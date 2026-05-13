@@ -20,17 +20,26 @@
               <DropdownItem
                 v-for="serviceTypeForDrop in serviceTypesForDrop"
                 :key="serviceTypeForDrop.getType()"
+                v-tooltip="getServiceTypeDeactivatedReason(serviceTypeForDrop)"
                 :name="serviceTypeForDrop.name"
                 :value="serviceTypeForDrop.getType()"
                 :image="serviceTypeForDrop.integrationType.image"
                 :disabled="isServiceTypeDeactivated(serviceTypeForDrop)"
-                :description="
-                  getServiceTypeDeactivatedReason(serviceTypeForDrop)
-                "
+                :description="serviceTypeForDrop.description"
+                tooltip-position="bottom-left"
+                @click="onServiceTypeClick(serviceTypeForDrop)"
               >
               </DropdownItem>
             </template>
           </Dropdown>
+          <component
+            :is="deactivatedClickModal[0]"
+            v-if="deactivatedClickModal !== null"
+            ref="deactivatedClickModal"
+            v-bind="deactivatedClickModal[1]"
+            :name="deactivatedServiceTypeName"
+            :workspace="builder.workspace"
+          />
         </FormGroup>
         <FormGroup
           :label="$t('dataSourceForm.integrationLabel')"
@@ -124,6 +133,8 @@ export default {
     return {
       allowedValues: ['name', 'integration_id', 'type'],
       values: { name: '', integration_id: null, type: null },
+      deactivatedClickModal: null,
+      deactivatedServiceTypeName: '',
     }
   },
   computed: {
@@ -223,6 +234,22 @@ export default {
     },
     isServiceTypeDeactivated(serviceType) {
       return this.getServiceTypeDeactivatedReason(serviceType) !== null
+    },
+    onServiceTypeClick(serviceType) {
+      const deactivatedClickModal = serviceType.getDeactivatedClickModal?.({
+        workspace: this.builder.workspace,
+      })
+      if (
+        deactivatedClickModal === null ||
+        deactivatedClickModal === undefined
+      ) {
+        return
+      }
+      this.deactivatedClickModal = deactivatedClickModal
+      this.deactivatedServiceTypeName = serviceType.name
+      this.$nextTick(() => {
+        this.$refs.deactivatedClickModal.show()
+      })
     },
   },
   validations() {

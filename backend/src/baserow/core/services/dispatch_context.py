@@ -1,10 +1,13 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 from baserow.core.formula.runtime_formula_context import RuntimeFormulaContext
 from baserow.core.services.models import Service
 from baserow.core.services.types import RuntimeFormulaContextSubClass
 from baserow.core.services.utils import ServiceAdhocRefinements
+
+if TYPE_CHECKING:
+    from baserow.core.models import Workspace
 
 
 class DispatchContext(RuntimeFormulaContext, ABC):
@@ -14,6 +17,7 @@ class DispatchContext(RuntimeFormulaContext, ABC):
         "use_sample_data",
         "force_outputs",
         "event_payload",
+        "workspace",
     ]
 
     """
@@ -25,6 +29,7 @@ class DispatchContext(RuntimeFormulaContext, ABC):
 
     def __init__(
         self,
+        workspace: "Workspace",
         only_record_id=None,
         event_payload: Any = None,
         update_sample_data_for: Optional[List[Service]] = None,
@@ -42,6 +47,7 @@ class DispatchContext(RuntimeFormulaContext, ABC):
         :param use_sample_data: Whether to use or update the sample_data.
         :param force_outputs: Mapping of service IDs and previous service
             outputs. Can be used to force a specific service to be dispatched.
+        :param workspace: The workspace this dispatch is running in.
         """
 
         self.cache = {}  # can be used by data providers to save queries
@@ -50,6 +56,7 @@ class DispatchContext(RuntimeFormulaContext, ABC):
         self.use_sample_data = use_sample_data
         self.force_outputs = force_outputs
         self.event_payload = event_payload
+        self.workspace = workspace
         super().__init__()
 
     @abstractmethod

@@ -6,6 +6,7 @@ from baserow_enterprise.features import (
     AUDIT_LOG,
     BUILDER_CUSTOM_CODE,
     BUILDER_FILE_INPUT,
+    BUILDER_GROUPED_AGGREGATE_ROWS,
     BUILDER_NO_BRANDING,
     BUILDER_SSO,
     CODE_RUNNER,
@@ -106,6 +107,7 @@ class EnterpriseWithoutSupportLicenseType(AdvancedLicenseType):
         ENTERPRISE_SETTINGS,
         SECURE_FILE_SERVE,
         DATA_SCANNER,
+        BUILDER_GROUPED_AGGREGATE_ROWS,
         CODE_RUNNER,
         XLS_FILE_READER,
     ]

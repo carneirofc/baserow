@@ -1,27 +1,27 @@
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from django.http import HttpRequest
 
 from baserow.core.services.dispatch_context import DispatchContext
 
 if TYPE_CHECKING:
-    from baserow.contrib.dashboard.widgets.models import Widget
+    from baserow.core.models import Workspace
 
 
 class DashboardDispatchContext(DispatchContext):
     own_properties = [
-        "widget",
+        "request",
+        "workspace",
     ]
 
     def __init__(
         self,
         request: HttpRequest,
-        widget: Optional["Widget"] = None,
+        workspace: "Workspace",
     ):
         self.request = request
-        self.widget = widget
 
-        super().__init__()
+        super().__init__(workspace)
 
     def range(self, service):
         offset, count = 0, None
