@@ -115,6 +115,7 @@ export class EnterpriseWithoutSupportLicenseType extends AdvancedLicenseType {
       EnterpriseFeaturesObject.BUILDER_GROUPED_AGGREGATE_ROWS,
       EnterpriseFeaturesObject.CODE_RUNNER,
       EnterpriseFeaturesObject.XLS_FILE_READER,
+      EnterpriseFeaturesObject.BUILDER_GRAPH_ELEMENT,
     ]
   }
 
