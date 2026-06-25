@@ -1136,7 +1136,7 @@ class AutomationWorkflowHandler(metaclass=baserow_trace_methods(tracer)):
         self,
         workflow: AutomationWorkflow,
         event_payload: Optional[List[Dict]] = None,
-    ) -> None:
+    ) -> Optional[AutomationWorkflowHistory]:
         """
         Runs the provided workflow in a celery task.
 
@@ -1201,7 +1201,7 @@ class AutomationWorkflowHandler(metaclass=baserow_trace_methods(tracer)):
             if create_history_entry and simulate_until_node is None:
                 now = timezone.now()
 
-                AutomationHistoryHandler().create_workflow_history(
+                history = AutomationHistoryHandler().create_workflow_history(
                     original_workflow=original_workflow,
                     workflow=workflow,
                     is_test_run=is_test_run,
@@ -1210,6 +1210,8 @@ class AutomationWorkflowHandler(metaclass=baserow_trace_methods(tracer)):
                     message=error,
                     status=history_status,
                 )
+                AutomationHistoryHandler().ensure_default_response(history)
+                return history
             return
 
         history = AutomationHistoryHandler().create_workflow_history(
@@ -1229,6 +1231,7 @@ class AutomationWorkflowHandler(metaclass=baserow_trace_methods(tracer)):
         transaction.on_commit(
             lambda: start_workflow_celery_task.delay(workflow.id, history.id)
         )
+        return history
 
     def start_workflow(
         self,

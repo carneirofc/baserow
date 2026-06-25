@@ -12,6 +12,7 @@ import CoreIteratorServiceForm from '@baserow/modules/integrations/core/componen
 import CoreCSVFileReaderServiceForm from '@baserow/modules/integrations/core/components/services/CoreCSVFileReaderServiceForm'
 import CorePeriodicServiceForm from '@baserow/modules/integrations/core/components/services/CorePeriodicServiceForm.vue'
 import CoreStartWorkflowServiceForm from '@baserow/modules/integrations/core/components/services/CoreStartWorkflowServiceForm.vue'
+import CoreResponseServiceForm from '@baserow/modules/integrations/core/components/services/CoreResponseServiceForm.vue'
 
 export class CoreHTTPRequestServiceType extends WorkflowActionServiceTypeMixin(
   ServiceType
@@ -418,6 +419,38 @@ export class CoreStartWorkflowServiceType extends WorkflowActionServiceTypeMixin
 
   getOrder() {
     return 8
+  }
+}
+
+export class CoreResponseServiceType extends WorkflowActionServiceTypeMixin(
+  ServiceType
+) {
+  static getType() {
+    return 'response'
+  }
+
+  get name() {
+    return this.app.$i18n.t('serviceType.coreResponse')
+  }
+
+  get description() {
+    return this.app.$i18n.t('serviceType.coreResponseDescription')
+  }
+
+  get icon() {
+    return 'iconoir-reply'
+  }
+
+  get formComponent() {
+    return CoreResponseServiceForm
+  }
+
+  getDataSchema(service) {
+    return service.schema
+  }
+
+  getOrder() {
+    return 9
   }
 }
 

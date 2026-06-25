@@ -25,6 +25,7 @@ class AutomationConfig(AppConfig):
             CoreIteratorNodeType,
             CoreManualTriggerNodeType,
             CorePeriodicTriggerNodeType,
+            CoreResponseNodeType,
             CoreRouterActionNodeType,
             CoreSMTPEmailNodeType,
             CoreStartWorkflowNodeType,
@@ -186,6 +187,7 @@ class AutomationConfig(AppConfig):
         automation_node_type_registry.register(CoreSMTPEmailNodeType())
         automation_node_type_registry.register(CoreRouterActionNodeType())
         automation_node_type_registry.register(CoreStartWorkflowNodeType())
+        automation_node_type_registry.register(CoreResponseNodeType())
         automation_node_type_registry.register(LocalBaserowRowsCreatedNodeTriggerType())
         automation_node_type_registry.register(LocalBaserowRowsUpdatedNodeTriggerType())
         automation_node_type_registry.register(LocalBaserowRowsDeletedNodeTriggerType())
