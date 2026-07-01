@@ -850,6 +850,10 @@
   "versionUpgradeNotification": {
     "title": "{version} is here! Check out what's new."
   },
+  "applicationUserLimitNotification": {
+    "titleWarning": "{workspaceName} has used {threshold} of its application user limit.",
+    "titleReached": "{workspaceName} has reached its application user limit. New users can't be created until you upgrade."
+  },
   "emailNotifications": {
     "title": "Email notifications",
     "label": "Mentions, comments and other notifications",

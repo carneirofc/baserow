@@ -470,6 +470,7 @@ class CoreConfig(AppConfig):
         import baserow.core.notifications.receivers  # noqa: F401
         import baserow.core.notifications.tasks  # noqa: F401
         from baserow.core.notification_types import (
+            ApplicationUserLimitNotificationType,
             BaserowVersionUpgradeNotificationType,
             WorkspaceInvitationAcceptedNotificationType,
             WorkspaceInvitationCreatedNotificationType,
@@ -487,6 +488,7 @@ class CoreConfig(AppConfig):
             WorkspaceInvitationRejectedNotificationType()
         )
         notification_type_registry.register(BaserowVersionUpgradeNotificationType())
+        notification_type_registry.register(ApplicationUserLimitNotificationType())
 
         from baserow.core.generative_ai.generative_ai_model_types import (
             AnthropicGenerativeAIModelType,

@@ -4,6 +4,7 @@ import WorkspaceInvitationCreatedNotification from '@baserow/modules/core/compon
 import WorkspaceInvitationAcceptedNotification from '@baserow/modules/core/components/notifications/WorkspaceInvitationAcceptedNotification'
 import WorkspaceInvitationRejectedNotification from '@baserow/modules/core/components/notifications/WorkspaceInvitationRejectedNotification'
 import BaserowVersionUpgradeNotification from '@baserow/modules/core/components/notifications/BaserowVersionUpgradeNotification'
+import ApplicationUserLimitNotification from '@baserow/modules/core/components/notifications/ApplicationUserLimitNotification'
 import NotificationImgIcon from '@baserow/modules/core/components/notifications/NotificationImgIcon'
 import BaserowIcon from '@baserow/modules/core/static/img/logoOnly.svg?url'
 
@@ -93,5 +94,23 @@ export class BaserowVersionUpgradeNotificationType extends NotificationType {
 
   getContentComponent() {
     return BaserowVersionUpgradeNotification
+  }
+}
+
+export class ApplicationUserLimitNotificationType extends NotificationType {
+  static getType() {
+    return 'application_user_limit'
+  }
+
+  getIconComponent() {
+    return NotificationImgIcon
+  }
+
+  getIconComponentProps() {
+    return { icon: BaserowIcon }
+  }
+
+  getContentComponent() {
+    return ApplicationUserLimitNotification
   }
 }
