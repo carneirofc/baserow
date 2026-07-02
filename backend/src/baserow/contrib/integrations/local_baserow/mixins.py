@@ -92,7 +92,6 @@ class LocalBaserowTableServiceFilterableMixin:
                 "field_id": f.field_id,
                 "type": f.type,
                 "value": f.value,
-                "value_is_formula": f.value["mode"] != BASEROW_FORMULA_MODE_RAW,
             }
             for f in service.service_filters_with_untrashed_fields
         ]

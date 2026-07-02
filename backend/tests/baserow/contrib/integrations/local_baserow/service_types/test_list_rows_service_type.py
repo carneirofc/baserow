@@ -116,7 +116,6 @@ def test_export_import_local_baserow_list_rows_service(data_fixture):
                 "field_id": service_filter.field_id,
                 "type": service_filter.type,
                 "value": service_filter.value,
-                "value_is_formula": service_filter.value["mode"] != "raw",
             }
         ],
         "sortings": [
