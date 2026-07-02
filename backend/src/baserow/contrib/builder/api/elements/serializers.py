@@ -532,6 +532,8 @@ class CollectionFieldOptionalFormulaSerializerField(FormulaSerializerField):
     def to_representation(self, value):
         value = BaserowFormulaObject.to_formula(super().to_representation(value))
 
+        # TODO ZDM: remove this legacy boolean read compatibility in the next version.
+        # The formula object mode should be the only source of truth.
         is_formula = getattr(self.parent.instance, "config", {}).get(
             self.is_formula_field_name
         )

@@ -236,6 +236,8 @@ class TagsCollectionFieldType(CollectionFieldType):
 
     def serialize_property(self, config: Dict[str, Any], prop_name: str):
         value = super().serialize_property(config, prop_name)
+        # TODO ZDM: remove this legacy boolean read compatibility in the next version.
+        # The colors formula object mode should be the only source of truth.
         if prop_name == "colors" and config.get("colors_is_formula") is False:
             value = BaserowFormulaObject.to_formula(value)
             value["mode"] = BASEROW_FORMULA_MODE_RAW
@@ -294,6 +296,8 @@ class TagsCollectionFieldType(CollectionFieldType):
             collection_field.config.get("colors", "")
         )
 
+        # TODO ZDM: remove this legacy boolean read compatibility in the next version.
+        # The colors formula object mode should be the only source of truth.
         if collection_field.config.get("colors_is_formula") is False:
             colors["mode"] = BASEROW_FORMULA_MODE_RAW
 
@@ -318,6 +322,8 @@ class TagsCollectionFieldType(CollectionFieldType):
         )
 
         if prop_name == "colors":
+            # TODO ZDM: remove this legacy boolean import compatibility in the next
+            # version. The colors formula object mode should be the only source of truth.
             colors_is_formula = serialized_values["config"].get("colors_is_formula")
             if colors_is_formula is False:
                 value = BaserowFormulaObject.to_formula(value)
@@ -331,7 +337,8 @@ class TagsCollectionFieldType(CollectionFieldType):
         colors = serialized_values["config"].get("colors")
         if colors is not None:
             serialized_values["config"]["colors_is_formula"] = (
-                BaserowFormulaObject.to_formula(colors)["mode"] != BASEROW_FORMULA_MODE_RAW
+                BaserowFormulaObject.to_formula(colors)["mode"]
+                != BASEROW_FORMULA_MODE_RAW
             )
 
         return super().create_instance_from_serialized(serialized_values)

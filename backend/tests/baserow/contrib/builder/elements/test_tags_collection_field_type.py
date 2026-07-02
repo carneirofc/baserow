@@ -1,13 +1,22 @@
+from importlib import import_module
+
+from django.apps import apps
+
 import pytest
 
 from baserow.contrib.builder.api.elements.serializers import CollectionFieldSerializer
 from baserow.contrib.builder.elements.handler import ElementHandler
+from baserow.contrib.builder.elements.models import CollectionField
 from baserow.contrib.builder.pages.service import PageService
 from baserow.core.formula import BaserowFormulaObject
 from baserow.core.formula.field import BASEROW_FORMULA_VERSION_INITIAL
 from baserow.core.formula.types import (
     BASEROW_FORMULA_MODE_RAW,
     BASEROW_FORMULA_MODE_SIMPLE,
+)
+
+tags_colors_migration = import_module(
+    "baserow.contrib.builder.migrations.0075_migrate_tags_colors_to_formula_objects"
 )
 
 
@@ -197,3 +206,45 @@ def test_deserialize_tags_collection_field_type_derives_colors_is_formula():
 
     assert serializer.is_valid(), serializer.errors
     assert serializer.validated_data["config"]["colors_is_formula"] is False
+
+
+@pytest.mark.django_db
+def test_0075_migrate_tags_colors_to_formula_objects():
+    raw_colors_field = CollectionField.objects.create(
+        order=1,
+        name="Raw colors",
+        type="tags",
+        config={
+            "values": "'a,b,c'",
+            "colors": "#d06060ff",
+            "colors_is_formula": False,
+        },
+    )
+    formula_colors_field = CollectionField.objects.create(
+        order=2,
+        name="Formula colors",
+        type="tags",
+        config={
+            "values": "'a,b,c'",
+            "colors": "get('current_record.Color')",
+            "colors_is_formula": True,
+        },
+    )
+
+    tags_colors_migration.migrate_tags_colors_to_formula_objects(apps, None)
+
+    raw_colors_field.refresh_from_db()
+    formula_colors_field.refresh_from_db()
+
+    assert raw_colors_field.config["colors"] == {
+        "formula": "#d06060ff",
+        "version": BASEROW_FORMULA_VERSION_INITIAL,
+        "mode": BASEROW_FORMULA_MODE_RAW,
+    }
+    assert raw_colors_field.config["colors_is_formula"] is False
+    assert formula_colors_field.config["colors"] == {
+        "formula": "get('current_record.Color')",
+        "version": BASEROW_FORMULA_VERSION_INITIAL,
+        "mode": BASEROW_FORMULA_MODE_SIMPLE,
+    }
+    assert formula_colors_field.config["colors_is_formula"] is True
