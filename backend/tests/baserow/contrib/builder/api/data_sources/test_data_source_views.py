@@ -403,7 +403,6 @@ def test_update_data_source_with_filters(api_client, data_fixture):
                         version=BASEROW_FORMULA_VERSION_INITIAL,
                         mode=BASEROW_FORMULA_MODE_RAW,
                     ),
-                    "value_is_formula": False,
                 },
                 {
                     "field": formula_field.id,
@@ -413,7 +412,6 @@ def test_update_data_source_with_filters(api_client, data_fixture):
                         version=BASEROW_FORMULA_VERSION_INITIAL,
                         mode=BASEROW_FORMULA_MODE_SIMPLE,
                     ),
-                    "value_is_formula": True,
                 },
             ]
         },
@@ -435,7 +433,6 @@ def test_update_data_source_with_filters(api_client, data_fixture):
                 mode=BASEROW_FORMULA_MODE_RAW,
             ),
             "trashed": False,
-            "value_is_formula": False,
         },
         {
             "id": service_filters[1].id,
@@ -448,8 +445,11 @@ def test_update_data_source_with_filters(api_client, data_fixture):
                 version=BASEROW_FORMULA_VERSION_INITIAL,
                 mode=BASEROW_FORMULA_MODE_SIMPLE,
             ),
-            "value_is_formula": True,
         },
+    ]
+    assert [service_filter.value_is_formula for service_filter in service_filters] == [
+        False,
+        True,
     ]
 
     # Reset the filters to nothing.
@@ -479,7 +479,6 @@ def test_update_data_source_with_filters(api_client, data_fixture):
                         version=BASEROW_FORMULA_VERSION_INITIAL,
                         mode=BASEROW_FORMULA_MODE_RAW,
                     ),
-                    "value_is_formula": False,
                 }
             ]
         },
@@ -501,9 +500,9 @@ def test_update_data_source_with_filters(api_client, data_fixture):
                 mode=BASEROW_FORMULA_MODE_RAW,
             ),
             "trashed": False,
-            "value_is_formula": False,
         }
     ]
+    assert service_filter.value_is_formula is False
 
 
 @pytest.mark.django_db

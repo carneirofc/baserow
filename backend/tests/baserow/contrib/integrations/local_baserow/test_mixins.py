@@ -227,7 +227,7 @@ def test_local_baserow_table_service_filterable_mixin_compat():
 
     id_mapping = {
         "database_field_select_options": {1: 42},
-        "database_fields": {1: 41, 2: 42, 3: 43, 4: 44},
+        "database_fields": {1: 41, 2: 42, 3: 43, 4: 44, 5: 45},
     }
 
     value_to_test = [
@@ -238,6 +238,10 @@ def test_local_baserow_table_service_filterable_mixin_compat():
             "field_id": 4,
             "value": {"mode": "simple", "version": "0.1", "formula": "'foobar'"},
             "value_is_formula": True,
+        },
+        {
+            "field_id": 5,
+            "value": {"mode": "raw", "version": "0.1", "formula": "1"},
         },
     ]
 
@@ -269,6 +273,11 @@ def test_local_baserow_table_service_filterable_mixin_compat():
             "field_id": 44,
             "value": {"mode": "simple", "version": "0.1", "formula": "'foobar'"},
             "value_is_formula": True,
+        },
+        {
+            "field_id": 45,
+            "value": {"mode": "raw", "version": "0.1", "formula": "42"},
+            "value_is_formula": False,
         },
     ]
 
