@@ -232,8 +232,25 @@ class TagsCollectionFieldType(CollectionFieldType):
 
     class SerializedDict(TypedDict):
         values: BaserowFormulaObject
-        colors_is_formula: bool
         colors: BaserowFormulaObject
+
+    def serialize_property(self, config: Dict[str, Any], prop_name: str):
+        value = super().serialize_property(config, prop_name)
+        if prop_name == "colors" and config.get("colors_is_formula") is False:
+            value = BaserowFormulaObject.to_formula(value)
+            value["mode"] = BASEROW_FORMULA_MODE_RAW
+        return value
+
+    @property
+    def serializer_mixins(self):
+        from baserow.contrib.builder.api.elements.serializers import (
+            LegacyFormulaModeSerializerMixin,
+        )
+
+        class TagsCollectionFieldSerializerMixin(LegacyFormulaModeSerializerMixin):
+            legacy_formula_mode_fields = {"colors_is_formula": "colors"}
+
+        return [TagsCollectionFieldSerializerMixin]
 
     @property
     def serializer_field_overrides(self):
@@ -254,6 +271,9 @@ class TagsCollectionFieldType(CollectionFieldType):
             "colors_is_formula": serializers.BooleanField(
                 required=False,
                 default=False,
+                write_only=True,
+                # TODO ZDM: remove this field in the next version. The colors formula
+                # mode now defines whether the value is raw or a formula.
                 help_text="Indicates whether the colors is a formula or not.",
             ),
         }
@@ -270,18 +290,51 @@ class TagsCollectionFieldType(CollectionFieldType):
 
         yield from super().formula_generator(collection_field)
 
-        is_formula = collection_field.config.get("colors_is_formula", False)
         colors = BaserowFormulaObject.to_formula(
             collection_field.config.get("colors", "")
         )
 
-        if not is_formula:
+        if collection_field.config.get("colors_is_formula") is False:
             colors["mode"] = BASEROW_FORMULA_MODE_RAW
 
         new_formula = yield colors
         if new_formula is not None:
             collection_field.config["colors"] = new_formula
+            collection_field.config["colors_is_formula"] = (
+                new_formula["mode"] != BASEROW_FORMULA_MODE_RAW
+            )
             yield collection_field
+
+    def deserialize_property(
+        self,
+        prop_name: str,
+        value: Any,
+        id_mapping: Dict[str, Any],
+        serialized_values: Dict[str, Any],
+        **kwargs,
+    ) -> Any:
+        value = super().deserialize_property(
+            prop_name, value, id_mapping, serialized_values, **kwargs
+        )
+
+        if prop_name == "colors":
+            colors_is_formula = serialized_values["config"].get("colors_is_formula")
+            if colors_is_formula is False:
+                value = BaserowFormulaObject.to_formula(value)
+                value["mode"] = BASEROW_FORMULA_MODE_RAW
+
+        return value
+
+    def create_instance_from_serialized(
+        self, serialized_values: Dict[str, Any]
+    ) -> CollectionField:
+        colors = serialized_values["config"].get("colors")
+        if colors is not None:
+            serialized_values["config"]["colors_is_formula"] = (
+                BaserowFormulaObject.to_formula(colors)["mode"] != BASEROW_FORMULA_MODE_RAW
+            )
+
+        return super().create_instance_from_serialized(serialized_values)
 
 
 class ButtonCollectionFieldType(CollectionFieldType):
