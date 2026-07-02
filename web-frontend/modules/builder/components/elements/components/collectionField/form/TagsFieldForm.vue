@@ -24,48 +24,28 @@
       </template>
     </FormGroup>
 
-    <div>
-      <FormGroup
-        v-if="values.colors_is_formula"
-        small-label
-        :label="$t('tagsFieldForm.fieldColorsLabel')"
-        horizontal
-        class="margin-bottom-2"
-        required
+    <FormGroup
+      small-label
+      :label="$t('tagsFieldForm.fieldColorsLabel')"
+      horizontal
+      class="margin-bottom-2"
+      required
+    >
+      <InjectedFormulaInput
+        v-model="values.colors"
+        :placeholder="$t('tagsFieldForm.fieldColorsPlaceholder')"
+        allow-raw-values
       >
-        <InjectedFormulaInput
-          v-model="values.colors"
-          :placeholder="$t('tagsFieldForm.fieldColorsPlaceholder')"
-        />
-        <template #after-input>
-          <ButtonIcon
-            icon="iconoir-color-picker"
-            type="secondary"
-            @click="setColorsToPicker"
+        <template #raw-input="{ value, input }">
+          <ColorInput
+            :model-value="value"
+            :color-variables="colorVariables"
+            small
+            @update:model-value="input"
           />
         </template>
-      </FormGroup>
-      <FormGroup
-        v-else
-        horizontal
-        small-label
-        :label="$t('tagsFieldForm.fieldColorsLabel')"
-        class="margin-bottom-2"
-      >
-        <ColorInput
-          v-model="rawFormula"
-          :color-variables="colorVariables"
-          small
-        />
-        <template #after-input>
-          <ButtonIcon
-            icon="iconoir-sigma-function"
-            type="secondary"
-            @click="setColorsToFormula"
-          />
-        </template>
-      </FormGroup>
-    </div>
+      </InjectedFormulaInput>
+    </FormGroup>
   </form>
 </template>
 
@@ -80,47 +60,16 @@ export default {
   mixins: [collectionFieldForm],
   data() {
     return {
-      allowedValues: ['values', 'colors', 'colors_is_formula', 'styles'],
+      allowedValues: ['values', 'colors', 'styles'],
       values: {
         values: {},
         colors: {
           formula: '#acc8f8',
           mode: 'raw',
         },
-        colors_is_formula: false,
         styles: {},
       },
     }
-  },
-  computed: {
-    rawFormula: {
-      get() {
-        return this.values.colors.formula
-      },
-      set(newValue) {
-        this.values.colors = {
-          ...this.values.colors,
-          formula: newValue,
-          mode: 'raw',
-        }
-      },
-    },
-  },
-  methods: {
-    setColorsToFormula() {
-      this.values.colors_is_formula = true
-      this.values.colors = {
-        formula: `'${this.values.colors.formula}'`,
-        mode: 'simple',
-      }
-    },
-    setColorsToPicker() {
-      this.values.colors_is_formula = false
-      this.values.colors = {
-        formula: '#acc8f8',
-        mode: 'raw',
-      }
-    },
   },
 }
 </script>

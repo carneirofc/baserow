@@ -1,22 +1,56 @@
 <template>
   <div ref="formulaInputRoot">
-    <div
-      ref="formulaEditorSurface"
-      class="formula-input-field__editor"
-      @click="handleEditorClick"
-    >
-      <EditorContent
-        :id="forInput"
-        ref="editor"
-        class="form-input formula-input-field"
-        role="textbox"
-        :class="classes"
-        :editor="editor"
-        :style="{ '--formula-placeholder': `'${placeholder}'` }"
+    <div class="formula-input-field__container">
+      <div
+        v-if="!isRawMode"
+        ref="formulaEditorSurface"
+        class="formula-input-field__editor"
+        @click="handleEditorClick"
+      >
+        <EditorContent
+          :id="forInput"
+          ref="editor"
+          class="form-input formula-input-field"
+          role="textbox"
+          :class="classes"
+          :editor="editor"
+          :style="{ '--formula-placeholder': `'${placeholder}'` }"
+        />
+      </div>
+      <slot
+        v-else
+        name="raw-input"
+        :value="value"
+        :disabled="disabled"
+        :read-only="readOnly"
+        :placeholder="placeholder"
+        :small="small"
+        :input="emitRawValue"
+      >
+        <FormInput
+          :value="value"
+          :disabled="disabled || readOnly"
+          :placeholder="placeholder"
+          :size="small ? 'small' : 'regular'"
+          @input="emitRawValue"
+        />
+      </slot>
+      <ButtonIcon
+        v-if="allowRawValues && !readOnly"
+        class="formula-input-field__raw-mode-toggle"
+        :class="{
+          'formula-input-field__raw-mode-toggle--active': isRawMode,
+        }"
+        icon="iconoir-sigma-function"
+        type="secondary"
+        :disabled="disabled"
+        :title="rawModeToggleTitle"
+        @click="toggleRawMode"
       />
     </div>
 
     <FormulaInputErrorContext
+      v-if="!isRawMode"
       :visible="showErrorContext"
       :formula-error-context="formulaErrorContext"
       :target="$refs.formulaEditorSurface"
@@ -24,7 +58,7 @@
     />
 
     <FormulaInputExplorerContext
-      v-if="isFocused && !readOnly"
+      v-if="!isRawMode && isFocused && !readOnly"
       ref="formulaInputExplorerContext"
       :node-selected="nodeSelected"
       :loading="loading"
@@ -86,6 +120,8 @@ import FormulaInputExplorerContext from '@baserow/modules/core/components/formul
 import { isFormulaValid } from '@baserow/modules/core/formula'
 import NodeHelpTooltip from '@baserow/modules/core/components/nodeExplorer/NodeHelpTooltip'
 import { BASEROW_FORMULA_MODES } from '@baserow/modules/core/formula/constants'
+import FormInput from '@baserow/modules/core/components/FormInput'
+import ButtonIcon from '@baserow/modules/core/components/ButtonIcon'
 
 /**
  * The ANTLR lexer's INTEGER_LITERAL / NUMERIC_LITERAL rules include an
@@ -144,6 +180,8 @@ export default {
     FormulaInputExplorerContext,
     EditorContent,
     NodeHelpTooltip,
+    FormInput,
+    ButtonIcon,
   },
 
   provide() {
@@ -217,6 +255,11 @@ export default {
       required: false,
       default: () => BASEROW_FORMULA_MODES,
     },
+    allowRawValues: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     validationContext: {
       type: Object,
       required: false,
@@ -241,6 +284,14 @@ export default {
   computed: {
     showErrorContext() {
       return this.isFocused && !this.readOnly && this.isFormulaInvalid
+    },
+    isRawMode() {
+      return this.mode === 'raw'
+    },
+    rawModeToggleTitle() {
+      return this.isRawMode
+        ? this.$t('formulaInputField.useFormulaMode')
+        : this.$t('formulaInputField.useRawMode')
     },
     isFormulaEmpty() {
       if (!this.editor) return true
@@ -388,10 +439,10 @@ export default {
   },
   watch: {
     disabled(newValue) {
-      this.editor.setOptions({ editable: !newValue && !this.readOnly })
+      this.editor?.setOptions({ editable: !newValue && !this.readOnly })
     },
     readOnly(newValue) {
-      this.editor.setOptions({ editable: !this.disabled && !newValue })
+      this.editor?.setOptions({ editable: !this.disabled && !newValue })
     },
 
     mode(newMode, oldMode) {
@@ -404,10 +455,21 @@ export default {
       if (this.isHandlingModeChange) {
         return
       }
-      this.recreateEditor()
+      if (newMode === 'raw') {
+        this.editor?.destroy()
+        this.editor = null
+        this.isEditorInitialized = false
+        this.isFormulaInvalid = false
+        this.formulaErrorContext = { scope: null, title: '', message: '' }
+      } else {
+        this.recreateEditor()
+      }
     },
 
     value(value) {
+      if (this.isRawMode) {
+        return
+      }
       // Use editor.getJSON() directly instead of this.wrapperContent to avoid stale cached data
       const editorContent = this.editor?.getJSON()
       const currentFormula = this.toFormula(editorContent)
@@ -434,7 +496,9 @@ export default {
     },
   },
   mounted() {
-    this.createEditor()
+    if (!this.isRawMode) {
+      this.createEditor()
+    }
     // Reflect the validity of the initially-displayed formula so an
     // already-invalid stored value shows its error state without an edit.
     this.validateFormula(this.value)
@@ -516,6 +580,12 @@ export default {
      * renders without any error styling until the field is touched.
      */
     validateFormula(formula) {
+      if (this.isRawMode) {
+        this.isFormulaInvalid = false
+        this.formulaErrorContext = { scope: null, title: '', message: '' }
+        return true
+      }
+
       const functions = new RuntimeFunctionCollection(this.$registry)
       // Validate the syntax, and assuming it's valid, then validate the arguments.
       const validationResult = isFormulaValid(
@@ -553,6 +623,59 @@ export default {
     },
     onUpdate() {
       this.emitChange()
+    },
+    emitRawValue(value) {
+      this.$emit('input', value)
+    },
+    toggleRawMode() {
+      if (this.disabled) {
+        return
+      }
+
+      const newMode = this.isRawMode ? 'simple' : 'raw'
+      const newFormula = this.isRawMode
+        ? this.rawValueToSimpleFormula(this.value)
+        : this.simpleFormulaToRawValue(
+            this.editor ? this.toFormula(this.wrapperContent, this.mode) : ''
+          )
+
+      this.isHandlingModeChange = true
+      this.$emit('update:mode', newMode)
+      this.$emit('input', newFormula)
+
+      if (!this.isRawMode) {
+        this.editor?.destroy()
+        this.editor = null
+        this.isEditorInitialized = false
+      }
+
+      this.isFormulaInvalid = false
+      this.formulaErrorContext = { scope: null, title: '', message: '' }
+      this.$nextTick(() => {
+        if (newMode !== 'raw' && !this.editor) {
+          this.createEditor(newFormula)
+        }
+        this.isHandlingModeChange = false
+      })
+    },
+    rawValueToSimpleFormula(value) {
+      if (!value) {
+        return ''
+      }
+
+      return `'${String(value).replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`
+    },
+    simpleFormulaToRawValue(formula) {
+      if (!formula) {
+        return ''
+      }
+
+      const stringLiteral = formula.match(/^(['"])((?:\\.|(?!\1).)*)\1$/)
+      if (!stringLiteral) {
+        return ''
+      }
+
+      return stringLiteral[2].replace(/\\(['"\\])/g, '$1')
     },
     handleNodeSelected(data) {
       const { path, node } = data
