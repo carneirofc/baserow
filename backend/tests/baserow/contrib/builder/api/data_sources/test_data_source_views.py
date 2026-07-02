@@ -447,9 +447,9 @@ def test_update_data_source_with_filters(api_client, data_fixture):
             ),
         },
     ]
-    assert [service_filter.value_is_formula for service_filter in service_filters] == [
-        False,
-        True,
+    assert [service_filter.value["mode"] for service_filter in service_filters] == [
+        BASEROW_FORMULA_MODE_RAW,
+        BASEROW_FORMULA_MODE_SIMPLE,
     ]
 
     # Reset the filters to nothing.
@@ -502,7 +502,7 @@ def test_update_data_source_with_filters(api_client, data_fixture):
             "trashed": False,
         }
     ]
-    assert service_filter.value_is_formula is False
+    assert service_filter.value["mode"] == BASEROW_FORMULA_MODE_RAW
 
 
 @pytest.mark.django_db

@@ -5,7 +5,6 @@ from baserow.contrib.integrations.local_baserow.models import (
     LocalBaserowTableServiceSort,
 )
 from baserow.core.formula.serializers import FormulaSerializerField
-from baserow.core.formula.types import BASEROW_FORMULA_MODE_RAW
 
 
 class LocalBaserowTableServiceSortSerializer(serializers.ModelSerializer):
@@ -76,13 +75,6 @@ class LocalBaserowTableServiceFilterSerializer(serializers.ModelSerializer):
             "value",
             "trashed",
         )
-
-    def to_internal_value(self, data):
-        attrs = super().to_internal_value(data)
-        attrs["value_is_formula"] = (
-            attrs.get("value", {}).get("mode") != BASEROW_FORMULA_MODE_RAW
-        )
-        return attrs
 
 
 class LocalBaserowTableServiceFilterSerializerMixin(serializers.Serializer):

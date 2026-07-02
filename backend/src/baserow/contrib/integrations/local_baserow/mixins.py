@@ -92,7 +92,7 @@ class LocalBaserowTableServiceFilterableMixin:
                 "field_id": f.field_id,
                 "type": f.type,
                 "value": f.value,
-                "value_is_formula": f.value_is_formula,
+                "value_is_formula": f.value["mode"] != BASEROW_FORMULA_MODE_RAW,
             }
             for f in service.service_filters_with_untrashed_fields
         ]
@@ -138,6 +138,8 @@ class LocalBaserowTableServiceFilterableMixin:
             value_is_formula = f.get(
                 "value_is_formula", formula["mode"] != BASEROW_FORMULA_MODE_RAW
             )
+            if not value_is_formula:
+                formula["mode"] = BASEROW_FORMULA_MODE_RAW
             field_id = id_mapping.get("database_fields", {}).get(
                 f["field_id"], f["field_id"]
             )
@@ -159,14 +161,9 @@ class LocalBaserowTableServiceFilterableMixin:
                     version=formula["version"],
                 )
 
-            result.append(
-                {
-                    **f,
-                    "field_id": field_id,
-                    "value": val,
-                    "value_is_formula": value_is_formula,
-                }
-            )
+            result_filter = {**f, "field_id": field_id, "value": val}
+            result_filter.pop("value_is_formula", None)
+            result.append(result_filter)
 
         return result
 
@@ -278,26 +275,19 @@ class LocalBaserowTableServiceFilterableMixin:
             model_field = model._meta.get_field(field_name)
             view_filter_type = view_filter_type_registry.get(service_filter.type)
 
-            # We need this test for compatibility purposes with old values
-            if (
-                service_filter.value_is_formula
-                or service_filter.value["mode"] == BASEROW_FORMULA_MODE_RAW
-            ):
-                try:
-                    resolved_value = ensure_string(
-                        resolve_formula(
-                            service_filter.value,
-                            formula_runtime_function_registry,
-                            dispatch_context,
-                        )
+            try:
+                resolved_value = ensure_string(
+                    resolve_formula(
+                        service_filter.value,
+                        formula_runtime_function_registry,
+                        dispatch_context,
                     )
-                except Exception as exc:
-                    raise ServiceImproperlyConfiguredDispatchException(
-                        f"The {field_name} service filter formula can't be "
-                        "resolved: {exc}"
-                    ) from exc
-            else:
-                resolved_value = service_filter.value["formula"]
+                )
+            except Exception as exc:
+                raise ServiceImproperlyConfiguredDispatchException(
+                    f"The {field_name} service filter formula can't be "
+                    "resolved: {exc}"
+                ) from exc
 
             service_filter_builder.filter(
                 view_filter_type.get_filter(
@@ -320,12 +310,6 @@ class LocalBaserowTableServiceFilterableMixin:
 
         for service_filter in service.service_filters_with_untrashed_fields:
             formula = BaserowFormulaObject.to_formula(service_filter.value)
-
-            if (
-                not service_filter.value_is_formula
-                or formula["mode"] == BASEROW_FORMULA_MODE_RAW
-            ):
-                formula["mode"] = BASEROW_FORMULA_MODE_RAW
 
             # Service types like LocalBaserowGetRow do not have a value attribute.
             new_formula = yield formula

@@ -193,7 +193,6 @@ def test_local_baserow_table_service_filterable_mixin_import_export(data_fixture
         {
             "field_id": sf.field_id,
             "value": sf.value,
-            "value_is_formula": sf.value_is_formula,
         }
         for sf in imported_datasource.service.service_filters.all()
     ]
@@ -202,21 +201,18 @@ def test_local_baserow_table_service_filterable_mixin_import_export(data_fixture
         {
             "field_id": imported_text_field.id,
             "value": {"mode": "simple", "version": "0.1", "formula": "'foobar'"},
-            "value_is_formula": True,
         },
         {
             "field_id": imported_text_field.id,
             "value": {"mode": "simple", "version": "0.1", "formula": "123"},
-            "value_is_formula": True,
         },
         {
             "field_id": imported_single_select_field.id,
             "value": {
-                "mode": "simple",
+                "mode": "raw",
                 "version": "0.1",
                 "formula": str(imported_select_option.id),
             },
-            "value_is_formula": False,
         },
     ]
 
@@ -257,27 +253,22 @@ def test_local_baserow_table_service_filterable_mixin_compat():
                 "mode": "simple",
                 "version": "0.1",
             },
-            "value_is_formula": True,
         },
         {
             "field_id": 42,
-            "value": {"formula": "42", "mode": "simple", "version": "0.1"},
-            "value_is_formula": False,
+            "value": {"formula": "42", "mode": "raw", "version": "0.1"},
         },
         {
             "field_id": 43,
             "value": {"formula": "", "mode": "simple", "version": "0.1"},
-            "value_is_formula": True,
         },
         {
             "field_id": 44,
             "value": {"mode": "simple", "version": "0.1", "formula": "'foobar'"},
-            "value_is_formula": True,
         },
         {
             "field_id": 45,
             "value": {"mode": "raw", "version": "0.1", "formula": "42"},
-            "value_is_formula": False,
         },
     ]
 
