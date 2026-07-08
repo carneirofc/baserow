@@ -29,6 +29,11 @@
               ? resolvedEmbed
               : null
           "
+          :sandbox="
+            element.source_type === IFRAME_SOURCE_TYPES.EMBED
+              ? 'allow-forms allow-popups allow-popups-to-escape-sandbox allow-scripts'
+              : null
+          "
           :style="isEditMode ? 'pointer-events: none' : ''"
         >
         </iframe>

@@ -36,7 +36,28 @@ describe('resolveElementUrl tests', () => {
       resolveFormula,
       'preview'
     )
-    expect(result).toEqual('/builder/123/preview/contact-us/')
+    expect(result).toEqual('/contact-us/')
+  })
+  test('Should prefix internal preview page navigation when preview path prefix is configured.', () => {
+    const element = {
+      navigation_type: 'page',
+      navigate_to_page_id: 1,
+      page_parameters: [],
+    }
+    const builder = {
+      id: 123,
+      pages: [{ id: 1, path: '/contact-us/', path_params: [] }],
+    }
+
+    const result = resolveElementUrl(
+      element,
+      builder,
+      builder.pages,
+      resolveFormula,
+      'preview',
+      '/builder-preview'
+    )
+    expect(result).toEqual('/builder-preview/contact-us/')
   })
   test('Should return resolvedContext with page navigation type where page is found and has params.', () => {
     const element = {
@@ -62,7 +83,7 @@ describe('resolveElementUrl tests', () => {
       resolveFormula,
       'preview'
     )
-    expect(result).toEqual('/builder/123/preview/product/10/')
+    expect(result).toEqual('/product/10/')
   })
   test('Should return resolvedContext for external custom navigation type.', () => {
     const element = {
@@ -94,7 +115,7 @@ describe('resolveElementUrl tests', () => {
       resolveFormula,
       'preview'
     )
-    expect(result).toEqual('/builder/123/preview/contact/')
+    expect(result).toEqual('/contact/')
   })
   test('Should return resolvedContext and ignore element page params when destination page params are removed', () => {
     const element = {
@@ -113,6 +134,6 @@ describe('resolveElementUrl tests', () => {
       resolveFormula,
       'preview'
     )
-    expect(result).toEqual('/builder/123/preview/products/')
+    expect(result).toEqual('/products/')
   })
 })

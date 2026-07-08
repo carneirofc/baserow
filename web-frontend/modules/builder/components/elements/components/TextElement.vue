@@ -94,9 +94,9 @@ export default {
         link_open: (tokens, idx, options, env, renderer) => {
           const url = prefixInternalResolvedUrl(
             tokens[idx].attrGet('href'),
-            this.builder,
             'custom',
-            this.mode
+            this.mode,
+            this.$config.public.builderPreviewPathPrefix
           )
           tokens[idx].attrSet('href', url)
           tokens[idx].attrJoin('class', 'ab-link')
