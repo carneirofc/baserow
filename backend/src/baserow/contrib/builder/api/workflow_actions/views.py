@@ -50,6 +50,12 @@ from baserow.contrib.builder.elements.exceptions import ElementDoesNotExist
 from baserow.contrib.builder.elements.handler import ElementHandler
 from baserow.contrib.builder.pages.exceptions import PageDoesNotExist
 from baserow.contrib.builder.pages.handler import PageHandler
+from baserow.contrib.builder.workflow_actions.actions import (
+    CreateBuilderWorkflowActionActionType,
+    DeleteBuilderWorkflowActionActionType,
+    OrderBuilderWorkflowActionsActionType,
+    UpdateBuilderWorkflowActionActionType,
+)
 from baserow.contrib.builder.workflow_actions.exceptions import (
     BuilderWorkflowActionCannotBeDispatched,
     WorkflowActionNotInElement,
@@ -131,7 +137,7 @@ class BuilderWorkflowActionsView(APIView):
         workflow_action_type = builder_workflow_action_type_registry.get(type_name)
         page = PageHandler().get_page(page_id)
 
-        workflow_action = BuilderWorkflowActionService().create_workflow_action(
+        workflow_action = CreateBuilderWorkflowActionActionType.do(
             request.user, workflow_action_type, page, **data
         )
 
@@ -227,9 +233,7 @@ class BuilderWorkflowActionView(APIView):
             workflow_action_id
         )
 
-        BuilderWorkflowActionService().delete_workflow_action(
-            request.user, workflow_action
-        )
+        DeleteBuilderWorkflowActionActionType.do(request.user, workflow_action)
 
         return Response(status=204)
 
@@ -290,7 +294,7 @@ class BuilderWorkflowActionView(APIView):
             partial=True,
         )
 
-        workflow_action_updated = BuilderWorkflowActionService().update_workflow_action(
+        workflow_action_updated = UpdateBuilderWorkflowActionActionType.do(
             request.user, workflow_action, **data
         )
 
@@ -348,7 +352,7 @@ class OrderBuilderWorkflowActionsView(APIView):
             ElementHandler().get_element(element_id) if element_id is not None else None
         )
 
-        BuilderWorkflowActionService().order_workflow_actions(
+        OrderBuilderWorkflowActionsActionType.do(
             request.user, page, data["workflow_action_ids"], element=element
         )
 

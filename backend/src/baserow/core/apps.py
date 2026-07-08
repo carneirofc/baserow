@@ -548,6 +548,7 @@ class CoreConfig(AppConfig):
             ListIntegrationsApplicationOperationType,
             OrderIntegrationsOperationType,
             ReadIntegrationOperationType,
+            RestoreIntegrationOperationType,
             UpdateIntegrationOperationType,
         )
 
@@ -557,6 +558,24 @@ class CoreConfig(AppConfig):
         operation_type_registry.register(ListIntegrationsApplicationOperationType())
         operation_type_registry.register(ReadIntegrationOperationType())
         operation_type_registry.register(OrderIntegrationsOperationType())
+        operation_type_registry.register(RestoreIntegrationOperationType())
+
+        from baserow.core.action.registries import action_type_registry
+        from baserow.core.integrations.actions import (
+            CreateIntegrationActionType,
+            DeleteIntegrationActionType,
+            MoveIntegrationActionType,
+            UpdateIntegrationActionType,
+        )
+        from baserow.core.integrations.trash_types import IntegrationTrashableItemType
+        from baserow.core.trash.registries import trash_item_type_registry
+
+        trash_item_type_registry.register(IntegrationTrashableItemType())
+
+        action_type_registry.register(CreateIntegrationActionType())
+        action_type_registry.register(UpdateIntegrationActionType())
+        action_type_registry.register(DeleteIntegrationActionType())
+        action_type_registry.register(MoveIntegrationActionType())
 
         from baserow.core.user_sources.object_scopes import UserSourceObjectScopeType
 
@@ -570,6 +589,7 @@ class CoreConfig(AppConfig):
             LoginUserSourceOperationType,
             OrderUserSourcesOperationType,
             ReadUserSourceOperationType,
+            RestoreUserSourceOperationType,
             UpdateUserSourceOperationType,
         )
 
@@ -581,6 +601,22 @@ class CoreConfig(AppConfig):
         operation_type_registry.register(UpdateUserSourceOperationType())
         operation_type_registry.register(AuthenticateUserSourceOperationType())
         operation_type_registry.register(LoginUserSourceOperationType())
+        operation_type_registry.register(RestoreUserSourceOperationType())
+
+        from baserow.core.user_sources.actions import (
+            CreateUserSourceActionType,
+            DeleteUserSourceActionType,
+            MoveUserSourceActionType,
+            UpdateUserSourceActionType,
+        )
+        from baserow.core.user_sources.trash_types import UserSourceTrashableItemType
+
+        trash_item_type_registry.register(UserSourceTrashableItemType())
+
+        action_type_registry.register(CreateUserSourceActionType())
+        action_type_registry.register(UpdateUserSourceActionType())
+        action_type_registry.register(DeleteUserSourceActionType())
+        action_type_registry.register(MoveUserSourceActionType())
 
         from baserow.core.mcp.operations import (
             CreateMCPEndpointOperationType,
