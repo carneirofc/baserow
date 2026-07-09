@@ -590,6 +590,16 @@ class AutomationNodeHandler(metaclass=baserow_trace_methods(tracer)):
 
         try:
             dispatch_result = node_type.dispatch(node, dispatch_context)
+            if (
+                dispatch_result.destination_service_id is not None
+                and not simulate_until_node
+            ):
+                # The dispatch requested a jump the runner is about to follow
+                # (jumps are never followed while simulating). Let the node type
+                # re-validate the destination against the live graph first.
+                node_type.validate_jump_destination(
+                    node, dispatch_result.destination_service_id
+                )
         except ServiceImproperlyConfiguredDispatchException as e:
             error = f"The node is misconfigured and cannot be dispatched. {str(e)}"
             self._handle_workflow_error(node_history, iteration_path, error)
@@ -670,9 +680,14 @@ class AutomationNodeHandler(metaclass=baserow_trace_methods(tracer)):
                 canvas = chain(*groups_to_chain)
                 to_chain.append(canvas)
 
-        if dispatch_result.destination_service_id is not None:
+        if (
+            dispatch_result.destination_service_id is not None
+            and not simulate_until_node
+        ):
             # A node (e.g. "Go to node") requested a jump to a specific node,
             # identified by its service, rather than the natural next node.
+            # While simulating, the jump is never followed: execution walks the
+            # natural path towards the simulated node instead of looping on it.
             next_node_ids = [
                 self.get_node_by_service_id(dispatch_result.destination_service_id).id
             ]
