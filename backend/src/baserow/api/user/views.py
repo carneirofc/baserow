@@ -127,7 +127,6 @@ from .serializers import (
     SendChangeEmailConfirmationSerializer,
     SendResetPasswordEmailBodyValidationSerializer,
     SendVerifyEmailAddressSerializer,
-    ShareOnboardingDetailsWithBaserowSerializer,
     TokenBlacklistSerializer,
     TokenObtainPairWithUserSerializer,
     TokenRefreshWithUserSerializer,
@@ -869,22 +868,3 @@ class RedoView(APIView):
         redone_actions = ActionHandler.redo(request.user, data, session_id)
         serializer = UndoRedoResponseSerializer({"actions": redone_actions})
         return Response(serializer.data, status=200)
-
-
-class ShareOnboardingDetailsWithBaserowView(APIView):
-    permission_classes = (IsAuthenticated,)
-
-    @extend_schema(exclude=True)
-    @transaction.atomic
-    @validate_body(ShareOnboardingDetailsWithBaserowSerializer)
-    def post(self, request, data):
-        UserHandler().start_share_onboarding_details_with_baserow(
-            request.user,
-            data["team"],
-            data["role"],
-            data["size"],
-            data["country"],
-            data["how"],
-        )
-
-        return Response(status=204)

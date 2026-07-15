@@ -10,13 +10,6 @@ supported-markers = [
     "sys_platform == 'darwin'",
 ]
 
-[manifest]
-members = [
-    "baserow",
-    "baserow-enterprise",
-    "baserow-premium",
-]
-
 [[package]]
 name = "amqp"
 version = "5.3.1"
@@ -482,16 +475,6 @@ dev = [
     { name = "syrupy", specifier = "==5.1.0" },
     { name = "watchdog", specifier = "==6.0.0" },
 ]
-
-[[package]]
-name = "baserow-enterprise"
-version = "2.3.2"
-source = { editable = "../enterprise/backend" }
-
-[[package]]
-name = "baserow-premium"
-version = "2.3.2"
-source = { editable = "../premium/backend" }
 
 [[package]]
 name = "beautifulsoup4"

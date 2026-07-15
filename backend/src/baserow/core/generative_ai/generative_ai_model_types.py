@@ -10,7 +10,7 @@ from baserow.core.models import Workspace
 from .registries import FileHandler, GenerativeAIModelType
 
 if TYPE_CHECKING:
-    from baserow_premium.fields.ai_file import AIFile
+    from baserow.core.generative_ai.types import AIFile
 
 
 _IMAGE_EXTENSIONS = {".gif", ".jpg", ".jpeg", ".png", ".webp"}

@@ -15,7 +15,7 @@ from .exceptions import GenerativeAITypeDoesNotExist, get_user_friendly_error_me
 if TYPE_CHECKING:
     from pydantic_ai import Agent
 
-    from baserow_premium.fields.ai_file import AIFile
+    from baserow.core.generative_ai.types import AIFile
 
 
 class FileHandler:

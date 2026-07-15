@@ -947,8 +947,7 @@
     "howEvent": "Event or webinar",
     "howSales": "Sales outreach",
     "howOther": "Other",
-    "country": "Country",
-    "share": "I'm okay with sharing this with the Baserow team"
+    "country": "Country"
   },
   "teamStep": {
     "description": "Which team are you on?",

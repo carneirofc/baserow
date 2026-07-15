@@ -1,3 +1,5 @@
+from dataclasses import dataclass, field
+from typing import Optional
 from unittest.mock import patch
 
 from pydantic_ai import BinaryContent, TextContent, UploadedFile
@@ -9,20 +11,36 @@ from baserow.core.generative_ai.generative_ai_model_types import (
     OpenAIGenerativeAIModelType,
     OpenRouterGenerativeAIModelType,
 )
-from baserow_premium.fields.ai_file import AIFile
+from baserow.core.generative_ai.types import AIFile
+
+
+@dataclass
+class FakeAIFile:
+    """In-memory :class:`AIFile` implementation returning canned content."""
+
+    name: str
+    original_name: str
+    size: int
+    mime_type: str
+    content_bytes: bytes = b""
+
+    content: Optional[object] = field(default=None, repr=False)
+    provider_file_id: Optional[str] = None
+
+    def read_content(self) -> bytes:
+        return self.content_bytes
 
 
 def _make_ai_file(
     name: str, size: int, mime_type: str = "text/plain", content_bytes: bytes = b""
 ) -> AIFile:
-    ai_file = AIFile(
+    return FakeAIFile(
         name=name,
         original_name=name,
         size=size,
         mime_type=mime_type,
+        content_bytes=content_bytes,
     )
-    ai_file.read_content = lambda: content_bytes  # type: ignore[assignment]
-    return ai_file
 
 
 def test_openai_supports_files():

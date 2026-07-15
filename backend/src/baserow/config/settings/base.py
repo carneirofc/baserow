@@ -47,11 +47,9 @@ else:
     BASEROW_PLUGIN_FOLDERS = []
 
 BASEROW_BACKEND_PLUGIN_NAMES = [d.name for d in BASEROW_PLUGIN_FOLDERS]
-BASEROW_OSS_ONLY = bool(os.getenv("BASEROW_OSS_ONLY", ""))
-if BASEROW_OSS_ONLY:
-    BASEROW_BUILT_IN_PLUGINS = []
-else:
-    BASEROW_BUILT_IN_PLUGINS = ["baserow_premium", "baserow_enterprise"]
+# This fork ships no built-in plugins. Third party plugins are still discovered
+# through BASEROW_PLUGIN_DIR above.
+BASEROW_BUILT_IN_PLUGINS = []
 
 # SECURITY WARNING: keep the secret key used in production secret!
 if "SECRET_KEY" in os.environ:
@@ -1294,7 +1292,6 @@ BASEROW_IMPORT_EXPORT_TABLE_ROWS_COUNT_LIMIT = int(
 )
 
 PERMISSION_MANAGERS = [
-    "view_ownership",
     "core",
     "setting_operation",
     "staff",
@@ -1303,18 +1300,10 @@ PERMISSION_MANAGERS = [
     "element_visibility",
     "member",
     "token",
-    "write_field_values",
-    "role",
     "basic",
     "automation_workflow",
     "automation_node",
 ]
-
-if "baserow_enterprise" not in INSTALLED_APPS:
-    PERMISSION_MANAGERS.remove("write_field_values")
-    PERMISSION_MANAGERS.remove("role")
-if "baserow_premium" not in INSTALLED_APPS:
-    PERMISSION_MANAGERS.remove("view_ownership")
 
 
 OLD_ACTION_CLEANUP_INTERVAL_MINUTES = os.getenv(
@@ -1393,7 +1382,6 @@ BASEROW_PERSONAL_VIEW_LOWEST_ROLE_ALLOWED = (
 )
 
 LICENSE_AUTHORITY_CHECK_TIMEOUT_SECONDS = 10
-ADDITIONAL_INFORMATION_TIMEOUT_SECONDS = 10
 
 MAX_NUMBER_CALENDAR_DAYS = 45
 
@@ -1617,12 +1605,6 @@ else:
         "database_fieldependency",
         "database_linkrowfield",
         "database_selectoption",
-        "baserow_premium_license",
-        "baserow_premium_licenseuser",
-        "baserow_enterprise_role",
-        "baserow_enterprise_roleassignment",
-        "baserow_enterprise_team",
-        "baserow_enterprise_teamsubject",
     ]
 
 # This list will have priority over CACHALOT_ONLY_CACHABLE_TABLES.
@@ -1641,7 +1623,6 @@ CACHALOT_UNCACHABLE_TABLES = [
     "django_migrations",
     "core_action",
     "database_token",
-    "baserow_enterprise_auditlogentry",
 ]
 
 
