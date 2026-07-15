@@ -59,7 +59,6 @@ global:
     domain: cluster.local
     backendDomain: api.cluster.local
     objectsDomain: objects.cluster.local
-    assistantLLMModel: ""
 
     securityContext:
       enabled: false
