@@ -1386,6 +1386,16 @@ BASEROW_ALLOW_MULTIPLE_SSO_PROVIDERS_FOR_SAME_ACCOUNT = bool(
     os.getenv("BASEROW_ALLOW_MULTIPLE_SSO_PROVIDERS_FOR_SAME_ACCOUNT", False)
 )
 
+# Env-configured OpenID Connect providers. Declared as a JSON list; parsed and
+# structurally validated here so an invalid configuration fails fast at startup.
+from baserow.core.sso.oidc.config import (  # noqa: E402
+    parse_oidc_providers_env,
+)
+
+BASEROW_OIDC_PROVIDERS = parse_oidc_providers_env(
+    os.getenv("BASEROW_OIDC_PROVIDERS", "")
+)
+
 MIGRATION_LOCK_ID = os.getenv("BASEROW_MIGRATION_LOCK_ID", 123456)
 DEFAULT_SEARCH_MODE = os.getenv("BASEROW_DEFAULT_SEARCH_MODE", "compat")
 

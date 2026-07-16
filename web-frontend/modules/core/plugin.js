@@ -2,7 +2,10 @@
 import { defineNuxtPlugin } from '#app'
 
 import { Registry } from '@baserow/modules/core/registry'
-import { PasswordAuthProviderType } from '@baserow/modules/core/authProviderTypes'
+import {
+  PasswordAuthProviderType,
+  OpenIdConnectAuthProviderType,
+} from '@baserow/modules/core/authProviderTypes'
 import {
   CreateSnapshotJobType,
   DuplicateApplicationJobType,
@@ -207,6 +210,10 @@ export default defineNuxtPlugin({
     registry.register('admin', new HealthCheckAdminType(context))
 
     registry.register('authProvider', new PasswordAuthProviderType(context))
+    registry.register(
+      'authProvider',
+      new OpenIdConnectAuthProviderType(context)
+    )
 
     registry.register('job', new DuplicateApplicationJobType(context))
     registry.register('job', new InstallTemplateJobType(context))

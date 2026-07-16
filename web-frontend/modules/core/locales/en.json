@@ -3,6 +3,21 @@
     "page": "Page",
     "of": "of {pages}"
   },
+  "authProviderTypes": {
+    "password": "Password",
+    "openIdConnect": "OpenID Connect"
+  },
+  "loginButton": {
+    "continueWith": "Continue with"
+  },
+  "loginError": {
+    "errorUserDeactivated": "This account has been deactivated.",
+    "errorProviderDoesNotExist": "The requested login provider does not exist.",
+    "errorAuthFlowError": "Something went wrong during the login. Please try again.",
+    "errorDifferentProvider": "This account is linked to a different login provider.",
+    "errorWorkspaceInvitationEmailMismatch": "The invitation was sent to a different email address than the one you signed in with.",
+    "errorSignupDisabled": "New signups are disabled for this instance."
+  },
   "workspaceSearch": {
     "title": "Search",
     "searchEverything": "Search...",

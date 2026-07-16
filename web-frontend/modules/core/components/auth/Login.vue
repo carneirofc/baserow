@@ -30,7 +30,10 @@
           <LangPicker class="margin-left-auto" />
         </div>
       </div>
-      <div v-if="redirectByDefault && defaultRedirectUrl">
+      <Alert v-if="ssoErrorMessage" type="error">
+        {{ ssoErrorMessage }}
+      </Alert>
+      <div v-if="redirectByDefault && !ssoError && defaultRedirectUrl">
         {{ $t('login.redirecting') }}
       </div>
       <div v-else>
@@ -125,6 +128,11 @@ export default {
       required: false,
       default: false,
     },
+    ssoError: {
+      type: String,
+      required: false,
+      default: null,
+    },
   },
   emits: ['success'],
   setup() {
@@ -162,9 +170,18 @@ export default {
     defaultRedirectUrl() {
       return this.$store.getters['authProvider/getDefaultRedirectUrl']
     },
+    ssoErrorMessage() {
+      if (!this.ssoError) {
+        return null
+      }
+      const key = `loginError.${this.ssoError}`
+      return this.$te(key)
+        ? this.$t(key)
+        : this.$t('loginError.errorAuthFlowError')
+    },
   },
   mounted() {
-    if (this.redirectByDefault) {
+    if (this.redirectByDefault && !this.ssoError) {
       if (this.defaultRedirectUrl !== null) {
         const { workspaceInvitationToken } = this.$route.query
         const url = addQueryParamsToRedirectUrl(this.defaultRedirectUrl, {

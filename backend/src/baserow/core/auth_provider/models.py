@@ -80,3 +80,21 @@ class AuthProviderModel(BaseAuthProviderModel):
 
 
 class PasswordAuthProviderModel(AuthProviderModel): ...
+
+
+class OIDCAuthProviderModel(AuthProviderModel):
+    """
+    Database anchor for an env-configured OIDC provider.
+
+    The provider's configuration (issuer, client id/secret, group mappings, ...) lives
+    entirely in the ``BASEROW_OIDC_PROVIDERS`` environment variable. This row exists
+    only to anchor the shared auth-provider machinery (the ``users`` M2M, the
+    different-provider guard and, for later tickets, SSO-granted memberships) to a
+    provider identified by its stable ``name``.
+    """
+
+    name = models.CharField(
+        max_length=255,
+        unique=True,
+        help_text="The stable name of the env-configured OIDC provider.",
+    )

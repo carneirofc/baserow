@@ -445,8 +445,10 @@ class CoreConfig(AppConfig):
             PasswordAuthProviderType,
         )
         from baserow.core.registries import auth_provider_type_registry
+        from baserow.core.sso.oidc.provider import OIDCAuthProviderType
 
         auth_provider_type_registry.register(PasswordAuthProviderType())
+        auth_provider_type_registry.register(OIDCAuthProviderType())
 
         from baserow.core.two_factor_auth.registries import (
             TOTPAuthProviderType,
