@@ -9,7 +9,7 @@ tokens so the full authorization-code flow can be exercised without a real IdP.
 import json
 import time
 from dataclasses import dataclass, field
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 import jwt
 from cryptography.hazmat.primitives.asymmetric import rsa
@@ -30,6 +30,7 @@ class FakeOIDCProvider:
     issuer: str = ISSUER
     email: str = "alice@example.com"
     full_name: str = "Alice Example"
+    groups: Optional[List[str]] = None
     private_key: rsa.RSAPrivateKey = field(default=None)
 
     def __post_init__(self):
@@ -106,6 +107,8 @@ class FakeOIDCProvider:
         }
         if nonce is not None:
             claims["nonce"] = nonce
+        if self.groups is not None:
+            claims["groups"] = self.groups
         if extra_claims:
             claims.update(extra_claims)
         return jwt.encode(
@@ -121,6 +124,8 @@ class FakeOIDCProvider:
             "email": self.email,
             "name": self.full_name,
         }
+        if self.groups is not None:
+            data["groups"] = self.groups
         if extra:
             data.update(extra)
         return data

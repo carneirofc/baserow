@@ -45,6 +45,18 @@ class OIDCProviderConfig:
     email_claim: str = "email"
     # The claim that holds the user's display name.
     name_claim: str = "name"
+    # The claim (in the ID token / userinfo) that holds the user's group memberships.
+    groups_claim: str = "groups"
+    # IdP groups whose members are granted Baserow global staff.
+    staff_groups: List[str] = field(default_factory=list)
+    # IdP groups whose members are granted Baserow global superuser.
+    superuser_groups: List[str] = field(default_factory=list)
+
+    @property
+    def syncs_global_roles(self) -> bool:
+        """True when this provider maps any IdP group to a global role."""
+
+        return bool(self.staff_groups) or bool(self.superuser_groups)
 
 
 def _require_str(provider: Dict[str, Any], key: str, index: int) -> str:
@@ -55,6 +67,17 @@ def _require_str(provider: Dict[str, Any], key: str, index: int) -> str:
             f"non-empty string."
         )
     return value.strip()
+
+
+def _string_list(provider: Dict[str, Any], key: str, index: int) -> List[str]:
+    """Validates an optional list-of-strings provider field, defaulting to []."""
+
+    value = provider.get(key, [])
+    if not isinstance(value, list) or not all(isinstance(item, str) for item in value):
+        raise ImproperlyConfigured(
+            f"BASEROW_OIDC_PROVIDERS[{index}]: '{key}' must be a list of strings."
+        )
+    return value
 
 
 def _validate_provider(provider: Any, index: int) -> OIDCProviderConfig:
@@ -99,15 +122,20 @@ def _validate_provider(provider: Any, index: int) -> OIDCProviderConfig:
 
     email_claim = provider.get("email_claim", "email")
     name_claim = provider.get("name_claim", "name")
+    groups_claim = provider.get("groups_claim", "groups")
     for claim_key, claim_value in (
         ("email_claim", email_claim),
         ("name_claim", name_claim),
+        ("groups_claim", groups_claim),
     ):
         if not isinstance(claim_value, str) or not claim_value.strip():
             raise ImproperlyConfigured(
                 f"BASEROW_OIDC_PROVIDERS[{index}]: '{claim_key}' must be a non-empty "
                 f"string."
             )
+
+    staff_groups = _string_list(provider, "staff_groups", index)
+    superuser_groups = _string_list(provider, "superuser_groups", index)
 
     return OIDCProviderConfig(
         name=name,
@@ -118,6 +146,9 @@ def _validate_provider(provider: Any, index: int) -> OIDCProviderConfig:
         scopes=scopes,
         email_claim=email_claim.strip(),
         name_claim=name_claim.strip(),
+        groups_claim=groups_claim.strip(),
+        staff_groups=staff_groups,
+        superuser_groups=superuser_groups,
     )
 
 

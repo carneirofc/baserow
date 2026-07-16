@@ -105,3 +105,43 @@ def test_multiple_providers_parsed():
     providers = parse_oidc_providers_env(_env(VALID_PROVIDER, second))
 
     assert [p.name for p in providers] == ["keycloak", "google"]
+
+
+def test_group_mapping_defaults():
+    provider = parse_oidc_providers_env(_env(VALID_PROVIDER))[0]
+
+    assert provider.groups_claim == "groups"
+    assert provider.staff_groups == []
+    assert provider.superuser_groups == []
+    assert provider.syncs_global_roles is False
+
+
+def test_group_mapping_parsed():
+    provider = dict(
+        VALID_PROVIDER,
+        groups_claim="roles",
+        staff_groups=["staff", "admins"],
+        superuser_groups=["superadmins"],
+    )
+
+    config = parse_oidc_providers_env(_env(provider))[0]
+
+    assert config.groups_claim == "roles"
+    assert config.staff_groups == ["staff", "admins"]
+    assert config.superuser_groups == ["superadmins"]
+    assert config.syncs_global_roles is True
+
+
+@pytest.mark.parametrize("key", ["staff_groups", "superuser_groups"])
+def test_group_lists_must_be_lists_of_strings(key):
+    provider = dict(VALID_PROVIDER, **{key: "not-a-list"})
+
+    with pytest.raises(ImproperlyConfigured):
+        parse_oidc_providers_env(_env(provider))
+
+
+def test_groups_claim_must_be_non_empty_string():
+    provider = dict(VALID_PROVIDER, groups_claim="")
+
+    with pytest.raises(ImproperlyConfigured):
+        parse_oidc_providers_env(_env(provider))

@@ -1,5 +1,3 @@
-import time
-
 from django.core.cache import cache
 
 import pytest
@@ -13,7 +11,6 @@ from baserow.core.sso.oidc.handler import (
     OIDCHandler,
     get_well_known_urls,
 )
-
 from baserow.test_utils.oidc import FakeOIDCProvider
 
 CALLBACK_URL = "https://baserow.example.com/api/sso/oidc/callback/keycloak/"
@@ -82,13 +79,14 @@ def test_full_flow_returns_user_info():
     session, nonce = _authorize(idp, responses)
     idp.register_all(responses, nonce=nonce)
 
-    user_info, original = OIDCHandler.get_user_info(
+    user_info, original, groups = OIDCHandler.get_user_info(
         idp.config, CALLBACK_URL, "the-code", session
     )
 
     assert user_info.email == "alice@example.com"
     assert user_info.name == "Alice Example"
     assert original == "/dashboard"
+    assert groups == []
 
 
 @responses.activate(assert_all_requests_are_fired=False)

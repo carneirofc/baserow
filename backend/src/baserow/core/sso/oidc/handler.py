@@ -9,7 +9,7 @@ endpoint for the email and name.
 
 import secrets
 from dataclasses import dataclass
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from django.contrib.sessions.backends.base import SessionBase
 
@@ -23,6 +23,7 @@ from baserow.core.auth_provider.types import UserInfo
 from baserow.core.cache import global_cache
 from baserow.core.sso.exceptions import AuthFlowError, InvalidProviderUrl
 from baserow.core.sso.oidc.config import OIDCProviderConfig
+from baserow.core.sso.oidc.groups import extract_groups
 
 DISCOVERY_TIMEOUT_SECONDS = 30
 JWKS_TIMEOUT_SECONDS = 30
@@ -137,7 +138,7 @@ class OIDCHandler:
         callback_url: str,
         code: str,
         session: SessionBase,
-    ) -> Tuple[UserInfo, str]:
+    ) -> Tuple[UserInfo, str, List[str]]:
         """
         Exchanges the authorization code for tokens, validates the ID token and reads
         the userinfo endpoint.
@@ -147,7 +148,8 @@ class OIDCHandler:
         :param code: The authorization code returned by the provider.
         :param session: The Django session holding the state / nonce.
         :raises AuthFlowError: When the flow fails or the ID token is invalid.
-        :return: The user info and the original (relative) url to redirect to.
+        :return: The user info, the original (relative) url to redirect to, and the
+            user's IdP group memberships.
         """
 
         well_known = get_well_known_urls(config)
@@ -171,7 +173,7 @@ class OIDCHandler:
         if "id_token" not in token:
             raise AuthFlowError("The provider did not return an id_token.")
 
-        cls._validate_id_token(config, well_known, token["id_token"], nonce)
+        claims = cls._validate_id_token(config, well_known, token["id_token"], nonce)
 
         try:
             userinfo = oauth.get(well_known.userinfo_endpoint).json()
@@ -185,6 +187,8 @@ class OIDCHandler:
         if not email:
             raise AuthFlowError("The provider did not return an email address.")
 
+        groups = extract_groups(config, claims, userinfo)
+
         return (
             UserInfo(
                 email=email,
@@ -196,6 +200,7 @@ class OIDCHandler:
                 or None,
             ),
             request_data.get("original", ""),
+            groups,
         )
 
     @classmethod

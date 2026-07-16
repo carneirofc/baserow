@@ -17,6 +17,7 @@ from baserow.core.auth_provider.exceptions import DifferentAuthProvider
 from baserow.core.exceptions import WorkspaceInvitationEmailMismatch
 from baserow.core.sso.exceptions import AuthFlowError, OIDCProviderNotFound
 from baserow.core.sso.oidc.config import get_oidc_provider
+from baserow.core.sso.oidc.groups import sync_global_roles
 from baserow.core.sso.oidc.handler import OIDCHandler
 from baserow.core.sso.oidc.provider import OIDCAuthProviderType
 from baserow.core.sso.utils import (
@@ -133,7 +134,7 @@ class OIDCCallbackView(APIView):
         if not code:
             return redirect_to_sign_in_error_page(SsoErrorCode.AUTH_FLOW_ERROR)
 
-        user_info, original_url = OIDCHandler.get_user_info(
+        user_info, original_url, groups = OIDCHandler.get_user_info(
             config,
             OIDCAuthProviderType.get_callback_url(config),
             code,
@@ -145,5 +146,7 @@ class OIDCCallbackView(APIView):
         user, _ = provider.get_type().get_or_create_user_and_sign_in(
             provider, user_info
         )
+
+        sync_global_roles(user, groups, config)
 
         return redirect_user_on_success(user, original_url)
