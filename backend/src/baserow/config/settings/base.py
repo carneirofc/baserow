@@ -1383,6 +1383,13 @@ BASEROW_USER_SOURCE_COUNTING_TASK_INTERVAL_MINUTES = int(
     os.getenv("BASEROW_USER_SOURCE_COUNTING_TASK_INTERVAL_MINUTES", "") or 15
 )
 
+# Set this to True to enable users to login with auth providers different than the one
+# they were originally created with. Read by `AuthProviderType.get_user_and_sign_in`,
+# which third party authentication plugins inherit.
+BASEROW_ALLOW_MULTIPLE_SSO_PROVIDERS_FOR_SAME_ACCOUNT = bool(
+    os.getenv("BASEROW_ALLOW_MULTIPLE_SSO_PROVIDERS_FOR_SAME_ACCOUNT", False)
+)
+
 MIGRATION_LOCK_ID = os.getenv("BASEROW_MIGRATION_LOCK_ID", 123456)
 DEFAULT_SEARCH_MODE = os.getenv("BASEROW_DEFAULT_SEARCH_MODE", "compat")
 
