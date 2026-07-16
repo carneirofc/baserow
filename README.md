@@ -1,117 +1,112 @@
-## Baserow: build databases, automations, apps & agents with AI — no code
+## Baserow FOSS fork: a no-code database, app builder and automation platform
 
-Baserow is the secure, open-source platform for building databases, applications,
-automations, and AI agents — all without code. Trusted by over 150,000 users, Baserow
-delivers enterprise-grade security with GDPR, HIPAA, and SOC 2 Type II compliance, plus
-cloud and self-hosted deployments for full data control. With a built-in AI Assistant
-that lets you create databases and workflows using natural language, Baserow empowers
-teams to structure data, automate processes, build internal tools, and create custom
-dashboards. Fully extensible and API-first, Baserow integrates seamlessly with your
-existing tools and performs at any scale.
+This is a fork of [Baserow](https://baserow.io) with the proprietary editions removed,
+intended as a clean open source starting point.
+
+Upstream Baserow is open-core: most of it is MIT licensed, but the `premium/` and
+`enterprise/` directories are covered by separate licenses that require a paid
+subscription for production use and forbid redistribution. This fork deletes those
+directories entirely, so **everything here is MIT licensed** (documentation under
+CC BY-SA 4.0) and free for commercial and private use.
 
 * A spreadsheet database hybrid combining ease of use and powerful data organization.
 * Create applications and portals, and publish them on your own domain.
 * Automate repetitive workflows with automations.
 * Visualize your data with dashboards.
-* Kuma, powerful AI-assistant to builds complete solutions.
-* GDPR, HIPAA, and SOC 2 Type II compliant.
-* Easily self-hosted with no storage restrictions or sign-up on https://baserow.io to
-  get started immediately.
-* Best Alternative to Airtable.
-* Open-core with all non-premium and non-enterprise features under
-  the [MIT License](https://choosealicense.com/licenses/mit/) allowing commercial and
-  private use.
 * Headless and API first.
+* Self-hosted with no storage restrictions and no license checks.
 * Uses popular frameworks and tools like [Django](https://www.djangoproject.com/),
   [Vue.js](https://vuejs.org/) and [PostgreSQL](https://www.postgresql.org/).
 
-[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://www.heroku.com/deploy/?template=https://github.com/baserow/baserow/tree/master)
+![Database screenshot](docs/assets/screenshot.png "Database screenshot")
 
-```bash
-docker run -v baserow_data:/baserow/data -p 80:80 -p 443:443 baserow/baserow:2.3.2
-```
+![Form screenshot](docs/assets/screenshot_form.png "Form view screenshot")
 
-![Baserow database screenshot](docs/assets/screenshot.png "Baserow database screenshot")
+![Application builder](docs/assets/screenshot_application_builder.png "Application builder screenshot")
 
-![Baserow form screenshot](docs/assets/screenshot_kuma_form.png "Baserow form view and Kuma screenshot")
+![Automations](docs/assets/screenshot_automations.png "Automations screenshot")
 
-![Baserow kanban screenshot](docs/assets/screenshot_kanban.png "Baserow kanban view screenshot")
+![Dashboard](docs/assets/screenshot_dashboard.png "Dashboard screenshot")
 
-![Baserow application builder](docs/assets/screenshot_application_builder.png "Baserow application builder screenshot")
+## What this fork removes
 
-![Baserow application builder](docs/assets/screenshot_automations.png "Baserow automations screenshot")
+Deleting the paid directories removes the features they implemented. What remains is the
+full MIT core: databases, grid/gallery/form views, the application builder, automations,
+dashboards, integrations, webhooks, the REST API and the plugin system.
 
-![Baserow application builder](docs/assets/screenshot_dashboard.png "Baserow dashboard screenshot")
+Removed with `premium/`:
+Kanban, calendar and timeline views; row comments; AI fields; JSON, XML, Excel and file
+exports; personal views; row coloring; survey form mode; the premium admin panel.
 
-## 🚨 Repository Migration Notice
+Removed with `enterprise/`:
+role-based access control; teams; SSO/SAML; audit log; field-level permissions; secure
+file serve; data sync; the code runner; the AI assistant.
 
-Baserow has moved from GitLab to GitHub. All issues have been successfully migrated,
-but merged and closed merge requests (PRs) were not imported. You can still browse the
-old repository and its history at: https://gitlab.com/baserow/baserow.
+The plugin system is untouched, so these can be reimplemented as third party plugins.
+Anything reimplemented here must be written from scratch — the removed code is not
+licensed for reuse.
 
-Please use this GitHub repository  for all new issues, discussions, and contributions
-going forward at: https://github.com/baserow/baserow.
+## Telemetry
 
-## Get Involved
+This fork makes no outbound calls to Baserow B.V. or anyone else. The upstream
+onboarding flow shipped a pre-checked box that sent your users' email, role, company
+size and country to `api.baserow.io`; that has been removed.
 
-Join our forum at https://community.baserow.io/. See
-[CONTRIBUTING.md](./CONTRIBUTING.md) for how to get involved.
+Optional observability hooks remain, and are off unless you turn them on:
+
+| Variable | Default | Effect |
+| --- | --- | --- |
+| `SENTRY_DSN` | unset | Error reporting, to the DSN you supply |
+| `BASEROW_ENABLE_OTEL` | unset | OpenTelemetry traces, to the endpoint you supply |
+| `POSTHOG_PROJECT_API_KEY` | unset | Product analytics, to the project you supply |
+
+All three are FOSS clients and only ever report to endpoints you configure.
 
 ## Installation
 
+The installation guides below are inherited from upstream and mostly still apply, but
+note that the published `baserow/baserow` Docker images include the premium and
+enterprise editions. To run this fork, build the images from this repository.
+
 * [**Docker**](docs/installation/install-with-docker.md)
 * [**Helm**](docs/installation/install-with-helm.md)
-* [**Docker Compose** ](docs/installation/install-with-docker-compose.md)
-* [**Heroku**: Easily install and scale up Baserow on Heroku.](docs/installation/install-on-heroku.md)
-* [**Render**: Easily install and scale up Baserow on Render.](docs/installation/install-on-render.md)
-* [**Digital Ocean**: Easily install and scale up Baserow on Digital Ocean.](docs/installation/install-on-digital-ocean.md)
-* [**AWS**: Install in a scalable way on AWS](docs/installation/install-on-aws.md)
-* [**Cloudron**: Install and update Baserow on your own Cloudron server.](docs/installation/install-on-cloudron.md)
-* [**Railway**: Install Baserow via Railway.](docs/installation/install-on-railway.md)
-* [**Elestio**: Fully managed by Elestio.](https://elest.io/open-source/baserow)
+* [**Docker Compose**](docs/installation/install-with-docker-compose.md)
+* [**Heroku**](docs/installation/install-on-heroku.md)
+* [**Render**](docs/installation/install-on-render.md)
+* [**Digital Ocean**](docs/installation/install-on-digital-ocean.md)
+* [**AWS**](docs/installation/install-on-aws.md)
+* [**Cloudron**](docs/installation/install-on-cloudron.md)
+* [**Railway**](docs/installation/install-on-railway.md)
 
-## Official documentation
+## Documentation
 
-The official documentation can be found on the website at https://baserow.io/docs/index
-or [here](./docs/index.md) inside the repository. The API docs can be found here at
-https://api.baserow.io/api/redoc/ or if you are looking for the OpenAPI schema here
-https://api.baserow.io/api/schema.json.
+Documentation lives [in the repository](./docs/index.md). Upstream's hosted docs at
+https://baserow.io/docs/index also cover the premium and enterprise features that this
+fork does not ship.
 
 ## Development environment
 
-If you want to contribute to Baserow you can setup a development environment like so:
-
 ```bash
-git clone https://github.com/baserow/baserow.git
+git clone https://github.com/carneirofc/baserow.git
 cd baserow
 
 just dc-dev build --parallel
 just dc-dev up -d
 ```
 
-The Baserow development environment is now running.
-Visit [http://localhost:3000](http://localhost:3000) in your browser to see a working
-version in development mode with hot code reloading and other dev features enabled.
-
-More detailed instructions and more information about the development environment can be
-found at [https://baserow.io/docs/development/development-environment](./docs/development/development-environment.md).
-
-## Why Baserow?
-
-Unlike proprietary tools like Airtable, Baserow gives you **full data ownership**,
-**infinite scalability**, and **no vendor lock-in** — all while keeping the simplicity
-of a spreadsheet interface.
+Visit [http://localhost:3000](http://localhost:3000) for a development build with hot
+reloading. See [the development environment docs](./docs/development/development-environment.md)
+for more detail.
 
 ## Meta
 
-Created by Baserow B.V. - bram@baserow.io.
+Baserow was created by Baserow B.V. - bram@baserow.io. This fork is not affiliated with
+or endorsed by Baserow B.V. "Baserow" and the Baserow logo are trademarks of Baserow
+B.V.; the MIT license covers the code, not the trademarks.
 
-Distributes under the MIT license. See `LICENSE` for more information.
+Distributed under the MIT license. See `LICENSE` for more information.
 
-Version: 2.3.2
+Upstream repository: https://github.com/baserow/baserow
 
-The official repository can be found at https://github.com/baserow/baserow.
-
-The changelog can be found [here](./changelog.md).
-
-Become a GitHub Sponsor [here](https://github.com/sponsors/bram2w).
+The upstream changelog can be found [here](./changelog.md).
+</content>

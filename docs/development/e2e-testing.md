@@ -113,6 +113,11 @@ just e2e test tests/mytest.spec.ts --trace on
 
 ### Regenerating Database Dump
 
+> **Note:** the committed dump was generated before the premium and enterprise
+> editions were removed, so it still contains their tables. It restores with
+> `|| true` in CI and the extra tables are inert, but it should be regenerated
+> against the current schema.
+
 When migrations change, regenerate the E2E database dump:
 
 ```bash

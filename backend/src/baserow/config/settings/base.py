@@ -1377,13 +1377,11 @@ BASEROW_NOWAIT_FOR_LOCKS = not bool(
     os.getenv("BASEROW_WAIT_INSTEAD_OF_409_CONFLICT_ERROR", False)
 )
 
-BASEROW_PERSONAL_VIEW_LOWEST_ROLE_ALLOWED = (
-    os.getenv("BASEROW_PERSONAL_VIEW_LOWEST_ROLE_ALLOWED", "viewer").strip().upper()
+# How often the user source user count is recalculated. Used to spread the counting
+# of registered user source types across that interval instead of doing it all at once.
+BASEROW_USER_SOURCE_COUNTING_TASK_INTERVAL_MINUTES = int(
+    os.getenv("BASEROW_USER_SOURCE_COUNTING_TASK_INTERVAL_MINUTES", "") or 15
 )
-
-LICENSE_AUTHORITY_CHECK_TIMEOUT_SECONDS = 10
-
-MAX_NUMBER_CALENDAR_DAYS = 45
 
 MIGRATION_LOCK_ID = os.getenv("BASEROW_MIGRATION_LOCK_ID", 123456)
 DEFAULT_SEARCH_MODE = os.getenv("BASEROW_DEFAULT_SEARCH_MODE", "compat")

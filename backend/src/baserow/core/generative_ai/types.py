@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional, Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Optional, Protocol
 
 if TYPE_CHECKING:
     from pydantic_ai.messages import UserContent
 
 
-@runtime_checkable
 class AIFile(Protocol):
     """
     Structural type for a file passed to a ``GenerativeAIModelType``.
