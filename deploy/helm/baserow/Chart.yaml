@@ -47,12 +47,6 @@ dependencies:
     repository: "file://charts/baserow-common"
     condition: baserow-celery-flower.enabled
 
-  - name: baserow
-    alias: baserow-embeddings
-    version: "1.0.55"
-    repository: "file://charts/baserow-common"
-    condition: baserow-embeddings.enabled
-
   - name: redis
     version: 19.5.x
     repository: https://charts.bitnami.com/bitnami

@@ -172,52 +172,6 @@ helm rollback my-baserow -n baserow
 helm rollback my-baserow 1 -n baserow
 ```
 
-### Configuring AI Features
-
-Baserow supports multiple AI providers for generative AI features and the AI assistant. To enable AI capabilities, you need to configure the embeddings service and AI providers.
-
-#### Enable AI Assistant with Embeddings
-
-Add to your `config.yaml`:
-
-```yaml
-baserow-embeddings:
-  enabled: true
-  assistantLLMModel: "groq:openai/gpt-oss-120b"
-
-backendSecrets:
-  GROQ_API_KEY: "your-groq-api-key"
-```
-
-#### Configure Additional AI Providers
-
-To enable AI field with multiple providers:
-
-```yaml
-backendSecrets:
-  # OpenAI
-  BASEROW_OPENAI_API_KEY: "sk-..."
-  BASEROW_OPENAI_MODELS: "gpt-3.5-turbo,gpt-4o"
-
-  # Anthropic
-  BASEROW_ANTHROPIC_API_KEY: "sk-ant-..."
-  BASEROW_ANTHROPIC_MODELS: "claude-3-5-sonnet-20241022"
-
-  # Mistral
-  BASEROW_MISTRAL_API_KEY: "..."
-  BASEROW_MISTRAL_MODELS: "mistral-large-latest"
-```
-
-For self-hosted Ollama:
-
-```yaml
-backendConfigMap:
-  BASEROW_OLLAMA_HOST: "http://ollama-service:11434"
-  BASEROW_OLLAMA_MODELS: "llama2,mistral"
-```
-
-See the [official Helm chart documentation](https://github.com/baserow/baserow/blob/develop/deploy/helm/baserow/README.md) for detailed AI configuration options.
-
 ### Testing Baserow with Minikube
 
 [Minikube](https://minikube.sigs.k8s.io/) is an excellent way to run a local Kubernetes cluster for testing and development. This guide will walk you through setting up Minikube and deploying Baserow using the official Helm chart.
