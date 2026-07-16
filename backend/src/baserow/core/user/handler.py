@@ -182,6 +182,7 @@ class UserHandler(metaclass=baserow_trace_methods(tracer)):
         workspace_invitation_token: Optional[str] = None,
         template: Template = None,
         auth_provider: Optional[AuthProviderModel] = None,
+        bypass_signup_toggle: bool = False,
     ) -> AbstractUser:
         """
         Creates a new user with the provided information and creates a new workspace and
@@ -199,6 +200,9 @@ class UserHandler(metaclass=baserow_trace_methods(tracer)):
         :param auth_provider: If provided, a reference to the authentication
             provider will be stored in order to be able to provide different options
             for the user to login.
+        :param bypass_signup_toggle: If True, the instance "allow new signups" setting
+            is ignored so the user is provisioned regardless. Used by SSO auto-
+            provisioning; must never be set on the password self-service signup path.
         :raises: UserAlreadyExist: When a user with the provided username (email)
             already exists.
         :raises WorkspaceInvitationEmailMismatch: If the workspace invitation email
@@ -229,7 +233,9 @@ class UserHandler(metaclass=baserow_trace_methods(tracer)):
             instance_settings.allow_signups_via_workspace_invitations
             and workspace_invitation is not None
         )
-        if not (allow_new_signups or allow_signup_for_invited_user):
+        if not (
+            allow_new_signups or allow_signup_for_invited_user or bypass_signup_toggle
+        ):
             raise DisabledSignupError("Sign up is disabled.")
 
         user = self.force_create_user(

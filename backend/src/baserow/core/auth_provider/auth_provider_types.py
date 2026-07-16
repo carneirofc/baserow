@@ -162,6 +162,9 @@ class AuthProviderType(BaseAuthProviderType):
             language=user_info.language,
             workspace_invitation_token=user_info.workspace_invitation_token,
             auth_provider=auth_provider,
+            # SSO providers auto-provision users regardless of the instance
+            # "allow new signups" setting; the password signup path never does.
+            bypass_signup_toggle=True,
         )
 
     def export_serialized(self) -> Dict[str, Any]:
