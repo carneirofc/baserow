@@ -31,7 +31,6 @@ import {
   CoreManualTriggerServiceType,
   CoreStartWorkflowServiceType,
 } from '@baserow/modules/integrations/core/serviceTypes'
-import { AIAgentServiceType } from '@baserow/modules/integrations/ai/serviceTypes'
 import { uuid } from '@baserow/modules/core/utils/string'
 import { SlackWriteMessageServiceType } from '@baserow/modules/integrations/slack/serviceTypes'
 
@@ -1080,28 +1079,6 @@ export class CoreRouterNodeType extends ActionNodeTypeMixin(
 
   isDuplicable({ workflow, node }) {
     return false
-  }
-}
-
-export class AIAgentActionNodeType extends ActionNodeTypeMixin(NodeType) {
-  static getType() {
-    return 'ai_agent'
-  }
-
-  get name() {
-    return this.app.$i18n.t('nodeType.aiAgent')
-  }
-
-  get iconClass() {
-    return 'iconoir-sparks'
-  }
-
-  get serviceType() {
-    return this.app.$registry.get('service', AIAgentServiceType.getType())
-  }
-
-  getOrder() {
-    return 8
   }
 }
 

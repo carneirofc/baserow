@@ -30,10 +30,7 @@ describe('Builder workflow action types', () => {
       'start_workflow',
       'http_request',
       'smtp_email',
-      'code',
-      'ai_agent',
       'csv_file_reader',
-      'xls_file_reader',
       'slack_write_message',
     ])
   })

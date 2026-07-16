@@ -21,14 +21,6 @@ import {
   DeleteAccountSettingsType,
   TwoFactorAuthSettingsType,
 } from '@baserow/modules/core/settingsTypes'
-import { GenerativeAIWorkspaceSettingsType } from '@baserow/modules/core/workspaceSettingsTypes'
-import {
-  OpenAIModelType,
-  OllamaModelType,
-  AnthropicModelType,
-  MistralModelType,
-  OpenRouterModelType,
-} from '@baserow/modules/core/generativeAIModelTypes'
 import {
   UploadFileUserFileUploadType,
   UploadViaURLUserFileUploadType,
@@ -156,7 +148,6 @@ export default defineNuxtPlugin({
     registry.registerNamespace('userSource')
     registry.registerNamespace('appAuthProvider')
     registry.registerNamespace('roles')
-    registry.registerNamespace('generativeAIModel')
     registry.registerNamespace('onboarding')
     registry.registerNamespace('guidedTour')
     registry.registerNamespace('admin')
@@ -174,17 +165,6 @@ export default defineNuxtPlugin({
     registry.register('settings', new MCPEndpointSettingsType(context))
     registry.register('settings', new DeleteAccountSettingsType(context))
     registry.register('settings', new TwoFactorAuthSettingsType(context))
-
-    registry.register(
-      'workspaceSettings',
-      new GenerativeAIWorkspaceSettingsType(context)
-    )
-
-    registry.register('generativeAIModel', new OpenAIModelType(context))
-    registry.register('generativeAIModel', new AnthropicModelType(context))
-    registry.register('generativeAIModel', new MistralModelType(context))
-    registry.register('generativeAIModel', new OllamaModelType(context))
-    registry.register('generativeAIModel', new OpenRouterModelType(context))
 
     registry.register(
       'permissionManager',

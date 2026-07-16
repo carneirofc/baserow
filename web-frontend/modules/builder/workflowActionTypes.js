@@ -16,7 +16,6 @@ import {
   LocalBaserowUpdateRowsWorkflowServiceType,
   LocalBaserowDeleteRowWorkflowServiceType,
 } from '@baserow/modules/integrations/localBaserow/serviceTypes'
-import { AIAgentServiceType } from '@baserow/modules/integrations/ai/serviceTypes'
 
 import { DataProviderType } from '@baserow/modules/core/dataProviderTypes'
 import resolveElementUrl from '@baserow/modules/builder/utils/urlResolution'
@@ -508,20 +507,6 @@ export class DeleteRowWorkflowActionType extends WorkflowActionServiceType {
       'service',
       LocalBaserowDeleteRowWorkflowServiceType.getType()
     )
-  }
-}
-
-export class AIAgentWorkflowActionType extends WorkflowActionServiceType {
-  static getType() {
-    return 'ai_agent'
-  }
-
-  getOrder() {
-    return 70
-  }
-
-  get serviceType() {
-    return this.app.$registry.get('service', AIAgentServiceType.getType())
   }
 }
 
