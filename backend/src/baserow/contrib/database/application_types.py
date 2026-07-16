@@ -31,6 +31,7 @@ from baserow.contrib.database.table.handler import TableHandler
 from baserow.contrib.database.views.exceptions import ViewTypeDoesNotExist
 from baserow.contrib.database.views.registries import view_type_registry
 from baserow.core.db import specific_queryset
+from baserow.core.exceptions import InstanceTypeDoesNotExist
 from baserow.core.handler import CoreHandler
 from baserow.core.models import Application, Workspace
 from baserow.core.registries import (
@@ -648,9 +649,23 @@ class DatabaseApplicationType(ApplicationType):
             field_rules_handler = FieldRuleHandler(table)
             serialized_rules = serialized_table["field_rules"]
             for serialized_rule in serialized_rules:
-                field_rules_handler.import_rule(
-                    serialized_rule, id_mapping["database_fields"]
-                )
+                # import_rule pops "type" off the dict, so read it beforehand for
+                # the warning below.
+                rule_type = serialized_rule.get("type")
+                try:
+                    field_rules_handler.import_rule(
+                        serialized_rule, id_mapping["database_fields"]
+                    )
+                except InstanceTypeDoesNotExist:
+                    # The field rule type is provided by a plugin that isn't
+                    # installed. Skip the rule rather than failing the import; the
+                    # table and its data still come through.
+                    logger.warning(
+                        "Skipping a field rule of table '{}' during import because "
+                        "field rule type '{}' is not registered.",
+                        serialized_table["name"],
+                        rule_type,
+                    )
 
     def _import_table_rows(
         self,

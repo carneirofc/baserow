@@ -37,6 +37,7 @@ from .exceptions import (
     BaseURLHostnameNotAllowed,
     CannotDeleteYourselfFromWorkspace,
     DuplicateApplicationMaxLocksExceededException,
+    InstanceTypeDoesNotExist,
     InvalidPermissionContext,
     LastAdminOfWorkspace,
     PermissionDenied,
@@ -1805,18 +1806,42 @@ class CoreHandler(metaclass=baserow_trace_methods(tracer, exclude="clear_context
             imported_applications = []
             next_application_order_value = Application.get_last_order(workspace)
             for application in prioritized_applications:
-                application_type = application_type_registry.get(application["type"])
-                imported_application = application_type.import_serialized(
-                    workspace,
-                    application,
-                    import_export_config,
-                    id_mapping,
-                    files_zip,
-                    storage,
-                    progress_builder=progress.create_child_builder(
-                        represents_progress=1000
-                    ),
+                application_progress = progress.create_child_builder(
+                    represents_progress=1000
                 )
+                # Import each application inside a savepoint so that one whose type
+                # or a nested type (field, view, user source, element, ...) is
+                # provided by an uninstalled plugin can be skipped without rolling
+                # back the applications that already imported. This keeps, for
+                # example, a template's database usable even when its builder
+                # application relies on a type that isn't available.
+                try:
+                    with transaction.atomic():
+                        application_type = application_type_registry.get(
+                            application["type"]
+                        )
+                        imported_application = application_type.import_serialized(
+                            workspace,
+                            application,
+                            import_export_config,
+                            id_mapping,
+                            files_zip,
+                            storage,
+                            progress_builder=application_progress,
+                        )
+                except InstanceTypeDoesNotExist as exc:
+                    logger.warning(
+                        "Skipping application '{}' of type '{}' during import "
+                        "because a required type is not registered: {}",
+                        application.get("name"),
+                        application["type"],
+                        exc,
+                    )
+                    # Advance the parent by everything this application represented.
+                    # set_progress clamps to the total, so any progress the child
+                    # already reported before failing is not double counted.
+                    progress.increment(by=application_progress.represents_progress)
+                    continue
                 imported_application.order = next_application_order_value
                 next_application_order_value += 1
                 imported_applications.append(imported_application)
