@@ -11,8 +11,12 @@ from baserow.core.user_sources.registries import (
 
 class UserSourceFixtures:
     def create_user_source_with_first_type(self, **kwargs):
-        first_user_source_type = list(user_source_type_registry.get_all())[0]
-        return self.create_user_source(first_user_source_type.model_class, **kwargs)
+        user_source_types = list(user_source_type_registry.get_all())
+        if not user_source_types:
+            import pytest
+
+            pytest.skip("No user source type is registered (needs a plugin).")
+        return self.create_user_source(user_source_types[0].model_class, **kwargs)
 
     def create_user_source(self, model_class, user=None, application=None, **kwargs):
         if not application:

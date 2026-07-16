@@ -490,7 +490,12 @@ def stub_user_source_registry(data_fixture, mutable_user_source_registry, fake):
 
         from baserow.core.user_sources.registries import user_source_type_registry
 
-        user_source_type = list(mutable_user_source_registry.get_all())[0]
+        registered_types = list(mutable_user_source_registry.get_all())
+        if not registered_types:
+            import pytest
+
+            pytest.skip("No user source type is registered (needs a plugin).")
+        user_source_type = registered_types[0]
 
         class StubbedUserSourceType(UserSourceType):
             type = user_source_type.type
