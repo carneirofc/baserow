@@ -160,7 +160,6 @@ def test_workspace_restored(mock_broadcast_to_users, data_fixture):
         "workspace": {
             "id": workspace.id,
             "name": workspace.name,
-            "generative_ai_models_enabled": {},
         },
         "tables": [],
     }

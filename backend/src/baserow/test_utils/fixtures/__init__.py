@@ -16,7 +16,6 @@ from .domain import DomainFixtures
 from .element import ElementFixtures
 from .field import FieldFixtures
 from .file_import import FileImportFixtures
-from .generative_ai import GenerativeAIFixtures
 from .import_export import ImportExportWorkspaceFixtures
 from .integration import IntegrationFixtures
 from .job import JobFixtures
@@ -75,7 +74,6 @@ class Fixtures(
     UserSourceFixtures,
     AppAuthProviderFixtures,
     UserSourceUserFixtures,
-    GenerativeAIFixtures,
     DataSyncFixtures,
     ImportExportWorkspaceFixtures,
     DashboardDataSourceFixtures,

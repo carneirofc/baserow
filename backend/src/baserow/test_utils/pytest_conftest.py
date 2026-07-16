@@ -964,15 +964,6 @@ def disable_full_text_search(settings):
 
 
 @pytest.fixture(autouse=True)
-def mutable_generative_ai_model_type_registry():
-    from baserow.core.generative_ai.registries import generative_ai_model_type_registry
-
-    before = generative_ai_model_type_registry.registry.copy()
-    yield generative_ai_model_type_registry
-    generative_ai_model_type_registry.registry = before
-
-
-@pytest.fixture(autouse=True)
 def run_clear_current_workspace_id_after_test():
     """Clear workspace_id stored in local context after each test."""
 

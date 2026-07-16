@@ -100,8 +100,6 @@ def setup_interesting_test_table(
     if database is None:
         database = data_fixture.create_database_application(user=user)
 
-    data_fixture.register_fake_generate_ai_type()
-
     file_suffix = file_suffix or ""
 
     try:

@@ -30,7 +30,6 @@ else:
 # Prefixes for vars that can be overridden via env vars (for DB/Redis configuration)
 ALLOWED_ENV_PREFIXES = (
     "DATABASE_",
-    "BASEROW_EMBEDDINGS_API_URL",
     "BASEROW_BACKEND_LOG_LEVEL",
 )
 

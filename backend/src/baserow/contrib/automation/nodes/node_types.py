@@ -16,7 +16,6 @@ from baserow.contrib.automation.nodes.exceptions import (
     AutomationNodeTriggerMustBeFirstNode,
 )
 from baserow.contrib.automation.nodes.models import (
-    AIAgentActionNode,
     AutomationNode,
     AutomationTriggerNode,
     CoreCSVFileReaderActionNode,
@@ -45,7 +44,6 @@ from baserow.contrib.automation.nodes.models import (
 from baserow.contrib.automation.nodes.registries import AutomationNodeType
 from baserow.contrib.automation.workflows.constants import WorkflowState
 from baserow.contrib.automation.workflows.models import AutomationWorkflow
-from baserow.contrib.integrations.ai.service_types import AIAgentServiceType
 from baserow.contrib.integrations.core.service_types import (
     CoreCSVFileReaderServiceType,
     CoreHTTPRequestServiceType,
@@ -236,13 +234,6 @@ class CoreStartWorkflowNodeType(AutomationNodeActionNodeType):
     type = "start_workflow"
     model_class = CoreStartWorkflowActionNode
     service_type = CoreStartWorkflowServiceType.type
-
-
-class AIAgentActionNodeType(AutomationNodeActionNodeType):
-    display_name = _("AI agent")
-    type = "ai_agent"
-    model_class = AIAgentActionNode
-    service_type = AIAgentServiceType.type
 
 
 class CoreRouterActionNodeType(AutomationNodeActionNodeType):

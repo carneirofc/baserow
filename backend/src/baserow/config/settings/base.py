@@ -618,10 +618,6 @@ if FILE_UPLOAD_ACTIVE_CONTENT_POLICY not in ("download", "block"):
         "'download' or 'block'."
     )
 
-BASEROW_OPENAI_UPLOADED_FILE_SIZE_LIMIT_MB = int(
-    os.getenv("BASEROW_OPENAI_UPLOADED_FILE_SIZE_LIMIT_MB", 512)
-)
-
 # Allows accessing and setting values on a dictionary like an object. Using this
 # we can pass plugin authors and other functions a `settings` object which can modify
 # the settings like they expect (settings.SETTING = 'test') etc.
@@ -1441,10 +1437,6 @@ for plugin in [*BASEROW_BUILT_IN_PLUGINS, *BASEROW_BACKEND_PLUGIN_NAMES]:
 # a warning will be shown suggesting to either lazy-load them or remove them from this
 # list if they're legitimately needed at startup.
 BASEROW_LAZY_LOADED_LIBRARIES = [
-    "openai",
-    "anthropic",
-    "mistralai",
-    "ollama",
     "jira2markdown",
     "saml2",
     "openpyxl",
@@ -1457,7 +1449,6 @@ SENTRY_DSN = SENTRY_BACKEND_DSN or os.getenv("SENTRY_DSN")
 
 if SENTRY_DSN:
     import sentry_sdk
-    import sentry_sdk.integrations as _sentry_integrations
     from loguru import logger
     from sentry_sdk.integrations.django import DjangoIntegration
     from sentry_sdk.scrubber import DEFAULT_DENYLIST, EventScrubber
@@ -1466,16 +1457,6 @@ if SENTRY_DSN:
         ConsoleSentryTransport,
         drop_expected_asyncio_websocket_disconnect_events,
     )
-
-    # Exclude integrations whose module-level imports are incompatible:
-    # - pydantic_ai: sentry-sdk patches ToolManager._call_tool which was
-    #   removed in pydantic-ai >= 1.x (now execute_tool_call)
-
-    _sentry_integrations._AUTO_ENABLING_INTEGRATIONS[:] = [
-        entry
-        for entry in _sentry_integrations._AUTO_ENABLING_INTEGRATIONS
-        if "pydantic_ai" not in entry
-    ]
 
     SENTRY_DENYLIST = DEFAULT_DENYLIST + ["username", "email", "name"]
     sentry_transport = None
@@ -1507,41 +1488,6 @@ if SENTRY_DSN:
 else:
     BASEROW_LAZY_LOADED_LIBRARIES.append("sentry_sdk")
 
-BASEROW_OPENAI_API_KEY = os.getenv("BASEROW_OPENAI_API_KEY", None)
-BASEROW_OPENAI_ORGANIZATION = os.getenv("BASEROW_OPENAI_ORGANIZATION", "") or None
-BASEROW_OPENAI_BASE_URL = os.getenv("BASEROW_OPENAI_BASE_URL", None) or None
-BASEROW_OPENAI_MODELS = os.getenv("BASEROW_OPENAI_MODELS", "")
-BASEROW_OPENAI_MODELS = (
-    BASEROW_OPENAI_MODELS.split(",") if BASEROW_OPENAI_MODELS else []
-)
-
-BASEROW_OPENROUTER_API_KEY = os.getenv("BASEROW_OPENROUTER_API_KEY", None)
-BASEROW_OPENROUTER_ORGANIZATION = (
-    os.getenv("BASEROW_OPENROUTER_ORGANIZATION", "") or None
-)
-BASEROW_OPENROUTER_MODELS = os.getenv("BASEROW_OPENROUTER_MODELS", "")
-BASEROW_OPENROUTER_MODELS = (
-    BASEROW_OPENROUTER_MODELS.split(",") if BASEROW_OPENROUTER_MODELS else []
-)
-
-BASEROW_ANTHROPIC_API_KEY = os.getenv("BASEROW_ANTHROPIC_API_KEY", None)
-BASEROW_ANTHROPIC_MODELS = os.getenv("BASEROW_ANTHROPIC_MODELS", "")
-BASEROW_ANTHROPIC_MODELS = (
-    BASEROW_ANTHROPIC_MODELS.split(",") if BASEROW_ANTHROPIC_MODELS else []
-)
-
-BASEROW_MISTRAL_API_KEY = os.getenv("BASEROW_MISTRAL_API_KEY", None)
-BASEROW_MISTRAL_MODELS = os.getenv("BASEROW_MISTRAL_MODELS", "")
-BASEROW_MISTRAL_MODELS = (
-    BASEROW_MISTRAL_MODELS.split(",") if BASEROW_MISTRAL_MODELS else []
-)
-
-BASEROW_OLLAMA_HOST = os.getenv("BASEROW_OLLAMA_HOST", None)
-BASEROW_OLLAMA_MODELS = os.getenv("BASEROW_OLLAMA_MODELS", "")
-BASEROW_OLLAMA_MODELS = (
-    BASEROW_OLLAMA_MODELS.split(",") if BASEROW_OLLAMA_MODELS else []
-)
-
 BASEROW_TWO_WAY_SYNC_MAX_CONSECUTIVE_FAILURES = int(
     os.getenv("BASEROW_TWO_WAY_SYNC_MAX_CONSECUTIVE_FAILURES", "") or 8
 )
@@ -1571,8 +1517,6 @@ BASEROW_MAX_HEALTHY_CELERY_QUEUE_SIZE = int(
 )
 
 BASEROW_USE_LOCAL_CACHE = str_to_bool(os.getenv("BASEROW_USE_LOCAL_CACHE", "true"))
-
-BASEROW_EMBEDDINGS_API_URL = os.getenv("BASEROW_EMBEDDINGS_API_URL", "")
 
 # -- CACHALOT SETTINGS --
 
