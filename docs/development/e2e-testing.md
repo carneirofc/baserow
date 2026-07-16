@@ -41,6 +41,30 @@ collide with the default dev stack (`3000`/`8000`) or the documented alternate
 dev stacks (`3010`/`8010` and `3020`/`8020`), and leaves `3030`-`3060`/
 `8030`-`8060` free for additional dev instances.
 
+## Infra-only stack (backend tests, migrations, template sync)
+
+`just e2e` builds full application images. When you only need the backing
+services — for example to run the backend test suite, `manage.py migrate` or
+`sync_templates` against a throwaway database — use the lightweight
+`docker-compose.e2e-infra.yml` stack, which starts just PostgreSQL (with
+pgvector) and Redis on non-default ports:
+
+```bash
+docker compose -f docker-compose.e2e-infra.yml up -d      # or: podman-compose
+
+# Point the backend at it (Postgres 5470, Redis 6470):
+export DATABASE_HOST=localhost DATABASE_PORT=5470 \
+       DATABASE_NAME=baserow DATABASE_USER=baserow DATABASE_PASSWORD=baserow \
+       REDIS_HOST=localhost REDIS_PORT=6470
+just b migrate
+just b test
+
+docker compose -f docker-compose.e2e-infra.yml down -v    # tears down + wipes
+```
+
+Postgres runs in tmpfs with durability disabled, so all data is lost on
+teardown — it is for throwaway test data only.
+
 ## Commands Reference
 
 | Command | Description |
