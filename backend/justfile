@@ -38,7 +38,6 @@ help:
     @echo "  docs/development/code-quality.md                    - Linting and formatting"
     @echo ""
     @echo "CI/CD & Production:"
-    @echo "  docs/development/ci-cd.md                           - CI/CD pipelines"
     @echo "  docs/development/building-and-running-production-images.md - Production images"
     @echo ""
     @echo "IDE Setup:"
