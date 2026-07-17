@@ -24,18 +24,16 @@ PR does not run the backend tests, etc.). The jobs are:
 - **Tests** — `backend-check-startup`, `test-backend` (parallel groups),
   `test-frontend` (sharded Vitest), `test-zapier`, `check-mjml-compiled`,
   `test-e2e` (sharded), plus `collect-coverage` and `collect-e2e-reports`.
+- **build-backend** / **build-frontend** — build the CI Docker images the test jobs run
+  inside, pushed to GHCR with a short-lived `ci-<sha>` tag.
 - **ci-status** — aggregates the above into a single required check for branch
   protection. Jobs listed in the `OPTIONAL_CHECKS` repository variable are allowed to
   fail without blocking the merge.
 
-### Inert upstream jobs
-
-`ci.yml` still contains upstream Baserow's image build-and-publish jobs
-(`build-final-*`, `publish-develop-latest-*`, `trigger-saas-build`). They are gated by
-`check-build-and-publish`, which only enables them when the `RELEASE_DOCKER_*` secrets
-(and, for the SaaS trigger, `GITLAB_SAAS_PAT`) are set. **This fork does not set those
-secrets, so those jobs are skipped** — on this fork `ci.yml` is effectively a lint-and-test
-pipeline, and all release publishing is done by the workflow below.
+`ci.yml` does not publish release images. Upstream Baserow's image build-and-publish jobs
+(`build-final-*`, `publish-develop-latest-*`, `trigger-saas-build`) pushed to Baserow
+B.V.'s own registry and SaaS pipeline; they have been removed from this fork. Release
+publishing is handled entirely by the workflow below.
 
 ## Build & Publish All-in-One Image (`build-publish-image.yml`)
 
