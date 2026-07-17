@@ -173,6 +173,20 @@ def test_workspace_mappings_parsed():
     assert config.workspace_mappings[1].role == "MEMBER"
 
 
+def test_strict_membership_defaults_false_and_parses():
+    assert parse_oidc_providers_env(_env(VALID_PROVIDER))[0].strict_membership is False
+
+    provider = dict(VALID_PROVIDER, strict_membership=True)
+    assert parse_oidc_providers_env(_env(provider))[0].strict_membership is True
+
+
+def test_strict_membership_must_be_boolean():
+    provider = dict(VALID_PROVIDER, strict_membership="yes")
+
+    with pytest.raises(ImproperlyConfigured):
+        parse_oidc_providers_env(_env(provider))
+
+
 @pytest.mark.parametrize(
     "mapping",
     [

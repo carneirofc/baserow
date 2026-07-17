@@ -67,6 +67,9 @@ class OIDCProviderConfig:
     superuser_groups: List[str] = field(default_factory=list)
     # Maps IdP groups to workspace memberships/roles.
     workspace_mappings: List[WorkspaceRoleMapping] = field(default_factory=list)
+    # When True, SSO-granted workspace memberships are revoked once the user loses the
+    # mapped group. Manually-added memberships are never touched.
+    strict_membership: bool = False
 
     @property
     def syncs_global_roles(self) -> bool:
@@ -200,6 +203,12 @@ def _validate_provider(provider: Any, index: int) -> OIDCProviderConfig:
     superuser_groups = _string_list(provider, "superuser_groups", index)
     workspace_mappings = _workspace_mappings(provider, index)
 
+    strict_membership = provider.get("strict_membership", False)
+    if not isinstance(strict_membership, bool):
+        raise ImproperlyConfigured(
+            f"BASEROW_OIDC_PROVIDERS[{index}]: 'strict_membership' must be a boolean."
+        )
+
     return OIDCProviderConfig(
         name=name,
         display_name=display_name.strip(),
@@ -213,6 +222,7 @@ def _validate_provider(provider: Any, index: int) -> OIDCProviderConfig:
         staff_groups=staff_groups,
         superuser_groups=superuser_groups,
         workspace_mappings=workspace_mappings,
+        strict_membership=strict_membership,
     )
 
 

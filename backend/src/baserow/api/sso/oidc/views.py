@@ -149,6 +149,6 @@ class OIDCCallbackView(APIView):
         )
 
         sync_global_roles(user, groups, config)
-        sync_workspace_memberships(user, groups, config)
+        sync_workspace_memberships(user, groups, config, provider)
 
         return redirect_user_on_success(user, original_url)
