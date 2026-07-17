@@ -46,6 +46,64 @@ The plugin system is untouched, so these can be reimplemented as third party plu
 Anything reimplemented here must be written from scratch — the removed code is not
 licensed for reuse.
 
+In addition, this fork removes generative AI end to end — not just the premium AI
+fields and enterprise AI assistant, but the underlying pgvector embeddings service and
+AI infrastructure, so there is no AI code path left in the core.
+
+## What this fork adds
+
+These are net-new features built from scratch under the MIT license, on top of the
+stripped-down core.
+
+### Env-configured OpenID Connect (OIDC) SSO
+
+Enterprise SSO/SAML was deleted with `enterprise/`, but this fork reintroduces
+single sign-on as a small, self-contained OIDC implementation configured entirely
+through environment variables — no admin UI, no database provider rows to manage. It is
+the source of truth and is validated at startup, so a bad configuration fails fast.
+
+* `BASEROW_OIDC_PROVIDERS` — a JSON list of providers. Each provider carries its
+  `issuer`, `client_id`/`client_secret`, and optional claim overrides.
+* **Group → global role mapping** — `staff_groups` and `superuser_groups` grant Baserow
+  global staff / superuser to members of the named IdP groups.
+* **Group → workspace membership mapping** — `workspace_mappings` places users into
+  specific workspaces with an `ADMIN` or `MEMBER` role based on their IdP groups.
+* **Strict membership** — with `strict_membership: true`, SSO-granted workspace
+  memberships are revoked when the user loses the mapped group. Memberships added
+  manually are never touched.
+* **`BASEROW_OIDC_ONLY`** — makes the instance OIDC-only for normal users: password
+  signup and password login are refused, while a staff/superuser **break-glass admin**
+  can still log in with a password so you can never lock yourself out.
+* **Auto-provisioning** — SSO users are created on first login even when open signups
+  are disabled.
+
+A minimal single-provider example:
+
+```jsonc
+BASEROW_OIDC_PROVIDERS='[
+  {
+    "name": "keycloak",
+    "display_name": "Company SSO",
+    "issuer": "https://idp.example.com/realms/main",
+    "client_id": "baserow",
+    "client_secret": "…",
+    "groups_claim": "groups",
+    "staff_groups": ["baserow-admins"],
+    "workspace_mappings": [
+      { "group": "engineering", "workspace": 1, "role": "MEMBER" }
+    ],
+    "strict_membership": true
+  }
+]'
+```
+
+### Per-application-type admin feature flags
+
+The instance settings gain `enable_database`, `enable_builder`, `enable_automation` and
+`enable_dashboard` toggles (all on by default), settable from the admin settings page.
+Disabling a type hides it from the create-application menu and rejects creation of new
+applications of that type; existing applications remain accessible.
+
 ## Telemetry
 
 This fork makes no outbound calls to Baserow B.V. or anyone else. The upstream
@@ -62,11 +120,45 @@ Optional observability hooks remain, and are off unless you turn them on:
 
 All three are FOSS clients and only ever report to endpoints you configure.
 
+## Run the container
+
+This fork publishes its own all-in-one image to the GitHub Container Registry, so you do
+**not** need the upstream `baserow/baserow` image (which ships the premium and enterprise
+editions). The image is built straight from this repository's source, so it contains the
+fork's changes — the AI removal and the OIDC SSO described above.
+
+```bash
+docker run -d \
+  --name baserow \
+  -e BASEROW_PUBLIC_URL=http://localhost \
+  -v baserow_data:/baserow/data \
+  -p 80:80 \
+  -p 443:443 \
+  --restart unless-stopped \
+  ghcr.io/carneirofc/baserow/baserow:latest
+```
+
+Then open [http://localhost](http://localhost). Baserow stores everything (Postgres,
+Redis, uploads) inside the `baserow_data` volume.
+
+* Set `BASEROW_PUBLIC_URL` to `https://YOUR_DOMAIN` or `http://YOUR_IP` for external
+  access — it must match the address you use in the browser.
+* Pin a specific release instead of `latest` with a version tag, e.g.
+  `ghcr.io/carneirofc/baserow/baserow:1.2.3`.
+* To enable SSO, pass the `BASEROW_OIDC_PROVIDERS` (and optionally `BASEROW_OIDC_ONLY`)
+  environment variables shown above.
+
+Images are published automatically by the
+[`build-publish-image`](.github/workflows/build-publish-image.yml) GitHub Actions
+workflow whenever a `v*` version tag is pushed; the `latest` tag always points at the
+most recent release. The GHCR package may be private by default — make it public (or
+`docker login ghcr.io`) if a pull is denied.
+
 ## Installation
 
-The installation guides below are inherited from upstream and mostly still apply, but
-note that the published `baserow/baserow` Docker images include the premium and
-enterprise editions. To run this fork, build the images from this repository.
+The installation guides below are inherited from upstream and mostly still apply. Where
+they reference the `baserow/baserow` image, substitute
+`ghcr.io/carneirofc/baserow/baserow` to run this fork instead of the upstream editions.
 
 * [**Docker**](docs/installation/install-with-docker.md)
 * [**Helm**](docs/installation/install-with-helm.md)
