@@ -33,6 +33,10 @@ class SettingsSerializer(serializers.ModelSerializer):
             "email_verification",
             "verify_import_signature",
             "oidc_only",
+            "enable_database",
+            "enable_builder",
+            "enable_automation",
+            "enable_dashboard",
         )
         extra_kwargs = {
             "allow_new_signups": {"required": False},
@@ -44,6 +48,10 @@ class SettingsSerializer(serializers.ModelSerializer):
             "show_baserow_help_request": {"required": False},
             "email_verification": {"required": False},
             "verify_import_signature": {"required": False},
+            "enable_database": {"required": False},
+            "enable_builder": {"required": False},
+            "enable_automation": {"required": False},
+            "enable_dashboard": {"required": False},
         }
 
     def get_oidc_only(self, instance) -> bool:

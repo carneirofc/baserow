@@ -23,6 +23,7 @@ from baserow.contrib.database.views.models import GridView, GridViewFieldOptions
 from baserow.core.exceptions import (
     ApplicationDoesNotExist,
     ApplicationNotInWorkspace,
+    ApplicationTypeDisabled,
     ApplicationTypeDoesNotExist,
     BaseURLHostnameNotAllowed,
     DuplicateApplicationMaxLocksExceededException,
@@ -959,6 +960,38 @@ def test_create_database_application(send_mock, data_fixture):
         handler.create_application(
             user=user, workspace=workspace, type_name="UNKNOWN", name=""
         )
+
+
+@pytest.mark.django_db
+def test_create_application_disabled_type(data_fixture):
+    user = data_fixture.create_user(is_staff=True)
+    workspace = data_fixture.create_workspace(user=user)
+    handler = CoreHandler()
+
+    handler.update_settings(user, enable_database=False)
+
+    assert handler.application_type_is_enabled("database") is False
+    assert handler.application_type_is_enabled("builder") is True
+
+    with pytest.raises(ApplicationTypeDisabled) as exc_info:
+        handler.create_application(
+            user=user, workspace=workspace, type_name="database", name="Test"
+        )
+    assert exc_info.value.application_type == "database"
+    assert Application.objects.count() == 0
+
+    # A different, still enabled, type can be created.
+    handler.create_application(
+        user=user, workspace=workspace, type_name="builder", name="Test builder"
+    )
+    assert Application.objects.count() == 1
+
+    # Re-enabling the type allows creation again.
+    handler.update_settings(user, enable_database=True)
+    handler.create_application(
+        user=user, workspace=workspace, type_name="database", name="Test database"
+    )
+    assert Application.objects.count() == 2
 
 
 @pytest.mark.django_db

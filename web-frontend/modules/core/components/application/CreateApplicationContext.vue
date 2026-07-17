@@ -120,9 +120,12 @@ export default {
   computed: {
     applicationTypes() {
       const applicationTypes = this.$registry.getOrderedList('application')
+      const settings = this.$store.getters['settings/get']
 
-      return applicationTypes.filter((applicationType) =>
-        applicationType.canBeCreated()
+      return applicationTypes.filter(
+        (applicationType) =>
+          applicationType.canBeCreated() &&
+          settings[`enable_${applicationType.getType()}`] !== false
       )
     },
     canCreateCreateApplication() {

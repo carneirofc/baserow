@@ -34,6 +34,7 @@ from .emails import WorkspaceInvitationEmail
 from .exceptions import (
     ApplicationDoesNotExist,
     ApplicationNotInWorkspace,
+    ApplicationTypeDisabled,
     BaseURLHostnameNotAllowed,
     CannotDeleteYourselfFromWorkspace,
     DuplicateApplicationMaxLocksExceededException,
@@ -210,6 +211,10 @@ class CoreHandler(metaclass=baserow_trace_methods(tracer, exclude="clear_context
                 "co_branding_logo",
                 "email_verification",
                 "verify_import_signature",
+                "enable_database",
+                "enable_builder",
+                "enable_automation",
+                "enable_dashboard",
             ],
             settings_instance,
         )
@@ -1424,6 +1429,18 @@ class CoreHandler(metaclass=baserow_trace_methods(tracer, exclude="clear_context
             )
         return specific_queryset(queryset, per_content_type_queryset_hook)
 
+    def application_type_is_enabled(self, type_name: str) -> bool:
+        """
+        Checks whether the provided application type is enabled through the instance
+        settings. Application types without a matching ``enable_<type_name>`` setting
+        (for example those registered by plugins) are always considered enabled.
+
+        :param type_name: The application type name to check.
+        :return: Whether applications of this type may be created.
+        """
+
+        return bool(getattr(self.get_settings(), f"enable_{type_name}", True))
+
     def create_application(
         self,
         user: AbstractUser,
@@ -1442,6 +1459,8 @@ class CoreHandler(metaclass=baserow_trace_methods(tracer, exclude="clear_context
         :param init_with_data: Whether the application should be initialized with
             some default data. Defaults to False.
         :param kwargs: Additional parameters to pass to the application creation.
+        :raises ApplicationTypeDisabled: When the application type has been disabled
+            by an instance administrator through the instance settings.
         :return: The created application instance.
         """
 
@@ -1453,6 +1472,10 @@ class CoreHandler(metaclass=baserow_trace_methods(tracer, exclude="clear_context
         )
 
         application_type = application_type_registry.get(type_name)
+
+        if not self.application_type_is_enabled(type_name):
+            raise ApplicationTypeDisabled(type_name)
+
         allowed_values = extract_allowed(
             kwargs, self.default_create_allowed_fields + application_type.allowed_fields
         )

@@ -668,7 +668,16 @@
     "emailVerificationRecommended": "Recommended",
     "emailVerificationEnforced": "Enforced",
     "settingsVerifyImportSignature": "Verify import signature",
-    "settingsVerifyImportSignatureDescription": "When enabled, the signature of the imported data is verified to ensure the data has not been tampered with."
+    "settingsVerifyImportSignatureDescription": "When enabled, the signature of the imported data is verified to ensure the data has not been tampered with.",
+    "applicationFeatures": "Application features",
+    "settingEnableDatabaseName": "Databases",
+    "settingEnableDatabaseDescription": "When disabled, users can no longer create database applications. Existing databases remain accessible.",
+    "settingEnableBuilderName": "Application Builder",
+    "settingEnableBuilderDescription": "When disabled, users can no longer create builder applications. Existing applications remain accessible.",
+    "settingEnableAutomationName": "Automations",
+    "settingEnableAutomationDescription": "When disabled, users can no longer create automation applications. Existing automations remain accessible.",
+    "settingEnableDashboardName": "Dashboards",
+    "settingEnableDashboardDescription": "When disabled, users can no longer create dashboard applications. Existing dashboards remain accessible."
   },
   "formSidebar": {
     "fields": "Fields",

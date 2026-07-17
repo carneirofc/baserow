@@ -53,6 +53,79 @@
       </div>
       <div class="admin-settings__group">
         <h2 class="admin-settings__group-title">
+          {{ $t('settings.applicationFeatures') }}
+        </h2>
+        <div class="admin-settings__item">
+          <div class="admin-settings__label">
+            <div class="admin-settings__name">
+              {{ $t('settings.settingEnableDatabaseName') }}
+            </div>
+            <div class="admin-settings__description">
+              {{ $t('settings.settingEnableDatabaseDescription') }}
+            </div>
+          </div>
+          <div class="admin-settings__control">
+            <SwitchInput
+              :value="settings.enable_database"
+              @input="updateSettings({ enable_database: $event })"
+              >{{ $t('settings.enabled') }}</SwitchInput
+            >
+          </div>
+        </div>
+        <div class="admin-settings__item">
+          <div class="admin-settings__label">
+            <div class="admin-settings__name">
+              {{ $t('settings.settingEnableBuilderName') }}
+            </div>
+            <div class="admin-settings__description">
+              {{ $t('settings.settingEnableBuilderDescription') }}
+            </div>
+          </div>
+          <div class="admin-settings__control">
+            <SwitchInput
+              :value="settings.enable_builder"
+              @input="updateSettings({ enable_builder: $event })"
+              >{{ $t('settings.enabled') }}</SwitchInput
+            >
+          </div>
+        </div>
+        <div class="admin-settings__item">
+          <div class="admin-settings__label">
+            <div class="admin-settings__name">
+              {{ $t('settings.settingEnableAutomationName') }}
+            </div>
+            <div class="admin-settings__description">
+              {{ $t('settings.settingEnableAutomationDescription') }}
+            </div>
+          </div>
+          <div class="admin-settings__control">
+            <SwitchInput
+              :value="settings.enable_automation"
+              @input="updateSettings({ enable_automation: $event })"
+              >{{ $t('settings.enabled') }}</SwitchInput
+            >
+          </div>
+        </div>
+        <div class="admin-settings__item">
+          <div class="admin-settings__label">
+            <div class="admin-settings__name">
+              {{ $t('settings.settingEnableDashboardName') }}
+            </div>
+            <div class="admin-settings__description">
+              {{ $t('settings.settingEnableDashboardDescription') }}
+            </div>
+          </div>
+          <div class="admin-settings__control">
+            <SwitchInput
+              :value="settings.enable_dashboard"
+              @input="updateSettings({ enable_dashboard: $event })"
+              >{{ $t('settings.enabled') }}</SwitchInput
+            >
+          </div>
+        </div>
+      </div>
+      <div class="admin-settings__group">
+        <h2 class="admin-settings__group-title">
           {{ $t('settings.accountRestrictions') }}
         </h2>
         <div class="admin-settings__item">
