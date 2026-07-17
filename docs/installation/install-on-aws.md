@@ -17,10 +17,9 @@ Baserow can be deployed to AWS in the following ways:
    file or our [sample K8S configuration](./install-with-k8s.md) as a starting point to
    configure ECS/Fargate tasks for more advanced, production ready, one service per
    container model. **See below for a detailed guide**
-3. Using the [Official Baserow helm chart](./install-with-helm.md) and EKS.
-4. Customizing our [sample K8S configuration](./install-with-k8s.md) and using that with
+3. Customizing our [sample K8S configuration](./install-with-k8s.md) and using that with
    EKS.
-5. Installing and using docker/docker-compose on an EC2 instance with
+4. Installing and using docker/docker-compose on an EC2 instance with
    our [all-in-one](./install-with-docker.md) or
    our [one container per service](./install-with-docker-compose.md) docker images.
 

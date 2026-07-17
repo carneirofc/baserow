@@ -18,8 +18,6 @@ Baserow by following one the guides below:
   install Baserow using docker.
 * [Install with Docker Compose](installation/install-with-docker-compose.md): A
   step-by-step guide to install Baserow using Docker Compose.
-* [Install with Helm](installation/install-with-helm.md): A community maintained helm 
-  chart for installing Baserow on a K8S cluster easily.
 * [Install on AWS](installation/install-on-aws.md): An overview of your options to 
   install Baserow on AWS with two specific guides for ECS.
 * [Install using Standalone images](installation/install-using-standalone-images.md): A

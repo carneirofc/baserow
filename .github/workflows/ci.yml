@@ -213,7 +213,6 @@ jobs:
       dockerfiles: ${{ steps.filter.outputs.dockerfiles }}
       mjml: ${{ steps.filter.outputs.mjml }}
       zapier: ${{ steps.filter.outputs.zapier }}
-      helm: ${{ steps.filter.outputs.helm }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -237,9 +236,6 @@ jobs:
               - '.github/workflows/ci.yml'
             zapier:
               - 'integrations/zapier/**'
-              - '.github/workflows/ci.yml'
-            helm:
-              - 'deploy/helm/**'
               - '.github/workflows/ci.yml'
   backend-lint:
     name: Backend Lint
@@ -336,36 +332,6 @@ jobs:
           name: hadolint-results
           path: reports/hadolint.json
           retention-days: 7
-
-  helm-chart-lint:
-    name: Helm Chart Lint
-    runs-on: ubuntu-latest
-    needs:
-      - detect-changes
-    if: needs.detect-changes.outputs.helm == 'true' || github.ref_name == 'develop' || github.ref_name == 'master'
-    permissions:
-      contents: read
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Helm
-        uses: azure/setup-helm@v4
-
-      - name: Lint Helm Chart
-        run: |
-          cd deploy/helm
-          rm -f baserow/Chart.lock
-
-          # Add Helm repositories
-          helm repo add bitnami https://charts.bitnami.com/bitnami
-          helm repo add caddy https://caddyserver.github.io/ingress
-
-          # Build dependencies
-          helm dependency build baserow
-
-          # Lint the chart with strict mode
-          helm lint baserow --strict
 
   # ==========================================================================
   # TEST STAGE - Run backend and frontend tests
@@ -1327,7 +1293,7 @@ jobs:
   # 1. Go to Settings → Secrets and variables → Actions → Variables
   # 2. Create a repository variable named OPTIONAL_CHECKS
   # 3. Set its value to a comma-separated list of job names that should be optional
-  #    Example: "test-e2e,test-zapier,helm-chart-lint"
+  #    Example: "test-e2e,test-zapier"
   #
   # Jobs listed in OPTIONAL_CHECKS can fail without blocking the PR.
   # Jobs NOT listed are required and must pass (or be skipped due to path filtering).
@@ -1342,7 +1308,6 @@ jobs:
       - backend-lint
       - frontend-lint
       - dockerfile-lint
-      - helm-chart-lint
       # Test jobs (can be skipped based on path changes)
       - backend-check-startup
       - test-backend
@@ -1362,7 +1327,6 @@ jobs:
             backend-lint=${{ needs.backend-lint.result }}
             frontend-lint=${{ needs.frontend-lint.result }}
             dockerfile-lint=${{ needs.dockerfile-lint.result }}
-            helm-chart-lint=${{ needs.helm-chart-lint.result }}
             backend-check-startup=${{ needs.backend-check-startup.result }}
             test-backend=${{ needs.test-backend.result }}
             test-frontend=${{ needs.test-frontend.result }}

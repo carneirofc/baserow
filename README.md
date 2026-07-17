@@ -161,7 +161,6 @@ they reference the `baserow/baserow` image, substitute
 `ghcr.io/carneirofc/baserow/baserow` to run this fork instead of the upstream editions.
 
 * [**Docker**](docs/installation/install-with-docker.md)
-* [**Helm**](docs/installation/install-with-helm.md)
 * [**Docker Compose**](docs/installation/install-with-docker-compose.md)
 * [**Heroku**](docs/installation/install-on-heroku.md)
 * [**Render**](docs/installation/install-on-render.md)

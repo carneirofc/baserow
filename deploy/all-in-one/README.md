@@ -428,7 +428,7 @@ docker run -it \
 This image can also be configured to deploy Baserow in a horizontally scalable way.
 We recommend you first consider using our `baserow/backend` and `baserow/web-frontend`
 single service per container images
-on [K8S](./install-with-k8s.md)/[Helm](install-with-helm.md).
+on [K8S](./install-with-k8s.md).
 However, if you just want to easily horizontally scale Baserow on something like
 AWS ECS or Google Cloud Run then the `baserow/baserow` can be used.
 

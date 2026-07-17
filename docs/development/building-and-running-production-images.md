@@ -255,24 +255,6 @@ vim .env
 docker compose --env-file .env -f docker-compose.yml up -d
 ```
 
-## Multi-Architecture Builds
-
-Build images for multiple architectures (e.g., AMD64 and ARM64):
-
-```bash
-# Create a builder for multi-arch
-docker buildx create --name multiarch --use
-
-# Build and push multi-arch images
-docker buildx build \
-  --platform linux/amd64,linux/arm64 \
-  -f backend/Dockerfile \
-  --target prod \
-  -t baserow/backend:latest \
-  --push \
-  .
-```
-
 ## Image Sizes
 
 Typical production image sizes:
