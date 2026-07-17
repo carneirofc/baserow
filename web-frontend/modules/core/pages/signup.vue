@@ -132,6 +132,10 @@ const passwordLoginEnabled = computed(
 )
 
 const isSignupEnabled = computed(() => {
+  if (settings.value.oidc_only) {
+    // OIDC-only mode disables self-service signup entirely.
+    return false
+  }
   return (
     settings.value.allow_new_signups ||
     (settings.value.allow_signups_via_workspace_invitations &&

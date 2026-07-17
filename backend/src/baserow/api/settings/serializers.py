@@ -1,3 +1,5 @@
+from django.conf import settings
+
 from rest_framework import serializers
 
 from baserow.api.user_files.serializers import UserFileField
@@ -8,6 +10,12 @@ class SettingsSerializer(serializers.ModelSerializer):
     co_branding_logo = UserFileField(
         required=False,
         help_text="Co-branding logo that's placed next to the Baserow logo (176x29).",
+    )
+    oidc_only = serializers.SerializerMethodField(
+        help_text=(
+            "Whether the instance is in OIDC-only mode: self-service signup and "
+            "password login for non-staff users are disabled."
+        )
     )
 
     class Meta:
@@ -24,6 +32,7 @@ class SettingsSerializer(serializers.ModelSerializer):
             "co_branding_logo",
             "email_verification",
             "verify_import_signature",
+            "oidc_only",
         )
         extra_kwargs = {
             "allow_new_signups": {"required": False},
@@ -36,6 +45,9 @@ class SettingsSerializer(serializers.ModelSerializer):
             "email_verification": {"required": False},
             "verify_import_signature": {"required": False},
         }
+
+    def get_oidc_only(self, instance) -> bool:
+        return bool(settings.BASEROW_OIDC_ONLY)
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)

@@ -214,6 +214,10 @@ class PasswordAuthProviderType(AuthProviderType):
     }
 
     def get_login_options(self, **kwargs) -> Optional[Dict[str, Any]]:
+        # In OIDC-only mode the password form is hidden from the login page; a
+        # break-glass admin can still reveal it via the escape hatch.
+        if settings.BASEROW_OIDC_ONLY:
+            return None
         if not PasswordProviderHandler.get().enabled:
             return None
         return {"type": self.type}

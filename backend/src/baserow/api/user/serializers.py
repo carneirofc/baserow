@@ -311,14 +311,20 @@ def get_all_user_data_serialized(
 
 def log_in_user(request, user):
     password_provider = PasswordProviderHandler.get()
-    if not password_provider.enabled and user.is_staff is False:
+    password_login_disabled = (
+        not password_provider.enabled or settings.BASEROW_OIDC_ONLY
+    )
+    if password_login_disabled and user.is_staff is False:
+        # Break-glass: staff/superuser may still use the password form even when
+        # password login is otherwise disabled (e.g. OIDC-only mode).
         raise AuthProviderDisabled()
     if not user.is_active:
         raise DeactivatedUserException()
 
-    settings = CoreHandler().get_settings()
+    instance_settings = CoreHandler().get_settings()
     if (
-        settings.email_verification == Settings.EmailVerificationOptions.ENFORCED
+        instance_settings.email_verification
+        == Settings.EmailVerificationOptions.ENFORCED
         and not user.profile.email_verified
     ):
         UserHandler().send_email_pending_verification(user)

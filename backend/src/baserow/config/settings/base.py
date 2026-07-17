@@ -1396,6 +1396,11 @@ BASEROW_OIDC_PROVIDERS = parse_oidc_providers_env(
     os.getenv("BASEROW_OIDC_PROVIDERS", "")
 )
 
+# When enabled, the instance is OIDC-only for normal users: self-service password
+# signup is disabled and password login is refused for non-staff accounts. A staff /
+# superuser (break-glass admin) can still log in with a password.
+BASEROW_OIDC_ONLY = str_to_bool(os.getenv("BASEROW_OIDC_ONLY", ""))
+
 MIGRATION_LOCK_ID = os.getenv("BASEROW_MIGRATION_LOCK_ID", 123456)
 DEFAULT_SEARCH_MODE = os.getenv("BASEROW_DEFAULT_SEARCH_MODE", "compat")
 

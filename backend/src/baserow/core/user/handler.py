@@ -233,10 +233,12 @@ class UserHandler(metaclass=baserow_trace_methods(tracer)):
             instance_settings.allow_signups_via_workspace_invitations
             and workspace_invitation is not None
         )
-        if not (
-            allow_new_signups or allow_signup_for_invited_user or bypass_signup_toggle
-        ):
-            raise DisabledSignupError("Sign up is disabled.")
+        if not bypass_signup_toggle:
+            if settings.BASEROW_OIDC_ONLY:
+                # OIDC-only mode disables self-service (password) signup entirely.
+                raise DisabledSignupError("Sign up is disabled.")
+            if not (allow_new_signups or allow_signup_for_invited_user):
+                raise DisabledSignupError("Sign up is disabled.")
 
         user = self.force_create_user(
             email=email,
@@ -308,13 +310,12 @@ class UserHandler(metaclass=baserow_trace_methods(tracer)):
             auth_provider = PasswordProviderHandler.get()
         auth_provider.user_signed_in(user)
 
-        settings = CoreHandler().get_settings()
         email_verification_send_email_if = [
             Settings.EmailVerificationOptions.RECOMMENDED,
             Settings.EmailVerificationOptions.ENFORCED,
         ]
         if (
-            settings.email_verification in email_verification_send_email_if
+            instance_settings.email_verification in email_verification_send_email_if
             and user.profile.email_verified is False
         ):
             UserHandler().send_email_pending_verification(user)

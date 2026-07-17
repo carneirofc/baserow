@@ -21,7 +21,10 @@
         </div>
         <h1 class="auth__head-title">{{ $t('login.title') }}</h1>
         <div class="auth__head">
-          <span v-if="settings.allow_new_signups" class="auth__head-text">
+          <span
+            v-if="settings.allow_new_signups && !settings.oidc_only"
+            class="auth__head-text"
+          >
             {{ $t('login.signUpText') }}
             <NuxtLink :to="{ name: 'signup' }">
               {{ $t('login.signUp') }}
