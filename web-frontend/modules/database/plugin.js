@@ -345,7 +345,6 @@ import {
   ScratchDatabaseOnboardingStepType,
   ImportDatabaseOnboardingStepType,
   AirtableDatabaseOnboardingStepType,
-  TemplateDatabaseOnboardingStepType,
 } from '@baserow/modules/database/databaseOnboardingStepTypes'
 
 import {
@@ -1032,10 +1031,6 @@ export default defineNuxtPlugin({
     $registry.register(
       'databaseOnboardingStep',
       new AirtableDatabaseOnboardingStepType(context)
-    )
-    $registry.register(
-      'databaseOnboardingStep',
-      new TemplateDatabaseOnboardingStepType(context)
     )
 
     $registry.register(

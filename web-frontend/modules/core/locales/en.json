@@ -395,13 +395,6 @@
     "permissionDeniedTitle": "Permission denied",
     "permissionDeniedBody": "You do not have the required permission to create a new workspace."
   },
-  "templateCategories": {
-    "search": "Search templates",
-    "title": "Templates"
-  },
-  "templateHeader": {
-    "use": "Use this template"
-  },
   "trashSidebar": {
     "unnamedWorkspace": "Unnamed workspace {id}",
     "workspaces": "Workspaces"
@@ -457,8 +450,6 @@
     "errorWrongFileTypeMessage": "You can't upload a file of type {type}"
   },
   "createApplicationContext": {
-    "fromTemplate": "From template",
-    "fromTemplateDesc": "Quickly start with one of our recommended templates",
     "table": "Table",
     "tableDesc": "Create a new place to manage data in your database.",
     "importWorkspace": "Import data",
@@ -551,7 +542,6 @@
     "shareOnReddit": "Share on Reddit",
     "shareOnFacebook": "Share on Facebook",
     "shareOnLinkedIn": "Share on LinkedIn",
-    "suggestedTemplates": "Suggested templates",
     "resources": "Resources",
     "knowledgeBase": "Knowledge base",
     "knowledgeBaseMessage": "Find answers to all of your questions",
@@ -567,9 +557,6 @@
   },
   "dashboardApplication": {
     "createdAt": "created"
-  },
-  "templateCard": {
-    "viewMore": "View more"
   },
   "login": {
     "title": "Welcome back",

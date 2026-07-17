@@ -73,29 +73,6 @@
           class="margin-top-0 margin-bottom-0"
         ></WorkspaceInvitation>
         <div class="dashboard__extras">
-          <div
-            v-if="canCreateCreateApplication"
-            class="dashboard__suggested-templates"
-          >
-            <h4>{{ $t('dashboard.suggestedTemplates') }}</h4>
-
-            <div class="dashboard__suggested-templates-wrapper">
-              <TemplateCard
-                v-for="(template, index) in templates"
-                :key="index"
-                :template="template"
-                class="dashboard__suggested-template"
-                @click="$refs.templateModal.show(template.slug)"
-              ></TemplateCard>
-
-              <TemplateCard
-                class="dashboard__suggested-template"
-                view-more
-                @click="$refs.templateModal.show()"
-              >
-              </TemplateCard>
-            </div>
-          </div>
           <div class="dashboard__resources">
             <h4>{{ $t('dashboard.resources') }}</h4>
             <div class="dashboard__resources-wrapper">
@@ -211,10 +188,6 @@
         :key="index"
       ></component>
     </template>
-    <TemplateModal
-      ref="templateModal"
-      :workspace="selectedWorkspace"
-    ></TemplateModal>
   </div>
 </template>
 
@@ -227,10 +200,8 @@ import WorkspaceContext from '@baserow/modules/core/components/workspace/Workspa
 import CreateApplicationContext from '@baserow/modules/core/components/application/CreateApplicationContext'
 import DashboardApplication from '@baserow/modules/core/components/dashboard/DashboardApplication'
 import WorkspaceInvitation from '@baserow/modules/core/components/workspace/WorkspaceInvitation'
-import TemplateCard from '@baserow/modules/core/components/template/TemplateCard'
 import editWorkspace from '@baserow/modules/core/mixins/editWorkspace'
 import DashboardVerifyEmail from '@baserow/modules/core/components/dashboard/DashboardVerifyEmail'
-import TemplateModal from '@baserow/modules/core/components/template/TemplateModal'
 import DashboardHelp from '@baserow/modules/core/components/dashboard/DashboardHelp'
 
 definePageMeta({
@@ -259,20 +230,6 @@ const { $store, $registry, $i18n, $hasPermission } = nuxtApp
 // ----------------------------------------------------------------------------
 const selectedWorkspace = ref(null)
 const workspaceComponentArguments = ref({})
-const templates = ref([
-  {
-    name: 'Project Management',
-    slug: 'project-management',
-    type: 'calendar',
-    color: 'yellow',
-  },
-  {
-    name: 'Performance Reviews',
-    slug: 'performance-reviews',
-    type: 'table',
-    color: 'purple',
-  },
-])
 
 // refs used in template
 const context = ref(null)
@@ -281,7 +238,6 @@ const createApplicationContext = ref(null)
 const createApplicationContextLink = ref(null)
 const createApplicationContextLink2 = ref(null)
 const rename = ref(null)
-const templateModal = ref(null)
 
 async function fetchWorkspaceExtraData(workspace) {
   const plugins = Object.values($registry.getAll('plugin'))
