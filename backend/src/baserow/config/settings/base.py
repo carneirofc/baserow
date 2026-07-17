@@ -484,13 +484,13 @@ SIMPLE_JWT = {
 SPECTACULAR_SETTINGS = {
     "TITLE": "Baserow API spec",
     "DESCRIPTION": "For more information about our REST API, please visit "
-    "[this page](https://baserow.io/docs/apis%2Frest-api).\n\n"
+    "[this page](https://github.com/carneirofc/baserow).\n\n"
     "For more information about our deprecation policy, please visit "
-    "[this page](https://baserow.io/docs/apis%2Fdeprecations).",
-    "CONTACT": {"url": "https://baserow.io/contact"},
+    "[this page](https://github.com/carneirofc/baserow).",
+    "CONTACT": {"url": "https://github.com/carneirofc/baserow"},
     "LICENSE": {
         "name": "MIT",
-        "url": "https://github.com/baserow/baserow/blob/develop/LICENSE",
+        "url": "https://github.com/carneirofc/baserow/blob/develop/LICENSE",
     },
     "VERSION": "2.3.2",
     "SERVE_INCLUDE_SCHEMA": False,

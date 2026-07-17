@@ -1,7 +1,7 @@
 # Creating A Plugin [Outdated]
 
-> Check out our [Plugin community sub-forum](https://community.baserow.io/c/plugins/17)
-> for community made plugins and further discussion.
+> Check out the [issue tracker](https://github.com/carneirofc/baserow/issues) for
+> discussion.
 
 In this guide we dive into how to create a Baserow plugin from scratch, give you example
 plugins to get inspiration from and discuss how to publish your plugin.
@@ -255,7 +255,7 @@ the git repository then anyone can then install your plugin following the steps 
 the [Plugin Installation](./installation.md) guide.
 
 Also, please share and post about your plugin on
-our [Plugin community sub-forum](https://community.baserow.io/c/plugins/17)!
+the [issue tracker](https://github.com/carneirofc/baserow/issues)!
 
 ## Further Reading
 

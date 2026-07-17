@@ -147,5 +147,5 @@ variable is not used by these standalone images.
 
 ## Further help 
 
-Please post on the [community forum](https://baserow.io) if you are having further
+Please post on the [issue tracker](https://github.com/carneirofc/baserow/issues) if you are having further
 troubles or are using another installation method.

@@ -245,7 +245,7 @@ class MaxLocksPerTransactionExceededException(Exception):
 
     message = (
         "Baserow has exceeded the maximum number of PostgreSQL locks per transaction. "
-        "Please read https://baserow.io/docs/technical/postgresql-locks"
+        "Please read https://github.com/carneirofc/baserow"
     )
 
 
@@ -270,7 +270,7 @@ class DuplicateApplicationMaxLocksExceededException(
     message = (
         "Baserow attempted to duplicate an application, but exceeded the maximum "
         "number of PostgreSQL locks per transaction. Please read "
-        "https://baserow.io/docs/technical/postgresql-locks"
+        "https://github.com/carneirofc/baserow"
     )
 
 

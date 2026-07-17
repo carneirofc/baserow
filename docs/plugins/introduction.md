@@ -30,9 +30,8 @@ Baserow Plugins are only available for self-hosted installations currently and a
 The [Plugin Installation](./installation.md) guide goes into detail on how to install
 and uninstall Baserow plugins in the various official Baserow docker images.
 
-Currently, we do not provide an officially supported plugins, however check out our
-[Plugin community sub-forum](https://community.baserow.io/c/plugins/17) for community
-made plugins and further discussion.
+Currently, we do not provide an officially supported plugins, however check out the
+[issue tracker](https://github.com/carneirofc/baserow/issues) for further discussion.
 
 ## Step by step plugin creation tutorial
 

@@ -4,7 +4,7 @@ Create your own online database without technical experience. Our user-friendly 
 tool gives you the powers of a developer without leaving your browser.
 
 * A spreadsheet database hybrid combining ease of use and powerful data organization.
-* Easily self-hosted with no storage restrictions or sign-up on https://baserow.io to
+* Easily self-hosted with no storage restrictions or sign-up on https://github.com/carneirofc/baserow to
   get started immediately.
 * Alternative to Airtable.
 * Open-core with all non-premium and non-enterprise features under
@@ -20,19 +20,19 @@ docker run -v baserow_data:/baserow/data -p 80:80 -p 443:443 baserow/baserow:2.3
 
 ## Quick Reference
 
-* **Maintained By**: [baserow.io](https://baserow.io/contact)
-* **Get Support At**: [The Baserow Community Forums](https://community.baserow.io)
-* **Source Code Available At**: [github.com/baserow/baserow](https://github.com/baserow/baserow)
-* **Docs At**: [baserow.io/docs](https://baserow.io/docs)
+* **Maintained By**: [github.com/carneirofc/baserow](https://github.com/carneirofc/baserow)
+* **Get Support At**: [GitHub Issues](https://github.com/carneirofc/baserow/issues)
+* **Source Code Available At**: [github.com/carneirofc/baserow](https://github.com/carneirofc/baserow)
+* **Docs At**: [github.com/carneirofc/baserow](https://github.com/carneirofc/baserow)
 * **License**: Open-Core with all non-premium and non-enterprise code under the MIT
   license.
 
 ## Supported tags and Dockerfile Links
 
-* [`X.Y.Z`](https://github.com/baserow/baserow/blob/master/deploy/all-in-one/Dockerfile)
+* [`X.Y.Z`](https://github.com/carneirofc/baserow)
   Tagged by Baserow version.
-* [`latest`](https://github.com/baserow/baserow/blob/master/deploy/all-in-one/Dockerfile)
-* [`develop-latest`](https://gitlab.com/baserow/baserow/-/blob/develop/deploy/all-in-one/Dockerfile) 
+* [`latest`](https://github.com/carneirofc/baserow)
+* [`develop-latest`](https://github.com/carneirofc/baserow) 
   This is a bleeding edge image from our development branch, use at your own risk.
 
 [comment]: <> (All content from here must be kept in sync with `docs/installation/install-with-docker.md`)
@@ -180,7 +180,7 @@ docker run \
 ```
 
 3. If the upgrade was successful, the container should exit with a success message, you can now start Baserow as you did before.
-4. If the upgrade wasn't successful, the upgrade image should output verbose logs of where exactly it failed. In that case, copy all of the log output and refer to [Baserow community](https://community.baserow.io/) or contact us for further assistance.
+4. If the upgrade wasn't successful, the upgrade image should output verbose logs of where exactly it failed. In that case, copy all of the log output and refer to [Baserow community](https://github.com/carneirofc/baserow/issues) or contact us for further assistance.
 
 ### Legacy PostgreSQL version
 
@@ -450,7 +450,7 @@ stored externally and not inside containers or volumes. To do this you will need
 With this image we recommend you set the following environment variables to scale it
 horizontally.
 
-> See our [Configuration Docs](https://baserow.io/docs/installation%2Fconfiguration) for
+> See our [Configuration Docs](https://github.com/carneirofc/baserow) for
 > more details on the following environment variables.
 
 1. All relevant `DATABASE_*` env vars need to be set to point Baserow at an external

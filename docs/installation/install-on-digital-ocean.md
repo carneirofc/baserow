@@ -98,7 +98,7 @@ completes. After, it will automatically add a domain/URL for you, and it will be
 visible in the settings. Copy this URL, click on the baserow-baserow component settings,
 edit the environment variables and set `BASEROW_PUBLIC_URL` to `(the copied URL)`, then
 hit the save button. Note that the URL does not have a trailing slask, so it should
-look like `https://baserow.io` and not `https://baserow.io/`.
+look like `https://example.com` and not `https://example.com/`.
 
 ## Templates
 

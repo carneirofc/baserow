@@ -17,15 +17,15 @@
 #      connections.
 #
 # See the following guides for more details and example configurations:
-#   1. https://baserow.io/docs/installation%2Finstall-behind-nginx
-#   2. https://baserow.io/docs/installation%2Finstall-behind-apache
+#   1. https://github.com/carneirofc/baserow
+#   2. https://github.com/carneirofc/baserow
 #
 # Also More documentation can be found in:
-# https://baserow.io/docs/installation%2Finstall-with-docker-compose
+# https://github.com/carneirofc/baserow
 #
 ########################################################################################
 
-# See https://baserow.io/docs/installation%2Fconfiguration for more details on these
+# See https://github.com/carneirofc/baserow for more details on these
 # backend environment variables, their defaults if left blank etc.
 x-backend-variables:
   &backend-variables # Most users should only need to set these first four variables.
@@ -76,7 +76,7 @@ x-backend-variables:
   AWS_S3_ENDPOINT_URL:
   AWS_S3_CUSTOM_DOMAIN:
 
-  # Misc settings see https://baserow.io/docs/installation%2Fconfiguration for info
+  # Misc settings see https://github.com/carneirofc/baserow for info
   BASEROW_AMOUNT_OF_WORKERS:
   BASEROW_ROW_PAGE_SIZE_LIMIT:
   BASEROW_DEPENDANT_ROWS_REALTIME_UPDATE_LIMIT:

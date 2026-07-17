@@ -14,5 +14,5 @@
 
 ## Add your resource
 
-Please edit this file in the repository at https://github.com/baserow/baserow and create
+Please edit this file in the repository at https://github.com/carneirofc/baserow and create
 a pull request to add your external resource to this list.

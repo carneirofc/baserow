@@ -646,8 +646,8 @@ export default {
           }
         }
         // `refreshRow` doesn't immediately hide a row not matching filters if a
-        // user open the modal for that row to solve
-        // https://gitlab.com/baserow/baserow/-/issues/1765. This handler ensure
+        // user open the modal for that row to solve upstream Baserow issue
+        // 1765. This handler ensure
         // the row is correctly refreshed if the user open another row using the
         // navigation buttons in the modal.
         const prevRowId = prevRow?.id

@@ -2,7 +2,7 @@
   <div v-if="roleUID" class="highest-role-field">
     {{ roleName }}
     <a
-      href="https://baserow.io/user-docs/subscriptions-overview#who-is-considered-a-user-for-billing-purposes"
+      href="https://github.com/carneirofc/baserow"
       target="_blank"
     >
       <Badge v-if="roleIsBillable" color="cyan" class="margin-left-1"

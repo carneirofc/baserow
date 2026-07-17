@@ -4,13 +4,13 @@ This image runs only the Baserow Web-frontend service and is intended for use by
 advanced users. Please instead use the `baserow/baserow` image if you want a simpler \
 setup.
 
-Please see our [Install using Standalone Images](https://baserow.io/docs/installation/install-using-standalone-images)
+Please see our [Install using Standalone Images](https://github.com/carneirofc/baserow)
 guide for more details.
 
 ## About Baserow
 
 * A spreadsheet database hybrid combining ease of use and powerful data organization.
-* Easily self-hosted with no storage restrictions or sign-up on https://baserow.io to
+* Easily self-hosted with no storage restrictions or sign-up on https://github.com/carneirofc/baserow to
   get started immediately.
 * Alternative to Airtable.
 * Open-core with all non-premium and non-enterprise features under
@@ -22,17 +22,17 @@ guide for more details.
 
 ## Quick Reference
 
-* **Maintained By**: [baserow.io](https://baserow.io/contact)
-* **Get Support At**: [The Baserow Community Forums](https://community.baserow.io)
-* **Source Code Available At**: [gitlab.com/baserow/baserow](https://gitlab.com/baserow/baserow)
-* **Docs At**: [baserow.io/docs](https://baserow.io/docs)
+* **Maintained By**: [github.com/carneirofc/baserow](https://github.com/carneirofc/baserow)
+* **Get Support At**: [GitHub Issues](https://github.com/carneirofc/baserow/issues)
+* **Source Code Available At**: [github.com/carneirofc/baserow](https://github.com/carneirofc/baserow)
+* **Docs At**: [github.com/carneirofc/baserow](https://github.com/carneirofc/baserow)
 * **License**: Open-Core with all non-premium and non-enterprise code under the MIT 
   license.
 
 ## Supported tags and Dockerfile Links
 
-* [`X.Y.Z`](https://github.com/baserow/baserow/blob/master/web-frontend/Dockerfile)
+* [`X.Y.Z`](https://github.com/carneirofc/baserow)
   Tagged by Baserow version.
-* [`latest`](https://github.com/baserow/baserow/blob/master/web-frontend/Dockerfile)
-* [`develop-latest`](https://gitlab.com/baserow/baserow/-/blob/develop/web-frontend/Dockerfile)
+* [`latest`](https://github.com/carneirofc/baserow)
+* [`develop-latest`](https://github.com/carneirofc/baserow)
   This is a bleeding edge image from our development branch, use at your own risk.

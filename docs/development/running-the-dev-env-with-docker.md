@@ -32,7 +32,7 @@ just --version
 
 ```bash
 # Clone the repository
-git clone --branch develop https://github.com/baserow/baserow.git
+git clone --branch develop https://github.com/carneirofc/baserow.git
 cd baserow
 
 # Build and start the dev environment

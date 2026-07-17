@@ -233,7 +233,7 @@ class ArrayValueSerializer(serializers.Serializer):
         self.fields["value"] = child
 
     def to_representation(self, instance):
-        # Note this is workaround for https://github.com/baserow/baserow/issues/4424
+        # Note this is workaround for https://github.com/carneirofc/baserow/issues/4424
         # Once we have a proper way to handle this, we can remove this
         # and return the super().to_representation(instance) directly.
         try:

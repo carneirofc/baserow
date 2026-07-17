@@ -10,9 +10,7 @@ developer.
 
 ## Installation
 
-We provide a hosted version of Baserow which you can sign up and start using immediately
-at [https://baserow.io](https://baserow.io). Alternatively you can easily self-host
-Baserow by following one the guides below:
+You can easily self-host Baserow by following one of the guides below:
 
 * [Install with Docker](installation/install-with-docker.md): A step-by-step guide to
   install Baserow using docker.

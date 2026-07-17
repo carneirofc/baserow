@@ -185,7 +185,7 @@ def load_test_data():
             variant="link",
             navigation_type="custom",
             target="blank",
-            navigate_to_url='"https://baserow.io"',
+            navigate_to_url='"https://github.com/carneirofc/baserow"',
             styles={"link": {"link_text_alignment": "center"}},
         )
     table = Table.objects.get(

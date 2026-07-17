@@ -2,7 +2,7 @@
   <div class="form-view__powered-by">
     Powered by
     <a
-      href="https://baserow.io"
+      href="https://github.com/carneirofc/baserow"
       target="_blank"
       title="Baserow - open source no-code database tool and Airtable alternative"
     >
