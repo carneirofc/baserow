@@ -145,3 +145,47 @@ def test_groups_claim_must_be_non_empty_string():
 
     with pytest.raises(ImproperlyConfigured):
         parse_oidc_providers_env(_env(provider))
+
+
+def test_workspace_mappings_defaults_to_empty():
+    provider = parse_oidc_providers_env(_env(VALID_PROVIDER))[0]
+
+    assert provider.workspace_mappings == []
+    assert provider.syncs_workspace_memberships is False
+
+
+def test_workspace_mappings_parsed():
+    provider = dict(
+        VALID_PROVIDER,
+        workspace_mappings=[
+            {"group": "team-a", "workspace": 7, "role": "ADMIN"},
+            {"group": "team-b", "workspace": 9, "role": "MEMBER"},
+        ],
+    )
+
+    config = parse_oidc_providers_env(_env(provider))[0]
+
+    assert config.syncs_workspace_memberships is True
+    assert config.workspace_mappings[0].group == "team-a"
+    assert config.workspace_mappings[0].workspace_id == 7
+    assert config.workspace_mappings[0].role == "ADMIN"
+    assert config.workspace_mappings[1].workspace_id == 9
+    assert config.workspace_mappings[1].role == "MEMBER"
+
+
+@pytest.mark.parametrize(
+    "mapping",
+    [
+        {"group": "team", "workspace": 1},  # missing role
+        {"group": "team", "workspace": 1, "role": "VIEWER"},  # role not allowed
+        {"group": "team", "workspace": "1", "role": "ADMIN"},  # workspace not int
+        {"group": "team", "workspace": True, "role": "ADMIN"},  # bool rejected
+        {"workspace": 1, "role": "ADMIN"},  # missing group
+        "not-an-object",
+    ],
+)
+def test_invalid_workspace_mapping_fails_fast(mapping):
+    provider = dict(VALID_PROVIDER, workspace_mappings=[mapping])
+
+    with pytest.raises(ImproperlyConfigured):
+        parse_oidc_providers_env(_env(provider))

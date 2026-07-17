@@ -26,9 +26,23 @@ from django.core.exceptions import ImproperlyConfigured
 
 DEFAULT_SCOPES = ["openid", "email", "profile"]
 
+# The workspace roles an operator may map an IdP group to.
+WORKSPACE_ROLE_ADMIN = "ADMIN"
+WORKSPACE_ROLE_MEMBER = "MEMBER"
+ALLOWED_WORKSPACE_ROLES = (WORKSPACE_ROLE_ADMIN, WORKSPACE_ROLE_MEMBER)
+
 # A provider name is used in URLs and as the database anchor key, so keep it to a
 # conservative, url-safe slug.
 _NAME_RE = re.compile(r"^[a-zA-Z0-9_-]+$")
+
+
+@dataclass(frozen=True)
+class WorkspaceRoleMapping:
+    """Maps one IdP group to a role in one Baserow workspace."""
+
+    group: str
+    workspace_id: int
+    role: str
 
 
 @dataclass(frozen=True)
@@ -51,12 +65,20 @@ class OIDCProviderConfig:
     staff_groups: List[str] = field(default_factory=list)
     # IdP groups whose members are granted Baserow global superuser.
     superuser_groups: List[str] = field(default_factory=list)
+    # Maps IdP groups to workspace memberships/roles.
+    workspace_mappings: List[WorkspaceRoleMapping] = field(default_factory=list)
 
     @property
     def syncs_global_roles(self) -> bool:
         """True when this provider maps any IdP group to a global role."""
 
         return bool(self.staff_groups) or bool(self.superuser_groups)
+
+    @property
+    def syncs_workspace_memberships(self) -> bool:
+        """True when this provider maps any IdP group to a workspace membership."""
+
+        return bool(self.workspace_mappings)
 
 
 def _require_str(provider: Dict[str, Any], key: str, index: int) -> str:
@@ -78,6 +100,46 @@ def _string_list(provider: Dict[str, Any], key: str, index: int) -> List[str]:
             f"BASEROW_OIDC_PROVIDERS[{index}]: '{key}' must be a list of strings."
         )
     return value
+
+
+def _workspace_mappings(
+    provider: Dict[str, Any], index: int
+) -> List[WorkspaceRoleMapping]:
+    """Validates the optional ``workspace_mappings`` provider field."""
+
+    raw_mappings = provider.get("workspace_mappings", [])
+    if not isinstance(raw_mappings, list):
+        raise ImproperlyConfigured(
+            f"BASEROW_OIDC_PROVIDERS[{index}]: 'workspace_mappings' must be a list."
+        )
+
+    mappings = []
+    for position, mapping in enumerate(raw_mappings):
+        prefix = f"BASEROW_OIDC_PROVIDERS[{index}].workspace_mappings[{position}]"
+        if not isinstance(mapping, dict):
+            raise ImproperlyConfigured(f"{prefix}: must be a JSON object.")
+
+        group = mapping.get("group")
+        if not isinstance(group, str) or not group.strip():
+            raise ImproperlyConfigured(f"{prefix}: 'group' must be a non-empty string.")
+
+        workspace = mapping.get("workspace")
+        # bool is a subclass of int; reject it explicitly.
+        if not isinstance(workspace, int) or isinstance(workspace, bool):
+            raise ImproperlyConfigured(
+                f"{prefix}: 'workspace' must be an integer workspace id."
+            )
+
+        role = mapping.get("role")
+        if role not in ALLOWED_WORKSPACE_ROLES:
+            raise ImproperlyConfigured(
+                f"{prefix}: 'role' must be one of {list(ALLOWED_WORKSPACE_ROLES)}."
+            )
+
+        mappings.append(
+            WorkspaceRoleMapping(group=group.strip(), workspace_id=workspace, role=role)
+        )
+    return mappings
 
 
 def _validate_provider(provider: Any, index: int) -> OIDCProviderConfig:
@@ -136,6 +198,7 @@ def _validate_provider(provider: Any, index: int) -> OIDCProviderConfig:
 
     staff_groups = _string_list(provider, "staff_groups", index)
     superuser_groups = _string_list(provider, "superuser_groups", index)
+    workspace_mappings = _workspace_mappings(provider, index)
 
     return OIDCProviderConfig(
         name=name,
@@ -149,6 +212,7 @@ def _validate_provider(provider: Any, index: int) -> OIDCProviderConfig:
         groups_claim=groups_claim.strip(),
         staff_groups=staff_groups,
         superuser_groups=superuser_groups,
+        workspace_mappings=workspace_mappings,
     )
 
 

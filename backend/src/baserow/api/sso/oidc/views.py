@@ -20,6 +20,7 @@ from baserow.core.sso.oidc.config import get_oidc_provider
 from baserow.core.sso.oidc.groups import sync_global_roles
 from baserow.core.sso.oidc.handler import OIDCHandler
 from baserow.core.sso.oidc.provider import OIDCAuthProviderType
+from baserow.core.sso.oidc.workspaces import sync_workspace_memberships
 from baserow.core.sso.utils import (
     SsoErrorCode,
     map_sso_exceptions,
@@ -148,5 +149,6 @@ class OIDCCallbackView(APIView):
         )
 
         sync_global_roles(user, groups, config)
+        sync_workspace_memberships(user, groups, config)
 
         return redirect_user_on_success(user, original_url)
