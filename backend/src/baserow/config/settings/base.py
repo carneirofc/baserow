@@ -1110,10 +1110,9 @@ USER_THUMBNAILS = {"tiny": [None, 21], "small": [48, 48], "card_cover": [300, 16
 # the `sync_templates` management command is called, then the templates in the
 # database will be synced with these files.
 APPLICATION_TEMPLATES_DIR = os.path.join(BASE_DIR, "../../../templates")
-# The template that must be selected when the user first opens the templates select
-# modal.
-# IF CHANGING KEEP IN SYNC WITH e2e-tests/wait-for-services.sh
-DEFAULT_APPLICATION_TEMPLATES = ["project-tracker", "ab_ivory_theme"]
+# The slugs of the templates that are highlighted by default in the templates select
+# modal. This fork ships no built-in templates, so the list is empty.
+DEFAULT_APPLICATION_TEMPLATES = []
 BASEROW_SYNC_TEMPLATES_PATTERN = os.getenv("BASEROW_SYNC_TEMPLATES_PATTERN", None)
 
 MAX_FIELD_LIMIT = int(os.getenv("BASEROW_MAX_FIELD_LIMIT", 600))
