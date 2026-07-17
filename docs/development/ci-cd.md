@@ -8,9 +8,6 @@ building and shipping code, both defined in `.github/workflows/`:
 | CI Pipeline | `ci.yml` | PRs, pushes to `develop`/`master`, manual dispatch | Lint and test every change |
 | Build & Publish All-in-One Image | `build-publish-image.yml` | `v*` tags | Build and publish the release container |
 
-(The `database-projects-*.yml` workflows are GitHub Project board automation, unrelated to
-build/test.)
-
 ## CI Pipeline (`ci.yml`)
 
 Runs on every pull request, on pushes to `develop`/`master`, and on manual dispatch.
