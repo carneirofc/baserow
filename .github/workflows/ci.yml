@@ -241,7 +241,6 @@ jobs:
             helm:
               - 'deploy/helm/**'
               - '.github/workflows/ci.yml'
-              - '.github/workflows/trigger-helm-chart-upload.yml'
   backend-lint:
     name: Backend Lint
     runs-on: ubuntu-latest
