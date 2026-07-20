@@ -50,14 +50,16 @@ export const createBaserowConfig = ({ extraSourceFiles = [] } = {}) => {
       },
     },
     // Plugin specific overrides
-    {
-      files: [
-        ...extraSourceFiles, // Apply these rules to plugins too
-      ],
-      rules: {
-        "vue/order-in-components": "off",
-      },
-    },
+    ...(extraSourceFiles.length > 0
+      ? [
+          {
+            files: extraSourceFiles, // Apply these rules to plugins too
+            rules: {
+              "vue/order-in-components": "off",
+            },
+          },
+        ]
+      : []),
     // Test files configuration
     {
       files: [
