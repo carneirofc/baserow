@@ -165,6 +165,9 @@ class CoreConfig(AppConfig):
             operation_type_registry,
             permission_manager_type_registry,
         )
+        from baserow.core.roles.permission_manager import (
+            GranularRolePermissionManagerType,
+        )
 
         from .emails_context_types import CoreEmailContextType
 
@@ -182,6 +185,7 @@ class CoreConfig(AppConfig):
         permission_manager_type_registry.register(
             AllowIfTemplatePermissionManagerType()
         )
+        permission_manager_type_registry.register(GranularRolePermissionManagerType())
 
         from .object_scopes import (
             ApplicationObjectScopeType,

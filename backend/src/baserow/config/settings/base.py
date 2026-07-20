@@ -1294,6 +1294,7 @@ PERMISSION_MANAGERS = [
     "allow_public_builder",
     "element_visibility",
     "member",
+    "granular_role",
     "token",
     "basic",
     "automation_workflow",
