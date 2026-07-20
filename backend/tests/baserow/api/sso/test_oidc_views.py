@@ -9,7 +9,6 @@ import responses
 
 from baserow.core.auth_provider.models import OIDCAuthProviderModel
 from baserow.core.sso.oidc.handler import SESSION_NONCE_KEY
-
 from baserow.test_utils.oidc import FakeOIDCProvider
 
 
