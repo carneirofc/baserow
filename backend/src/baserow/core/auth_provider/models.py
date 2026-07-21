@@ -80,3 +80,50 @@ class AuthProviderModel(BaseAuthProviderModel):
 
 
 class PasswordAuthProviderModel(AuthProviderModel): ...
+
+
+class OIDCAuthProviderModel(AuthProviderModel):
+    """
+    Database anchor for an env-configured OIDC provider.
+
+    The provider's configuration (issuer, client id/secret, group mappings, ...) lives
+    entirely in the ``BASEROW_OIDC_PROVIDERS`` environment variable. This row exists
+    only to anchor the shared auth-provider machinery (the ``users`` M2M, the
+    different-provider guard and, for later tickets, SSO-granted memberships) to a
+    provider identified by its stable ``name``.
+    """
+
+    name = models.CharField(
+        max_length=255,
+        unique=True,
+        help_text="The stable name of the env-configured OIDC provider.",
+    )
+
+
+class OIDCSsoWorkspaceMembership(CreatedAndUpdatedOnMixin, models.Model):
+    """
+    Records that a workspace membership was granted through an OIDC group mapping.
+
+    Only memberships that the OIDC sync itself created are recorded here, so strict
+    revocation can tell SSO-granted memberships apart from manually-added ones and
+    never revoke the latter.
+    """
+
+    provider = models.ForeignKey(
+        OIDCAuthProviderModel,
+        on_delete=models.CASCADE,
+        related_name="sso_workspace_memberships",
+    )
+    user = models.ForeignKey(
+        "auth.User",
+        on_delete=models.CASCADE,
+        related_name="oidc_sso_workspace_memberships",
+    )
+    workspace = models.ForeignKey(
+        "core.Workspace",
+        on_delete=models.CASCADE,
+        related_name="oidc_sso_memberships",
+    )
+
+    class Meta:
+        unique_together = ("provider", "user", "workspace")

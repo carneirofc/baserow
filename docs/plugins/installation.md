@@ -1,7 +1,7 @@
 # Plugin Installation
 
-> Check out our [Plugin community sub-forum](https://community.baserow.io/c/plugins/17)
-> for community made plugins and further discussion.
+> Check out the [issue tracker](https://github.com/carneirofc/baserow/issues) for
+> discussion.
 
 Before we begin, Baserow plugins are in **early preview** and so there are important
 things to know:

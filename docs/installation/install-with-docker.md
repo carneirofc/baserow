@@ -1,8 +1,8 @@
 # Install with Docker
 
 > Any questions, problems or suggestions with this guide? Ask a question in our
-> [community](https://community.baserow.io/) or contribute the change yourself at
-> https://github.com/baserow/baserow/tree/develop/docs .
+> [issue tracker](https://github.com/carneirofc/baserow/issues) or contribute the change yourself at
+> https://github.com/carneirofc/baserow/tree/develop/docs .
 
 > Docker version 19.03 is the minimum required to use Baserow. It is strongly
 > advised however that you install the latest version of Docker available.
@@ -157,7 +157,7 @@ docker run \
 ```
 
 3. If the upgrade was successful, the container should exit with a success message, you can now start Baserow as you did before.
-4. If the upgrade wasn't successful, the upgrade image should output verbose logs of where exactly it failed. In that case, copy all of the log output and refer to [Baserow community](https://community.baserow.io/) or contact us for further assistance.
+4. If the upgrade wasn't successful, the upgrade image should output verbose logs of where exactly it failed. In that case, copy all of the log output and refer to the [issue tracker](https://github.com/carneirofc/baserow/issues) for further assistance.
 
 ### Legacy PostgreSQL version
 
@@ -405,7 +405,7 @@ docker run -it \
 This image can also be configured to deploy Baserow in a horizontally scalable way.
 We recommend you first consider using our `baserow/backend` and `baserow/web-frontend`
 single service per container images
-on [K8S](./install-with-k8s.md)/[Helm](install-with-helm.md).
+on [K8S](./install-with-k8s.md).
 However, if you just want to easily horizontally scale Baserow on something like
 AWS ECS or Google Cloud Run then the `baserow/baserow` can be used.
 
@@ -427,7 +427,7 @@ stored externally and not inside containers or volumes. To do this you will need
 With this image we recommend you set the following environment variables to scale it
 horizontally.
 
-> See our [Configuration Docs](https://baserow.io/docs/installation%2Fconfiguration) for
+> See our [Configuration Docs](configuration.md) for
 > more details on the following environment variables.
 
 1. All relevant `DATABASE_*` env vars need to be set to point Baserow at an external

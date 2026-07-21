@@ -123,7 +123,6 @@ import {
   CoreHTTPRequestWorkflowActionType,
   CoreSMTPEmailWorkflowActionType,
   CoreStartWorkflowWorkflowActionType,
-  AIAgentWorkflowActionType,
   LocalBaserowCreateRowsWorkflowActionType,
   SlackWriteMessageWorkflowActionType,
 } from '@baserow/modules/builder/workflowActionTypes'
@@ -367,7 +366,6 @@ export default defineNuxtPlugin({
       'workflowAction',
       new CoreStartWorkflowWorkflowActionType(context)
     )
-    $registry.register('workflowAction', new AIAgentWorkflowActionType(context))
     $registry.register(
       'workflowAction',
       new CreateRowWorkflowActionType(context)

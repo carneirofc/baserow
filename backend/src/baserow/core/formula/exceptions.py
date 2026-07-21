@@ -47,6 +47,6 @@ def formula_exception_handler(e):
     exception_capturer(e)
     logger.error(
         f"Formula related error occurred: {e}. Please send this error to the baserow "
-        f"developers at https://baserow.io/contact."
+        f"developers at https://github.com/carneirofc/baserow/issues."
     )
     logger.exception(e)

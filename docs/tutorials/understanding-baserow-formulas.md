@@ -136,7 +136,7 @@ no longer reference the deleted field or rename another field.
 ### Extra Functions
 
 Many more functions will be coming soon, please let us know which in particular are most
-important for you on our [community forum](https://community.baserow.io/).
+important for you on our [issue tracker](https://github.com/carneirofc/baserow/issues).
 
 ### Unsupported Field Types
 

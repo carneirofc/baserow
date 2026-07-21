@@ -1,10 +1,5 @@
 # Install with K8S
 
-## Official Baserow Helm Chart
-
-We recommend you use the [official baserow helm chart](./install-with-helm.md) to
-install Baserow on K8S.
-
 ## Raw K8S starting point
 
 See below for a starting point for a K8S configuration file which deploys a production
@@ -48,7 +43,7 @@ stringData:
   REDIS_SSL_CA_CERTS: "TODO"
   BASEROW_AMOUNT_OF_GUNICORN_WORKERS: "5"
   # S3 Compatible storage is recommended with K8S to get the exports and file storage working
-  # See the docs for more info https://baserow.io/docs/installation%2Fconfiguration#user-file-upload-configuration
+  # See the docs for more info https://github.com/carneirofc/baserow/blob/develop/docs/installation/configuration.md#user-file-upload-configuration
   AWS_ACCESS_KEY_ID: "TODO"
   AWS_SECRET_ACCESS_KEY: "TODO"
   AWS_STORAGE_BUCKET_NAME: "TODO"

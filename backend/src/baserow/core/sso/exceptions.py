@@ -1,0 +1,17 @@
+class SsoError(Exception):
+    """Base class for single-sign-on errors."""
+
+
+class AuthFlowError(SsoError):
+    """
+    Raised when the SSO authentication flow fails, e.g. because the identity
+    provider is unavailable, misconfigured, or returned an invalid response.
+    """
+
+
+class InvalidProviderUrl(SsoError):
+    """Raised when the identity provider's discovery document cannot be loaded."""
+
+
+class OIDCProviderNotFound(SsoError):
+    """Raised when no env-configured OIDC provider matches the requested name."""

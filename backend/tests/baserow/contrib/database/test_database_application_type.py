@@ -1,6 +1,6 @@
 import os
 from datetime import datetime, timezone
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from django.core.files.storage import FileSystemStorage
 
@@ -12,6 +12,7 @@ from baserow.contrib.database.fields.models import FormulaField, TextField
 from baserow.contrib.database.rows.handler import RowHandler
 from baserow.contrib.database.table.handler import TableHandler
 from baserow.contrib.database.table.models import Table
+from baserow.contrib.database.views.exceptions import ViewTypeDoesNotExist
 from baserow.core.action.models import Action
 from baserow.core.action.registries import action_type_registry
 from baserow.core.actions import CreateApplicationActionType
@@ -264,3 +265,44 @@ def test_perform_restore_interesting_database(data_fixture):
         model = snapshotted_table.get_model()
         assert model.objects.count() == 2
     assert progress.progress == 100
+
+
+def test_import_table_views_skips_unregistered_view_type():
+    """
+    A view type provided by a plugin that isn't installed must not fail the whole
+    import. The view is skipped and the rest of the table still imports.
+    """
+
+    imported = []
+
+    class StubViewType:
+        def import_serialized(self, table, serialized_view, *args, **kwargs):
+            imported.append(serialized_view["type"])
+
+    def get(view_type):
+        if view_type == "grid":
+            return StubViewType()
+        raise ViewTypeDoesNotExist(view_type)
+
+    serialized_table = {
+        "_object": MagicMock(),
+        "name": "Tasks",
+        "views": [
+            {"type": "not_installed", "name": "From a plugin"},
+            {"type": "grid", "name": "Grid"},
+        ],
+    }
+    progress = MagicMock()
+
+    with patch(
+        "baserow.contrib.database.application_types.view_type_registry"
+    ) as registry:
+        registry.get.side_effect = get
+        DatabaseApplicationType()._import_table_views(
+            serialized_table, MagicMock(), {}, None, progress
+        )
+
+    assert imported == ["grid"]
+    # Progress must advance for the skipped view too, otherwise the reported
+    # total no longer matches the number of views.
+    assert progress.increment.call_count == 2

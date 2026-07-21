@@ -34,9 +34,11 @@ from .emails import WorkspaceInvitationEmail
 from .exceptions import (
     ApplicationDoesNotExist,
     ApplicationNotInWorkspace,
+    ApplicationTypeDisabled,
     BaseURLHostnameNotAllowed,
     CannotDeleteYourselfFromWorkspace,
     DuplicateApplicationMaxLocksExceededException,
+    InstanceTypeDoesNotExist,
     InvalidPermissionContext,
     LastAdminOfWorkspace,
     PermissionDenied,
@@ -209,6 +211,10 @@ class CoreHandler(metaclass=baserow_trace_methods(tracer, exclude="clear_context
                 "co_branding_logo",
                 "email_verification",
                 "verify_import_signature",
+                "enable_database",
+                "enable_builder",
+                "enable_automation",
+                "enable_dashboard",
             ],
             settings_instance,
         )
@@ -665,7 +671,6 @@ class CoreHandler(metaclass=baserow_trace_methods(tracer, exclude="clear_context
         user: AbstractUser,
         workspace: WorkspaceForUpdate,
         name: Optional[str] = None,
-        generative_ai_models_settings: Optional[Dict[str, Any]] = None,
     ) -> Workspace:
         """
         Updates the values of a workspace if the user has admin
@@ -680,7 +685,7 @@ class CoreHandler(metaclass=baserow_trace_methods(tracer, exclude="clear_context
 
         if not isinstance(workspace, Workspace):
             raise ValueError("The workspace is not an instance of Workspace.")
-        elif name is None and generative_ai_models_settings is None:
+        elif name is None:
             raise ValueError("Nothing to update.")
 
         CoreHandler().check_permissions(
@@ -694,9 +699,6 @@ class CoreHandler(metaclass=baserow_trace_methods(tracer, exclude="clear_context
         if name is not None:
             workspace.name = name
             updated_fields.append("name")
-        if generative_ai_models_settings is not None:
-            workspace.generative_ai_models_settings = generative_ai_models_settings
-            updated_fields.append("generative_ai_models_settings")
 
         workspace.save(update_fields=updated_fields)
         workspace_updated.send(self, workspace=workspace, user=user)
@@ -1427,6 +1429,18 @@ class CoreHandler(metaclass=baserow_trace_methods(tracer, exclude="clear_context
             )
         return specific_queryset(queryset, per_content_type_queryset_hook)
 
+    def application_type_is_enabled(self, type_name: str) -> bool:
+        """
+        Checks whether the provided application type is enabled through the instance
+        settings. Application types without a matching ``enable_<type_name>`` setting
+        (for example those registered by plugins) are always considered enabled.
+
+        :param type_name: The application type name to check.
+        :return: Whether applications of this type may be created.
+        """
+
+        return bool(getattr(self.get_settings(), f"enable_{type_name}", True))
+
     def create_application(
         self,
         user: AbstractUser,
@@ -1445,6 +1459,8 @@ class CoreHandler(metaclass=baserow_trace_methods(tracer, exclude="clear_context
         :param init_with_data: Whether the application should be initialized with
             some default data. Defaults to False.
         :param kwargs: Additional parameters to pass to the application creation.
+        :raises ApplicationTypeDisabled: When the application type has been disabled
+            by an instance administrator through the instance settings.
         :return: The created application instance.
         """
 
@@ -1456,6 +1472,10 @@ class CoreHandler(metaclass=baserow_trace_methods(tracer, exclude="clear_context
         )
 
         application_type = application_type_registry.get(type_name)
+
+        if not self.application_type_is_enabled(type_name):
+            raise ApplicationTypeDisabled(type_name)
+
         allowed_values = extract_allowed(
             kwargs, self.default_create_allowed_fields + application_type.allowed_fields
         )
@@ -1805,18 +1825,42 @@ class CoreHandler(metaclass=baserow_trace_methods(tracer, exclude="clear_context
             imported_applications = []
             next_application_order_value = Application.get_last_order(workspace)
             for application in prioritized_applications:
-                application_type = application_type_registry.get(application["type"])
-                imported_application = application_type.import_serialized(
-                    workspace,
-                    application,
-                    import_export_config,
-                    id_mapping,
-                    files_zip,
-                    storage,
-                    progress_builder=progress.create_child_builder(
-                        represents_progress=1000
-                    ),
+                application_progress = progress.create_child_builder(
+                    represents_progress=1000
                 )
+                # Import each application inside a savepoint so that one whose type
+                # or a nested type (field, view, user source, element, ...) is
+                # provided by an uninstalled plugin can be skipped without rolling
+                # back the applications that already imported. This keeps, for
+                # example, a template's database usable even when its builder
+                # application relies on a type that isn't available.
+                try:
+                    with transaction.atomic():
+                        application_type = application_type_registry.get(
+                            application["type"]
+                        )
+                        imported_application = application_type.import_serialized(
+                            workspace,
+                            application,
+                            import_export_config,
+                            id_mapping,
+                            files_zip,
+                            storage,
+                            progress_builder=application_progress,
+                        )
+                except InstanceTypeDoesNotExist as exc:
+                    logger.warning(
+                        "Skipping application '{}' of type '{}' during import "
+                        "because a required type is not registered: {}",
+                        application.get("name"),
+                        application["type"],
+                        exc,
+                    )
+                    # Advance the parent by everything this application represented.
+                    # set_progress clamps to the total, so any progress the child
+                    # already reported before failing is not double counted.
+                    progress.increment(by=application_progress.represents_progress)
+                    continue
                 imported_application.order = next_application_order_value
                 next_application_order_value += 1
                 imported_applications.append(imported_application)

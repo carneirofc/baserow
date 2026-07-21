@@ -311,14 +311,20 @@ def get_all_user_data_serialized(
 
 def log_in_user(request, user):
     password_provider = PasswordProviderHandler.get()
-    if not password_provider.enabled and user.is_staff is False:
+    password_login_disabled = (
+        not password_provider.enabled or settings.BASEROW_OIDC_ONLY
+    )
+    if password_login_disabled and user.is_staff is False:
+        # Break-glass: staff/superuser may still use the password form even when
+        # password login is otherwise disabled (e.g. OIDC-only mode).
         raise AuthProviderDisabled()
     if not user.is_active:
         raise DeactivatedUserException()
 
-    settings = CoreHandler().get_settings()
+    instance_settings = CoreHandler().get_settings()
     if (
-        settings.email_verification == Settings.EmailVerificationOptions.ENFORCED
+        instance_settings.email_verification
+        == Settings.EmailVerificationOptions.ENFORCED
         and not user.profile.email_verified
     ):
         UserHandler().send_email_pending_verification(user)
@@ -466,26 +472,3 @@ class TokenBlacklistSerializer(serializers.Serializer):
 
 class DashboardSerializer(serializers.Serializer):
     workspace_invitations = UserWorkspaceInvitationSerializer(many=True)
-
-
-class ShareOnboardingDetailsWithBaserowSerializer(serializers.Serializer):
-    team = serializers.CharField(
-        help_text="The team that the user has chosen during the onboarding.",
-        required=True,
-    )
-    role = serializers.CharField(
-        help_text="The role that the user has chosen during the onboarding",
-        required=True,
-    )
-    size = serializers.CharField(
-        help_text="The company size that the user has chosen during the onboarding.",
-        required=True,
-    )
-    country = serializers.CharField(
-        help_text="The country that the user has chosen during the onboarding.",
-        required=True,
-    )
-    how = serializers.CharField(
-        help_text="How the user found Baserow.",
-        required=True,
-    )

@@ -15,11 +15,8 @@ from django.db.utils import IntegrityError
 from django.utils import translation
 from django.utils.translation import gettext as _
 
-import requests
 from itsdangerous import BadSignature, URLSafeSerializer, URLSafeTimedSerializer
-from loguru import logger
 from opentelemetry import trace
-from requests.exceptions import RequestException
 
 from baserow.core.auth_provider.exceptions import AuthProviderDisabled
 from baserow.core.auth_provider.handler import PasswordProviderHandler
@@ -48,7 +45,7 @@ from baserow.core.signals import (
     user_updated,
 )
 from baserow.core.trash.handler import TrashHandler
-from baserow.core.utils import generate_hash, get_baserow_saas_base_url
+from baserow.core.utils import generate_hash
 from baserow.throttling.handler import rate_limit
 
 from ..telemetry.utils import baserow_trace_methods
@@ -77,7 +74,6 @@ from .exceptions import (
     UserNotFound,
 )
 from .signals import user_password_changed
-from .tasks import share_onboarding_details_with_baserow
 from .utils import normalize_email_address
 
 User = get_user_model()
@@ -186,6 +182,7 @@ class UserHandler(metaclass=baserow_trace_methods(tracer)):
         workspace_invitation_token: Optional[str] = None,
         template: Template = None,
         auth_provider: Optional[AuthProviderModel] = None,
+        bypass_signup_toggle: bool = False,
     ) -> AbstractUser:
         """
         Creates a new user with the provided information and creates a new workspace and
@@ -203,6 +200,9 @@ class UserHandler(metaclass=baserow_trace_methods(tracer)):
         :param auth_provider: If provided, a reference to the authentication
             provider will be stored in order to be able to provide different options
             for the user to login.
+        :param bypass_signup_toggle: If True, the instance "allow new signups" setting
+            is ignored so the user is provisioned regardless. Used by SSO auto-
+            provisioning; must never be set on the password self-service signup path.
         :raises: UserAlreadyExist: When a user with the provided username (email)
             already exists.
         :raises WorkspaceInvitationEmailMismatch: If the workspace invitation email
@@ -233,8 +233,12 @@ class UserHandler(metaclass=baserow_trace_methods(tracer)):
             instance_settings.allow_signups_via_workspace_invitations
             and workspace_invitation is not None
         )
-        if not (allow_new_signups or allow_signup_for_invited_user):
-            raise DisabledSignupError("Sign up is disabled.")
+        if not bypass_signup_toggle:
+            if settings.BASEROW_OIDC_ONLY:
+                # OIDC-only mode disables self-service (password) signup entirely.
+                raise DisabledSignupError("Sign up is disabled.")
+            if not (allow_new_signups or allow_signup_for_invited_user):
+                raise DisabledSignupError("Sign up is disabled.")
 
         user = self.force_create_user(
             email=email,
@@ -306,13 +310,12 @@ class UserHandler(metaclass=baserow_trace_methods(tracer)):
             auth_provider = PasswordProviderHandler.get()
         auth_provider.user_signed_in(user)
 
-        settings = CoreHandler().get_settings()
         email_verification_send_email_if = [
             Settings.EmailVerificationOptions.RECOMMENDED,
             Settings.EmailVerificationOptions.ENFORCED,
         ]
         if (
-            settings.email_verification in email_verification_send_email_if
+            instance_settings.email_verification in email_verification_send_email_if
             and user.profile.email_verified is False
         ):
             UserHandler().send_email_pending_verification(user)
@@ -1011,76 +1014,3 @@ class UserHandler(metaclass=baserow_trace_methods(tracer)):
             key=user.username,
             raise_exception=False,
         )(send_email)()
-
-    def start_share_onboarding_details_with_baserow(
-        self,
-        user,
-        team: str,
-        role: str,
-        size: str,
-        country: str,
-        how: str,
-    ):
-        """
-        Starts a celery task that shares some user information with baserow.io. Note
-        that this is only triggered if the user given permission during the onboarding
-        in the web-frontend.
-
-        :param user: The user on whose behalf the information is shared.
-        :param team: The team type that the user shared.
-        :param role: The role that the user shared.
-        :param size: The company size that the user shared.
-        :param country: The country name that the user shared.
-        """
-
-        email = user.email
-
-        share_onboarding_details_with_baserow.delay(
-            email=email,
-            team=team,
-            role=role,
-            size=size,
-            country=country,
-            how=how,
-        )
-
-    def share_onboarding_details_with_baserow(
-        self, email, team, role, size, country, how
-    ):
-        """
-        Makes an API request to baserow.io that shares the additional information. Note
-        that this is only triggered if the user given permission during the onboarding
-        in the web-frontend.
-
-        :param team: The team type that the user shared.
-        :param role: The role that the user shared.
-        :param size: The company size that the user shared.
-        :param country: The country name that the user shared.
-        :param how: How the user found Baserow.
-        """
-
-        settings_object = CoreHandler().get_settings()
-        base_url, headers = get_baserow_saas_base_url()
-        authority_url = f"{base_url}/api/saas/onboarding/additional-details/"
-
-        try:
-            response = requests.post(
-                authority_url,
-                json={
-                    "team": team,
-                    "role": role,
-                    "size": size,
-                    "country": country,
-                    "email": email,
-                    "how": how,
-                    "instance_id": settings_object.instance_id,
-                },
-                timeout=settings.ADDITIONAL_INFORMATION_TIMEOUT_SECONDS,
-                headers=headers,
-            )
-            response.raise_for_status()
-        except RequestException:
-            logger.warning(
-                "The onboarding details could not be shared with the Baserow team "
-                "because the SaaS environment could not be reached."
-            )

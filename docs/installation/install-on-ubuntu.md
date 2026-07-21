@@ -1,8 +1,8 @@
 # Installation on Ubuntu
 
 > Any questions, problems or suggestions with this guide? Ask a question in our
-> [community](https://community.baserow.io/) or contribute the change yourself at
-> https://github.com/baserow/baserow/tree/develop/docs .
+> [issue tracker](https://github.com/carneirofc/baserow/issues) or contribute the change yourself at
+> https://github.com/carneirofc/baserow/tree/develop/docs .
 
 > If you installed Baserow 1.8.2 or earlier using this guide in version 1.8.2 please
 > See the upgrade section at the end of this guide.

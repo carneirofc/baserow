@@ -1098,7 +1098,6 @@
     "scratch": "Scratch",
     "import": "File",
     "airtable": "Airtable",
-    "template": "Template",
     "workspaceName": "{name}'s workspace"
   },
   "ViewFilterTypeDateUpgradeToMultiStep": {

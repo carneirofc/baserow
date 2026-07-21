@@ -1392,37 +1392,6 @@ def test_send_verify_email_address_inactive_user(client, data_fixture, mailoutbo
     assert len(mailoutbox) == 0
 
 
-@pytest.mark.django_db
-@patch("baserow.core.user.handler.share_onboarding_details_with_baserow")
-def test_share_onboarding_details_with_baserow(mock_task, client, data_fixture):
-    data_fixture.update_settings(instance_id="1")
-    user, token = data_fixture.create_user_and_token()
-
-    response = client.post(
-        reverse("api:user:share_onboarding_details_with_baserow"),
-        {
-            "team": "Marketing",
-            "role": "CEO",
-            "size": "11 - 50",
-            "country": "The Netherlands",
-            "how": "Google",
-        },
-        format="json",
-        HTTP_AUTHORIZATION=f"JWT {token}",
-    )
-
-    assert response.status_code == HTTP_204_NO_CONTENT
-
-    mock_task.delay.assert_called_with(
-        email=user.email,
-        team="Marketing",
-        role="CEO",
-        size="11 - 50",
-        country="The Netherlands",
-        how="Google",
-    )
-
-
 @pytest.mark.django_db(transaction=True)
 def test_send_change_email_confirmation(data_fixture, client, mailoutbox):
     data_fixture.create_password_provider()

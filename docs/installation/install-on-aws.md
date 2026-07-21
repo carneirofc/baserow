@@ -13,14 +13,13 @@ Baserow can be deployed to AWS in the following ways:
    horizontally scalable but easy to
    set up deployment. **See below for a detailed guide.**
 2. Using
-   this [docker-compose](https://github.com/baserow/baserow/blob/develop/docker-compose.no-caddy.yml)
+   this [docker-compose](https://github.com/carneirofc/baserow/blob/develop/docker-compose.no-caddy.yml)
    file or our [sample K8S configuration](./install-with-k8s.md) as a starting point to
    configure ECS/Fargate tasks for more advanced, production ready, one service per
    container model. **See below for a detailed guide**
-3. Using the [Official Baserow helm chart](./install-with-helm.md) and EKS.
-4. Customizing our [sample K8S configuration](./install-with-k8s.md) and using that with
+3. Customizing our [sample K8S configuration](./install-with-k8s.md) and using that with
    EKS.
-5. Installing and using docker/docker-compose on an EC2 instance with
+4. Installing and using docker/docker-compose on an EC2 instance with
    our [all-in-one](./install-with-docker.md) or
    our [one container per service](./install-with-docker-compose.md) docker images.
 
@@ -364,7 +363,7 @@ certain services inside the container.
 
 You should now have a fully running Baserow cluster. The first user to sign-up becomes
 the first "staff" instance-wide admin user. This user can then configure Baserow's
-in-tool settings, active enterprise licenses, promote other users to being staff etc.
+in-tool settings, promote other users to being staff etc.
 
 ## Option 2) Deploying Baserow as separate services to Fargate/ECS
 
@@ -434,7 +433,7 @@ new cluster for Baserow and then proceed to make the following task definitions.
 > If you are familiar with K8S then [this sample config](./install-with-k8s.md) gives an
 > overview of the services.
 >
-Alternatively [this docker-compose](https://github.com/baserow/baserow/blob/develop/docker-compose.no-caddy.yml)
+Alternatively [this docker-compose](https://github.com/carneirofc/baserow/blob/develop/docker-compose.no-caddy.yml)
 > can also be used as reference
 
 #### 6) The backend WSGI service
@@ -604,11 +603,10 @@ launched inside each container to vertically scale each one:
 
 You should now have a fully running Baserow cluster. This deployment method is more
 complex to get working so if you need any help please post in
-our [community forums](https://community.baserow.io).
+the [issue tracker](https://github.com/carneirofc/baserow/issues).
 
 The first user to sign-up becomes the first "staff" instance-wide admin user. This user
-can then configure Baserow's in-tool settings, active enterprise licenses, promote other
-users to being staff etc.
+can then configure Baserow's in-tool settings, promote other users to being staff etc.
 
 ## Upgrading Baserow
 

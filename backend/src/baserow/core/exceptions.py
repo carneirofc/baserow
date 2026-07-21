@@ -138,6 +138,17 @@ class ApplicationOperationNotSupported(Exception):
     """
 
 
+class ApplicationTypeDisabled(Exception):
+    """
+    Raised when trying to create an application of a type that has been
+    disabled by an instance administrator through the instance settings.
+    """
+
+    def __init__(self, application_type: str = None, *args, **kwargs):
+        self.application_type = application_type
+        super().__init__(*args, **kwargs)
+
+
 class AuthenticationProviderTypeAlreadyRegistered(InstanceTypeAlreadyRegistered):
     pass
 
@@ -234,7 +245,7 @@ class MaxLocksPerTransactionExceededException(Exception):
 
     message = (
         "Baserow has exceeded the maximum number of PostgreSQL locks per transaction. "
-        "Please read https://baserow.io/docs/technical/postgresql-locks"
+        "Please read https://github.com/carneirofc/baserow"
     )
 
 
@@ -259,7 +270,7 @@ class DuplicateApplicationMaxLocksExceededException(
     message = (
         "Baserow attempted to duplicate an application, but exceeded the maximum "
         "number of PostgreSQL locks per transaction. Please read "
-        "https://baserow.io/docs/technical/postgresql-locks"
+        "https://github.com/carneirofc/baserow"
     )
 
 

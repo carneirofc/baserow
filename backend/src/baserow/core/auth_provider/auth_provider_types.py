@@ -162,6 +162,9 @@ class AuthProviderType(BaseAuthProviderType):
             language=user_info.language,
             workspace_invitation_token=user_info.workspace_invitation_token,
             auth_provider=auth_provider,
+            # SSO providers auto-provision users regardless of the instance
+            # "allow new signups" setting; the password signup path never does.
+            bypass_signup_toggle=True,
         )
 
     def export_serialized(self) -> Dict[str, Any]:
@@ -211,6 +214,10 @@ class PasswordAuthProviderType(AuthProviderType):
     }
 
     def get_login_options(self, **kwargs) -> Optional[Dict[str, Any]]:
+        # In OIDC-only mode the password form is hidden from the login page; a
+        # break-glass admin can still reveal it via the escape hatch.
+        if settings.BASEROW_OIDC_ONLY:
+            return None
         if not PasswordProviderHandler.get().enabled:
             return None
         return {"type": self.type}

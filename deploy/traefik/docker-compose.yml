@@ -15,7 +15,7 @@ services:
       # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock
   baserow:
-    image: baserow/baserow:develop-latest
+    image: ghcr.io/carneirofc/baserow/baserow:latest
     labels:
       # Explicitly tell Traefik to expose this container
       - "traefik.enable=true"

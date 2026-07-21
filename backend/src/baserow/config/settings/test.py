@@ -30,7 +30,6 @@ else:
 # Prefixes for vars that can be overridden via env vars (for DB/Redis configuration)
 ALLOWED_ENV_PREFIXES = (
     "DATABASE_",
-    "BASEROW_EMBEDDINGS_API_URL",
     "BASEROW_BACKEND_LOG_LEVEL",
 )
 
@@ -130,10 +129,6 @@ BUILDER_PUBLICLY_USED_PROPERTIES_CACHE_TTL_SECONDS = 10
 BUILDER_DISPATCH_ACTION_CACHE_TTL_SECONDS = 300
 
 AUTO_INDEX_VIEW_ENABLED = False
-# For ease of testing tests assume this setting is set to this. Set it explicitly to
-# prevent any dev env config from breaking the tests.
-BASEROW_PERSONAL_VIEW_LOWEST_ROLE_ALLOWED = "VIEWER"
-
 # Ensure the tests never run with the concurrent middleware unless they add it in to
 # prevent failures caused by the middleware itself
 if "baserow.middleware.ConcurrentUserRequestsMiddleware" in MIDDLEWARE:

@@ -114,8 +114,7 @@ the matching modules directory.
 ## docs
 
 The docs folder contains markdown files with the full developer documentation of
-Baserow. The contents of these files are automatically placed on
-https://baserow.io/docs.
+Baserow.
 
 ## media
 

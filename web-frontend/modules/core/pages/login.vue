@@ -5,6 +5,7 @@
       :redirect-on-success="true"
       :invitation="invitation"
       :redirect-by-default="redirectByDefault"
+      :sso-error="ssoError"
     />
   </div>
 </template>
@@ -68,8 +69,12 @@ useHead({
   ],
 })
 
+const ssoError = computed(() => route.query.error || null)
+
 const redirectByDefault = computed(() => {
-  return !(route.query.noredirect === null)
+  // Never auto-redirect back into a provider that just failed, otherwise the user
+  // would be bounced straight back into the failing flow.
+  return !(route.query.noredirect === null) && !ssoError.value
 })
 
 const invitation = computed(() => data.value?.invitation || null)

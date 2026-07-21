@@ -64,8 +64,6 @@ RUN ln -s /opt/yarn-v1.22.22/bin/yarn /usr/local/bin/yarn
 
 # Copy su-exec from backend image (already built with pinned version + SHA256 verification)
 COPY --from=backend_image /usr/local/bin/su-exec /usr/local/bin/su-exec
-COPY --from=backend_image /usr/local/bin/wasmtime /usr/local/bin/wasmtime
-COPY --from=backend_image /usr/local/lib/baserow/qjs.wasm /usr/local/lib/baserow/qjs.wasm
 
 ENV POSTGRES_LOCATION=/etc/postgresql/15/main \
     UV_PROJECT_ENVIRONMENT=/baserow/venv \
@@ -73,7 +71,7 @@ ENV POSTGRES_LOCATION=/etc/postgresql/15/main \
     UV_VERBOSE=1 \
     PYTHONUNBUFFERED=1 \
     PATH="/baserow/venv/bin:$PATH" \
-    PYTHONPATH="/baserow/backend/src:/baserow/premium/backend/src:/baserow/enterprise/backend/src" \
+    PYTHONPATH="/baserow/backend/src" \
     DJANGO_SETTINGS_MODULE='baserow.config.settings.base' \
     NODE_OPTIONS="--max-old-space-size=4096" \
     NODE_ENV=production
@@ -91,8 +89,6 @@ COPY --chown=$UID:$GID --from=web_frontend_image /baserow/web-frontend /baserow/
 
 # Backend
 COPY --chown=$UID:$GID --from=backend_image /baserow/backend /baserow/backend
-COPY --chown=$UID:$GID --from=backend_image /baserow/premium/backend /baserow/premium/backend
-COPY --chown=$UID:$GID --from=backend_image /baserow/enterprise/backend /baserow/enterprise/backend
 COPY --chown=$UID:$GID --from=backend_image /baserow/venv /baserow/venv
 
 # Configuration and startup scripts
@@ -139,8 +135,6 @@ COPY --chown=$UID:$GID --from=web_frontend_image /baserow/web-frontend /baserow/
 
 # Backend
 COPY --chown=$UID:$GID --from=backend_image /baserow/backend /baserow/backend
-COPY --chown=$UID:$GID --from=backend_image /baserow/premium/backend /baserow/premium/backend
-COPY --chown=$UID:$GID --from=backend_image /baserow/enterprise/backend /baserow/enterprise/backend
 COPY --chown=$UID:$GID --from=backend_image /baserow/venv /baserow/venv
 
 # Configuration and startup scripts

@@ -129,11 +129,6 @@ export const routes = [
   },
 
   {
-    name: 'template',
-    path: '/template/:slug',
-    file: path.resolve(__dirname, 'pages/template.vue'),
-  },
-  {
     name: 'health-check',
     path: '/_health/:trailing()?',
     file: path.resolve(__dirname, 'pages/_health.vue'),

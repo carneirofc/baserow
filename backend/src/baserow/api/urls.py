@@ -21,6 +21,7 @@ from .search import urls as search_urls
 from .settings import urls as settings_urls
 from .snapshots import urls as snapshots_urls
 from .spectacular.views import CachedSpectacularJSONAPIView
+from .sso import urls as sso_urls
 from .templates import urls as templates_urls
 from .trash import urls as trash_urls
 from .two_factor_auth import urls as two_factor_urls
@@ -42,6 +43,7 @@ urlpatterns = (
         ),
         path("settings/", include(settings_urls, namespace="settings")),
         path("auth-provider/", include(auth_provider_urls, namespace="auth_provider")),
+        path("sso/", include(sso_urls, namespace="sso")),
         path("two-factor-auth/", include(two_factor_urls, namespace="two_factor_auth")),
         path("user/", include(user_urls, namespace="user")),
         path("user-files/", include(user_files_urls, namespace="user_files")),

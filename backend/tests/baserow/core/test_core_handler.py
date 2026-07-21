@@ -1,12 +1,11 @@
 import os
 from decimal import Decimal
 from io import BytesIO
-from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
-from django.db import OperationalError, transaction
+from django.db import OperationalError
 
 import pytest
 from itsdangerous.exc import BadSignature
@@ -23,6 +22,7 @@ from baserow.contrib.database.views.models import GridView, GridViewFieldOptions
 from baserow.core.exceptions import (
     ApplicationDoesNotExist,
     ApplicationNotInWorkspace,
+    ApplicationTypeDisabled,
     ApplicationTypeDoesNotExist,
     BaseURLHostnameNotAllowed,
     DuplicateApplicationMaxLocksExceededException,
@@ -962,6 +962,38 @@ def test_create_database_application(send_mock, data_fixture):
 
 
 @pytest.mark.django_db
+def test_create_application_disabled_type(data_fixture):
+    user = data_fixture.create_user(is_staff=True)
+    workspace = data_fixture.create_workspace(user=user)
+    handler = CoreHandler()
+
+    handler.update_settings(user, enable_database=False)
+
+    assert handler.application_type_is_enabled("database") is False
+    assert handler.application_type_is_enabled("builder") is True
+
+    with pytest.raises(ApplicationTypeDisabled) as exc_info:
+        handler.create_application(
+            user=user, workspace=workspace, type_name="database", name="Test"
+        )
+    assert exc_info.value.application_type == "database"
+    assert Application.objects.count() == 0
+
+    # A different, still enabled, type can be created.
+    handler.create_application(
+        user=user, workspace=workspace, type_name="builder", name="Test builder"
+    )
+    assert Application.objects.count() == 1
+
+    # Re-enabling the type allows creation again.
+    handler.update_settings(user, enable_database=True)
+    handler.create_application(
+        user=user, workspace=workspace, type_name="database", name="Test database"
+    )
+    assert Application.objects.count() == 2
+
+
+@pytest.mark.django_db
 @patch("baserow.core.signals.application_updated.send")
 def test_update_database_application(send_mock, data_fixture):
     user = data_fixture.create_user()
@@ -1255,44 +1287,6 @@ def test_export_import_workspace_application(data_fixture):
     assert imported_database.table_set.all().count() == 1
     assert database.id in id_mapping["applications"]
     assert id_mapping["applications"][database.id] == imported_database.id
-
-
-@pytest.mark.django_db(transaction=True)
-@pytest.mark.once_per_day_in_ci
-# You must add --run-once-per-day-in-ci to pytest's additional args to run this test,
-# you can do this in intellij by editing the run config for this test and adding
-# --run-once-per-day-in-ci to the additional args.
-def test_sync_and_install_all_templates(data_fixture, tmpdir):
-    storage = FileSystemStorage(location=str(tmpdir), base_url="http://localhost")
-    handler = CoreHandler()
-    handler.sync_templates(storage=storage)
-
-    assert Template.objects.count() == len(
-        list(Path(settings.APPLICATION_TEMPLATES_DIR).glob("*.json"))
-    )
-
-    workspace_user = data_fixture.create_user_workspace()
-    for template in Template.objects.all():
-        with transaction.atomic():
-            handler.install_template(
-                workspace_user.user, workspace_user.workspace, template, storage=storage
-            )
-
-
-@pytest.mark.django_db(transaction=True)
-def test_sync_and_install_single_template(data_fixture, tmpdir):
-    storage = FileSystemStorage(location=str(tmpdir), base_url="http://localhost")
-    handler = CoreHandler()
-
-    with transaction.atomic():
-        handler.sync_templates(storage=storage, pattern="new-hire-onboarding")
-
-    workspace_user = data_fixture.create_user_workspace()
-    template = Template.objects.get()
-    with transaction.atomic():
-        handler.install_template(
-            workspace_user.user, workspace_user.workspace, template, storage=storage
-        )
 
 
 @pytest.mark.django_db

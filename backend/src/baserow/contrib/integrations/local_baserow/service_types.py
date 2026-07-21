@@ -1179,7 +1179,7 @@ class LocalBaserowListRowsUserServiceType(
             # NOTE: This is an expensive operation, so in the future we need to
             # calculate the list of used fields for searching/sorting/filtering
             # and pass them to `get_model`.
-            # See: https://gitlab.com/baserow/baserow/-/issues/3062
+            # See: https://github.com/carneirofc/baserow/issues/3062
             model = table.get_model()
             queryset = self.build_queryset(
                 service, table, dispatch_context, model

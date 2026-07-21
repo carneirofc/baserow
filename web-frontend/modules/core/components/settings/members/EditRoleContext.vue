@@ -11,10 +11,7 @@
             class="edit-role-context__header-link"
           >
             <i class="iconoir-book"></i>
-            <a
-              href="https://baserow.io/user-docs/subscriptions-overview#who-is-considered-a-user-for-billing-purposes"
-              target="_blank"
-            >
+            <a href="https://github.com/carneirofc/baserow" target="_blank">
               {{ $t('editRoleContext.billableRolesLink') }}
             </a>
           </div>

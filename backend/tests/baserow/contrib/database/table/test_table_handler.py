@@ -41,7 +41,7 @@ from baserow.contrib.database.views.models import GridView, GridViewFieldOptions
 from baserow.core.cache import local_cache
 from baserow.core.exceptions import UserNotInWorkspace
 from baserow.core.handler import CoreHandler
-from baserow.core.models import Template, TrashEntry, Workspace
+from baserow.core.models import TrashEntry, Workspace
 from baserow.core.trash.handler import TrashHandler
 from baserow.core.usage.handler import UsageHandler
 from baserow.core.usage.registries import USAGE_UNIT_MB
@@ -1074,45 +1074,6 @@ def test_usage_is_calculated_correctly_when_rows_are_deleted(data_fixture):
         {"row_count": 15, "id": database.workspace_id},
         {"row_count": 3, "id": table3.database.workspace_id},
     ]
-
-
-@pytest.mark.django_db(transaction=True)
-def test_usage_is_calculated_correctly_when_a_template_is_installed(
-    data_fixture, tmpdir
-):
-    user = data_fixture.create_user()
-    workspace = data_fixture.create_workspace(user=user)
-    storage = FileSystemStorage(location=str(tmpdir), base_url="http://localhost")
-    handler = CoreHandler()
-
-    with transaction.atomic():
-        handler.sync_templates(storage=storage, pattern="new-hire-onboarding")
-
-    template = Template.objects.get()
-    with transaction.atomic():
-        CoreHandler().install_template(user, workspace, template, storage=storage)
-
-    row_counts = [
-        21,  # Tasks
-        91,  # Checklist
-        24,  # Employees
-        18,  # Titles
-        8,  # Departments
-        4,  # Office locations
-    ]
-    assert (
-        list(
-            TableUsageUpdate.objects.order_by("table_id").values_list(
-                "row_count", flat=True
-            )
-        )
-        == row_counts
-    )
-
-    subq = UsageHandler.get_workspace_row_count_annotation()
-    workspace = Workspace.objects.filter(id=workspace.id).annotate(row_count=subq).get()
-
-    assert workspace.row_count == sum(row_counts)
 
 
 @pytest.mark.django_db(transaction=True)

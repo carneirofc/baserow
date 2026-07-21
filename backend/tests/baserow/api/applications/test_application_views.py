@@ -16,6 +16,7 @@ from rest_framework.status import (
 )
 
 from baserow.contrib.database.models import Database
+from baserow.core.handler import CoreHandler
 from baserow.core.job_types import DuplicateApplicationJobType
 from baserow.core.jobs.handler import JobHandler
 from baserow.core.models import Template
@@ -286,6 +287,33 @@ def test_create_application(api_client, data_fixture):
     assert response_json["id"] == database.id
     assert response_json["name"] == database.name
     assert response_json["order"] == database.order
+
+
+@pytest.mark.django_db
+def test_create_application_disabled_type(api_client, data_fixture):
+    user, token = data_fixture.create_user_and_token(is_staff=True)
+    workspace = data_fixture.create_workspace(user=user)
+
+    CoreHandler().update_settings(user, enable_database=False)
+
+    response = api_client.post(
+        reverse("api:applications:list", kwargs={"workspace_id": workspace.id}),
+        {"name": "Test 1", "type": "database"},
+        format="json",
+        HTTP_AUTHORIZATION=f"JWT {token}",
+    )
+    assert response.status_code == HTTP_400_BAD_REQUEST
+    assert response.json()["error"] == "ERROR_APPLICATION_TYPE_DISABLED"
+    assert Database.objects.count() == 0
+
+    # A still-enabled type can be created.
+    response = api_client.post(
+        reverse("api:applications:list", kwargs={"workspace_id": workspace.id}),
+        {"name": "Test builder", "type": "builder"},
+        format="json",
+        HTTP_AUTHORIZATION=f"JWT {token}",
+    )
+    assert response.status_code == HTTP_200_OK
 
 
 @pytest.mark.django_db

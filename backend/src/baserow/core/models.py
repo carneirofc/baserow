@@ -31,6 +31,7 @@ from .mixins import (
     WithRegistry,
 )
 from .notifications.models import Notification
+from .roles.models import Role
 from .services.models import Service
 
 __all__ = [
@@ -51,6 +52,7 @@ __all__ = [
     "Integration",
     "Service",
     "Notification",
+    "Role",
     "BlacklistedToken",
     "ExportApplicationsJob",
     "ImportApplicationsJob",
@@ -161,6 +163,30 @@ class Settings(models.Model):
         default=True,
         db_default=True,
         help_text="Indicates whether the signature of imported files should be verified.",
+    )
+    # Per application type feature flags. When disabled, applications of that type
+    # can no longer be created (existing applications remain accessible). The field
+    # name must follow the `enable_<application_type>` convention so it can be
+    # resolved generically from an application type name.
+    enable_database = models.BooleanField(
+        default=True,
+        db_default=True,
+        help_text="Indicates whether database applications can be created.",
+    )
+    enable_builder = models.BooleanField(
+        default=True,
+        db_default=True,
+        help_text="Indicates whether builder applications can be created.",
+    )
+    enable_automation = models.BooleanField(
+        default=True,
+        db_default=True,
+        help_text="Indicates whether automation applications can be created.",
+    )
+    enable_dashboard = models.BooleanField(
+        default=True,
+        db_default=True,
+        help_text="Indicates whether dashboard applications can be created.",
     )
 
 
@@ -342,6 +368,15 @@ class WorkspaceUser(
         default=WORKSPACE_USER_PERMISSION_MEMBER,
         max_length=32,
         help_text="The permissions that the user has within the workspace.",
+    )
+    role = models.ForeignKey(
+        "core.Role",
+        on_delete=models.SET_NULL,
+        null=True,
+        db_default=None,
+        related_name="workspace_users",
+        help_text="The custom role restricting this member's operations. NULL "
+        "means no custom role is assigned, i.e. today's full-member access.",
     )
 
     def get_parent(self):

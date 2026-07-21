@@ -1,8 +1,8 @@
 # Installation on Heroku
 
 > Any questions, problems or suggestions with this guide? Ask a question in our
-> [community](https://community.baserow.io/) or contribute the change yourself at
-> https://github.com/baserow/baserow/tree/develop/docs .
+> [issue tracker](https://github.com/carneirofc/baserow/issues) or contribute the change yourself at
+> https://github.com/carneirofc/baserow/tree/develop/docs .
 
 > The Heroku template and one click to deploy button are currently in beta.
 
@@ -163,7 +163,7 @@ Make sure that you navigate to an empty directory and then run the commands belo
 Don't forgot to replace `YOUR_APP_NAME` with the name of your Heroku app.
 
 ```
-$ git clone --branch master https://github.com/baserow/baserow.git
+$ git clone --branch master https://github.com/carneirofc/baserow.git
 $ cd baserow
 $ git remote add heroku https://git.heroku.com/YOUR_APP_NAME.git
 $ git push -f heroku master

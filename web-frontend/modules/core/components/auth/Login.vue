@@ -21,7 +21,10 @@
         </div>
         <h1 class="auth__head-title">{{ $t('login.title') }}</h1>
         <div class="auth__head">
-          <span v-if="settings.allow_new_signups" class="auth__head-text">
+          <span
+            v-if="settings.allow_new_signups && !settings.oidc_only"
+            class="auth__head-text"
+          >
             {{ $t('login.signUpText') }}
             <NuxtLink :to="{ name: 'signup' }">
               {{ $t('login.signUp') }}
@@ -30,7 +33,10 @@
           <LangPicker class="margin-left-auto" />
         </div>
       </div>
-      <div v-if="redirectByDefault && defaultRedirectUrl">
+      <Alert v-if="ssoErrorMessage" type="error">
+        {{ ssoErrorMessage }}
+      </Alert>
+      <div v-if="redirectByDefault && !ssoError && defaultRedirectUrl">
         {{ $t('login.redirecting') }}
       </div>
       <div v-else>
@@ -125,6 +131,11 @@ export default {
       required: false,
       default: false,
     },
+    ssoError: {
+      type: String,
+      required: false,
+      default: null,
+    },
   },
   emits: ['success'],
   setup() {
@@ -162,9 +173,18 @@ export default {
     defaultRedirectUrl() {
       return this.$store.getters['authProvider/getDefaultRedirectUrl']
     },
+    ssoErrorMessage() {
+      if (!this.ssoError) {
+        return null
+      }
+      const key = `loginError.${this.ssoError}`
+      return this.$te(key)
+        ? this.$t(key)
+        : this.$t('loginError.errorAuthFlowError')
+    },
   },
   mounted() {
-    if (this.redirectByDefault) {
+    if (this.redirectByDefault && !this.ssoError) {
       if (this.defaultRedirectUrl !== null) {
         const { workspaceInvitationToken } = this.$route.query
         const url = addQueryParamsToRedirectUrl(this.defaultRedirectUrl, {

@@ -17,5 +17,5 @@ class DatabaseSnapshotMaxLocksExceededException(
     message = (
         "Baserow attempted to snapshot a database, but exceeded the maximum "
         "number of PostgreSQL locks per transaction. Please read "
-        "https://baserow.io/docs/technical/postgresql-locks"
+        "https://github.com/carneirofc/baserow"
     )

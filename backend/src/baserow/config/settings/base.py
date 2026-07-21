@@ -47,11 +47,9 @@ else:
     BASEROW_PLUGIN_FOLDERS = []
 
 BASEROW_BACKEND_PLUGIN_NAMES = [d.name for d in BASEROW_PLUGIN_FOLDERS]
-BASEROW_OSS_ONLY = bool(os.getenv("BASEROW_OSS_ONLY", ""))
-if BASEROW_OSS_ONLY:
-    BASEROW_BUILT_IN_PLUGINS = []
-else:
-    BASEROW_BUILT_IN_PLUGINS = ["baserow_premium", "baserow_enterprise"]
+# This fork ships no built-in plugins. Third party plugins are still discovered
+# through BASEROW_PLUGIN_DIR above.
+BASEROW_BUILT_IN_PLUGINS = []
 
 # SECURITY WARNING: keep the secret key used in production secret!
 if "SECRET_KEY" in os.environ:
@@ -486,13 +484,13 @@ SIMPLE_JWT = {
 SPECTACULAR_SETTINGS = {
     "TITLE": "Baserow API spec",
     "DESCRIPTION": "For more information about our REST API, please visit "
-    "[this page](https://baserow.io/docs/apis%2Frest-api).\n\n"
+    "[this page](https://github.com/carneirofc/baserow).\n\n"
     "For more information about our deprecation policy, please visit "
-    "[this page](https://baserow.io/docs/apis%2Fdeprecations).",
-    "CONTACT": {"url": "https://baserow.io/contact"},
+    "[this page](https://github.com/carneirofc/baserow).",
+    "CONTACT": {"url": "https://github.com/carneirofc/baserow"},
     "LICENSE": {
         "name": "MIT",
-        "url": "https://github.com/baserow/baserow/blob/develop/LICENSE",
+        "url": "https://github.com/carneirofc/baserow/blob/develop/LICENSE",
     },
     "VERSION": "2.3.2",
     "SERVE_INCLUDE_SCHEMA": False,
@@ -619,10 +617,6 @@ if FILE_UPLOAD_ACTIVE_CONTENT_POLICY not in ("download", "block"):
         "BASEROW_FILE_UPLOAD_ACTIVE_CONTENT_POLICY must be set to "
         "'download' or 'block'."
     )
-
-BASEROW_OPENAI_UPLOADED_FILE_SIZE_LIMIT_MB = int(
-    os.getenv("BASEROW_OPENAI_UPLOADED_FILE_SIZE_LIMIT_MB", 512)
-)
 
 # Allows accessing and setting values on a dictionary like an object. Using this
 # we can pass plugin authors and other functions a `settings` object which can modify
@@ -1116,10 +1110,9 @@ USER_THUMBNAILS = {"tiny": [None, 21], "small": [48, 48], "card_cover": [300, 16
 # the `sync_templates` management command is called, then the templates in the
 # database will be synced with these files.
 APPLICATION_TEMPLATES_DIR = os.path.join(BASE_DIR, "../../../templates")
-# The template that must be selected when the user first opens the templates select
-# modal.
-# IF CHANGING KEEP IN SYNC WITH e2e-tests/wait-for-services.sh
-DEFAULT_APPLICATION_TEMPLATES = ["project-tracker", "ab_ivory_theme"]
+# The slugs of the templates that are highlighted by default in the templates select
+# modal. This fork ships no built-in templates, so the list is empty.
+DEFAULT_APPLICATION_TEMPLATES = []
 BASEROW_SYNC_TEMPLATES_PATTERN = os.getenv("BASEROW_SYNC_TEMPLATES_PATTERN", None)
 
 MAX_FIELD_LIMIT = int(os.getenv("BASEROW_MAX_FIELD_LIMIT", 600))
@@ -1294,7 +1287,6 @@ BASEROW_IMPORT_EXPORT_TABLE_ROWS_COUNT_LIMIT = int(
 )
 
 PERMISSION_MANAGERS = [
-    "view_ownership",
     "core",
     "setting_operation",
     "staff",
@@ -1302,19 +1294,12 @@ PERMISSION_MANAGERS = [
     "allow_public_builder",
     "element_visibility",
     "member",
+    "granular_role",
     "token",
-    "write_field_values",
-    "role",
     "basic",
     "automation_workflow",
     "automation_node",
 ]
-
-if "baserow_enterprise" not in INSTALLED_APPS:
-    PERMISSION_MANAGERS.remove("write_field_values")
-    PERMISSION_MANAGERS.remove("role")
-if "baserow_premium" not in INSTALLED_APPS:
-    PERMISSION_MANAGERS.remove("view_ownership")
 
 
 OLD_ACTION_CLEANUP_INTERVAL_MINUTES = os.getenv(
@@ -1388,14 +1373,33 @@ BASEROW_NOWAIT_FOR_LOCKS = not bool(
     os.getenv("BASEROW_WAIT_INSTEAD_OF_409_CONFLICT_ERROR", False)
 )
 
-BASEROW_PERSONAL_VIEW_LOWEST_ROLE_ALLOWED = (
-    os.getenv("BASEROW_PERSONAL_VIEW_LOWEST_ROLE_ALLOWED", "viewer").strip().upper()
+# How often the user source user count is recalculated. Used to spread the counting
+# of registered user source types across that interval instead of doing it all at once.
+BASEROW_USER_SOURCE_COUNTING_TASK_INTERVAL_MINUTES = int(
+    os.getenv("BASEROW_USER_SOURCE_COUNTING_TASK_INTERVAL_MINUTES", "") or 15
 )
 
-LICENSE_AUTHORITY_CHECK_TIMEOUT_SECONDS = 10
-ADDITIONAL_INFORMATION_TIMEOUT_SECONDS = 10
+# Set this to True to enable users to login with auth providers different than the one
+# they were originally created with. Read by `AuthProviderType.get_user_and_sign_in`,
+# which third party authentication plugins inherit.
+BASEROW_ALLOW_MULTIPLE_SSO_PROVIDERS_FOR_SAME_ACCOUNT = bool(
+    os.getenv("BASEROW_ALLOW_MULTIPLE_SSO_PROVIDERS_FOR_SAME_ACCOUNT", False)
+)
 
-MAX_NUMBER_CALENDAR_DAYS = 45
+# Env-configured OpenID Connect providers. Declared as a JSON list; parsed and
+# structurally validated here so an invalid configuration fails fast at startup.
+from baserow.core.sso.oidc.config import (  # noqa: E402
+    parse_oidc_providers_env,
+)
+
+BASEROW_OIDC_PROVIDERS = parse_oidc_providers_env(
+    os.getenv("BASEROW_OIDC_PROVIDERS", "")
+)
+
+# When enabled, the instance is OIDC-only for normal users: self-service password
+# signup is disabled and password login is refused for non-staff accounts. A staff /
+# superuser (break-glass admin) can still log in with a password.
+BASEROW_OIDC_ONLY = str_to_bool(os.getenv("BASEROW_OIDC_ONLY", ""))
 
 MIGRATION_LOCK_ID = os.getenv("BASEROW_MIGRATION_LOCK_ID", 123456)
 DEFAULT_SEARCH_MODE = os.getenv("BASEROW_DEFAULT_SEARCH_MODE", "compat")
@@ -1448,10 +1452,6 @@ for plugin in [*BASEROW_BUILT_IN_PLUGINS, *BASEROW_BACKEND_PLUGIN_NAMES]:
 # a warning will be shown suggesting to either lazy-load them or remove them from this
 # list if they're legitimately needed at startup.
 BASEROW_LAZY_LOADED_LIBRARIES = [
-    "openai",
-    "anthropic",
-    "mistralai",
-    "ollama",
     "jira2markdown",
     "saml2",
     "openpyxl",
@@ -1464,7 +1464,6 @@ SENTRY_DSN = SENTRY_BACKEND_DSN or os.getenv("SENTRY_DSN")
 
 if SENTRY_DSN:
     import sentry_sdk
-    import sentry_sdk.integrations as _sentry_integrations
     from loguru import logger
     from sentry_sdk.integrations.django import DjangoIntegration
     from sentry_sdk.scrubber import DEFAULT_DENYLIST, EventScrubber
@@ -1473,16 +1472,6 @@ if SENTRY_DSN:
         ConsoleSentryTransport,
         drop_expected_asyncio_websocket_disconnect_events,
     )
-
-    # Exclude integrations whose module-level imports are incompatible:
-    # - pydantic_ai: sentry-sdk patches ToolManager._call_tool which was
-    #   removed in pydantic-ai >= 1.x (now execute_tool_call)
-
-    _sentry_integrations._AUTO_ENABLING_INTEGRATIONS[:] = [
-        entry
-        for entry in _sentry_integrations._AUTO_ENABLING_INTEGRATIONS
-        if "pydantic_ai" not in entry
-    ]
 
     SENTRY_DENYLIST = DEFAULT_DENYLIST + ["username", "email", "name"]
     sentry_transport = None
@@ -1514,41 +1503,6 @@ if SENTRY_DSN:
 else:
     BASEROW_LAZY_LOADED_LIBRARIES.append("sentry_sdk")
 
-BASEROW_OPENAI_API_KEY = os.getenv("BASEROW_OPENAI_API_KEY", None)
-BASEROW_OPENAI_ORGANIZATION = os.getenv("BASEROW_OPENAI_ORGANIZATION", "") or None
-BASEROW_OPENAI_BASE_URL = os.getenv("BASEROW_OPENAI_BASE_URL", None) or None
-BASEROW_OPENAI_MODELS = os.getenv("BASEROW_OPENAI_MODELS", "")
-BASEROW_OPENAI_MODELS = (
-    BASEROW_OPENAI_MODELS.split(",") if BASEROW_OPENAI_MODELS else []
-)
-
-BASEROW_OPENROUTER_API_KEY = os.getenv("BASEROW_OPENROUTER_API_KEY", None)
-BASEROW_OPENROUTER_ORGANIZATION = (
-    os.getenv("BASEROW_OPENROUTER_ORGANIZATION", "") or None
-)
-BASEROW_OPENROUTER_MODELS = os.getenv("BASEROW_OPENROUTER_MODELS", "")
-BASEROW_OPENROUTER_MODELS = (
-    BASEROW_OPENROUTER_MODELS.split(",") if BASEROW_OPENROUTER_MODELS else []
-)
-
-BASEROW_ANTHROPIC_API_KEY = os.getenv("BASEROW_ANTHROPIC_API_KEY", None)
-BASEROW_ANTHROPIC_MODELS = os.getenv("BASEROW_ANTHROPIC_MODELS", "")
-BASEROW_ANTHROPIC_MODELS = (
-    BASEROW_ANTHROPIC_MODELS.split(",") if BASEROW_ANTHROPIC_MODELS else []
-)
-
-BASEROW_MISTRAL_API_KEY = os.getenv("BASEROW_MISTRAL_API_KEY", None)
-BASEROW_MISTRAL_MODELS = os.getenv("BASEROW_MISTRAL_MODELS", "")
-BASEROW_MISTRAL_MODELS = (
-    BASEROW_MISTRAL_MODELS.split(",") if BASEROW_MISTRAL_MODELS else []
-)
-
-BASEROW_OLLAMA_HOST = os.getenv("BASEROW_OLLAMA_HOST", None)
-BASEROW_OLLAMA_MODELS = os.getenv("BASEROW_OLLAMA_MODELS", "")
-BASEROW_OLLAMA_MODELS = (
-    BASEROW_OLLAMA_MODELS.split(",") if BASEROW_OLLAMA_MODELS else []
-)
-
 BASEROW_TWO_WAY_SYNC_MAX_CONSECUTIVE_FAILURES = int(
     os.getenv("BASEROW_TWO_WAY_SYNC_MAX_CONSECUTIVE_FAILURES", "") or 8
 )
@@ -1578,8 +1532,6 @@ BASEROW_MAX_HEALTHY_CELERY_QUEUE_SIZE = int(
 )
 
 BASEROW_USE_LOCAL_CACHE = str_to_bool(os.getenv("BASEROW_USE_LOCAL_CACHE", "true"))
-
-BASEROW_EMBEDDINGS_API_URL = os.getenv("BASEROW_EMBEDDINGS_API_URL", "")
 
 # -- CACHALOT SETTINGS --
 
@@ -1617,12 +1569,6 @@ else:
         "database_fieldependency",
         "database_linkrowfield",
         "database_selectoption",
-        "baserow_premium_license",
-        "baserow_premium_licenseuser",
-        "baserow_enterprise_role",
-        "baserow_enterprise_roleassignment",
-        "baserow_enterprise_team",
-        "baserow_enterprise_teamsubject",
     ]
 
 # This list will have priority over CACHALOT_ONLY_CACHABLE_TABLES.
@@ -1641,7 +1587,6 @@ CACHALOT_UNCACHABLE_TABLES = [
     "django_migrations",
     "core_action",
     "database_token",
-    "baserow_enterprise_auditlogentry",
 ]
 
 

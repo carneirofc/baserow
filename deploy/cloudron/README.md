@@ -2,13 +2,13 @@
 
 This is the Baserow maintained [Cloudron Image](https://cloudron.io).
 
-Please see our [Install on Cloudron](https://baserow.io/docs/installation/install-on-cloudron)
+Please see our [Install on Cloudron](https://github.com/carneirofc/baserow)
 guide for more details.
 
 ## About Baserow
 
 * A spreadsheet database hybrid combining ease of use and powerful data organization.
-* Easily self-hosted with no storage restrictions or sign-up on https://baserow.io to
+* Easily self-hosted with no storage restrictions or sign-up on https://github.com/carneirofc/baserow to
   get started immediately.
 * Alternative to Airtable.
 * Open-core with all non-premium and non-enterprise features under
@@ -20,19 +20,19 @@ guide for more details.
 
 ## Quick Reference
 
-* **Maintained By**: [baserow.io](https://baserow.io/contact)
-* **Get Support At**: [The Baserow Community Forums](https://community.baserow.io)
-* **Source Code Available At**: [github.com/baserow/baserow](https://github.com/baserow/baserow)
-* **Docs At**: [baserow.io/docs](https://baserow.io/docs)
+* **Maintained By**: [github.com/carneirofc/baserow](https://github.com/carneirofc/baserow)
+* **Get Support At**: [GitHub Issues](https://github.com/carneirofc/baserow/issues)
+* **Source Code Available At**: [github.com/carneirofc/baserow](https://github.com/carneirofc/baserow)
+* **Docs At**: [github.com/carneirofc/baserow](https://github.com/carneirofc/baserow)
 * **License**: Open-Core with all non-premium and non-enterprise code under the MIT 
   license.
 
 ## Supported tags and Dockerfile Links
 
-* [`X.Y.Z`](https://github.com/baserow/baserow/blob/master/deploy/cloudron/Dockerfile)
+* [`X.Y.Z`](https://github.com/carneirofc/baserow)
   Tagged by Baserow version.
-* [`latest`](https://github.com/baserow/baserow/blob/master/deploy/cloudron/Dockerfile)
-* [`develop-latest`](https://gitlab.com/baserow/baserow/-/blob/develop/deploy/cloudron/Dockerfile)
+* [`latest`](https://github.com/carneirofc/baserow)
+* [`develop-latest`](https://github.com/carneirofc/baserow)
   This is a bleeding edge image from our development branch, use at your own risk.
 
 ## Application builder domains

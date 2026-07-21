@@ -363,9 +363,6 @@ case "$1" in
     ci-check-startup)
         exec just ci-check-startup
     ;;
-    ci-check-startup-oss-only)
-        exec just ci-check-startup-oss-only
-    ;;
     ci-check-migrations)
         exec just check-migrations
     ;;

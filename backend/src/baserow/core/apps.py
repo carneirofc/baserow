@@ -165,6 +165,9 @@ class CoreConfig(AppConfig):
             operation_type_registry,
             permission_manager_type_registry,
         )
+        from baserow.core.roles.permission_manager import (
+            GranularRolePermissionManagerType,
+        )
 
         from .emails_context_types import CoreEmailContextType
 
@@ -182,6 +185,7 @@ class CoreConfig(AppConfig):
         permission_manager_type_registry.register(
             AllowIfTemplatePermissionManagerType()
         )
+        permission_manager_type_registry.register(GranularRolePermissionManagerType())
 
         from .object_scopes import (
             ApplicationObjectScopeType,
@@ -445,8 +449,10 @@ class CoreConfig(AppConfig):
             PasswordAuthProviderType,
         )
         from baserow.core.registries import auth_provider_type_registry
+        from baserow.core.sso.oidc.provider import OIDCAuthProviderType
 
         auth_provider_type_registry.register(PasswordAuthProviderType())
+        auth_provider_type_registry.register(OIDCAuthProviderType())
 
         from baserow.core.two_factor_auth.registries import (
             TOTPAuthProviderType,
@@ -487,23 +493,6 @@ class CoreConfig(AppConfig):
             WorkspaceInvitationRejectedNotificationType()
         )
         notification_type_registry.register(BaserowVersionUpgradeNotificationType())
-
-        from baserow.core.generative_ai.generative_ai_model_types import (
-            AnthropicGenerativeAIModelType,
-            MistralGenerativeAIModelType,
-            OllamaGenerativeAIModelType,
-            OpenAIGenerativeAIModelType,
-            OpenRouterGenerativeAIModelType,
-        )
-        from baserow.core.generative_ai.registries import (
-            generative_ai_model_type_registry,
-        )
-
-        generative_ai_model_type_registry.register(OpenAIGenerativeAIModelType())
-        generative_ai_model_type_registry.register(AnthropicGenerativeAIModelType())
-        generative_ai_model_type_registry.register(MistralGenerativeAIModelType())
-        generative_ai_model_type_registry.register(OllamaGenerativeAIModelType())
-        generative_ai_model_type_registry.register(OpenRouterGenerativeAIModelType())
 
         # Must import the Posthog signal, otherwise it won't work.
         import baserow.core.posthog  # noqa: F403, F401
@@ -605,16 +594,6 @@ class CoreConfig(AppConfig):
 
         import baserow.core.import_export.tasks  # noqa: F403, F401
         import baserow.core.integrations.receivers  # noqa: F403, F401
-
-        # pgvector extension setup. Because the extension is optional, we must
-        # dynamically check if it's available and adjust the models accordingly.
-        from baserow.core.pgvector import try_migrate_vector_fields
-
-        post_migrate.connect(
-            try_migrate_vector_fields,
-            sender=self,
-            dispatch_uid="baserow_core_pgvector_post_migrate",
-        )
 
 
 # noinspection PyPep8Naming

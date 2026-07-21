@@ -1,8 +1,8 @@
 # Install with Docker compose
 
 > Any questions, problems or suggestions with this guide? Ask a question in our
-> [community](https://community.baserow.io/) or contribute the change yourself at
-> https://github.com/baserow/baserow/tree/develop/docs .
+> [issue tracker](https://github.com/carneirofc/baserow/issues) or contribute the change yourself at
+> https://github.com/carneirofc/baserow/tree/develop/docs .
 
 ## Quickstart
 
@@ -15,7 +15,7 @@ guide on the specifics of how to work with this image.
 services:
   baserow:
     container_name: baserow
-    image: baserow/baserow:2.3.2
+    image: ghcr.io/carneirofc/baserow/baserow:latest
     environment:
       BASEROW_PUBLIC_URL: 'http://localhost'
     ports:
@@ -44,7 +44,7 @@ https://docs.docker.com/compose/install/.
 
 You can download the example Baserow `docker-compose.yml` by either directly downloading
 the file from
-[https://github.com/baserow/baserow/blob/master/docker-compose.yml](https://github.com/baserow/baserow/blob/master/docker-compose.yml)
+[https://github.com/carneirofc/baserow/blob/master/docker-compose.yml](https://github.com/carneirofc/baserow/blob/master/docker-compose.yml)
 and running:
 
 ```bash
@@ -60,7 +60,7 @@ or by directly cloning our git repo so you can get updates easier:
 
 ```bash
 cd ~/baserow
-git clone --depth=1 --branch master https://github.com/baserow/baserow.git
+git clone --depth=1 --branch master https://github.com/carneirofc/baserow.git
 cd baserow
 cp .env.example .env
 # Edit .env and set your own secure passwords for the 3 required variables at the top. 
@@ -103,7 +103,7 @@ You can set these variables by using docker-compose env file
 (https://docs.docker.com/compose/environment-variables/#the-env-file):
 
 1. Copy the `.env.example` file found in the root of Baserows repository
-   (https://github.com/baserow/baserow/blob/master/.env.example)  to `.env`:
+   (https://github.com/carneirofc/baserow/blob/master/.env.example)  to `.env`:
 
 ```
 curl -o .env https://raw.githubusercontent.com/baserow/baserow/refs/heads/master/.env.example

@@ -35,11 +35,9 @@ A few things to know when passing paths:
   not `src/baserow/...`), even when you invoke the recipe from inside
   `backend/` or `web-frontend/`. This keeps the behavior identical regardless
   of where you run it from and matches what `pre-commit` passes in.
-- Paths outside the linted trees (`backend/{src,tests}`,
-  `{premium,enterprise}/backend/{src,tests}`, `web-frontend/`,
-  `{premium,enterprise}/web-frontend/`) are silently skipped, as are files with
-  extensions the tools don't handle. This lets you pipe in a mixed file list
-  without filtering it yourself.
+- Paths outside the linted trees (`backend/{src,tests}`, `web-frontend/`) are
+  silently skipped, as are files with extensions the tools don't handle. This
+  lets you pipe in a mixed file list without filtering it yourself.
 - **With no arguments each recipe lints its full component tree** (`just b`
   walks all backend trees, `just f` walks all frontend trees; running both
   covers the monorepo). This matters when you scope to a diff with `$(...)`

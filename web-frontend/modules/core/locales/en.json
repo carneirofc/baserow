@@ -3,6 +3,21 @@
     "page": "Page",
     "of": "of {pages}"
   },
+  "authProviderTypes": {
+    "password": "Password",
+    "openIdConnect": "OpenID Connect"
+  },
+  "loginButton": {
+    "continueWith": "Continue with"
+  },
+  "loginError": {
+    "errorUserDeactivated": "This account has been deactivated.",
+    "errorProviderDoesNotExist": "The requested login provider does not exist.",
+    "errorAuthFlowError": "Something went wrong during the login. Please try again.",
+    "errorDifferentProvider": "This account is linked to a different login provider.",
+    "errorWorkspaceInvitationEmailMismatch": "The invitation was sent to a different email address than the one you signed in with.",
+    "errorSignupDisabled": "New signups are disabled for this instance."
+  },
   "workspaceSearch": {
     "title": "Search",
     "searchEverything": "Search...",
@@ -380,13 +395,6 @@
     "permissionDeniedTitle": "Permission denied",
     "permissionDeniedBody": "You do not have the required permission to create a new workspace."
   },
-  "templateCategories": {
-    "search": "Search templates",
-    "title": "Templates"
-  },
-  "templateHeader": {
-    "use": "Use this template"
-  },
   "trashSidebar": {
     "unnamedWorkspace": "Unnamed workspace {id}",
     "workspaces": "Workspaces"
@@ -442,8 +450,6 @@
     "errorWrongFileTypeMessage": "You can't upload a file of type {type}"
   },
   "createApplicationContext": {
-    "fromTemplate": "From template",
-    "fromTemplateDesc": "Quickly start with one of our recommended templates",
     "table": "Table",
     "tableDesc": "Create a new place to manage data in your database.",
     "importWorkspace": "Import data",
@@ -536,7 +542,6 @@
     "shareOnReddit": "Share on Reddit",
     "shareOnFacebook": "Share on Facebook",
     "shareOnLinkedIn": "Share on LinkedIn",
-    "suggestedTemplates": "Suggested templates",
     "resources": "Resources",
     "knowledgeBase": "Knowledge base",
     "knowledgeBaseMessage": "Find answers to all of your questions",
@@ -552,9 +557,6 @@
   },
   "dashboardApplication": {
     "createdAt": "created"
-  },
-  "templateCard": {
-    "viewMore": "View more"
   },
   "login": {
     "title": "Welcome back",
@@ -653,7 +655,16 @@
     "emailVerificationRecommended": "Recommended",
     "emailVerificationEnforced": "Enforced",
     "settingsVerifyImportSignature": "Verify import signature",
-    "settingsVerifyImportSignatureDescription": "When enabled, the signature of the imported data is verified to ensure the data has not been tampered with."
+    "settingsVerifyImportSignatureDescription": "When enabled, the signature of the imported data is verified to ensure the data has not been tampered with.",
+    "applicationFeatures": "Application features",
+    "settingEnableDatabaseName": "Databases",
+    "settingEnableDatabaseDescription": "When disabled, users can no longer create database applications. Existing databases remain accessible.",
+    "settingEnableBuilderName": "Application Builder",
+    "settingEnableBuilderDescription": "When disabled, users can no longer create builder applications. Existing applications remain accessible.",
+    "settingEnableAutomationName": "Automations",
+    "settingEnableAutomationDescription": "When disabled, users can no longer create automation applications. Existing automations remain accessible.",
+    "settingEnableDashboardName": "Dashboards",
+    "settingEnableDashboardDescription": "When disabled, users can no longer create dashboard applications. Existing dashboards remain accessible."
   },
   "formSidebar": {
     "fields": "Fields",
@@ -947,8 +958,7 @@
     "howEvent": "Event or webinar",
     "howSales": "Sales outreach",
     "howOther": "Other",
-    "country": "Country",
-    "share": "I'm okay with sharing this with the Baserow team"
+    "country": "Country"
   },
   "teamStep": {
     "description": "Which team are you on?",

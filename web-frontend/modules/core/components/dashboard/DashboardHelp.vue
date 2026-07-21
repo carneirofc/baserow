@@ -25,7 +25,7 @@
     <template #actions>
       <Button
         tag="a"
-        href="https://github.com/baserow/baserow"
+        href="https://github.com/carneirofc/baserow"
         target="_blank"
         rel="noopener noreferrer"
         type="secondary"
@@ -59,7 +59,7 @@
         tag="a"
         tooltip-position="top"
         icon="baserow-icon-facebook"
-        href="https://www.facebook.com/sharer/sharer.php?u=https://baserow.io"
+        href="https://www.facebook.com/sharer/sharer.php?u=https://github.com/carneirofc/baserow"
         target="_blank"
         rel="noopener noreferrer"
       />
@@ -69,7 +69,7 @@
         tag="a"
         tooltip-position="top"
         icon="baserow-icon-linkedin"
-        href="https://www.linkedin.com/sharing/share-offsite/?url=https://baserow.io"
+        href="https://www.linkedin.com/sharing/share-offsite/?url=https://github.com/carneirofc/baserow"
         target="_blank"
         rel="noopener noreferrer"
       />
@@ -101,14 +101,14 @@ const { t } = useI18n()
 
 const twitterUrl = computed(
   () =>
-    `https://twitter.com/intent/tweet?url=https://baserow.io&hashtags=opensource,nocode,database,baserow&text=${encodeURI(
+    `https://twitter.com/intent/tweet?url=https://github.com/carneirofc/baserow&hashtags=opensource,nocode,database,baserow&text=${encodeURI(
       t('dashboard.tweetContent')
     )}`
 )
 
 const redditUrl = computed(
   () =>
-    `https://www.reddit.com/submit?url=https://baserow.io&title=${encodeURI(
+    `https://www.reddit.com/submit?url=https://github.com/carneirofc/baserow&title=${encodeURI(
       t('dashboard.redditTitle')
     )}`
 )

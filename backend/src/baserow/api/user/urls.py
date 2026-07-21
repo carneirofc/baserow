@@ -14,7 +14,6 @@ from .views import (
     SendChangeEmailConfirmationView,
     SendResetPasswordEmailView,
     SendVerifyEmailView,
-    ShareOnboardingDetailsWithBaserowView,
     UndoView,
     UserView,
     VerifyEmailAddressView,
@@ -58,10 +57,5 @@ urlpatterns = [
     re_path(r"^dashboard/$", DashboardView.as_view(), name="dashboard"),
     re_path(r"^undo/$", UndoView.as_view(), name="undo"),
     re_path(r"^redo/$", RedoView.as_view(), name="redo"),
-    re_path(
-        r"^share-onboarding-details-with-baserow/$",
-        ShareOnboardingDetailsWithBaserowView.as_view(),
-        name="share_onboarding_details_with_baserow",
-    ),
     re_path(r"^$", UserView.as_view(), name="index"),
 ]
