@@ -48,7 +48,10 @@ class GranularRolePermissionManagerType(PermissionManagerType):
         }
         operations_by_role_id = defaultdict(set)
         if role_ids:
-            for role_id, operation_name in WorkspaceUser.role.field.related_model.objects.filter(
+            for (
+                role_id,
+                operation_name,
+            ) in WorkspaceUser.role.field.related_model.objects.filter(
                 id__in=role_ids
             ).values_list("id", "operations__name"):
                 operations_by_role_id[role_id].add(operation_name)
