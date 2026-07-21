@@ -11,10 +11,7 @@
             class="edit-role-context__header-link"
           >
             <i class="iconoir-book"></i>
-            <a
-              href="https://github.com/carneirofc/baserow"
-              target="_blank"
-            >
+            <a href="https://github.com/carneirofc/baserow" target="_blank">
               {{ $t('editRoleContext.billableRolesLink') }}
             </a>
           </div>
