@@ -1,75 +1,105 @@
-# Repository Guidelines
+# DOX framework
 
-## Project Structure & Module Organization
+- DOX is highly performant AGENTS.md hierarchy installed here
+- Agent must follow DOX instructions across any edits
 
-Baserow is a monorepo. Core Django code lives in `backend/src`, shared backend tests in `backend/tests`, and the main Nuxt app in `web-frontend/` (`modules/`, `server/`, `test/`, `stories/`). End-to-end coverage lives in `e2e-tests/`. Product and contributor docs are in `docs/`, while deployment recipes are under `deploy/`.
+## Core Contract
 
-## Build, Test, and Development Commands
+- AGENTS.md files are binding work contracts for their subtrees
+- Work products, source materials, instructions, records, assets, and durable docs must stay understandable from the nearest applicable AGENTS.md plus every parent AGENTS.md above it
 
-Use `just` from the repo root; it wraps the backend and frontend workflows consistently for local and Docker setups.
+## Read Before Editing
 
-- `just init` installs dependencies and creates `.env.local`.
-- `just dev up` starts the local stack; `just dc-dev up -d` runs the Docker dev environment.
-- `just b test -n=auto` runs backend pytest suites in parallel.
-- `just b test tests/baserow/core/notifications/utils.py` to test a specific file.
-- `just f test` runs frontend Vitest suites.
-- `just lint` runs both backend and frontend linters; `just fix` applies auto-fixes.
-- `just b run pre-commit run --files $(git diff --name-only HEAD)` lints only the files you've touched on your branch (staged + unstaged); use `origin/develop...HEAD` instead of `HEAD` to scope to the whole branch. See `docs/development/code-quality.md` for details.
-- `just b migrate` runs Django migrations.
+1. Read the root AGENTS.md
+2. Identify every file or folder you expect to touch
+3. Walk from the repository root to each target path
+4. Read every AGENTS.md found along each route
+5. If a parent AGENTS.md lists a child AGENTS.md whose scope contains the path, read that child and continue from there
+6. Use the nearest AGENTS.md as the local contract and parent docs for repo-wide rules
+7. If docs conflict, the closer doc controls local work details, but no child doc may weaken DOX
 
-For direct package-manager use, backend commands run through `uv` and frontend commands through `yarn`.
+Do not rely on memory. Re-read the applicable DOX chain in the current session before editing.
 
-## Coding Style & Naming Conventions
+## Update After Editing
 
-Python targets Python 3.14, uses 4-space indentation, and is formatted and linted with Ruff (`just b lint`, `just b fix`) with an 88-character line length. Follow existing Django app/module naming and keep new tests in `test_*.py` or `*_test.py` files. Frontend code uses ESLint, Stylelint, and Prettier (`just f lint`, `just f fix`); SCSS should follow BEM-style naming already used in `web-frontend/modules`. Use `$palette-*` color variables in CSS; `$color-*` variables are legacy compatibility aliases and should not be used for new styles.
+Every meaningful change requires a DOX pass before the task is done.
 
-## Localization
+Update the closest owning AGENTS.md when a change affects:
 
-When adding or changing UI copy, update the English locale files only. Do not add or edit non-English locale files such as `fr.json`, `es.json`, or `de.json` unless explicitly requested; those translations are managed through Weblate.
+- purpose, scope, ownership, or responsibilities
+- durable structure, contracts, workflows, or operating rules
+- required inputs, outputs, permissions, constraints, side effects, or artifacts
+- user preferences about behavior, communication, process, organization, or quality
+- AGENTS.md creation, deletion, move, rename, or index contents
 
-## Technology Stack
+Update parent docs when parent-level structure, ownership, workflow, or child index changes. Update child docs when parent changes alter local rules. Remove stale or contradictory text immediately. Small edits that do not change behavior or contracts may leave docs unchanged, but the DOX pass still must happen.
 
-Backend code uses Django, Django REST Framework, Celery, PostgreSQL, Redis, and pytest/pytest-django. Python dependencies are managed with `uv`.
+## Hierarchy
 
-Frontend code uses Vue 3, Nuxt 3, Vuex, Vite, Vitest, Storybook, SCSS, ESLint, Stylelint, Prettier, and `yarn`. Render functions must use Vue 3 semantics, for example importing `h` from `vue` instead of expecting `render(h)` to receive it. JSX-bearing frontend files must use a `.jsx` or `.tsx` extension so Vite can parse them.
+- Root AGENTS.md is the DOX rail: project-wide instructions, global preferences, durable workflow rules, and the top-level Child DOX Index
+- Child AGENTS.md files own domain-specific instructions and their own Child DOX Index
+- Each parent explains what its direct children cover and what stays owned by the parent
+- The closer a doc is to the work, the more specific and practical it must be
 
-## Testing Guidelines
+## Child Doc Shape
 
-Backend tests use `pytest` with `pytest-django`; frontend tests use `vitest`; browser flows live in `e2e-tests/`. Add unit tests for backend changes and targeted frontend tests for component or store behavior. 
+- Create a child AGENTS.md when a folder becomes a durable boundary with its own purpose, rules, responsibilities, workflow, materials, or quality standards
+- Work Guidance must reflect the current standards of the project or user instructions; if there are no specific standards or instructions yet, leave it empty
+- Verification must reflect an existing check; if no verification framework exists yet, leave it empty and update it when one exists
 
-Examples: `just b test tests/path/`, `just b test-coverage`, `just f test -- --coverage`, `just f yarn test:core path/to/test`.
+Default section order:
+- Purpose
+- Ownership
+- Local Contracts
+- Work Guidance
+- Verification
+- Child DOX Index
 
-## Commit & Pull Request Guidelines
+## Style
 
-Recent history favors short, imperative subjects, often with Conventional Commit prefixes such as `fix:`, `feat:`, and `chore(deps):`. Branch from `develop`, keep PRs focused, and link the related issue or discussion. Include a clear summary, note schema or env changes, attach screenshots for UI work, add a changelog entry when required, and make sure the relevant lint and test commands pass before opening the PR.
+- Keep docs concise, current, and operational
+- Document stable contracts, not diary entries
+- Put broad rules in parent docs and concrete details in child docs
+- Prefer direct bullets with explicit names
+- Do not duplicate rules across many files unless each scope needs a local version
+- Delete stale notes instead of explaining history
+- Trim obvious statements, repeated rules, misplaced detail, and warnings for risks that no longer exist
 
-## Project Skills
+## Closeout
 
-Reusable skills live in `.agents/skills/`. Each subdirectory is a self-contained skill with a `SKILL.md` that describes when and how to apply it. Use these instead of re-deriving the same workflow from scratch.
+1. Re-check changed paths against the DOX chain
+2. Update nearest owning docs and any affected parents or children
+3. Refresh every affected Child DOX Index
+4. Remove stale or contradictory text
+5. Run existing verification when relevant
+6. Report any docs intentionally left unchanged and why
 
-| Skill directory                   | When to use                                                                                                                                                          |
-| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `add-django-config-env-var`       | Adding a new Django setting backed by an env var and propagating it to `base.py`, docker-compose files, `env-remap.mjs`, and `docs/installation/configuration.md`    |
-| `write-frontend-unit-test`        | Writing or fixing frontend unit tests in `web-frontend`                                                                                                              |
-| `create-update-service`           | Creating or updating an integration type or service type in `contrib/integrations`                                                                                   |
-| `create-in-app-notification`      | Creating or updating a Baserow in-app notification for an event, including backend and frontend registration, target routing data, and duplicate-prevention behavior |
-| `add-update-builder-element-type` | Adding or updating an Application Builder element type across backend, frontend, migrations, registration, translations, icons, and targeted tests                   |
-| `manage-backend-layers`           | Adding or changing backend model, handler, service, undoable action, and API view layers using the newer automation modules as the preferred pattern                 |
+## User Preferences
 
-## Security & Configuration Tips
+When the user requests a durable behavior change, record it here or in the relevant child AGENTS.md
 
-Do not commit secrets or local overrides. Use `.env.local` for development, keep production settings in the documented deploy configs, and report vulnerabilities privately via the contact path in `CONTRIBUTING.md` rather than opening a public issue.
+- This is a FOSS fork of Baserow. Scrub pointers/branding/infra ties back to Baserow B.V.; do not reintroduce them.
 
-## Good practices
+## Project
 
-- On a specific branch, always merge backend migrations file instead of creating new ones only if it was created on the very same branch.
-- Django migrations must be executed with zero downtime. This means the new database schema must remain compatible with the previous application version during the deployment.
-  - Every new field must define a `db_default`.
-  - Do not remove fields unless you are certain they are no longer used by the previous application version. Instead, keep the field and add a `# TODO ZDM: remove this field in the next version` comment so it can be safely removed in a subsequent release.
-- CSS classes respect BEM methodology.
-- When working on translations, only update english unless told otherwise. Other languages are handled with Weblate. Don't nest keys too much, just keep one level of nesting.
+Baserow (FOSS fork): a no-code database and application platform. Django backend + Nuxt/Vue web frontend, orchestrated with Docker Compose and shipped via a Helm chart.
 
-## Memory
+Layout: `backend/` (Django API + workers), `web-frontend/` (Nuxt app), `e2e-tests/` (Playwright), `deploy/` (Compose + Helm), `docs/`, `changelog/`, `.agents/skills/` (canonical project skills; `.claude/skills` symlinks here).
 
-Before starting work, read `MEMORY.md` file at same level of `AGENTS.md` file if it exists for historical context and design decisions.
-Update that memory file to keep track of the decisions.
+### Repo-wide rules
+
+- Task runner is `just` (root `justfile` dispatches to per-area justfiles). Key roots: `just lint`, `just test`, `just fix` (both backend + frontend); `just backend …`, `just frontend …`, `just e2e …`, `just changelog …`.
+- Every user-facing or behavioral change needs a changelog entry — `just changelog add`. See `changelog/AGENTS.md`.
+- Commits: Conventional Commits; never add a `Co-Authored-By` or tooling-attribution trailer.
+- `.pre-commit-config.yaml` runs lint/format gates; keep changes passing before committing.
+- Domain docs: read root `CONTEXT.md` and `docs/adr/` (per `docs/agents/domain.md`) before deep work; proceed silently if absent.
+
+## Child DOX Index
+
+- [`backend/AGENTS.md`](backend/AGENTS.md) — Django backend: API, core, contrib domains, workers, migrations, pytest.
+- [`web-frontend/AGENTS.md`](web-frontend/AGENTS.md) — Nuxt/Vue frontend: modules, components, i18n, Vitest.
+- [`e2e-tests/AGENTS.md`](e2e-tests/AGENTS.md) — Playwright end-to-end suite and its Dockerized stack.
+- [`deploy/AGENTS.md`](deploy/AGENTS.md) — deployment surface: all-in-one Compose image and the Helm chart.
+- [`docs/AGENTS.md`](docs/AGENTS.md) — project documentation, ADRs, agent conventions.
+- [`changelog/AGENTS.md`](changelog/AGENTS.md) — conflict-free changelog generator and workflow.
+- [`.agents/skills/AGENTS.md`](.agents/skills/AGENTS.md) — canonical project skills for agents.
