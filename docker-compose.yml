@@ -2,7 +2,7 @@
 #
 # READ ME FIRST!
 #
-# Use the much simpler `docker-compose.all-in-one.yml` instead of this file
+# Use the much simpler root `docker-compose.yaml` instead of this file
 # unless you are an advanced user!
 #
 # This compose file runs every service separately using a Caddy reverse proxy to route

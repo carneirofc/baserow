@@ -242,11 +242,10 @@ browser. Our `baserow/baserow` image and some of our `docker-compose.yml` templa
 come with a [Caddy](https://caddy.io) reverse proxy which is configured to serve
 back any user uploaded files which are stored in the data/media volume.
 
-If you do not wish to use our default Caddy see the following guides on configuring
-an Apache, NGinx or Traefik to serve user files for you:
-* [Apache](./install-behind-apache.md)
-* [Nginx](./install-behind-nginx.md)
-* [Traefik](./install-with-traefik.md)
+If you do not wish to use our default Caddy proxy, place your own reverse proxy in front
+of the backend and web-frontend services and have it serve user files from the media
+volume. On OpenShift/Kubernetes the [Helm chart](../../deploy/helm/README.md) does this
+via path-based Routes and S3 object storage instead.
 
 
 #### File Service alternatives

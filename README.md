@@ -156,18 +156,26 @@ most recent release. The GHCR package may be private by default — make it publ
 
 ## Installation
 
-The installation guides below are inherited from upstream and mostly still apply. Where
-they reference the `baserow/baserow` image, substitute
-`ghcr.io/carneirofc/baserow/baserow` to run this fork instead of the upstream editions.
+This fork supports two deployment paths:
 
-* [**Docker**](docs/installation/install-with-docker.md)
-* [**Docker Compose**](docs/installation/install-with-docker-compose.md)
-* [**Heroku**](docs/installation/install-on-heroku.md)
-* [**Render**](docs/installation/install-on-render.md)
-* [**Digital Ocean**](docs/installation/install-on-digital-ocean.md)
-* [**AWS**](docs/installation/install-on-aws.md)
-* [**Cloudron**](docs/installation/install-on-cloudron.md)
-* [**Railway**](docs/installation/install-on-railway.md)
+* **Simple local stack** — a single [`docker-compose.yaml`](docker-compose.yaml) that builds
+  the backend and web-frontend from source with PostgreSQL, Redis and a Caddy proxy on one
+  origin:
+
+  ```bash
+  cp .env.compose.example .env   # then set the secrets
+  docker compose up -d --build   # http://localhost
+  ```
+
+* **Kubernetes / OpenShift** — the [Helm chart](deploy/helm/baserow) deploys the backend,
+  web-frontend and Celery workers as hardened pods that run under OpenShift's default
+  `restricted-v2` SCC (no security-profile changes needed). PostgreSQL and Redis are
+  optional, toggleable subcharts; media uses S3 object storage. See
+  [`deploy/helm/README.md`](deploy/helm/README.md).
+
+For a single-container deployment, the all-in-one image
+`ghcr.io/carneirofc/baserow/baserow` (embedded PostgreSQL + Redis) is published by CI and
+covered by the generic [Docker](docs/installation/install-with-docker.md) guide.
 
 ## Documentation
 

@@ -523,7 +523,7 @@ _dc_help:
     @echo "       just dc-dev <cmd> [args]   (development - builds dev images)"
     @echo ""
     @echo "Examples:"
-    @echo "  just dc-dev tabs                 # Open terminal tabs for each service (like dev.sh). Alias: just dct"
+    @echo "  just dc-dev tabs                 # Open terminal tabs for each service. Alias: just dct"
     @echo "  just dc-dev up -d                # Start containers (detached)"
     @echo "  just dc-dev up -d backend db     # Start specific services"
     @echo "  just dc-dev tmux                 # Start tmux session with all services"
@@ -651,7 +651,7 @@ _dc-dev-tmux:
     tmux select-window -t $SESSION:backend
     tmux attach-session -t $SESSION
 
-# Start dev environment with terminal tabs (like dev.sh)
+# Start dev environment with terminal tabs
 [private]
 _dc-dev-tabs *ARGS:
     #!/usr/bin/env bash
@@ -863,9 +863,9 @@ dc-fix-network:
 # Production Images (build & test production Docker images)
 # =============================================================================
 
-# Production compose (builds locally if BASEROW_VERSION is unset/latest, otherwise pulls images)
+# Production compose (pulls the published images for the given BASEROW_VERSION)
 [group('3 - production')]
-[doc("Docker compose (production images): just dc-prod <build|up|down|logs>")]
+[doc("Docker compose (production images): just dc-prod <up|down|logs>")]
 dc-prod *ARGS:
     #!/usr/bin/env bash
     if [ -z "{{ ARGS }}" ]; then
@@ -873,11 +873,8 @@ dc-prod *ARGS:
     else
         export BASEROW_PUBLIC_URL="${BASEROW_PUBLIC_URL:-http://localhost}"
         VERSION="${BASEROW_VERSION:-latest}"
-        if [ "$VERSION" = "latest" ] || [ -z "$BASEROW_VERSION" ]; then
-            # Build locally for latest/unset
-            BASEROW_VERSION="$VERSION" docker compose -f docker-compose.yml -f docker-compose.build.yml {{ ARGS }}
-        else
-            # Pull from registry for specific versions
+        if true; then
+            # Pull from registry (to build locally from source use: docker compose up -d)
             BASEROW_VERSION="$VERSION" docker compose -f docker-compose.yml {{ ARGS }}
         fi
     fi
@@ -886,7 +883,7 @@ alias dcp := dc-prod
 
 # Build deployment images
 [group('3 - production')]
-[doc("Build image: backend, web-frontend, all-in-one, heroku, cloudron, etc.")]
+[doc("Build image: backend, web-frontend, all-in-one, all-in-one-lite")]
 build target="" tag="latest" *ARGS:
     #!/usr/bin/env bash
     set -eo pipefail
@@ -972,26 +969,6 @@ build target="" tag="latest" *ARGS:
             NAME_ARG="baserow/baserow:lite-{{ tag }}"
             $BUILD_CMD "${BUILD_ARGS[@]}" -f deploy/all-in-one/Dockerfile --target prod-lite -t $NAME_ARG .
             ;;
-        "heroku")
-            NAME_ARG="baserow/heroku:{{ tag }}"
-            $BUILD_CMD "${BUILD_ARGS[@]}" -f heroku.Dockerfile -t $NAME_ARG .
-            ;;
-        "cloudron")
-            NAME_ARG="baserow/cloudron:{{ tag }}"
-            $BUILD_CMD "${BUILD_ARGS[@]}" -f deploy/cloudron/Dockerfile -t $NAME_ARG .
-            ;;
-        "render")
-            NAME_ARG="baserow/render:{{ tag }}"
-            $BUILD_CMD "${BUILD_ARGS[@]}" -f deploy/render/Dockerfile -t $NAME_ARG .
-            ;;
-        "apache")
-            NAME_ARG="baserow/apache:{{ tag }}"
-            $BUILD_CMD "${BUILD_ARGS[@]}" -f deploy/apache/recommended/Dockerfile -t  $NAME_ARG deploy/apache/recommended/
-            ;;
-        "apache-no-caddy")
-            NAME_ARG="baserow/apache-no-caddy:{{ tag }}"
-            $BUILD_CMD "${BUILD_ARGS[@]}" -f deploy/apache/no-caddy/Dockerfile -t $NAME_ARG deploy/apache/no-caddy/
-            ;;
         *)
             echo "Build deployment images"
             echo ""
@@ -1002,11 +979,6 @@ build target="" tag="latest" *ARGS:
             echo "  web-frontend    - Nuxt web frontend"
             echo "  all-in-one      - Single container (production)"
             echo "  all-in-one-lite - Single container without postgres/redis"
-            echo "  heroku          - Heroku platform"
-            echo "  cloudron        - Cloudron marketplace"
-            echo "  render          - Render.com platform"
-            echo "  apache          - Apache reverse proxy"
-            echo "  apache-no-caddy - Apache reverse proxy (no Caddy)"
             echo ""
             echo "Options:"
             echo "  --multi         - Build for linux/amd64 and linux/arm64 (requires --push or --output)"
@@ -1026,9 +998,9 @@ build target="" tag="latest" *ARGS:
         echo "Multi-platform build complete."
     fi
 
-# Run docker compose for specific deployment configurations
+# Run docker compose for the all-in-one deployment image
 [group('3 - production')]
-[doc("Docker compose for different deployments methods (all-in-one, heroku, etc.): just dc-deploy <name> <cmd>")]
+[doc("Docker compose for the all-in-one image: just dc-deploy all-in-one <cmd>")]
 dc-deploy name="" *ARGS:
     #!/usr/bin/env bash
     set -euo pipefail
@@ -1037,42 +1009,17 @@ dc-deploy name="" *ARGS:
         "all-in-one")
             docker compose -f deploy/all-in-one/docker-compose.yml {{ ARGS }}
             ;;
-        "cloudron")
-            docker compose -f deploy/cloudron/docker-compose.yml {{ ARGS }}
-            ;;
-        "heroku")
-            docker compose -f deploy/heroku/docker-compose.yml {{ ARGS }}
-            ;;
-        "traefik")
-            docker compose -f deploy/traefik/docker-compose.yml {{ ARGS }}
-            ;;
-        "nginx")
-            docker compose -f deploy/nginx/recommended/docker-compose.yml {{ ARGS }}
-            ;;
-        "apache")
-            docker compose -f deploy/apache/recommended/docker-compose.yml {{ ARGS }}
-            ;;
-        "local-testing")
-            docker compose -f deploy/local_testing/docker-compose.local.yml {{ ARGS }}
-            ;;
         *)
-            echo "Run docker compose for deployment configurations"
+            echo "Run docker compose for the all-in-one deployment image"
             echo ""
-            echo "Usage: just dc-deploy <name> <cmd> [args]"
-            echo ""
-            echo "Deployments:"
-            echo "  all-in-one      - All-in-one container (production)"
-            echo "  cloudron        - Cloudron deployment"
-            echo "  heroku          - Heroku deployment"
-            echo "  traefik         - Traefik reverse proxy"
-            echo "  nginx           - Nginx reverse proxy"
-            echo "  apache          - Apache reverse proxy"
-            echo "  local-testing   - Local testing setup"
+            echo "Usage: just dc-deploy all-in-one <cmd> [args]"
             echo ""
             echo "Examples:"
-            echo "  just dc-deploy cloudron up -d"
+            echo "  just dc-deploy all-in-one up -d"
             echo "  just dc-deploy all-in-one logs -f"
-            echo "  just dc-deploy heroku build"
+            echo ""
+            echo "For a simple multi-service local stack use: docker compose up -d"
+            echo "For OpenShift use the Helm chart in deploy/helm/baserow/"
             [[ -n "{{ name }}" ]] && exit 1 || exit 0
             ;;
     esac

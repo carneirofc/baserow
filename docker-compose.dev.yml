@@ -229,19 +229,6 @@ services:
     networks:
       local:
 
-  otel-collector:
-    image: otel/opentelemetry-collector:0.106.1
-    command: ["--config=/etc/otel-collector-config.yaml"]
-    environment:
-      HONEYCOMB_API_KEY:
-      HONEYCOMB_METRICS_DATASET: baserow-dev-metrics
-    volumes:
-      - $PWD/deploy/otel/otel-collector-config.yaml:/etc/otel-collector-config.yaml
-    networks:
-      local:
-    ports:
-      - "${BASEROW_HOST_PUBLISH_IP:-127.0.0.1}:${BASEROW_OTEL_COLLECTOR_PORT:-4318}:4318"
-
 volumes:
   pgdatadev:
   node_modules:

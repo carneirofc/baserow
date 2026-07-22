@@ -42,12 +42,10 @@ docker logs baserow-otel-collector-1
 
 ### Under the hood
 
-* `docker-compose.dev.yml` also launches
-  an [Open Telemetry Collector](https://opentelemetry.io/docs/collector/) service
-  configured by the file in `deploy/otel/otel-collector-config.yaml`.
-* When you enable telemetry using `BASEROW_ENABLE_OTEL=true` the dev containers are
-  configured by the
-  `OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318` in `docker-compose.dev.yml`
+* When you enable telemetry using `BASEROW_ENABLE_OTEL=true` the dev containers export
+  to the endpoint set in `OTEL_EXPORTER_OTLP_ENDPOINT`. Point it at your own
+  [Open Telemetry Collector](https://opentelemetry.io/docs/collector/), e.g.
+  `OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318`
   to send telemetry to that local collector.
 * Then this local collector will send telemetry
   to [honeycomb](https://honeycomb.io) using your `HONEYCOMB_API_KEY` where you can

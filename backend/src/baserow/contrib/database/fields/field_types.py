@@ -5465,7 +5465,7 @@ class PhoneNumberFieldType(CollationSortMixin, CharFieldMatchingRegexFieldType):
     A simple wrapper around a TextField which ensures any entered data is a
     simple phone number.
 
-    See `docs/decisions/001-phone-number-field-validation.md` for context
+    See `docs/adr/001-phone-number-field-validation.md` for context
     as to why the phone number validation was implemented using a simple regex.
     """
 

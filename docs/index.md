@@ -21,12 +21,6 @@ You can easily self-host Baserow by following one of the guides below:
 * [Install using Standalone images](installation/install-using-standalone-images.md): A
   general overview on how to run the Baserow standalone service images with your own
   container orchestration software.
-* [Install on Cloudron](installation/install-on-cloudron.md): Instructions to manually
-  install Baserow on Cloudron.
-* [Install on Heroku](installation/install-on-heroku.md): A step-by-step guide to
-  install Baserow using Heroku.
-* [Install on Render](installation/install-on-render.md): A step-by-step guide to
-  install Baserow using Render a Heroku alternative.
 * [Install on Digital Ocean Apps](installation/install-on-digital-ocean.md):
   Instructions on how to install on Digital Ocean Apps platform.
 * [Install on Railway](installation/install-on-railway.md): A step-by-step guide to
@@ -35,14 +29,11 @@ You can easily self-host Baserow by following one of the guides below:
   Docker and use it to install Baserow on a fresh ubuntu install.
 * [Third party hosting providers](installation/third-party-hosting-providers.md): A list
   of hosting/deployment providers that allow to easily self-host Baserow.
-* [Install with Traefik](installation/install-with-traefik.md): How to configure Baserow
-  when using Traefik.
 * [Install with K8S](installation/install-with-k8s.md): An example performant 
   production ready K8S configuration for use as a starting point.
-* [Install behind Nginx](installation/install-behind-nginx.md): How to configure Baserow
-  when using a Nginx reverse proxy.
-* [Install behind Apache](installation/install-behind-apache.md): How to configure Baserow
-  when using an Apache reverse proxy.
+* [Helm chart (OpenShift-hardened)](../deploy/helm/README.md): Deploy the split
+  backend/web-frontend/Celery pods under the default restricted-v2 SCC, with optional
+  bundled PostgreSQL/Redis and S3 media.
 * [DEPRECATED: Install on Ubuntu](installation/old-install-on-ubuntu.md): A deprecated
   and now unsupported guide on how to manually install Baserow and its required services
   on a fresh Ubuntu install. Please use the guides above instead.
@@ -102,8 +93,6 @@ Everything related to contributing and developing for Baserow.
   previewed and installed by others.
 * [Justfile reference](./development/justfile.md): Complete reference for all `just` commands
   available for development.
-* [dev.sh](./development/dev_sh.md): **(Deprecated)** Legacy `./dev.sh` helper script.
-  Use `just` commands instead.
 * [IntelliJ setup](./development/intellij-setup.md): How to configure Intellij to work
   well with Baserow for development purposes.
 * [Feature flags](./development/feature-flags.md): How Baserow uses basic feature flags for optionally
