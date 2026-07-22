@@ -104,7 +104,8 @@ just dc-prod build backend
 just dc-prod build --no-cache --parallel
 ```
 
-This uses `docker-compose.yml` + `docker-compose.build.yml` to build the `prod` target from each Dockerfile.
+`just dc-prod` pulls the published images for the given `BASEROW_VERSION`. To build the
+`prod` target from source instead, use the root `docker-compose.yaml` (`docker compose up -d --build`).
 
 ### Image Tagging
 

@@ -248,8 +248,6 @@ This opens a browser where your actions are recorded as test code. Use it as a s
 ### Old Installation
 
 ```bash
-# Using dev.sh (deprecated)
-./dev.sh
 cd e2e-tests
 ./run-e2e-tests-locally.sh
 
