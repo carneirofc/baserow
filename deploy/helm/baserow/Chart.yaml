@@ -1,0 +1,28 @@
+apiVersion: v2
+name: baserow
+description: >-
+  Baserow (FOSS fork) for OpenShift. Deploys the backend, web-frontend and
+  Celery workers as separate hardened pods that run unmodified under the
+  restricted-v2 SCC (arbitrary UID, non-root, no privileged ports). PostgreSQL
+  and Redis are optional, toggleable subcharts; point at an external managed
+  database instead by disabling them.
+type: application
+version: 0.1.0
+# Tracks the application version shipped by this fork's images.
+appVersion: "2.3.2"
+home: https://github.com/carneirofc/baserow
+sources:
+  - https://github.com/carneirofc/baserow
+maintainers:
+  - name: carneirofc
+    email: claudiofcarneiro@gmail.com
+
+dependencies:
+  - name: postgresql
+    version: "~18.8.0"
+    repository: https://charts.bitnami.com/bitnami
+    condition: postgresql.enabled
+  - name: redis
+    version: "~27.0.0"
+    repository: https://charts.bitnami.com/bitnami
+    condition: redis.enabled

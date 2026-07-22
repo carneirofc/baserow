@@ -1,0 +1,11 @@
+{{- if .Values.branding.faviconBase64 }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "baserow.fullname" . }}-favicon
+  labels:
+    {{- include "baserow.labels" . | nindent 4 }}
+binaryData:
+  # Mounted over the web-frontend's served favicon (see webfrontend-deployment).
+  favicon.ico: {{ .Values.branding.faviconBase64 | quote }}
+{{- end }}

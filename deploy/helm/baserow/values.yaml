@@ -1,0 +1,232 @@
+# Default values for the Baserow (FOSS fork) chart.
+# Designed to run under OpenShift's default restricted-v2 SCC with NO cluster
+# security changes: arbitrary UID, non-root, read-only rootfs, unprivileged ports.
+
+# -- Number of replicas for the stateless app pods (safe to raise only when
+#    objectStorage is enabled; with the media PVC fallback keep backend at 1).
+replicaCount:
+  backend: 1
+  webFrontend: 1
+  celery: 1
+  # celery-beat is always a singleton and is not configurable here.
+
+image:
+  registry: ghcr.io
+  # These images are already restricted-v2 compatible (no chown/su-exec,
+  # unprivileged ports 8000/3000). Do NOT use the all-in-one image on OpenShift.
+  backend:
+    repository: carneirofc/baserow/backend
+    tag: "" # defaults to Chart.appVersion
+    pullPolicy: IfNotPresent
+  webFrontend:
+    repository: carneirofc/baserow/web-frontend
+    tag: "" # defaults to Chart.appVersion
+    pullPolicy: IfNotPresent
+imagePullSecrets: []
+
+# ---------------------------------------------------------------------------
+# Public URL / routing
+# ---------------------------------------------------------------------------
+# The single origin the app is served on. Backend and web-frontend share this
+# host; OpenShift Routes demux by path (see openshift.route.backendPaths).
+publicURL: "https://baserow.apps.example.com"
+# Extra comma-separated hostnames to add to Django ALLOWED_HOSTS (optional).
+extraAllowedHosts: ""
+
+openshift:
+  # Create OpenShift Route objects (requires the route.openshift.io API).
+  route:
+    enabled: true
+    host: "baserow.apps.example.com"
+    tls:
+      enabled: true
+      termination: edge
+      insecureEdgeTerminationPolicy: Redirect
+    # Paths served by the backend; everything else goes to the web-frontend.
+    # Mirrors the reverse-proxy rules the all-in-one image uses.
+    backendPaths:
+      - /api
+      - /ws
+      - /mcp
+      - /assistant
+      - /static
+    annotations: {}
+
+# Plain-Kubernetes Ingress alternative (leave disabled on OpenShift).
+ingress:
+  enabled: false
+  className: ""
+  host: "baserow.example.com"
+  tls: []
+  annotations: {}
+  backendPaths:
+    - /api
+    - /ws
+    - /mcp
+    - /assistant
+    - /static
+
+# ---------------------------------------------------------------------------
+# Secrets (generated on first install if left empty, then preserved on upgrade)
+# ---------------------------------------------------------------------------
+secrets:
+  # Django SECRET_KEY. Leave empty to auto-generate.
+  secretKey: ""
+  # JWT signing key. Leave empty to fall back to SECRET_KEY.
+  jwtSigningKey: ""
+  # Reference an existing Secret instead of letting the chart manage one.
+  # It must contain: secret-key, jwt-signing-key, database-password,
+  # redis-password (+ s3-access-key-id / s3-secret-access-key if using S3).
+  existingSecret: ""
+
+# ---------------------------------------------------------------------------
+# Database — bundled subchart (default) OR external managed PostgreSQL
+# ---------------------------------------------------------------------------
+# postgresql.enabled=true  -> deploy the Bitnami PostgreSQL subchart.
+# postgresql.enabled=false -> use externalDatabase.* below (recommended for
+#                             hardened / production clusters).
+postgresql:
+  enabled: true
+  auth:
+    username: baserow
+    database: baserow
+    # Optional: set a fixed password. If empty the subchart generates one and
+    # stores it in the Secret "<release>-postgresql" (key: password); the app
+    # reads it from there automatically.
+    password: ""
+  primary:
+    persistence:
+      enabled: true
+      size: 8Gi
+  # Required so the subchart obeys restricted-v2 (arbitrary UID, no chown).
+  global:
+    compatibility:
+      openshift:
+        adaptSecurityContext: auto
+
+externalDatabase:
+  host: ""
+  port: 5432
+  user: baserow
+  database: baserow
+  # Password: set here (stored in the chart Secret) OR reference your own via
+  # existingSecret/existingSecretPasswordKey.
+  password: ""
+  existingSecret: ""
+  existingSecretPasswordKey: "database-password"
+  # Optional full DSN; overrides the discrete fields above when set.
+  url: ""
+
+# ---------------------------------------------------------------------------
+# Redis — bundled subchart (default) OR external managed Redis
+# ---------------------------------------------------------------------------
+redis:
+  enabled: true
+  architecture: standalone
+  auth:
+    enabled: true
+    # Optional fixed password; if empty the subchart generates one in the Secret
+    # "<release>-redis" (key: redis-password) and the app reads it from there.
+    password: ""
+  master:
+    persistence:
+      enabled: false
+  global:
+    compatibility:
+      openshift:
+        adaptSecurityContext: auto
+
+externalRedis:
+  host: ""
+  port: 6379
+  password: ""
+  existingSecret: ""
+  existingSecretPasswordKey: "redis-password"
+  url: ""
+
+# ---------------------------------------------------------------------------
+# Media storage
+# ---------------------------------------------------------------------------
+# Recommended on OpenShift: S3-compatible object storage -> stateless pods,
+# multi-replica safe. Disable to fall back to an RWO PVC (single backend replica).
+objectStorage:
+  enabled: true
+  bucketName: "baserow-media"
+  endpointURL: "" # e.g. https://s3.us-east-1.amazonaws.com or a MinIO endpoint
+  region: "us-east-1"
+  # Public base URL objects are served from (sets MEDIA_URL). Leave empty to
+  # let Baserow build it from the bucket/endpoint.
+  customDomain: ""
+  # Credentials (stored in the chart Secret). Or use existingSecret with keys
+  # s3-access-key-id / s3-secret-access-key.
+  accessKeyId: ""
+  secretAccessKey: ""
+  existingSecret: ""
+
+# PVC used only when objectStorage.enabled=false.
+mediaPersistence:
+  size: 10Gi
+  storageClassName: ""
+  accessMode: ReadWriteOnce
+
+# ---------------------------------------------------------------------------
+# App behaviour
+# ---------------------------------------------------------------------------
+migrateOnStartup: true # runs Django migrations from the backend pod on boot
+
+# ---------------------------------------------------------------------------
+# Branding / personalization
+# ---------------------------------------------------------------------------
+branding:
+  # Runtime override: base64-encoded favicon (.ico/.png) mounted over the
+  # web-frontend favicon. Leave empty to keep the default.
+  faviconBase64: ""
+  # The following are BUILD-TIME only in Baserow FOSS (compiled into the image)
+  # and cannot be changed at deploy time. To customise, rebuild the fork image
+  # and point image.*.tag at it. Pointers for the rebuild:
+  #   appName -> web-frontend app title strings / i18n
+  #   logo    -> web-frontend/modules/core/components/Logo.vue
+  #   palette -> web-frontend/modules/core/assets/scss/colors.scss ($palette-*)
+  appName: "" # documentation only; not applied at runtime
+  logo: "" # documentation only; not applied at runtime
+  palette: {} # documentation only; not applied at runtime
+
+# ---------------------------------------------------------------------------
+# Pod hardening (restricted-v2 friendly). Do NOT set runAsUser/fsGroup here on
+# OpenShift — the SCC injects them from the namespace's allocated range.
+# ---------------------------------------------------------------------------
+podSecurityContext:
+  runAsNonRoot: true
+  # fsGroup: null      # let OpenShift assign; only needed for the media PVC fallback
+  seccompProfile:
+    type: RuntimeDefault
+
+containerSecurityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+
+resources:
+  backend:
+    requests: { cpu: 250m, memory: 512Mi }
+    limits: { cpu: "2", memory: 2Gi }
+  webFrontend:
+    requests: { cpu: 100m, memory: 256Mi }
+    limits: { cpu: "1", memory: 1Gi }
+  celery:
+    requests: { cpu: 250m, memory: 512Mi }
+    limits: { cpu: "2", memory: 2Gi }
+  celeryBeat:
+    requests: { cpu: 50m, memory: 128Mi }
+    limits: { cpu: 250m, memory: 256Mi }
+
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
