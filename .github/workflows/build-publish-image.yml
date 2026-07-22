@@ -5,7 +5,10 @@ name: Build & Publish All-in-One Image
 # deploy/all-in-one image and publishes it to this repo's GitHub Container
 # Registry. Uses only the built-in GITHUB_TOKEN — no external secrets required.
 #
-# Result: ghcr.io/<owner>/<repo>/baserow:<version> (+ :latest)
+# Results (each + :latest):
+#   ghcr.io/<owner>/<repo>/baserow:<version>       (all-in-one; compose/simple deploys)
+#   ghcr.io/<owner>/<repo>/backend:<version>       (Helm chart)
+#   ghcr.io/<owner>/<repo>/web-frontend:<version>  (Helm chart)
 
 on:
   push:
@@ -56,6 +59,30 @@ jobs:
             type=semver,pattern={{major}}
             type=raw,value=latest
 
+      # Stable tags for the standalone backend / web-frontend images so the
+      # Helm chart (deploy/helm/baserow) can consume them directly.
+      - name: Docker metadata for backend image
+        id: meta-backend
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}/backend
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=raw,value=latest
+
+      - name: Docker metadata for web-frontend image
+        id: meta-webfrontend
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}/web-frontend
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=raw,value=latest
+
       - name: Build & push backend image
         uses: docker/build-push-action@v5
         with:
@@ -64,7 +91,12 @@ jobs:
           target: prod
           platforms: linux/amd64
           push: true
-          tags: ${{ steps.refs.outputs.backend }}
+          # Intermediate pinned tag (consumed by the all-in-one build) plus the
+          # stable semver/latest tags used by the Helm chart.
+          tags: |
+            ${{ steps.refs.outputs.backend }}
+            ${{ steps.meta-backend.outputs.tags }}
+          labels: ${{ steps.meta-backend.outputs.labels }}
           cache-from: type=gha,scope=backend-prod
           cache-to: type=gha,scope=backend-prod,mode=max
 
@@ -76,7 +108,10 @@ jobs:
           target: prod
           platforms: linux/amd64
           push: true
-          tags: ${{ steps.refs.outputs.webfrontend }}
+          tags: |
+            ${{ steps.refs.outputs.webfrontend }}
+            ${{ steps.meta-webfrontend.outputs.tags }}
+          labels: ${{ steps.meta-webfrontend.outputs.labels }}
           cache-from: type=gha,scope=frontend-prod
           cache-to: type=gha,scope=frontend-prod,mode=max
 
