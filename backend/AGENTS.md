@@ -8,7 +8,7 @@ Django backend for Baserow: REST API, real-time WebSocket layer, Celery workers,
 
 Owns everything under `backend/`: `src/baserow/` (source), `tests/` (pytest suite), `Dockerfile`, `pyproject.toml`, `pytest.ini`, `mypy.ini`, `justfile`, and packaging.
 
-- `src/baserow/core/` — cross-cutting platform: registries, permissions, jobs, import/export, auth, formulas, notifications, MCP.
+- `src/baserow/core/` — cross-cutting platform: registries, permissions, jobs, import/export, backups and backup schedules, contents, API clients, auth, formulas, notifications, MCP.
 - `src/baserow/contrib/` — feature domains: `database/`, `builder/`, `automation/`, `dashboard/`, `integrations/`.
 - `src/baserow/api/` — DRF serializers, views, URL routing, error handling.
 - `src/baserow/config/` — Django settings, Celery, Gunicorn config.

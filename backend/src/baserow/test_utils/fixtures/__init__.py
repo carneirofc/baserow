@@ -2,6 +2,7 @@ from baserow.core.db import get_collation_name
 from baserow.test_utils.fixtures.two_factor_auth import TwoFactorAuthFixtures
 
 from .airtable import AirtableFixtures
+from .api_client import ApiClientFixtures
 from .app_auth_provider import AppAuthProviderFixtures
 from .application import ApplicationFixtures
 from .auth_provider import AuthProviderFixtures
@@ -9,6 +10,7 @@ from .automation_history import AutomationHistoryFixtures
 from .automation_node import AutomationNodeFixtures
 from .automation_workflow import AutomationWorkflowFixtures
 from .automation_workflow_history import AutomationWorkflowHistoryFixtures
+from .backup import BackupFixtures
 from .dashboard_data_source import DashboardDataSourceFixtures
 from .data_source import DataSourceFixtures
 from .data_sync import DataSyncFixtures
@@ -76,6 +78,8 @@ class Fixtures(
     UserSourceUserFixtures,
     DataSyncFixtures,
     ImportExportWorkspaceFixtures,
+    ApiClientFixtures,
+    BackupFixtures,
     DashboardDataSourceFixtures,
     WidgetFixtures,
     MCPFixtures,

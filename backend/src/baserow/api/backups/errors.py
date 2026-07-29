@@ -1,0 +1,12 @@
+from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND
+
+ERROR_BACKUP_SCHEDULE_DOES_NOT_EXIST = (
+    "ERROR_BACKUP_SCHEDULE_DOES_NOT_EXIST",
+    HTTP_404_NOT_FOUND,
+    "The requested backup schedule does not exist.",
+)
+ERROR_INVALID_BACKUP_SCHEDULE_CRON = (
+    "ERROR_INVALID_BACKUP_SCHEDULE_CRON",
+    HTTP_400_BAD_REQUEST,
+    "{e}",
+)

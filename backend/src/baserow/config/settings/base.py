@@ -187,6 +187,8 @@ CELERY_TASK_ROUTES = {
     "baserow.core.usage.tasks": {"queue": BASEROW_GROUP_STORAGE_USAGE_QUEUE},
     "baserow.contrib.database.table.tasks.run_row_count_job": {"queue": "export"},
     "baserow.core.jobs.tasks.clean_up_jobs": {"queue": "export"},
+    "baserow.core.backups.tasks.run_due_backup_schedules": {"queue": "export"},
+    "baserow.core.backups.tasks.apply_backup_retention": {"queue": "export"},
 }
 CELERY_TASK_SOFT_TIME_LIMIT = int(
     os.getenv("CELERY_TASK_SOFT_TIME_LIMIT") or 60 * 5
@@ -1217,6 +1219,19 @@ INTEGRATIONS_PERIODIC_MINUTE_MIN = int(
     os.getenv("BASEROW_INTEGRATIONS_PERIODIC_MINUTE_MIN") or 1
 )
 
+# How often the periodic task looks for backup schedules that became due. Every
+# minute by default so a schedule fires close to the moment its cron expression says.
+BASEROW_BACKUP_SCHEDULE_TICK_CRONTAB = get_crontab_from_env(
+    "BASEROW_BACKUP_SCHEDULE_TICK_CRONTAB", default_crontab="* * * * *"
+)
+
+# The maximum amount of rows the `/api/contents/` endpoints return in one synchronous
+# response. Larger requests are refused with ERROR_CONTENTS_TOO_LARGE and should use
+# `/api/backups/` instead. Set to 0 to disable the limit.
+BASEROW_CONTENTS_API_MAX_ROWS = int(
+    os.getenv("BASEROW_CONTENTS_API_MAX_ROWS", "100000")
+)
+
 TOTP_ISSUER_NAME = os.getenv("BASEROW_TOTP_ISSUER_NAME", "Baserow")
 
 # ======== WARNING ========
@@ -1296,6 +1311,7 @@ PERMISSION_MANAGERS = [
     "member",
     "granular_role",
     "token",
+    "write_field_values",
     "basic",
     "automation_workflow",
     "automation_node",
