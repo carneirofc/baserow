@@ -1209,6 +1209,7 @@ class ExportApplicationsActionType(ActionType):
             applications=applications,
             import_export_config=cli_import_export_config,
             progress_builder=progress_builder,
+            created_by=user,
         )
 
         params = cls.Params(

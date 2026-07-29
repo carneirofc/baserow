@@ -463,6 +463,7 @@ class ImportExportHandler(metaclass=baserow_trace_methods(tracer)):
         import_export_config: ImportExportConfig,
         storage: Optional[Storage] = None,
         progress_builder: Optional[ChildProgressBuilder] = None,
+        created_by: Optional[AbstractUser] = None,
     ) -> ImportExportResource:
         """
         Create zip file with exported applications. If applications param is provided,
@@ -474,10 +475,13 @@ class ImportExportHandler(metaclass=baserow_trace_methods(tracer)):
         :param storage: The storage where the files will be stored. If not provided
             the default storage will be used.
         :param progress_builder: A progress builder that allows for publishing progress.
+        :param created_by: The user the resource belongs to. Without it the resource
+            has no owner, and can therefore neither be deleted nor imported again,
+            because both look the resource up by its owner.
         :return: The ImportExportResource instance that represents the exported file.
         """
 
-        resource = ImportExportResource.objects.create()
+        resource = ImportExportResource.objects.create(created_by=created_by)
         file_name = resource.get_archive_name()
 
         storage = storage or get_default_storage()
