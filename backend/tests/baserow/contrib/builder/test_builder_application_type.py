@@ -41,7 +41,10 @@ from baserow.core.registries import ImportExportConfig, application_type_registr
 from baserow.core.storage import ExportZipFile
 from baserow.core.trash.handler import TrashHandler
 from baserow.core.user_files.handler import UserFileHandler
-from baserow.core.user_sources.registries import DEFAULT_USER_ROLE_PREFIX
+from baserow.core.user_sources.registries import (
+    DEFAULT_USER_ROLE_PREFIX,
+    user_source_type_registry,
+)
 from baserow.test_utils.helpers import AnyStr
 
 
@@ -1052,19 +1055,8 @@ IMPORT_REFERENCE = {
             "type": "local_baserow",
         },
     ],
-    "user_sources": [
-        {
-            "auth_providers": [],
-            "email_field_id": None,
-            "id": 42,
-            "integration_id": 42,
-            "name": "My user source",
-            "name_field_id": None,
-            "order": "1.00000000000000000000",
-            "table_id": None,
-            "type": "local_baserow",
-        },
-    ],
+    # No concrete user source type ships with this fork, so nothing to import.
+    "user_sources": [],
     "theme": {
         "body_text_color": "#ccccccff",
         "body_font_size": 14,
@@ -1131,7 +1123,7 @@ def test_builder_application_import(data_fixture):
     first_integration = builder.integrations.first().specific
     assert first_integration.authorized_user.id == user.id
 
-    assert builder.user_sources.count() == 1
+    assert builder.user_sources.count() == 0
 
     [page1, page2] = builder.visible_pages.all()
 
@@ -1472,19 +1464,8 @@ COMPAT_IMPORT_REFERENCE = {
             "type": "local_baserow",
         },
     ],
-    "user_sources": [
-        {
-            "auth_providers": [],
-            "email_field_id": None,
-            "id": 42,
-            "integration_id": 42,
-            "name": "My user source",
-            "name_field_id": None,
-            "order": "1.00000000000000000000",
-            "table_id": None,
-            "type": "local_baserow",
-        },
-    ],
+    # No concrete user source type ships with this fork, so nothing to import.
+    "user_sources": [],
     "theme": {
         "body_text_color": "#ccccccff",
         "body_font_size": 14,
@@ -1545,7 +1526,7 @@ def test_builder_application_import_compat(data_fixture):
     assert builder.visible_pages.count() == 2
     assert builder.page_set.filter(shared=True).count() == 1
     assert builder.integrations.count() == 1
-    assert builder.user_sources.count() == 1
+    assert builder.user_sources.count() == 0
 
     [page1, page2] = builder.visible_pages.all()
 
@@ -1691,19 +1672,8 @@ IMPORT_REFERENCE_COMPLEX = {
             "type": "local_baserow",
         },
     ],
-    "user_sources": [
-        {
-            "auth_providers": [],
-            "email_field_id": None,
-            "id": 42,
-            "integration_id": 42,
-            "name": "My user source",
-            "name_field_id": None,
-            "order": "1.00000000000000000000",
-            "table_id": None,
-            "type": "local_baserow",
-        },
-    ],
+    # No concrete user source type ships with this fork, so nothing to import.
+    "user_sources": [],
     "theme": {
         "primary_color": "#ccccccff",
         "secondary_color": "#ccccccff",
@@ -1944,11 +1914,26 @@ def test_builder_application_imports_correct_default_roles(data_fixture):
     user = data_fixture.create_user(email="test@baserow.io")
     workspace = data_fixture.create_workspace(user=user)
 
+    user_source_types = list(user_source_type_registry.get_all())
+    if not user_source_types:
+        pytest.skip("No user source type is registered (needs a plugin).")
+
     serialized_values = IMPORT_REFERENCE.copy()
     first_page = serialized_values["pages"][0]
 
-    serialized_user_source = serialized_values["user_sources"][0]
-    serialized_user_source["role_field_id"] = None
+    serialized_user_source = {
+        "auth_providers": [],
+        "email_field_id": None,
+        "id": 42,
+        "integration_id": 42,
+        "name": "My user source",
+        "name_field_id": None,
+        "order": "1.00000000000000000000",
+        "role_field_id": None,
+        "table_id": None,
+        "type": user_source_types[0].type,
+    }
+    serialized_values["user_sources"] = [serialized_user_source]
 
     serialized_element = serialized_values["pages"][0]["elements"][0]
     serialized_element["role_type"] = "allow_all_except"

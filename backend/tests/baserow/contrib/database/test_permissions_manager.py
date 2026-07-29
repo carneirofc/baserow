@@ -31,7 +31,7 @@ from baserow.core.types import PermissionCheck
         "allow_if_template",
         "member",
         "token",
-        "role",
+        "granular_role",
         "basic",
     ]
 )
@@ -204,7 +204,7 @@ def test_allow_if_template_permission_manager(data_fixture):
         "allow_if_template",
         "member",
         "token",
-        "role",
+        "granular_role",
         "basic",
     ]
 )
