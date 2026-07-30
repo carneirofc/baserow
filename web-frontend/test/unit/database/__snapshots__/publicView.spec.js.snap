@@ -46,7 +46,7 @@ exports[`Public View Page Tests > Can see a publicly shared grid view 1`] = `
           >
             <a
               class="header__filter-logo"
-              href="https://baserow.io"
+              href="https://github.com/carneirofc/baserow"
               target="_blank"
               title="Baserow - open source no-code database tool and Airtable alternative"
             >
@@ -93,7 +93,6 @@ exports[`Public View Page Tests > Can see a publicly shared grid view 1`] = `
           </li>
           <!--v-if-->
           
-          <!--v-if-->
           
           <li
             class="header__filter-item"
@@ -526,7 +525,6 @@ exports[`Public View Page Tests > Can see a publicly shared grid view 1`] = `
                       class="grid-view__description-options"
                     >
                       
-                      <!--v-if-->
                       
                       <!--v-if-->
                       <!--v-if-->
@@ -566,7 +564,6 @@ exports[`Public View Page Tests > Can see a publicly shared grid view 1`] = `
                       class="grid-view__description-options"
                     >
                       
-                      <!--v-if-->
                       
                       <!--v-if-->
                       <!--v-if-->
@@ -606,7 +603,6 @@ exports[`Public View Page Tests > Can see a publicly shared grid view 1`] = `
                       class="grid-view__description-options"
                     >
                       
-                      <!--v-if-->
                       
                       <!--v-if-->
                       <!--v-if-->

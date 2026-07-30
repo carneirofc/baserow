@@ -1030,10 +1030,14 @@ class DatabaseConfig(AppConfig):
 
         from baserow.core.registries import permission_manager_type_registry
 
-        from .permission_manager import AllowIfTemplatePermissionManagerType
+        from .permission_manager import (
+            AllowIfTemplatePermissionManagerType,
+            FieldValuePermissionManagerType,
+        )
         from .tokens.permission_manager import TokenPermissionManagerType
 
         permission_manager_type_registry.register(TokenPermissionManagerType())
+        permission_manager_type_registry.register(FieldValuePermissionManagerType())
 
         prev_manager = permission_manager_type_registry.get(
             AllowIfTemplatePermissionManagerType.type

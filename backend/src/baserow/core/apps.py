@@ -587,11 +587,48 @@ class CoreConfig(AppConfig):
 
         object_scope_type_registry.register(MCPEndpointObjectScopeType())
 
+        from baserow.core.api_clients.operations import (
+            CreateApiClientOperationType,
+            DeleteApiClientOperationType,
+            ListApiClientsOperationType,
+            ReadApiClientOperationType,
+            UpdateApiClientOperationType,
+        )
+
+        operation_type_registry.register(ListApiClientsOperationType())
+        operation_type_registry.register(CreateApiClientOperationType())
+        operation_type_registry.register(ReadApiClientOperationType())
+        operation_type_registry.register(UpdateApiClientOperationType())
+        operation_type_registry.register(DeleteApiClientOperationType())
+
+        from baserow.core.api_clients.object_scopes import ApiClientObjectScopeType
+
+        object_scope_type_registry.register(ApiClientObjectScopeType())
+
+        from baserow.core.backups.operations import (
+            CreateBackupScheduleOperationType,
+            DeleteBackupScheduleOperationType,
+            ListBackupSchedulesOperationType,
+            ReadBackupScheduleOperationType,
+            UpdateBackupScheduleOperationType,
+        )
+
+        operation_type_registry.register(ListBackupSchedulesOperationType())
+        operation_type_registry.register(CreateBackupScheduleOperationType())
+        operation_type_registry.register(ReadBackupScheduleOperationType())
+        operation_type_registry.register(UpdateBackupScheduleOperationType())
+        operation_type_registry.register(DeleteBackupScheduleOperationType())
+
+        from baserow.core.backups.object_scopes import BackupScheduleObjectScopeType
+
+        object_scope_type_registry.register(BackupScheduleObjectScopeType())
+
         plugin_dir.register(DebugModeHealthCheck)
         if getattr(settings, "HEROKU_ENABLED", False):
             plugin_dir.register(HerokuExternalFileStorageConfiguredHealthCheck)
         plugin_dir.register(DefaultFileStorageHealthCheck)
 
+        import baserow.core.backups.tasks  # noqa: F403, F401
         import baserow.core.import_export.tasks  # noqa: F403, F401
         import baserow.core.integrations.receivers  # noqa: F403, F401
 
