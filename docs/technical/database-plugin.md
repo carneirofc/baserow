@@ -9,7 +9,9 @@ has been built around this concept.
 
 Each database application can have multiple tables and a table is exactly what you
 might suspect. It contains rows and columns, but in Baserow the columns are called fields. 
-Every table has its own schema representation in the PostgreSQL database.
+Every table has its own schema representation in the PostgreSQL database. The
+[table persistence guide](./table-persistence.md) covers that representation in detail:
+naming, the generated model, schema changes, and what trashing a table actually does.
 
 There is a `baserow.contrib.database.table.handler.TableHandler` handler class that has
 all kinds of methods related to creating, modifying, and deleting tables. Another nice
