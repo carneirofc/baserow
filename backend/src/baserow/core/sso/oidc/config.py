@@ -43,6 +43,10 @@ class WorkspaceRoleMapping:
     group: str
     workspace_id: int
     role: str
+    # The name of a `core.Role` in the same workspace, restricting the member to that
+    # role's operations. None means today's unrestricted full-member access. Resolved at
+    # login time, since the database is not reachable while settings are evaluated.
+    granular_role: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -139,8 +143,30 @@ def _workspace_mappings(
                 f"{prefix}: 'role' must be one of {list(ALLOWED_WORKSPACE_ROLES)}."
             )
 
+        granular_role = mapping.get("granular_role")
+        if granular_role is not None:
+            if not isinstance(granular_role, str) or not granular_role.strip():
+                raise ImproperlyConfigured(
+                    f"{prefix}: 'granular_role' must be a non-empty string when "
+                    f"provided."
+                )
+            granular_role = granular_role.strip()
+            if role == WORKSPACE_ROLE_ADMIN:
+                # Workspace admins bypass the granular role permission manager, so the
+                # combination would silently grant unrestricted access.
+                raise ImproperlyConfigured(
+                    f"{prefix}: 'granular_role' cannot be combined with role "
+                    f"'{WORKSPACE_ROLE_ADMIN}', because workspace admins are not "
+                    f"restricted by a role. Use role '{WORKSPACE_ROLE_MEMBER}'."
+                )
+
         mappings.append(
-            WorkspaceRoleMapping(group=group.strip(), workspace_id=workspace, role=role)
+            WorkspaceRoleMapping(
+                group=group.strip(),
+                workspace_id=workspace,
+                role=role,
+                granular_role=granular_role,
+            )
         )
     return mappings
 

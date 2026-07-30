@@ -203,3 +203,69 @@ def test_invalid_workspace_mapping_fails_fast(mapping):
 
     with pytest.raises(ImproperlyConfigured):
         parse_oidc_providers_env(_env(provider))
+
+
+def test_granular_role_defaults_to_none():
+    provider = dict(
+        VALID_PROVIDER,
+        workspace_mappings=[{"group": "team", "workspace": 1, "role": "MEMBER"}],
+    )
+
+    config = parse_oidc_providers_env(_env(provider))[0]
+
+    assert config.workspace_mappings[0].granular_role is None
+
+
+def test_granular_role_parsed():
+    provider = dict(
+        VALID_PROVIDER,
+        workspace_mappings=[
+            {
+                "group": "team",
+                "workspace": 1,
+                "role": "MEMBER",
+                "granular_role": " Editor ",
+            }
+        ],
+    )
+
+    config = parse_oidc_providers_env(_env(provider))[0]
+
+    assert config.workspace_mappings[0].granular_role == "Editor"
+
+
+@pytest.mark.parametrize("granular_role", ["", "   ", 5, []])
+def test_granular_role_must_be_a_non_empty_string(granular_role):
+    provider = dict(
+        VALID_PROVIDER,
+        workspace_mappings=[
+            {
+                "group": "team",
+                "workspace": 1,
+                "role": "MEMBER",
+                "granular_role": granular_role,
+            }
+        ],
+    )
+
+    with pytest.raises(ImproperlyConfigured, match="'granular_role'"):
+        parse_oidc_providers_env(_env(provider))
+
+
+def test_granular_role_cannot_be_combined_with_admin():
+    # Workspace admins bypass the granular role permission manager, so the combination
+    # would silently grant unrestricted access.
+    provider = dict(
+        VALID_PROVIDER,
+        workspace_mappings=[
+            {
+                "group": "team",
+                "workspace": 1,
+                "role": "ADMIN",
+                "granular_role": "Editor",
+            }
+        ],
+    )
+
+    with pytest.raises(ImproperlyConfigured, match="cannot be combined with role"):
+        parse_oidc_providers_env(_env(provider))

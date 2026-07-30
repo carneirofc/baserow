@@ -1,0 +1,9 @@
+{
+    "type": "feature",
+    "message": "An OIDC workspace mapping can now grant a granular role. Adding granular_role to a workspace_mappings entry restricts the member to the operations of the named role declared in BASEROW_ROLES, so an IdP group decides both which workspaces a user lands in and what they may do there. If the named role does not exist the membership is refused rather than granted unrestricted access, and dropping granular_role from a mapping restores full member access on the next login.",
+    "issue_origin": "github",
+    "issue_number": 8,
+    "domain": "core",
+    "bullet_points": [],
+    "created_at": "2026-07-30"
+}

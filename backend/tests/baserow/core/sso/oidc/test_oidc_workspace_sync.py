@@ -7,6 +7,7 @@ from baserow.core.auth_provider.models import (
     OIDCSsoWorkspaceMembership,
 )
 from baserow.core.models import WorkspaceUser
+from baserow.core.roles.models import Role
 from baserow.core.sso.oidc.config import OIDCProviderConfig, WorkspaceRoleMapping
 from baserow.core.sso.oidc.workspaces import sync_workspace_memberships
 
@@ -170,6 +171,220 @@ def test_strict_keeps_membership_while_group_retained(data_fixture, provider):
     sync_workspace_memberships(user, ["team"], config, provider)
 
     assert WorkspaceUser.objects.filter(user=user, workspace=workspace).exists()
+
+
+# --- granular role mapping -------------------------------------------------
+
+
+def _role(workspace, name="Editor"):
+    return Role.objects.create(workspace=workspace, name=name)
+
+
+@pytest.mark.django_db
+def test_grants_the_mapped_granular_role(data_fixture, provider):
+    user = data_fixture.create_user()
+    workspace = data_fixture.create_workspace()
+    role = _role(workspace)
+    config = _config(
+        [
+            WorkspaceRoleMapping(
+                group="team",
+                workspace_id=workspace.id,
+                role="MEMBER",
+                granular_role="Editor",
+            )
+        ]
+    )
+
+    sync_workspace_memberships(user, ["team"], config, provider)
+
+    wu = WorkspaceUser.objects.get(user=user, workspace=workspace)
+    assert wu.permissions == "MEMBER"
+    assert wu.role_id == role.id
+
+
+@pytest.mark.django_db
+def test_updates_the_granular_role_on_an_existing_membership(data_fixture, provider):
+    user = data_fixture.create_user()
+    workspace = data_fixture.create_workspace()
+    reader = _role(workspace, "Reader")
+    editor = _role(workspace, "Editor")
+    data_fixture.create_user_workspace(
+        workspace=workspace, user=user, permissions="MEMBER", order=0, role=reader
+    )
+    config = _config(
+        [
+            WorkspaceRoleMapping(
+                group="team",
+                workspace_id=workspace.id,
+                role="MEMBER",
+                granular_role="Editor",
+            )
+        ]
+    )
+
+    sync_workspace_memberships(user, ["team"], config, provider)
+
+    wu = WorkspaceUser.objects.get(user=user, workspace=workspace)
+    assert wu.role_id == editor.id
+
+
+@pytest.mark.django_db
+def test_dropping_granular_role_from_the_mapping_clears_it(data_fixture, provider):
+    # The sync is authoritative for the workspaces it maps, so removing granular_role
+    # restores unrestricted member access on the next login.
+    user = data_fixture.create_user()
+    workspace = data_fixture.create_workspace()
+    _role(workspace)
+    with_role = _config(
+        [
+            WorkspaceRoleMapping(
+                group="team",
+                workspace_id=workspace.id,
+                role="MEMBER",
+                granular_role="Editor",
+            )
+        ]
+    )
+    sync_workspace_memberships(user, ["team"], with_role, provider)
+    assert WorkspaceUser.objects.get(user=user, workspace=workspace).role_id is not None
+
+    without_role = _config(
+        [WorkspaceRoleMapping(group="team", workspace_id=workspace.id, role="MEMBER")]
+    )
+    sync_workspace_memberships(user, ["team"], without_role, provider)
+
+    assert WorkspaceUser.objects.get(user=user, workspace=workspace).role_id is None
+
+
+@pytest.mark.django_db
+def test_membership_is_refused_when_the_granular_role_is_missing(
+    data_fixture, provider
+):
+    # Fail closed: granting the membership without the restricting role would hand out
+    # full member access, the opposite of what the mapping asks for.
+    user = data_fixture.create_user()
+    workspace = data_fixture.create_workspace()
+    config = _config(
+        [
+            WorkspaceRoleMapping(
+                group="team",
+                workspace_id=workspace.id,
+                role="MEMBER",
+                granular_role="DoesNotExist",
+            )
+        ]
+    )
+
+    sync_workspace_memberships(user, ["team"], config, provider)
+
+    assert not WorkspaceUser.objects.filter(user=user, workspace=workspace).exists()
+
+
+@pytest.mark.django_db
+def test_a_role_from_another_workspace_is_not_used(data_fixture, provider):
+    user = data_fixture.create_user()
+    workspace = data_fixture.create_workspace()
+    other_workspace = data_fixture.create_workspace()
+    _role(other_workspace, "Editor")
+    config = _config(
+        [
+            WorkspaceRoleMapping(
+                group="team",
+                workspace_id=workspace.id,
+                role="MEMBER",
+                granular_role="Editor",
+            )
+        ]
+    )
+
+    sync_workspace_memberships(user, ["team"], config, provider)
+
+    assert not WorkspaceUser.objects.filter(user=user, workspace=workspace).exists()
+
+
+@pytest.mark.django_db
+def test_strict_revokes_a_membership_whose_granular_role_disappeared(
+    data_fixture, provider
+):
+    user = data_fixture.create_user()
+    other = data_fixture.create_user()
+    workspace = data_fixture.create_workspace(user=other)
+    role = _role(workspace)
+    config = _config(
+        [
+            WorkspaceRoleMapping(
+                group="team",
+                workspace_id=workspace.id,
+                role="MEMBER",
+                granular_role="Editor",
+            )
+        ],
+        strict=True,
+    )
+    sync_workspace_memberships(user, ["team"], config, provider)
+    assert WorkspaceUser.objects.filter(user=user, workspace=workspace).exists()
+
+    role.delete()
+    sync_workspace_memberships(user, ["team"], config, provider)
+
+    assert not WorkspaceUser.objects.filter(user=user, workspace=workspace).exists()
+
+
+@pytest.mark.django_db
+def test_conflicting_mappings_resolve_admin_first(data_fixture, provider):
+    user = data_fixture.create_user()
+    workspace = data_fixture.create_workspace()
+    _role(workspace)
+    config = _config(
+        [
+            WorkspaceRoleMapping(
+                group="team",
+                workspace_id=workspace.id,
+                role="MEMBER",
+                granular_role="Editor",
+            ),
+            WorkspaceRoleMapping(
+                group="leads", workspace_id=workspace.id, role="ADMIN"
+            ),
+        ]
+    )
+
+    sync_workspace_memberships(user, ["team", "leads"], config, provider)
+
+    wu = WorkspaceUser.objects.get(user=user, workspace=workspace)
+    assert wu.permissions == "ADMIN"
+    assert wu.role_id is None
+
+
+@pytest.mark.django_db
+def test_conflicting_member_mappings_apply_the_first(data_fixture, provider):
+    user = data_fixture.create_user()
+    workspace = data_fixture.create_workspace()
+    reader = _role(workspace, "Reader")
+    _role(workspace, "Editor")
+    config = _config(
+        [
+            WorkspaceRoleMapping(
+                group="team",
+                workspace_id=workspace.id,
+                role="MEMBER",
+                granular_role="Reader",
+            ),
+            WorkspaceRoleMapping(
+                group="leads",
+                workspace_id=workspace.id,
+                role="MEMBER",
+                granular_role="Editor",
+            ),
+        ]
+    )
+
+    sync_workspace_memberships(user, ["team", "leads"], config, provider)
+
+    assert (
+        WorkspaceUser.objects.get(user=user, workspace=workspace).role_id == reader.id
+    )
 
 
 @pytest.mark.django_db
