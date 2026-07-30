@@ -87,6 +87,8 @@ Saveroom provides various APIs detailed below:
   redo technically.
 * [Permissions handling Guide](technical/permissions-guide.md): How Saveroom implements
   permission checking technically.
+* [Table persistence](technical/table-persistence.md): How user created tables are stored
+  in PostgreSQL, how their schema is created and altered, and what deleting them does.
 
 ## Development
 
