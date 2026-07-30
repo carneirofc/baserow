@@ -1,0 +1,9 @@
+{
+    "type": "feature",
+    "message": "Workspace roles can be declared through the BASEROW_ROLES environment variable. Each role names a workspace, a role name and the set of operations it grants; the declaration is reconciled into the database after every migrate and by the new sync_roles management command. A member assigned a role may only perform the operations it grants, while a member without one keeps full member access.",
+    "issue_origin": "github",
+    "issue_number": 8,
+    "domain": "core",
+    "bullet_points": [],
+    "created_at": "2026-07-30"
+}
