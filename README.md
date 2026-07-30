@@ -68,6 +68,10 @@ the source of truth and is validated at startup, so a bad configuration fails fa
   global staff / superuser to members of the named IdP groups.
 * **Group → workspace membership mapping** — `workspace_mappings` places users into
   specific workspaces with an `ADMIN` or `MEMBER` role based on their IdP groups.
+* **Group → granular role mapping** — a `workspace_mappings` entry may also name a
+  `granular_role` declared in `BASEROW_ROLES`, restricting the member to that role's
+  operations (see below). If the named role is missing the membership is refused rather
+  than silently granted unrestricted.
 * **Strict membership** — with `strict_membership: true`, SSO-granted workspace
   memberships are revoked when the user loses the mapped group. Memberships added
   manually are never touched.
@@ -90,12 +94,38 @@ BASEROW_OIDC_PROVIDERS='[
     "groups_claim": "groups",
     "staff_groups": ["baserow-admins"],
     "workspace_mappings": [
-      { "group": "engineering", "workspace": 1, "role": "MEMBER" }
+      { "group": "engineering", "workspace": 1, "role": "MEMBER",
+        "granular_role": "Editor" }
     ],
     "strict_membership": true
   }
 ]'
 ```
+
+### Declarative workspace roles (RBAC)
+
+A workspace role is a named set of operations a member is restricted to. Roles are
+declared through `BASEROW_ROLES` and reconciled into the database after every migrate
+(or on demand with `./baserow manage sync_roles`, needed when the workspace is created
+after deploy). A member without a role keeps full member access, so existing installs
+are unaffected until a role is assigned.
+
+```jsonc
+BASEROW_ROLES='[
+  {
+    "workspace": 1,
+    "name": "Editor",
+    "operations": [
+      "database.table.read",
+      "database.table.update_row",
+      "database.table.create_row"
+    ]
+  }
+]'
+```
+
+Combined with `granular_role` above, an IdP group determines both which workspaces a
+user lands in and exactly what they may do there.
 
 ### Per-application-type admin feature flags
 
