@@ -133,45 +133,15 @@ docker rm baserow
 
 ## Upgrading PostgreSQL database from a previous version
 
-On November 2023 [PostgreSQL released](https://www.postgresql.org/about/news/postgresql-161-155-1410-1313-1217-and-1122-released-2749/) a final update for version 11 of the database together with an end-of-life notice for this version. This means, that PostgreSQL 11 will no longer receive security and bug fixes.
-
-If you are using an embedded PostgreSQL database (an embedded one is when you do _not_ provide `POSTGRESQL_*` environment variables when launching Baserow, as opposed to an external one, where you provide connection details to your external PostgreSQL instance), and if you restart or try to run a new Baserow instance, if your data was initialized with PostgreSQL version 11, you'll notice that it doesn't start up anymore and raises an error because you need to upgrade your data directory to be compatible with PostgreSQL version 15. Baserow provides an image to automatically upgrade your data directory to PostgreSQL version 15, which is now the version officially supported by Baserow.
-
-If you don't want to upgrade at this point in time, jump to [Legacy PostgreSQL version](#legacy-postgresql-version) section below. Although, be aware, that we will only support PostgreSQL 11 for a limited amount of time and that this version won't receive official updates from PostgreSQL anymore.
-
-### Upgrade process
-
-To upgrade your data directory to be compatible with PostgreSQL 15, follow these steps:
-
-**CAUTION:** before doing this, make sure to [Back up your Baserow instance](#backing-up-and-restoring-baserow) to avoid potential data loss.
-
-1. Make sure there are no Baserow instances running with `docker ps`. If Baserow is running, stop the container with `docker stop baserow`.
-2. Run this command to run a Docker image which will automatically update your data directory to be compatible with PostgreSQL version 15:
+The all-in-one image now embeds **PostgreSQL 18**, up from 15 in earlier releases. A PostgreSQL data directory can only be read by the major version that created it, so if you use the embedded database (an embedded one is when you do _not_ provide `POSTGRESQL_*` environment variables when launching Baserow, as opposed to an external one, where you provide connection details to your external PostgreSQL instance), the container will refuse to start against a version 15 data directory and print:
 
 ```
-docker run \
-  --name baserow-pgautoupgrade \
-  # ALL THE ARGUMENTS YOU NORMALLY ADD TO YOUR BASEROW INSTANCE
-  --restart no \
-  baserow/baserow-pgautoupgrade:1.30.1
+Your PostgreSQL data directory was initialized with version 15, but this image is running version 18.
 ```
 
-3. If the upgrade was successful, the container should exit with a success message, you can now start Baserow as you did before.
-4. If the upgrade wasn't successful, the upgrade image should output verbose logs of where exactly it failed. In that case, copy all of the log output and refer to the [issue tracker](https://github.com/carneirofc/baserow/issues) for further assistance.
+Follow the [embedded PostgreSQL upgrade runbook](../runbooks/upgrade-embedded-postgres.md) to dump your data with your previous image and restore it into a fresh volume. Your old volume is left untouched, so you can roll back at any point.
 
-### Legacy PostgreSQL version
-
-Starting from January 1, 2025, we will no longer create new images with PostgreSQL 11. If you are using the embedded PostgreSQL version in a Baserow version before 1.30 and want to upgrade to the latest version, you must first use the latest `pgautoupgrade` image to upgrade PostgreSQL to version 15, and then upgrade to the latest version of Baserow. If you do not wish to upgrade PostgreSQL, version 1.30.1 is the last image we provide with PostgreSQL 11, but it will not receive any updates.
-
-To run the latest Baserow image that uses the legacy PostgreSQL 11 version, use the following command:
-
-```
-docker run \
-  --name baserow-pg11 \
-  # ALL THE ARGUMENTS YOU NORMALLY ADD TO YOUR BASEROW INSTANCE
-  --restart unless-stopped \
-  baserow/baserow-pg11:1.30.1
-```
+If you use an **external** PostgreSQL server, none of this applies — upgrade that server on your own schedule. Baserow supports PostgreSQL >= 14.
 
 ## Example Commands
 

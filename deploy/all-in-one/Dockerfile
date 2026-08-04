@@ -12,15 +12,21 @@ FROM caddy:${CADDY_VERSION} AS caddy_image
 
 # =============================================================================
 # Base - system dependencies (cached independently of source images)
+#
+# Ubuntu 26.04 LTS, matching backend/Dockerfile and web-frontend/Dockerfile. The
+# backend venv copied in below is built against Ubuntu's python3 (3.14), so this
+# stage must provide the same interpreter. PostgreSQL and its client come from
+# Ubuntu itself, so the image carries no third-party apt repository.
 # =============================================================================
-FROM python:3.14.6-slim-trixie AS base
+FROM ubuntu:26.04 AS base
 ARG UID
 ARG GID
+ARG TARGETARCH
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 ENV DOCKER_USER=baserow_docker_user \
-    POSTGRES_VERSION=15 \
+    POSTGRES_VERSION=18 \
     BASEROW_IMAGE_TYPE="all-in-one" \
     DATA_DIR=/baserow/data \
     BASEROW_PLUGIN_DIR=/baserow/data/plugins
@@ -29,11 +35,9 @@ ENV DOCKER_USER=baserow_docker_user \
 RUN apt-get update && \
     apt-get upgrade -y && \
     DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get install --no-install-recommends -y \
-    curl gnupg2 ca-certificates && \
-    curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --batch --dearmor -o /usr/share/keyrings/pgdg.gpg && \
-    echo "deb [signed-by=/usr/share/keyrings/pgdg.gpg] https://apt.postgresql.org/pub/repos/apt trixie-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
-    apt-get update && \
-    DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get install --no-install-recommends -y \
+    curl ca-certificates \
+    python3 \
+    python3-venv \
     supervisor \
     psmisc \
     gawk \
@@ -56,16 +60,39 @@ RUN apt-get update && \
 
 COPY --from=caddy_image /usr/bin/caddy /usr/bin/caddy
 
-# Copy Node.js, npm, and yarn from web-frontend image (avoids insecure curl|bash from NodeSource)
-COPY --from=web_frontend_image /usr/local/bin/node /usr/local/bin/node
-COPY --from=web_frontend_image /usr/local/lib/node_modules /usr/local/lib/node_modules
-COPY --from=web_frontend_image /opt/yarn-v1.22.22 /opt/yarn-v1.22.22
-RUN ln -s /opt/yarn-v1.22.22/bin/yarn /usr/local/bin/yarn
+# Node.js from the official nodejs.org tarball, verified by SHA256. This repeats
+# the recipe in web-frontend/Dockerfile's node-base stage rather than copying the
+# runtime out of the web-frontend image: that image's prod target deletes npm and
+# yarn to shed their CVEs, but the plugin scripts in deploy/plugins/ run
+# `yarn add`/`yarn remove` inside this image. Keep NODE_VERSION, the SHA256s and
+# YARN_VERSION in sync with web-frontend/Dockerfile.
+ENV NODE_VERSION=v24.18.1 \
+    NODE_SHA256_amd64=d6c664df3f3f61458e8c277585571328522d705166723a7c7823a9253a4d15a0 \
+    NODE_SHA256_arm64=7201e3a09dc825bac57867c81913e2b8f0ef87d04cb9082af4cda82f6ff3d88c \
+    YARN_VERSION=1.22.22
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
+    apt-get install --no-install-recommends -y xz-utils && \
+    case "${TARGETARCH:-amd64}" in \
+    amd64) NODE_ARCH=x64; NODE_SHA256="$NODE_SHA256_amd64" ;; \
+    arm64) NODE_ARCH=arm64; NODE_SHA256="$NODE_SHA256_arm64" ;; \
+    *) echo "unsupported architecture: ${TARGETARCH}" >&2; exit 1 ;; \
+    esac && \
+    curl -fsSL -o /tmp/node.tar.xz \
+    "https://nodejs.org/dist/${NODE_VERSION}/node-${NODE_VERSION}-linux-${NODE_ARCH}.tar.xz" && \
+    echo "${NODE_SHA256}  /tmp/node.tar.xz" | sha256sum -c - && \
+    tar -xJf /tmp/node.tar.xz -C /usr/local --strip-components=1 --no-same-owner \
+    --exclude=CHANGELOG.md --exclude=LICENSE --exclude=README.md && \
+    rm /tmp/node.tar.xz && \
+    npm install -g "yarn@${YARN_VERSION}" && \
+    npm cache clean --force && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* && \
+    node --version && yarn --version
 
 # Copy su-exec from backend image (already built with pinned version + SHA256 verification)
 COPY --from=backend_image /usr/local/bin/su-exec /usr/local/bin/su-exec
 
-ENV POSTGRES_LOCATION=/etc/postgresql/15/main \
+ENV POSTGRES_LOCATION=/etc/postgresql/${POSTGRES_VERSION}/main \
     UV_PROJECT_ENVIRONMENT=/baserow/venv \
     UV_CACHE_DIR=/tmp/baserow_uv_cache \
     UV_VERBOSE=1 \
@@ -113,14 +140,13 @@ ARG GID
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-# Install postgres + redis (PGDG repo already added in base stage)
-RUN curl -fsSL https://packages.redis.io/gpg | gpg --batch --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg && \
-    echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb trixie main" > /etc/apt/sources.list.d/redis.list && \
-    apt-get update && \
+# Install postgres + redis, both from the Ubuntu archive so no third-party apt
+# repository is needed.
+RUN apt-get update && \
     apt-get install --no-install-recommends -y \
     "postgresql-${POSTGRES_VERSION}" \
     "postgresql-${POSTGRES_VERSION}-pgvector" \
-    redis \
+    redis-server \
     && apt-get clean && rm -rf /var/lib/apt/lists/* \
     && \
     # Setup redis

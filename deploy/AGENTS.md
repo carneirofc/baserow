@@ -19,6 +19,9 @@ The root `docker-compose.yaml` / `docker-compose.yml` and `Caddyfile*` are the l
 - This is a FOSS fork: image references, registries, chart names, and branding must point at this fork's infrastructure, **not** Baserow B.V. Do not reintroduce upstream pointers.
 - Keep `values-openshift.yaml` compatible with OpenShift's restricted SCC (no fixed UIDs/root, arbitrary-UID-safe) when editing the chart.
 - Bump `Chart.yaml` `version`/`appVersion` on chart changes; keep `Chart.lock` and subcharts consistent.
+- All three images (`backend/Dockerfile`, `web-frontend/Dockerfile`, `all-in-one/Dockerfile`) build on `ubuntu:26.04` and take PostgreSQL 18 and Redis from the Ubuntu archive — no third-party apt repositories. The all-in-one copies the backend venv, so its base must keep providing the same `python3` as the backend image.
+- Node is installed from the SHA256-pinned nodejs.org tarball in both `web-frontend/Dockerfile` (`node-base`) and `all-in-one/Dockerfile`; keep `NODE_VERSION`, the per-arch SHA256s and `YARN_VERSION` identical in both. The all-in-one installs its own copy because the web-frontend `prod` target deletes npm/yarn, which `plugins/*.sh` needs.
+- Bumping the embedded PostgreSQL major version is a breaking change for all-in-one users: update `docs/runbooks/upgrade-embedded-postgres.md` and the version guard in `all-in-one/supervisor/docker-postgres-setup.sh` together.
 
 ## Work Guidance
 
