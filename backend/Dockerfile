@@ -1,5 +1,8 @@
 # syntax=docker/dockerfile:1.4
-ARG PYTHON_BASE_IMAGE="python:3.14.6-slim-trixie"
+# Ubuntu 26.04 LTS ships Python 3.14 as the default `python3`, matching
+# requires-python in pyproject.toml, and carries five years of Canonical
+# security updates.
+ARG PYTHON_BASE_IMAGE="ubuntu:26.04"
 ARG UID="9999"
 ARG GID="9999"
 
@@ -7,7 +10,7 @@ ARG GID="9999"
 # Builder for su-exec (replaces gosu, safer with smaller footprint)
 # Pinned to v0.2 (commit 212b75144bbc) with SHA256 verification
 # =============================================================================
-FROM debian:trixie-slim AS tool-builder
+FROM ubuntu:26.04 AS tool-builder
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -41,6 +44,10 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     apt-get install -y --no-install-recommends \
     build-essential \
     libpq-dev \
+    # Ubuntu's default python3 is 3.14; uv builds the venv against it
+    python3 \
+    python3-dev \
+    python3-venv \
     # uv needs the git CLI to fetch git-sourced dependencies (pysaml2 fork)
     git
 
@@ -55,7 +62,7 @@ ENV UV_PYTHON_DOWNLOADS=0 \
     PYTHONPATH="/baserow/backend/src"
 
 # hadolint ignore=DL3022
-COPY --from=ghcr.io/astral-sh/uv:0.9.26 /uv /uvx /bin/
+COPY --from=ghcr.io/astral-sh/uv:0.12.0 /uv /uvx /bin/
 
 # Create baserow directory structure (including subdirs for COPY targets)
 RUN mkdir -p /baserow/ && chown -R $UID:$GID /baserow/
@@ -170,6 +177,8 @@ ARG GID
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
+    python3 \
+    python3-venv \
     gettext \
     xmlsec1 \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -190,7 +199,7 @@ RUN groupadd --system --gid $GID ${DOCKER_USER} && \
 COPY --from=tool-builder /usr/local/bin/su-exec /usr/local/bin/su-exec
 COPY --from=tool-builder /usr/bin/tini /usr/bin/tini
 # hadolint ignore=DL3022
-COPY --from=ghcr.io/astral-sh/uv:0.9.26 /uv /uvx /bin/
+COPY --from=ghcr.io/astral-sh/uv:0.12.0 /uv /uvx /bin/
 
 # Create baserow directory structure (including subdirs for COPY targets)
 RUN mkdir -p /baserow/backend/reports /baserow/media && \
@@ -222,15 +231,16 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     apt-get update && \
     apt-get upgrade -y && \
-    apt-get install -y --no-install-recommends curl ca-certificates gnupg \
-    && curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --batch --dearmor -o /usr/share/keyrings/pgdg.gpg \
-    && echo "deb [signed-by=/usr/share/keyrings/pgdg.gpg] https://apt.postgresql.org/pub/repos/apt trixie-pgdg main" > /etc/apt/sources.list.d/pgdg.list \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends \
+    apt-get install -y --no-install-recommends \
     build-essential \
+    python3 \
     python3-dev \
+    python3-venv \
     ca-certificates \
-    postgresql-client-15 \
+    # Ubuntu 26.04 ships postgresql-client 18, which dumps and connects to
+    # every server version Baserow supports. Using it drops the third-party
+    # apt.postgresql.org repository from the image entirely.
+    postgresql-client-18 \
     gettext \
     xmlsec1 \
     curl \
@@ -265,7 +275,7 @@ COPY --from=tool-builder /usr/local/bin/su-exec /usr/local/bin/su-exec
 COPY --from=tool-builder /usr/bin/tini /usr/bin/tini
 COPY --from=tool-builder /usr/bin/dos2unix /usr/local/bin/dos2unix
 # hadolint ignore=DL3022
-COPY --from=ghcr.io/astral-sh/uv:0.9.26 /uv /uvx /bin/
+COPY --from=ghcr.io/astral-sh/uv:0.12.0 /uv /uvx /bin/
 
 # Create directory structure to install dependencies
 RUN mkdir -p /baserow/backend/docker /baserow/media && \
@@ -315,7 +325,7 @@ ARG GID
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-ENV POSTGRES_VERSION=15 \
+ENV POSTGRES_VERSION=18 \
     DOCKER_USER=baserow_docker_user \
     BASEROW_IMAGE_TYPE="backend" \
     UV_PROJECT_ENVIRONMENT=/baserow/venv \
@@ -324,14 +334,15 @@ ENV POSTGRES_VERSION=15 \
     PYTHONPATH="/baserow/backend/src" \
     DJANGO_SETTINGS_MODULE='baserow.config.settings.base'
 
-# Runtime dependencies only
+# Runtime dependencies only. postgresql-client comes from Ubuntu itself, so the
+# image carries no third-party apt repository. pg_dump 18 can dump every server
+# version Baserow supports (>= 14).
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install -y --no-install-recommends curl ca-certificates gnupg \
-    && curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --batch --dearmor -o /usr/share/keyrings/pgdg.gpg \
-    && echo "deb [signed-by=/usr/share/keyrings/pgdg.gpg] https://apt.postgresql.org/pub/repos/apt trixie-pgdg main" > /etc/apt/sources.list.d/pgdg.list \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends \
+    apt-get install -y --no-install-recommends \
+    ca-certificates \
+    python3 \
+    python3-venv \
     xmlsec1 \
     gettext \
     postgresql-client-${POSTGRES_VERSION} \

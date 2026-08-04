@@ -1,5 +1,9 @@
 # syntax=docker/dockerfile:1.4
-ARG NODE_BASE_IMAGE="node:24.18.0-trixie-slim"
+# Ubuntu 26.04 LTS base with Node installed from the official nodejs.org
+# tarball. Ubuntu's own apt only carries Node 22, and this project requires 24
+# (see .nvmrc and docs/installation/supported.md), so the runtime is pinned by
+# SHA256 the same way su-exec is rather than trusting a third-party apt repo.
+ARG NODE_BASE_IMAGE="ubuntu:26.04"
 ARG UID="9999"
 ARG GID="9999"
 
@@ -7,7 +11,7 @@ ARG GID="9999"
 # Builder for su-exec (replaces gosu, smaller footprint)
 # Pinned to v0.2 (commit 212b75144bbc) with SHA256 verification
 # =============================================================================
-FROM debian:trixie-slim AS tool-builder
+FROM ubuntu:26.04 AS tool-builder
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -26,9 +30,45 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 
 
 # =============================================================================
+# Node runtime on Ubuntu. Every stage below builds on this instead of pulling
+# the Debian-based official node image.
+# =============================================================================
+FROM ${NODE_BASE_IMAGE} AS node-base
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+ARG TARGETARCH
+ENV NODE_VERSION=v24.18.1 \
+    NODE_SHA256_amd64=d6c664df3f3f61458e8c277585571328522d705166723a7c7823a9253a4d15a0 \
+    NODE_SHA256_arm64=7201e3a09dc825bac57867c81913e2b8f0ef87d04cb9082af4cda82f6ff3d88c \
+    YARN_VERSION=1.22.22
+
+# hadolint ignore=DL3008
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y --no-install-recommends ca-certificates curl xz-utils && \
+    case "${TARGETARCH:-amd64}" in \
+    amd64) NODE_ARCH=x64; NODE_SHA256="$NODE_SHA256_amd64" ;; \
+    arm64) NODE_ARCH=arm64; NODE_SHA256="$NODE_SHA256_arm64" ;; \
+    *) echo "unsupported architecture: ${TARGETARCH}" >&2; exit 1 ;; \
+    esac && \
+    curl -fsSL -o /tmp/node.tar.xz \
+    "https://nodejs.org/dist/${NODE_VERSION}/node-${NODE_VERSION}-linux-${NODE_ARCH}.tar.xz" && \
+    echo "${NODE_SHA256}  /tmp/node.tar.xz" | sha256sum -c - && \
+    tar -xJf /tmp/node.tar.xz -C /usr/local --strip-components=1 --no-same-owner \
+    --exclude=CHANGELOG.md --exclude=LICENSE --exclude=README.md && \
+    rm /tmp/node.tar.xz && \
+    npm install -g "yarn@${YARN_VERSION}" && \
+    npm cache clean --force && \
+    node --version && yarn --version
+
+
+# =============================================================================
 # CI builder stage
 # =============================================================================
-FROM ${NODE_BASE_IMAGE} AS builder-ci
+FROM node-base AS builder-ci
 ARG UID
 ARG GID
 
@@ -52,7 +92,7 @@ RUN --mount=type=cache,target=$YARN_CACHE_FOLDER,uid=$UID,gid=$GID,sharing=locke
 # =============================================================================
 # Production builder stage
 # =============================================================================
-FROM ${NODE_BASE_IMAGE} AS builder-prod
+FROM node-base AS builder-prod
 ARG UID
 ARG GID
 
@@ -93,7 +133,7 @@ FROM busybox:musl AS busybox-helper
 # =============================================================================
 # CI target - used in CI pipelines
 # =============================================================================
-FROM ${NODE_BASE_IMAGE} AS ci
+FROM node-base AS ci
 ARG UID
 ARG GID
 
@@ -145,7 +185,7 @@ CMD ["nuxt-prod"]
 # =============================================================================
 # Development target - used for local development with live reload
 # =============================================================================
-FROM ${NODE_BASE_IMAGE} AS dev
+FROM node-base AS dev
 ARG UID
 ARG GID
 
@@ -174,8 +214,10 @@ ENV DOCKER_USER=baserow_docker_user \
     PATH="/baserow/web-frontend/node_modules/.bin:$PATH" \
     YARN_CACHE_FOLDER=/tmp/.yarn-dev-cache
 
-# Install rust-just for running justfiles
-RUN pip3 install --break-system-packages --no-cache-dir rust-just==1.43.1
+# Install rust-just for running justfiles. Keep in sync with the rust-just
+# requirement in backend/pyproject.toml (and the version backend/uv.lock
+# resolves) so both dev containers run the same just.
+RUN pip3 install --break-system-packages --no-cache-dir rust-just==1.57.0
 
 COPY --from=tool-builder /usr/local/bin/su-exec /usr/local/bin/su-exec
 COPY --from=tool-builder /usr/bin/tini /usr/bin/tini
@@ -230,7 +272,7 @@ CMD ["nuxt-dev"]
 # =============================================================================
 # Production target - minimal image with only runtime requirements
 # =============================================================================
-FROM ${NODE_BASE_IMAGE} AS local
+FROM node-base AS local
 ARG UID
 ARG GID
 
@@ -250,8 +292,10 @@ COPY --from=busybox-helper /bin/wget /usr/local/bin/wget
 RUN apt-get update && apt-get upgrade -y --no-install-recommends \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Remove npm (not needed at runtime) to eliminate CVEs in its bundled deps (minimatch, glob, etc.)
-RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx
+# Remove npm and yarn (not needed at runtime - the entrypoint runs node
+# directly) to eliminate CVEs in their bundled deps (minimatch, glob, etc.)
+RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx \
+    /usr/local/lib/node_modules/yarn /usr/local/bin/yarn /usr/local/bin/yarnpkg
 
 RUN groupadd --system --gid $GID ${DOCKER_USER} && \
     useradd --shell /bin/bash -l -u $UID -g $GID -o -c "" -d /baserow -m ${DOCKER_USER} && \
