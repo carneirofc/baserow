@@ -51,8 +51,10 @@ def test_not_capture_event_if_not_enabled(data_fixture):
 
 
 @pytest.mark.django_db
-@override_settings(POSTHOG_ENABLED=True)
+@override_settings(POSTHOG_ENABLED=True, POSTHOG_PROJECT_API_KEY="test-api-key")
 def test_capture_event_if_enabled(data_fixture):
+    # A project API key is required: posthog disables the client on an empty key
+    # regardless of the `disabled` argument passed to the constructor.
     posthog = get_posthog_client()
 
     assert posthog.disabled is False
