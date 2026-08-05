@@ -138,7 +138,7 @@ class BaserowMCPServer:
             A response that sends nothing, because the SSE transport already sent one.
 
             Returning a normal Response here makes Starlette send a second
-            http.response.start, which uvicorn rejects (Sentry BASEROW-SAAS-BACKEND-Z4).
+            http.response.start, which uvicorn rejects.
             """
 
             async def __call__(self, scope, receive, send) -> None:

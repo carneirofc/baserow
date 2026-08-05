@@ -206,8 +206,8 @@ class DjangoChannelsSseServerTransport:
         except ValidationError as err:
             # Client error: answer 400 and log it. Don't relay the error into the
             # SSE stream — group_listener would re-parse the error text as a message,
-            # fail again, and push a misleading exception to the server's read stream
-            # (Sentry BASEROW-SAAS-BACKEND-12K).
+            # fail again, and push a misleading exception to the server's read
+            # stream.
             logger.warning(f"Failed to parse message: {err}")
             response = Response("Could not parse message", status_code=400)
             await response(scope, receive, send)

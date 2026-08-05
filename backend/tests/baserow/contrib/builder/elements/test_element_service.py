@@ -620,8 +620,8 @@ def test_heal_orphan_elements_service_returns_patch_and_persists(data_fixture):
 
 
 @pytest.mark.django_db
-@patch("sentry_sdk.capture_message")
-def test_heal_orphan_elements_reports_to_sentry(capture_message_mock, data_fixture):
+@patch("baserow.contrib.builder.elements.handler.logger")
+def test_heal_orphan_elements_is_logged(logger_mock, data_fixture):
     user = data_fixture.create_user()
     page = data_fixture.create_builder_page(user=user)
     data_fixture.create_builder_heading_element(page=page)
@@ -629,24 +629,21 @@ def test_heal_orphan_elements_reports_to_sentry(capture_message_mock, data_fixtu
 
     ElementHandler().heal_orphan_elements(page)
 
-    capture_message_mock.assert_called_once()
-    # The message reports how many elements were healed, at warning level.
-    assert "1 orphan" in capture_message_mock.call_args[0][0]
-    assert capture_message_mock.call_args.kwargs["level"] == "warning"
+    logger_mock.warning.assert_called_once()
+    # The log reports how many elements were healed.
+    assert logger_mock.warning.call_args.kwargs["healed_count"] == 1
 
 
 @pytest.mark.django_db
-@patch("sentry_sdk.capture_message")
-def test_heal_orphan_elements_does_not_report_when_consistent(
-    capture_message_mock, data_fixture
-):
+@patch("baserow.contrib.builder.elements.handler.logger")
+def test_heal_orphan_elements_does_not_log_when_consistent(logger_mock, data_fixture):
     user = data_fixture.create_user()
     page = data_fixture.create_builder_page(user=user)
     data_fixture.create_builder_heading_element(page=page)
 
     ElementHandler().heal_orphan_elements(page)
 
-    capture_message_mock.assert_not_called()
+    logger_mock.warning.assert_not_called()
 
 
 @pytest.mark.django_db
@@ -733,8 +730,8 @@ def test_heal_reconciles_orphan_and_stale_point_together(data_fixture):
 
 
 @pytest.mark.django_db
-@patch("sentry_sdk.capture_message")
-def test_heal_reports_pruned_stale_points_to_sentry(capture_message_mock, data_fixture):
+@patch("baserow.contrib.builder.elements.handler.logger")
+def test_heal_logs_pruned_stale_points(logger_mock, data_fixture):
     user = data_fixture.create_user()
     page = data_fixture.create_builder_page(user=user)
 
@@ -745,9 +742,8 @@ def test_heal_reports_pruned_stale_points_to_sentry(capture_message_mock, data_f
 
     ElementHandler().heal_orphan_elements(page)
 
-    capture_message_mock.assert_called_once()
-    assert "1 stale" in capture_message_mock.call_args[0][0]
-    assert capture_message_mock.call_args.kwargs["level"] == "warning"
+    logger_mock.warning.assert_called_once()
+    assert logger_mock.warning.call_args.kwargs["pruned_count"] == 1
 
 
 @pytest.mark.django_db

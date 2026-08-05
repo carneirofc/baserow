@@ -1437,10 +1437,6 @@ PG_FULLTEXT_SEARCH_UPDATE_DATA_THROTTLE_SECONDS = float(
     os.getenv("BASEROW_PG_FULLTEXT_SEARCH_UPDATE_DATA_THROTTLE_SECONDS", 2)  # seconds
 )
 
-POSTHOG_PROJECT_API_KEY = os.getenv("POSTHOG_PROJECT_API_KEY", "")
-POSTHOG_HOST = os.getenv("POSTHOG_HOST") or None
-POSTHOG_ENABLED = bool(POSTHOG_PROJECT_API_KEY)
-
 BASEROW_BUILDER_DOMAINS = os.getenv("BASEROW_BUILDER_DOMAINS", None)
 BASEROW_BUILDER_DOMAINS = (
     BASEROW_BUILDER_DOMAINS.split(",") if BASEROW_BUILDER_DOMAINS is not None else []
@@ -1474,50 +1470,6 @@ BASEROW_LAZY_LOADED_LIBRARIES = [
     "numpy",
 ]
 
-
-SENTRY_BACKEND_DSN = os.getenv("SENTRY_BACKEND_DSN")
-SENTRY_DSN = SENTRY_BACKEND_DSN or os.getenv("SENTRY_DSN")
-
-if SENTRY_DSN:
-    import sentry_sdk
-    from loguru import logger
-    from sentry_sdk.integrations.django import DjangoIntegration
-    from sentry_sdk.scrubber import DEFAULT_DENYLIST, EventScrubber
-
-    from baserow.core.sentry import (
-        ConsoleSentryTransport,
-        drop_expected_asyncio_websocket_disconnect_events,
-    )
-
-    SENTRY_DENYLIST = DEFAULT_DENYLIST + ["username", "email", "name"]
-    sentry_transport = None
-
-    if SENTRY_DSN == "fake":
-        logger.info(
-            "[SENTRY] Using fake backend Sentry DSN, events will be logged to the "
-            "console."
-        )
-        SENTRY_DSN = "https://public@example.invalid/1"
-        sentry_transport = ConsoleSentryTransport()
-
-    # Sample rate for performance tracing (transactions), disabled when the console transport is used
-    # (fake DSN in dev) to avoid spamming transaction envelopes to the console.
-    sentry_traces_sample_rate = (
-        0 if sentry_transport else float(os.getenv("SENTRY_TRACES_SAMPLE_RATE", 0.01))
-    )
-
-    sentry_sdk.init(
-        dsn=SENTRY_DSN,
-        integrations=[DjangoIntegration(signals_spans=False, middleware_spans=False)],
-        traces_sample_rate=sentry_traces_sample_rate,
-        send_default_pii=False,
-        before_send=drop_expected_asyncio_websocket_disconnect_events,
-        event_scrubber=EventScrubber(recursive=True, denylist=SENTRY_DENYLIST),
-        environment=os.getenv("SENTRY_ENVIRONMENT", ""),
-        transport=sentry_transport,
-    )
-else:
-    BASEROW_LAZY_LOADED_LIBRARIES.append("sentry_sdk")
 
 BASEROW_TWO_WAY_SYNC_MAX_CONSECUTIVE_FAILURES = int(
     os.getenv("BASEROW_TWO_WAY_SYNC_MAX_CONSECUTIVE_FAILURES", "") or 8

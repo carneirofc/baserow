@@ -110,15 +110,14 @@ This fork makes no outbound calls to Baserow B.V. or anyone else. The upstream
 onboarding flow shipped a pre-checked box that sent your users' email, role, company
 size and country to `api.baserow.io`; that has been removed.
 
-Optional observability hooks remain, and are off unless you turn them on:
+Error reporting and product analytics have been removed entirely. One optional
+observability hook remains, and is off unless you turn it on:
 
 | Variable | Default | Effect |
 | --- | --- | --- |
-| `SENTRY_DSN` | unset | Error reporting, to the DSN you supply |
 | `BASEROW_ENABLE_OTEL` | unset | OpenTelemetry traces, to the endpoint you supply |
-| `POSTHOG_PROJECT_API_KEY` | unset | Product analytics, to the project you supply |
 
-All three are FOSS clients and only ever report to endpoints you configure.
+It is a FOSS client and only ever reports to the endpoint you configure.
 
 ## Run the container
 
