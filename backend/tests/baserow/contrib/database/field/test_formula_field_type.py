@@ -2461,7 +2461,7 @@ def test_periodic_update_does_not_crash_on_outer_if_after_inner_invalidated(
     data_fixture,
 ):
     """
-    Regression test for Sentry issue BASEROW-SAAS-BACKEND-5 / GH #5371.
+    Regression test for GH #5371.
 
     When deleting a field referenced by a chain of formulas, the propagation
     used to leave the FieldCache populated with the pre-mutation instance of

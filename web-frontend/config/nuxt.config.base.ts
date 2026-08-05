@@ -57,7 +57,7 @@ export default defineNuxtConfig({
       version: pkg.version,
     },
   },
-  modules: [...baserow.modules, '@nuxtjs/i18n', '@sentry/nuxt/module'],
+  modules: [...baserow.modules, '@nuxtjs/i18n'],
   i18n: {
     strategy: 'no_prefix',
     defaultLocale: 'en',
@@ -127,7 +127,6 @@ export default defineNuxtConfig({
         '@vue/devtools-kit',
         'vuex',
         'vuejs3-datepicker',
-        'posthog-js',
         'flush-promises', // CJS
         'papaparse', // CJS
         'mitt',
@@ -205,7 +204,6 @@ export default defineNuxtConfig({
         'chartjs-adapter-moment',
         'xlsx',
         '@tiptap/pm/transform',
-        '@sentry/core',
         'lodash/isObject',
       ],
     },

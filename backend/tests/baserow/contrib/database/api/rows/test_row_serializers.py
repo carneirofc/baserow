@@ -579,7 +579,7 @@ def test_get_row_validation_serializer_does_not_query_select_options_per_field(
     # The validation serializer builds a help text from each select field's options.
     # Those options are prefetched during model generation, so building the serializer
     # must not issue a query per select field (regression for the select option N+1 on
-    # the batch rows endpoint, Sentry BASEROW-SAAS-BACKEND-12V).
+    # the batch rows endpoint).
     table, _, _, _, _ = setup_interesting_test_table(data_fixture)
     model = table.get_model()
 

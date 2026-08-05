@@ -69,8 +69,6 @@ export default defineNuxtModule({
         baserowFrontendSameSiteCookie: 'lax',
         baserowFrontendCookiePrefix: '',
         baserowFrontendJobsPollingTimeoutMs: 2000,
-        posthogProjectApiKey: '',
-        posthogHost: '',
         baserowEmbeddedShareUrl: 'http://localhost:3000',
         baserowUsePgFulltextSearch: 'true',
         integrationLocalBaserowPageSizeLimit: 200,
@@ -84,10 +82,6 @@ export default defineNuxtModule({
         baserowDisableSupport: '',
         baserowIntegrationsPeriodicMinuteMin: '1',
         mediaUrl: 'http://localhost:4000/media/',
-        sentryDsn: '',
-        sentryEnvironment: '',
-        sentryTracesSampleRate: '0.01',
-        sentryReplaysOnErrorSampleRate: '0.1',
       }
     )
 
@@ -130,8 +124,6 @@ export default defineNuxtModule({
     addPlugin(resolve('plugins/papa.js'))
     addPlugin(resolve('plugins/ensureRender.js'))
     addPlugin(resolve('plugins/version.js'))
-    addPlugin(resolve('plugins/posthog.js'))
-    addPlugin(resolve('plugins/sentry-user.js'))
     addPlugin(resolve('plugins/vueDatepicker.js'))
     addPlugin(resolve('plugins/routeMounted.js'))
     addPlugin(resolve('plugins/storeRegister.js'))

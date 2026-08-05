@@ -29,7 +29,6 @@ const config: StorybookConfig = {
           'lodash-es',
           'mitt',
           'papaparse',
-          'posthog-js',
           'flush-promises',
           'vuex',
           'moment',

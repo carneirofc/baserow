@@ -7,7 +7,6 @@ from rest_framework.permissions import BasePermission
 from baserow.api.sessions import set_user_remote_addr_ip_from_request
 from baserow.core.api_clients.exceptions import ApiClientKeyDoesNotExist
 from baserow.core.api_clients.handler import ApiClientHandler
-from baserow.core.sentry import setup_user_in_sentry
 from baserow.core.telemetry.utils import setup_user_in_baggage_and_spans
 
 
@@ -65,7 +64,6 @@ class ApiClientAuthentication(BaseAuthentication):
         request.api_client = api_client
         set_user_remote_addr_ip_from_request(user, request)
         with setup_user_in_baggage_and_spans(user, request):
-            setup_user_in_sentry(user)
             return user, api_client
 
 

@@ -45,9 +45,6 @@
   },
   "dependencies": {
     "@nuxtjs/i18n": "10.6.0",
-    "@sentry/node": "10.69.0",
-    "@sentry/nuxt": "10.69.0",
-    "@sentry/vue": "10.69.0",
     "@tiptap/core": "^3.29.2",
     "@tiptap/extension-blockquote": "^3.29.2",
     "@tiptap/extension-bold": "^3.29.2",
@@ -118,7 +115,6 @@
     "nuxt": "^4.5.1",
     "papaparse": "5.5.4",
     "path-to-regexp": "8.4.2",
-    "posthog-js": "^1.409.4",
     "sass": "1.102.0",
     "thenby": "^1.4.1",
     "tippy.js": "^6.3.7",

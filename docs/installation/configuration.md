@@ -215,15 +215,6 @@ Baserow can throttle the number of concurrent requests a single user (or, option
 | ------------------------- | ------------------------------------------------------------------------------------------------------------------------ | -------- |
 | BASEROW\_BUILDER\_DOMAINS | A comma separated list of domain names that can be used as the domains to create sub domains in the application builder. |          |
 
-### Misc Configuration
-
-| Name                         | Description                                                                                                                                                                          | Defaults          |
-| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------- |
-| SENTRY\_DSN                  | If provided, will instantiate Sentry SDK for error monitoring for both Frontend and Backend.                                                                                         | "" (empty string) |
-| SENTRY\_BACKEND\_DSN         | If provided, will instantiate Sentry SDK for the backend with this DSN. It will override SENTRY\_DSN                                                                                 | "" (empty string) |
-| SENTRY\_TRACES\_SAMPLE\_RATE | The sample rate for Sentry performance tracing (transactions), shared by the backend and frontend. A float between 0 and 1, where 0 disables tracing and 1 traces every transaction. | 0.01              |
-| SENTRY\_REPLAYS\_ON\_ERROR\_SAMPLE\_RATE | The frontend sample rate for saving a Sentry session replay when an error occurs. A float between 0 and 1, where 0 disables error replays and 1 saves a replay for every error. | 0.1               |
-
 ### User file upload Configuration
 
 Baserow needs somewhere to store the following types of files:
@@ -366,9 +357,3 @@ domain than your Baserow, you need to make sure CORS is configured correctly.
 | BASEROW\_DISABLE\_PLUGIN\_INSTALL\_ON\_STARTUP | When set to any non-empty values no automatic startup check and/or install of plugins will be run. Disables the above two env variables. |
 | BASEROW\_PLUGIN\_DIR                           | **INTERNAL** Sets the folder where the Baserow plugin scripts look for plugins.                                                          | In the all-in-one image `/baserow/data/plugins`, otherwise `/baserow/plugins` |
 
-### Posthog configuration
-
-| Name                       | Description                                                     | Defaults |
-| -------------------------- | --------------------------------------------------------------- | -------- |
-| POSTHOG\_PROJECT\_API\_KEY | Set this to your Posthog project API key for product analytics. |          |
-| POSTHOG\_HOST              | Set this to your Posthog host for product analytics.            |          |
