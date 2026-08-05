@@ -30,7 +30,8 @@ The root `docker-compose.yaml` / `docker-compose.yml` and `Caddyfile*` are the l
 
 ## Verification
 
-No repo-wired check yet; use `helm lint`/`helm template` and a local `docker compose` bring-up.
+- `.github/workflows/publish-helm-chart.yml` lints, renders, and packages the chart on PRs touching `deploy/helm/**`, and on `v*` tags pushes it to `oci://ghcr.io/<owner>/<repo>/charts/baserow` (chart version from `Chart.yaml`).
+- Locally: `helm lint`/`helm template` and a `docker compose` bring-up.
 
 ## Child DOX Index
 
