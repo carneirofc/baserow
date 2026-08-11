@@ -602,6 +602,19 @@ export class FieldType extends Registerable {
   }
 
   /**
+   * Returns the sort function used when ordering group-by nodes. By default
+   * this dispatches through `getSortTypes` so the group-by type (e.g.
+   * "First → Last" for single select) is respected. Field types that need
+   * set-based ordering for group-by (e.g. multi-select, multiple
+   * collaborators) override this independently.
+   */
+  getGroupBySort(name, order, field, sortType) {
+    const types = this.getSortTypes(field)
+    const resolved = types[sortType] || types[DEFAULT_SORT_TYPE_KEY]
+    return resolved.function(name, order, field)
+  }
+
+  /**
    * Should return a visualisation of how the sort function is going to work. For
    * example ['text', 'A', 'Z'] will result in 'A -> Z' as ascending and 'Z -> A'
    * descending visualisation for the user. It is also possible to use a icon class name
@@ -4051,6 +4064,33 @@ export class MultipleSelectFieldType extends SelectOptionBaseFieldType {
     }
   }
 
+  getGroupBySort(name, order, field) {
+    const optionOrders = new Map(
+      (field.select_options || []).map((option) => [option.id, option.order])
+    )
+
+    const sortKey = (values) => {
+      if (!values || values.length === 0) {
+        return []
+      }
+      return [...values]
+        .map(({ id }) => [optionOrders.get(id) ?? Infinity, id])
+        .sort(([orderA, idA], [orderB, idB]) => orderA - orderB || idA - idB)
+    }
+
+    const comparePairs = (pairsA, pairsB) => {
+      const len = Math.min(pairsA.length, pairsB.length)
+      for (let i = 0; i < len; i++) {
+        const d = pairsA[i][0] - pairsB[i][0] || pairsA[i][1] - pairsB[i][1]
+        if (d !== 0) return order === 'ASC' ? d : -d
+      }
+      const lenDiff = pairsA.length - pairsB.length
+      return order === 'ASC' ? lenDiff : -lenDiff
+    }
+
+    return (a, b) => comparePairs(sortKey(a[name]), sortKey(b[name]))
+  }
+
   parseDefaultRowValue(field, value) {
     if (!Array.isArray(value)) {
       return []
@@ -4847,6 +4887,43 @@ export class MultipleCollaboratorsFieldType extends FieldType {
 
       return collatedStringCompare(stringA, stringB, order)
     }
+  }
+
+  getGroupBySort(name, order, field) {
+    const resolveName = (obj) => {
+      const workspaces = this.app.$store.getters['workspace/getAll']
+      if (workspaces.length > 0) {
+        const user = this.app.$store.getters['workspace/getUserById'](obj.id)
+        return user?.name ?? obj.name ?? ''
+      }
+      return obj.name ?? ''
+    }
+
+    const sortKey = (values) => {
+      if (!values || values.length === 0) {
+        return []
+      }
+      return [...values]
+        .map((obj) => [resolveName(obj), obj.id])
+        .sort(
+          ([nameA, idA], [nameB, idB]) =>
+            collatedStringCompare(nameA, nameB, 'ASC') || idA - idB
+        )
+    }
+
+    const comparePairs = (pairsA, pairsB) => {
+      const len = Math.min(pairsA.length, pairsB.length)
+      for (let i = 0; i < len; i++) {
+        const d =
+          collatedStringCompare(pairsA[i][0], pairsB[i][0], 'ASC') ||
+          pairsA[i][1] - pairsB[i][1]
+        if (d !== 0) return order === 'ASC' ? d : -d
+      }
+      const lenDiff = pairsA.length - pairsB.length
+      return order === 'ASC' ? lenDiff : -lenDiff
+    }
+
+    return (a, b) => comparePairs(sortKey(a[name]), sortKey(b[name]))
   }
 
   prepareValueForCopy(field, value) {
