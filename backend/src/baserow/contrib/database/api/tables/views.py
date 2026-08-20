@@ -48,6 +48,9 @@ from baserow.contrib.database.operations import (
 from baserow.contrib.database.rows.constants import is_destructive_import
 from baserow.contrib.database.rows.exceptions import CannotCreateRowsInTable
 from baserow.contrib.database.rows.import_preview import TableImportPreviewHandler
+from baserow.contrib.database.rows.operations import (
+    UpdateDatabaseRowOperationType,
+)
 from baserow.contrib.database.table.actions import (
     CreateTableActionType,
     DeleteTableActionType,
@@ -585,6 +588,13 @@ class AsyncTableImportView(APIView):
             context=table,
         )
         configuration = data.get("configuration")
+        if configuration and configuration.get("upsert_fields"):
+            core_handler.check_permissions(
+                request.user,
+                UpdateDatabaseRowOperationType.type,
+                workspace=table.database.workspace,
+                context=table,
+            )
         if is_destructive_import(configuration):
             core_handler.check_permissions(
                 request.user,
