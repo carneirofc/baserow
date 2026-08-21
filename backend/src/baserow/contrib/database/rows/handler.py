@@ -1205,9 +1205,12 @@ class RowHandler(metaclass=baserow_trace_methods(tracer)):
             )
             getattr(row, name).set(value)
 
+        field_objects_to_always_update = model.get_field_objects_to_always_update()
         always_updated_fields = ["updated_on"] + [
-            fo["field"].db_column for fo in model.get_field_objects_to_always_update()
+            fo["field"].db_column for fo in field_objects_to_always_update
         ]
+        for field_object in field_objects_to_always_update:
+            updated_field_ids.add(field_object["field"].id)
         if getattr(model, LAST_MODIFIED_BY_COLUMN_NAME, None):
             setattr(row, LAST_MODIFIED_BY_COLUMN_NAME, user if user.id else None)
             always_updated_fields.append(LAST_MODIFIED_BY_COLUMN_NAME)
@@ -1241,6 +1244,11 @@ class RowHandler(metaclass=baserow_trace_methods(tracer)):
                 table, [row], model, updated_field_ids, m2m_change_tracker
             )
         )
+
+        updated_field_ids.update(
+            field.id for field in dependant_fields if field.table_id == table.id
+        )
+
         # We need to refresh here as ExpressionFields might have had their values
         # updated. Django does not support UPDATE .... RETURNING and so we need to
         # query for the rows updated values instead.
@@ -1255,6 +1263,9 @@ class RowHandler(metaclass=baserow_trace_methods(tracer)):
             row_ids=[row.id],
         )
 
+        # rows_before_update is serialized in full so the frontend can
+        # reconstruct the pre-update state for filter/sort/search transitions.
+        # rows can be partial because the frontend merges it onto the existing row.
         rows_updated.send(
             self,
             rows=rows,
@@ -1263,6 +1274,7 @@ class RowHandler(metaclass=baserow_trace_methods(tracer)):
             model=model,
             before_return=before_return,
             updated_field_ids=updated_field_ids,
+            serialize_only_updated_fields=True,
             m2m_change_tracker=m2m_change_tracker,
             fields=[f for f in updated_fields if f.id in updated_field_ids],
             dependant_fields=dependant_fields,
@@ -2712,6 +2724,9 @@ class RowHandler(metaclass=baserow_trace_methods(tracer)):
             # replace updated rows with fresh versions with formula values
             cascade_updated.updated_rows = cascade_updated_rows
 
+        # rows_before_update is serialized in full so the frontend can
+        # reconstruct the pre-update state for filter/sort/search transitions.
+        # rows can be partial because the frontend merges it onto the existing row.
         rows_updated.send(
             self,
             rows=updated_rows_to_return,
@@ -2720,6 +2735,7 @@ class RowHandler(metaclass=baserow_trace_methods(tracer)):
             model=model,
             before_return=before_return,
             updated_field_ids=updated_field_ids,
+            serialize_only_updated_fields=True,
             m2m_change_tracker=m2m_change_tracker,
             send_realtime_update=send_realtime_update,
             send_webhook_events=send_webhook_events,
