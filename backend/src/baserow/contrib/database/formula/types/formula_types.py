@@ -858,7 +858,7 @@ class BaserowFormulaDurationType(
     ) -> "OptionallyAnnotatedQ":
         try:
             value = int(value)
-        except (TypeError, ValueError):
+        except TypeError, ValueError:
             return Q()
 
         return get_array_json_filter_expression(
@@ -1813,7 +1813,7 @@ class BaserowFormulaMultipleCollaboratorsType(
         try:
             value = [int(value)]
 
-        except (TypeError, ValueError):
+        except TypeError, ValueError:
             return Q()
 
         return get_jsonb_has_any_in_value_filter_expr(

@@ -48,7 +48,7 @@ def get_public_view_authorization_token(request: Request) -> Optional[str]:
     auth_header = request.headers.get(settings.PUBLIC_VIEW_AUTHORIZATION_HEADER, None)
     try:
         _, token = auth_header.split(" ", 1)
-    except (AttributeError, ValueError):
+    except AttributeError, ValueError:
         return None
     return token
 

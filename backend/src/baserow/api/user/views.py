@@ -657,7 +657,7 @@ class SendVerifyEmailView(APIView):
             handler = UserHandler()
             user = handler.get_active_user(email=data["email"])
             action_type_registry.get(SendVerifyEmailAddressActionType.type).do(user)
-        except (EmailAlreadyVerified, UserNotFound):
+        except EmailAlreadyVerified, UserNotFound:
             # ignore as not to leak existing email addresses
             ...
         return Response(status=204)

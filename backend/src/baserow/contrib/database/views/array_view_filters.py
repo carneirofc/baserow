@@ -234,7 +234,7 @@ class HasValueLengthIsLowerThanViewFilterType(ViewFilterType):
         try:
             # The value is expected to be an integer representing the length to compare
             filter_value = int(value)
-        except (ValueError, TypeError):
+        except ValueError, TypeError:
             return self.default_filter_on_exception()
 
         field_type: HasValueLengthIsLowerThanFilterSupport = (

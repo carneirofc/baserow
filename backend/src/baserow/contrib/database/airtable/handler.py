@@ -138,7 +138,7 @@ def download_airtable_file(
         try:
             total_size = content_range.split("/")[-1]
             file_size_bytes = int(total_size)
-        except (TypeError, ValueError):
+        except TypeError, ValueError:
             raise FileDownloadFailed(f"Could not determine the size of file {name}.")
 
     # Use Content-Length if the status code is not partial content
@@ -147,7 +147,7 @@ def download_airtable_file(
         if content_length is not None:
             try:
                 file_size_bytes = int(content_length)
-            except (TypeError, ValueError):
+            except TypeError, ValueError:
                 file_size_bytes = None
 
     # Fall back to measuring the actual downloaded content. This handles

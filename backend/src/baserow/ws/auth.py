@@ -37,7 +37,7 @@ def get_user(token):
     else:
         try:
             return get_user_from_token(token)
-        except (TokenError, InvalidToken):
+        except TokenError, InvalidToken:
             return
 
 

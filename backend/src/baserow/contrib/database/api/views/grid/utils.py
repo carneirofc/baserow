@@ -174,7 +174,7 @@ def deserialize_group_by_path_object(
 
         try:
             deserialized[db_column] = serializer_field.to_internal_value(raw_value)
-        except (ValidationError, DjangoValidationError, ValueError, TypeError):
+        except ValidationError, DjangoValidationError, ValueError, TypeError:
             return None
 
     return deserialized
@@ -213,7 +213,7 @@ def deserialize_group_by_parent_requests(
 
     try:
         raw_parent_requests = json.loads(raw_parents)
-    except (TypeError, json.JSONDecodeError):
+    except TypeError, json.JSONDecodeError:
         return None
 
     if not isinstance(raw_parent_requests, list):

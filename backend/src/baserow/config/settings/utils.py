@@ -126,14 +126,14 @@ def str_to_bool(s: str) -> bool:
 def try_int(s: str | int | None, default: Any = None) -> int | None:
     try:
         return int(s)
-    except (TypeError, ValueError):
+    except TypeError, ValueError:
         return default
 
 
 def try_float(s: str | float | None, default: Any = None) -> float | None:
     try:
         return float(s)
-    except (TypeError, ValueError):
+    except TypeError, ValueError:
         return default
 
 

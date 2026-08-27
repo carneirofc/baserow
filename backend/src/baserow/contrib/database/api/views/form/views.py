@@ -244,7 +244,7 @@ class EditRowFormViewView(APIView):
 
         try:
             row = model.objects.get(**{field_column: cell_uuid})
-        except (model.DoesNotExist, ValidationError):
+        except model.DoesNotExist, ValidationError:
             raise RowDoesNotExist(cell_uuid)
 
         options = form.active_field_options
@@ -325,7 +325,7 @@ class EditRowFormViewView(APIView):
 
         try:
             row = model.objects.get(**{field_column: cell_uuid})
-        except (model.DoesNotExist, ValidationError):
+        except model.DoesNotExist, ValidationError:
             raise RowDoesNotExist(cell_uuid)
 
         options = form.active_field_options

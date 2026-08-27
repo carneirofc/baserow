@@ -119,7 +119,7 @@ class PresenceSpace:
         for pid, value in raw.items():
             try:
                 data = json.loads(value)
-            except (ValueError, TypeError):
+            except ValueError, TypeError:
                 corrupt.append(pid)
                 continue
             if _is_valid_entry(data):

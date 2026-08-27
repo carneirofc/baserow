@@ -1250,7 +1250,7 @@ def safely_update_formula_versions(sender, **kwargs):
             FormulaField = apps.get_model("database", "FormulaField")
             # noinspection PyProtectedMember
             FormulaField._meta.get_field("version")
-        except (LookupError, FieldDoesNotExist):
+        except LookupError, FieldDoesNotExist:
             print(
                 "Skipping formula update as FormulaField does not exist or have "
                 "version column."

@@ -674,7 +674,7 @@ class NumberFieldType(FieldType):
                 return None
         try:
             value = Decimal(value)
-        except (InvalidOperation, ValueError, TypeError):
+        except InvalidOperation, ValueError, TypeError:
             raise ValidationError(
                 f"The value for field {instance.id} is not a valid number",
                 code="invalid",
@@ -728,7 +728,7 @@ class NumberFieldType(FieldType):
             if instance.number_decimal_places == 0:
                 try:
                     return int(value)
-                except (ValueError, TypeError):
+                except ValueError, TypeError:
                     pass
 
             # DRF's Decimal Serializer knows how to quantize and format the decimal
@@ -905,7 +905,7 @@ class NumberFieldType(FieldType):
             value = Decimal(value)
             if not value.is_finite():
                 raise ValueError
-        except (InvalidOperation, ValueError, TypeError):
+        except InvalidOperation, ValueError, TypeError:
             raise ValueError(f"Invalid value for number field: {value}")
         return value
 
@@ -940,7 +940,7 @@ class RatingFieldType(FieldType):
         try:
             # Ensure the value is an int
             value = int(value)
-        except (ValueError, TypeError):
+        except ValueError, TypeError:
             raise ValidationError(
                 f"The value for field {instance.id} is not a valid number",
                 code="invalid",

@@ -88,7 +88,7 @@ class ICalCalendarDataSyncType(DataSyncType):
 
         try:
             response = advocate.get(instance.ical_url, timeout=60)
-        except (RequestException, UnacceptableAddressException, ConnectionError):
+        except RequestException, UnacceptableAddressException, ConnectionError:
             raise SyncError("The provided URL could not be reached.")
 
         if not response.ok:

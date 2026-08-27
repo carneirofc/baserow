@@ -107,7 +107,7 @@ class FieldSerializer(serializers.ModelSerializer):
         try:
             constraints = instance.field_constraints.all()
             return FieldConstraintSerializer(constraints, many=True).data
-        except (ValueError, TypeError):
+        except ValueError, TypeError:
             return []
 
 
@@ -469,7 +469,7 @@ class CollaboratorField(serializers.Field):
         if isinstance(data, dict):
             try:
                 return int(data["id"])
-            except (KeyError, TypeError, ValueError):
+            except KeyError, TypeError, ValueError:
                 pass
 
         raise serializers.ValidationError(

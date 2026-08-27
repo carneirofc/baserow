@@ -1085,7 +1085,7 @@ class FieldType(
             field_constraints = [
                 {"type_name": c.type_name} for c in field.field_constraints.all()
             ]
-        except (ValueError, TypeError):
+        except ValueError, TypeError:
             field_constraints = []
 
         serialized = {

@@ -234,7 +234,7 @@ class APIGroupedFiltersAdapter(GroupedFiltersAdapter):
             )
             extract_filters_and_groups(serialized_filter_tree)
 
-        except (KeyError, AttributeError, ValueError, TypeError):
+        except KeyError, AttributeError, ValueError, TypeError:
             raise InvalidAPIGroupedFiltersFormatException()
 
         return APIGroupedFiltersAdapter(

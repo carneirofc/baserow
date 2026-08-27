@@ -63,7 +63,7 @@ class FormulaField(models.TextField):
 
         try:
             return json.loads(value)
-        except (TypeError, json.JSONDecodeError):
+        except TypeError, json.JSONDecodeError:
             return None
 
     def _transform_db_value_to_dict(
@@ -109,7 +109,7 @@ class FormulaField(models.TextField):
             # yet inherit from `JSONField`.
             try:
                 value = json.loads(value)
-            except (TypeError, json.JSONDecodeError):
+            except TypeError, json.JSONDecodeError:
                 logger.error(
                     "FormulaField was unable to deserialize "
                     f"value '{value}' when the column type was `json`.",

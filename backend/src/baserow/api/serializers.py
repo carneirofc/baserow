@@ -186,5 +186,5 @@ class NonValidatingPrimaryKeyRelatedField(PrimaryKeyRelatedField):
     def to_internal_value(self, data):
         try:
             return int(data)
-        except (ValueError, TypeError):
+        except ValueError, TypeError:
             raise ValidationError(f"Invalid ID: {data}")

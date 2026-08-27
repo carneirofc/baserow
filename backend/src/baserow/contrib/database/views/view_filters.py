@@ -728,7 +728,7 @@ class DateEqualsDayOfMonthViewFilterType(TimezoneAwareDateViewFilterType):
             if day_of_month < 1 or day_of_month > 31:
                 raise ValueError
 
-        except (ValueError, zoneinfo.ZoneInfoNotFoundError):
+        except ValueError, zoneinfo.ZoneInfoNotFoundError:
             return Q(pk__in=[])
 
         if field.date_include_time:  # filter on a datetime field
@@ -1281,7 +1281,7 @@ class ManyToManyHasBaseViewFilter(ViewFilterType):
 
         try:
             val = int(value.strip())
-        except (ValueError, TypeError):
+        except ValueError, TypeError:
             return Q()
 
         field_type = field_type_registry.get_by_model(field)
@@ -1334,7 +1334,7 @@ class LinkRowHasViewFilterType(ManyToManyHasBaseViewFilter):
                 )
 
                 name = str(model.objects.get(pk=related_row_id))
-            except (Field.DoesNotExist, model.DoesNotExist):
+            except Field.DoesNotExist, model.DoesNotExist:
                 pass
 
         return {"display_name": name}
@@ -1391,7 +1391,7 @@ class LinkRowContainsViewFilterType(ViewFilterType):
                 .apply_to_queryset(model.objects)
                 .values_list("id", flat=True)
             )
-        except (ValueError, ValidationError):
+        except ValueError, ValidationError:
             subquery = []
 
         return Q(

@@ -75,7 +75,7 @@ class BackupScheduleHandler:
 
         try:
             ZoneInfo(name)
-        except (ZoneInfoNotFoundError, ValueError):
+        except ZoneInfoNotFoundError, ValueError:
             raise InvalidBackupScheduleCron(f"The timezone '{name}' is not known.")
 
         return name
