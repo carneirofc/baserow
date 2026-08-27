@@ -760,6 +760,18 @@ jobs:
           cd e2e-tests
           yarn install
 
+      # Browsers come from the runner image (playwright.config.ts pins
+      # `channel: chrome` on CI), but `video: on-first-retry` also needs
+      # Playwright's own ffmpeg build. Without it the first retry of a failing
+      # test aborts with "Executable doesn't exist at .../ffmpeg-linux"
+      # instead of re-running the test, so any flake becomes a hard failure.
+      - name: Install Playwright ffmpeg
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 0
+        run: |
+          cd e2e-tests
+          npx playwright install ffmpeg
+
       - name: Verify Google Chrome
         run: google-chrome --version
 
