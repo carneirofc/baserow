@@ -1,5 +1,35 @@
 # Changelog
 
+## Released v0.3.0
+
+### New features
+* [Core] Admins can now enable or disable creating each application type
+* [Core] Added API clients, a credential for external integrations that acts on behalf of the user that created it within a single workspace. A client can hold several keys, each limited to a set of scopes and optionally given an expiry, and keys can be revoked without deleting the client. Only a hash of a key is stored, so the key itself is shown once at creation.
+* [Core] Added a `/api/backups/` API to back up and restore a whole workspace or individual applications. Backups build on the existing signed workspace export archives, so a backup taken here can be downloaded, deleted, and restored into any workspace you have access to.
+* [Core] Backups can now be scheduled. A backup schedule takes a crontab expression and a timezone, and optionally cleans up after itself with `keep_last` and `keep_days` retention. A periodic task starts every schedule that becomes due, and schedules can also be triggered on demand.
+* [Core] Added a `/api/contents/` API that returns the complete contents of a workspace or a single application as JSON in one request, with an `exclude_data` option for structure only. Requests above `BASEROW_CONTENTS_API_MAX_ROWS` are refused so that large reads go through a backup instead.
+* [Core] OIDC sign-in now auto-provisions new users even when the instance has new signups disabled, so operators can turn off self-service signup while still provisioning everyone who authenticates through the IdP. Password-based signup stays governed by the toggle. [#2](https://github.com/baserow/baserow/issues/2)
+* [Core] OIDC providers can now map IdP groups to Baserow global staff and superuser. On every login the user's staff/superuser status is reconciled from their current groups (granted when in a mapped group, revoked when not); a local break-glass admin that never logs in via OIDC is unaffected. [#3](https://github.com/baserow/baserow/issues/3)
+* [Core] OIDC providers can now map IdP groups to workspace memberships. Each mapping declares a group, a workspace and a role (ADMIN or MEMBER); on login the user is added to every mapped workspace they have a group for, or their existing membership is updated to the mapped role. This is additive - memberships are never removed by this mapping. [#4](https://github.com/baserow/baserow/issues/4)
+* [Core] Added env-configured OpenID Connect (OIDC) login. Declare one or more providers in the BASEROW_OIDC_PROVIDERS environment variable to show a sign-in button per provider; first-time users are auto-provisioned from their OIDC email and name. [#1](https://github.com/baserow/baserow/issues/1)
+* [Core] Added an OIDC-only mode (BASEROW_OIDC_ONLY) that makes the instance OIDC-only for normal users: self-service signup is disabled, password login is refused for non-staff accounts, and the login page hides the password form and signup and shows only OIDC buttons. A staff/superuser break-glass admin can still reveal the password form and log in if the IdP is unavailable. [#5](https://github.com/baserow/baserow/issues/5)
+* [Core] OIDC workspace mappings can opt into strict membership reconciliation with a per-provider strict_membership flag. When enabled, memberships the sync granted are recorded and revoked once the user loses the mapped group on their next login; memberships added outside SSO are never revoked. With the flag off, behaviour stays additive. [#6](https://github.com/baserow/baserow/issues/6)
+* Publish the Helm chart from CI: version tags push it as an OCI package to the repo's GitHub Container Registry, and chart changes are linted and packaged on every pull request.
+
+### Bug fixes
+* [Core] Workspace export archives now record the user that created them. Without an owner they could neither be deleted nor imported again, because both look the resource up by its owner.
+* [Database] Writing values to fields is allowed again when no plugin provides field level permissions. Without one, every write permission check was denied, so Local Baserow create/update row services silently stored empty rows.
+* [Core] The OpenAPI schema endpoints no longer fail with a server error when no row metadata type is registered.
+
+### Refactors
+* [Core] Refreshed backend and web-frontend dependencies, including Nuxt, Sentry, TipTap, Vitest and the Node runtime, and pinned resolutions for known transitive vulnerabilities.
+* [Core] Upgraded backend dependencies, resolving reported CVEs in Django (5.2.17), cryptography (50.0.1), sqlparse (0.6.0), tornado (6.5.8), soupsieve (2.9.2) and click (8.5.0), and refreshing the remaining transitive and development packages.
+
+### Breaking API changes
+* [Core] Removed the PostHog product analytics and Sentry error reporting integrations, along with their POSTHOG_* and SENTRY_* environment variables.
+* [Core] The all-in-one Docker image now embeds PostgreSQL 18 instead of 15, and all images are built on Ubuntu 26.04 LTS. Existing embedded databases must be migrated by following docs/runbooks/upgrade-embedded-postgres.md; external PostgreSQL servers are unaffected.
+
+
 ## Released 2.3.2
 
 ### New features
