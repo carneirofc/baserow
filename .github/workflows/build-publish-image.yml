@@ -106,6 +106,9 @@ jobs:
           target: prod
           platforms: linux/amd64
           push: true
+          # Re-resolve the base images (ubuntu:26.04, golang) on every release build so
+          # a tag cut picks up upstream security rebuilds instead of a stale cache hit.
+          pull: true
           # Intermediate pinned tag (consumed by the all-in-one build) plus the
           # stable semver/latest tags used by the Helm chart.
           tags: |
@@ -123,6 +126,7 @@ jobs:
           target: prod
           platforms: linux/amd64
           push: true
+          pull: true
           tags: |
             ${{ steps.refs.outputs.webfrontend }}
             ${{ steps.meta-webfrontend.outputs.tags }}
@@ -137,6 +141,7 @@ jobs:
           file: deploy/caddy/Dockerfile
           platforms: linux/amd64
           push: true
+          pull: true
           tags: ${{ steps.meta-caddy.outputs.tags }}
           labels: ${{ steps.meta-caddy.outputs.labels }}
           cache-from: type=gha,scope=caddy
@@ -149,6 +154,7 @@ jobs:
           file: deploy/all-in-one/Dockerfile
           platforms: linux/amd64
           push: true
+          pull: true
           build-args: |
             BACKEND_IMAGE=${{ steps.refs.outputs.backend }}
             WEBFRONTEND_IMAGE=${{ steps.refs.outputs.webfrontend }}
