@@ -1074,6 +1074,8 @@ _test-db-start:
         echo "Removing existing container to get fresh tmpfs..."
         docker rm -f {{ test_db_name }} > /dev/null
     fi
+    # postgres 18+ moved PGDATA to /var/lib/postgresql/<major>/docker, so the
+    # tmpfs on the old path needs PGDATA pinned back to it.
     echo "Creating test database container with tmpfs (ramdisk)..."
     docker run -d \
         --name {{ test_db_name }} \
@@ -1081,6 +1083,7 @@ _test-db-start:
         -e POSTGRES_PASSWORD=baserow \
         -e POSTGRES_DB=baserow \
         -p {{ test_db_port }}:5432 \
+        -e PGDATA=/var/lib/postgresql/data \
         --tmpfs /var/lib/postgresql/data:size=8G \
         {{ test_db_image }} \
         -c shared_buffers=512MB \
