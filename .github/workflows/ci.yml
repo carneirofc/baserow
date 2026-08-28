@@ -351,10 +351,11 @@ jobs:
           [ "$actual" = "$expected" ]
 
   # The prod web-frontend target is only built by the release workflow, so build
-  # it here too and guard what it ships: the Nitro output traces esbuild (a Go
-  # binary) in, and an SCA scan of the published image then reports the Go
-  # standard library it was compiled against. web-frontend/Dockerfile strips it;
-  # this job proves it stayed stripped and that the server still boots without it.
+  # it here too and guard what it ships. The prod stage copies only `.output`,
+  # which keeps Go-compiled npm binaries (esbuild, pulled in by nitropack and
+  # vite) out of the runtime image; an SCA scanner would otherwise report the Go
+  # standard library embedded in them. This job proves that stays true and that
+  # the server boots.
   web-frontend-prod-image:
     name: Web-frontend Prod Image
     runs-on: ubuntu-latest

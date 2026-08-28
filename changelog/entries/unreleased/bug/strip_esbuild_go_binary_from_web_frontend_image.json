@@ -1,9 +1,0 @@
-{
-    "type": "bug",
-    "message": "Removed the esbuild binary from the published web-frontend and all-in-one images. Nitro traced it into `.output/server/node_modules` even though the production server never runs a bundler, and because esbuild ships as a prebuilt Go binary, SCA scanners reported the Go 1.26.5 standard library it was compiled against as a finding on images that otherwise carry no Go code but the Go 1.26.7 Caddy build.",
-    "issue_origin": "github",
-    "issue_number": null,
-    "domain": "core",
-    "bullet_points": [],
-    "created_at": "2026-08-28"
-}
