@@ -1,5 +1,11 @@
 # Changelog
 
+## Released v0.3.1
+
+### Refactors
+* [Core] Built Caddy from source against a pinned Go 1.26.7 toolchain in the all-in-one image instead of copying the binary from the official caddy image, resolving the Go standard library CVEs reported against the published image.
+
+
 ## Released v0.3.0
 
 ### New features
