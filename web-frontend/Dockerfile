@@ -129,8 +129,10 @@ RUN --mount=type=cache,target=$YARN_CACHE_FOLDER,uid=$UID,gid=$GID,sharing=locke
 # never runs a bundler. esbuild ships as a prebuilt Go binary, so an SCA scan of
 # the runtime image reports the Go standard library it was compiled against
 # (0.28.1 is built with Go 1.26.5). Drop it, then assert none is left behind.
-RUN find /baserow/web-frontend/.output -depth \( -name 'esbuild' -o -name '@esbuild' \) -exec rm -rf {} + && \
-    ! find /baserow/web-frontend/.output -name '*esbuild*' -print -quit | grep -q .
+RUN cd /baserow/web-frontend && \
+    echo "removing traced esbuild artefacts:" && \
+    find .output -depth \( -name 'esbuild' -o -name '@esbuild' \) -print -exec rm -rf {} + && \
+    ! find .output -name '*esbuild*' -print -quit | grep -q .
 
 
 # =============================================================================
