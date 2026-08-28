@@ -4,11 +4,29 @@ ARG GID="9999"
 ARG BACKEND_IMAGE=baserow/backend
 ARG WEBFRONTEND_IMAGE=baserow/web-frontend
 ARG CADDY_VERSION=2.11.4
+ARG GO_VERSION=1.26.7
 # hadolint ignore=DL3006
 FROM ${BACKEND_IMAGE} AS backend_image
 # hadolint ignore=DL3006
 FROM ${WEBFRONTEND_IMAGE} AS web_frontend_image
-FROM caddy:${CADDY_VERSION} AS caddy_image
+
+# =============================================================================
+# Caddy - built from source against a pinned Go toolchain
+#
+# The official caddy image is rebuilt on its own cadence and lags behind Go
+# security releases (2.11.4 still ships a Go 1.26.5 stdlib, flagged for
+# CVE-2026-39821 and friends). Building the same pinned Caddy release here lets
+# the Go toolchain be bumped independently of upstream image rebuilds.
+# GOTOOLCHAIN=local keeps the build on GO_VERSION instead of letting go.mod pull
+# a different toolchain down.
+# =============================================================================
+FROM golang:${GO_VERSION} AS caddy_image
+ARG CADDY_VERSION
+ENV CGO_ENABLED=0 \
+    GOTOOLCHAIN=local \
+    GOBIN=/usr/bin
+RUN go install "github.com/caddyserver/caddy/v2/cmd/caddy@v${CADDY_VERSION}" && \
+    caddy version
 
 # =============================================================================
 # Base - system dependencies (cached independently of source images)
