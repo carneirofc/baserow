@@ -26,7 +26,7 @@ services:
   db:
     # pgvector is required: baserow.core.pgvector expects the extension to be
     # available. Keep the default major version in sync with docker-compose.yml.
-    image: pgvector/pgvector:pg${POSTGRES_IMAGE_VERSION:-14}
+    image: pgvector/pgvector:pg${POSTGRES_IMAGE_VERSION:-18}
     environment:
       POSTGRES_USER: ${DATABASE_USER:-baserow}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-baserow}

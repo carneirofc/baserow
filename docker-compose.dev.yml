@@ -1,7 +1,7 @@
 services:
   db:
     # use lowest supported version for dev to check compatibility
-    image: pgvector/pgvector:pg${POSTGRES_IMAGE_VERSION:-14}
+    image: pgvector/pgvector:pg${POSTGRES_IMAGE_VERSION:-18}
     ports:
       - "${BASEROW_HOST_PUBLISH_IP:-127.0.0.1}:${BASEROW_POSTGRES_PORT:-5432}:5432"
     command: "${POSTGRES_DEV_EXTRA_ARGS}"

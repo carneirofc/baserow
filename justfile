@@ -1031,7 +1031,7 @@ dc-deploy name="" *ARGS:
 # Test DB settings
 test_db_name := "baserow-test-db"
 test_db_port := env("TEST_DB_PORT", "5431")
-test_db_image := "pgvector/pgvector:pg${POSTGRES_IMAGE_VERSION:-14}"
+test_db_image := "pgvector/pgvector:pg${POSTGRES_IMAGE_VERSION:-18}"
 
 # Ramdisk PostgreSQL for fast tests (2-5x faster)
 [group('4 - testing')]

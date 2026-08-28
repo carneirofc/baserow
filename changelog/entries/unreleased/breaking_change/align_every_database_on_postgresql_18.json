@@ -1,0 +1,9 @@
+{
+    "type": "breaking_change",
+    "message": "Aligned every PostgreSQL container on `pgvector/pgvector:pg18`, matching the PostgreSQL 18 the images already target. The Compose stacks ran PostgreSQL 15 and the dev, e2e and CI databases ran PostgreSQL 14, so the shipped `pg_dump` was two majors ahead of the server it talked to. Existing development and e2e volumes hold PostgreSQL 14/15 data directories that an 18 server will refuse to start: remove those volumes to get a fresh database, or dump and restore before upgrading. Set `POSTGRES_IMAGE_VERSION` to stay on an older major.",
+    "issue_origin": "github",
+    "issue_number": null,
+    "domain": "core",
+    "bullet_points": [],
+    "created_at": "2026-08-28"
+}
