@@ -306,6 +306,50 @@ jobs:
           path: reports/hadolint.json
           retention-days: 7
 
+  # The caddy image is only built by the release workflow (on `v*` tags), so
+  # build it here too: a broken Dockerfile would otherwise only surface during a
+  # release and block publishing the all-in-one image.
+  caddy-image-build:
+    name: Caddy Image Build
+    runs-on: ubuntu-latest
+    needs:
+      - detect-changes
+    if: needs.detect-changes.outputs.dockerfiles == 'true' || github.ref_name == 'develop' || github.ref_name == 'master'
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build caddy image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: deploy/caddy/Dockerfile
+          platforms: linux/amd64
+          push: false
+          load: true
+          tags: baserow/caddy:ci
+          cache-from: type=gha,scope=caddy-ci
+          cache-to: type=gha,scope=caddy-ci,mode=max
+
+      # Guards the reason this image exists: the Go stdlib compiled into the
+      # binary must stay ahead of the Go security releases (>= 1.26.6).
+      - name: Verify Caddy binary and Go toolchain
+        run: |
+          set -euo pipefail
+          expected="go$(grep -oP '^ARG GO_VERSION=\K.*' deploy/caddy/Dockerfile)"
+          docker run --rm baserow/caddy:ci caddy version
+          docker create --name caddy_ci baserow/caddy:ci
+          docker cp caddy_ci:/usr/bin/caddy ./caddy-bin
+          docker rm caddy_ci
+          actual=$(docker run --rm -v "$PWD:/w" golang:1-bookworm go version /w/caddy-bin | awk '{print $2}')
+          echo "caddy stdlib: $actual (expected $expected)"
+          [ "$actual" = "$expected" ]
+
   # ==========================================================================
   # TEST STAGE - Run backend and frontend tests
   # ==========================================================================
@@ -965,6 +1009,7 @@ jobs:
       - backend-lint
       - frontend-lint
       - dockerfile-lint
+      - caddy-image-build
       # Test jobs (can be skipped based on path changes)
       - backend-check-startup
       - test-backend
@@ -984,6 +1029,7 @@ jobs:
             backend-lint=${{ needs.backend-lint.result }}
             frontend-lint=${{ needs.frontend-lint.result }}
             dockerfile-lint=${{ needs.dockerfile-lint.result }}
+            caddy-image-build=${{ needs.caddy-image-build.result }}
             backend-check-startup=${{ needs.backend-check-startup.result }}
             test-backend=${{ needs.test-backend.result }}
             test-frontend=${{ needs.test-frontend.result }}

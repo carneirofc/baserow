@@ -118,7 +118,11 @@ services:
       - backend
 
   caddy:
-    image: caddy:2.11.4
+    # Built from source against a pinned Go toolchain; the official caddy image
+    # lags behind Go security releases. See deploy/caddy/Dockerfile.
+    build:
+      context: .
+      dockerfile: deploy/caddy/Dockerfile
     restart: unless-stopped
     environment:
       BASEROW_CADDY_ADDRESSES: ":80"

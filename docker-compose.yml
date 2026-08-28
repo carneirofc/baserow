@@ -244,7 +244,11 @@ services:
   # requests to either the backend or web-frontend and also serving user uploaded files
   # from the media volume.
   caddy:
-    image: caddy:2.11.4
+    # This fork's own Caddy build (deploy/caddy/Dockerfile): the same pinned
+    # Caddy release compiled against a current Go toolchain, because the
+    # official caddy image lags behind Go security releases. Tagged with this
+    # fork's release versions, which are independent of BASEROW_VERSION.
+    image: ghcr.io/carneirofc/baserow/caddy:${BASEROW_CADDY_VERSION:-latest}
     restart: unless-stopped
     environment:
       # Controls what port the Caddy server binds to inside its container.

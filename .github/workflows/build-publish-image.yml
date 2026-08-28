@@ -9,6 +9,7 @@ name: Build & Publish All-in-One Image
 #   ghcr.io/<owner>/<repo>/baserow:<version>       (all-in-one; compose/simple deploys)
 #   ghcr.io/<owner>/<repo>/backend:<version>       (Helm chart)
 #   ghcr.io/<owner>/<repo>/web-frontend:<version>  (Helm chart)
+#   ghcr.io/<owner>/<repo>/caddy:<version>         (split-services compose)
 
 on:
   push:
@@ -83,6 +84,20 @@ jobs:
             type=semver,pattern={{major}}
             type=raw,value=latest
 
+      # Caddy reverse proxy for the split-services compose stack. Built from
+      # source against a pinned Go toolchain rather than pulled from the
+      # official caddy image, which lags behind Go security releases.
+      - name: Docker metadata for caddy image
+        id: meta-caddy
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}/caddy
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=raw,value=latest
+
       - name: Build & push backend image
         uses: docker/build-push-action@v5
         with:
@@ -114,6 +129,18 @@ jobs:
           labels: ${{ steps.meta-webfrontend.outputs.labels }}
           cache-from: type=gha,scope=frontend-prod
           cache-to: type=gha,scope=frontend-prod,mode=max
+
+      - name: Build & push caddy image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: deploy/caddy/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.meta-caddy.outputs.tags }}
+          labels: ${{ steps.meta-caddy.outputs.labels }}
+          cache-from: type=gha,scope=caddy
+          cache-to: type=gha,scope=caddy,mode=max
 
       - name: Build & push all-in-one image
         uses: docker/build-push-action@v5
