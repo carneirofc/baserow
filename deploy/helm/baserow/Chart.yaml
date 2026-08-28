@@ -7,9 +7,9 @@ description: >-
   and Redis are optional, toggleable subcharts; point at an external managed
   database instead by disabling them.
 type: application
-version: 0.1.0
+version: 0.1.1
 # Tracks the application version shipped by this fork's images.
-appVersion: "2.3.2"
+appVersion: "0.3.4"
 home: https://github.com/carneirofc/baserow
 sources:
   - https://github.com/carneirofc/baserow

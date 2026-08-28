@@ -1,5 +1,15 @@
 # Changelog
 
+## Released v0.3.4
+
+### Bug fixes
+* [Core] Pointed the Compose stacks and the all-in-one image build at this fork's registry. `docker-compose.yml` pulled `baserow/backend` and `baserow/web-frontend` from Docker Hub — Baserow B.V.'s images, not this fork's — and `deploy/all-in-one/Dockerfile` defaulted its `BACKEND_IMAGE`/`WEBFRONTEND_IMAGE` build args to the same, so a local build assembled the all-in-one from upstream images. Everything now resolves to `ghcr.io/carneirofc/baserow/*` and defaults to this fork's release versions instead of the upstream 2.3.2 / 2.0.3 tags.
+* [Core] Fixed the Helm chart deploying image tags that do not exist. `Chart.yaml` still carried the upstream `appVersion` 2.3.2, and the chart defaults `image.backend.tag` / `image.webFrontend.tag` to it, so a default install pulled `ghcr.io/carneirofc/baserow/backend:2.3.2` from this fork's registry, which only publishes this fork's own release tags. `appVersion` now tracks the fork release.
+
+### Breaking API changes
+* [Core] Aligned every PostgreSQL container on `pgvector/pgvector:pg18`, matching the PostgreSQL 18 the images already target. The Compose stacks ran PostgreSQL 15 and the dev, e2e and CI databases ran PostgreSQL 14. `PGDATA` is pinned to `/var/lib/postgresql/data` everywhere, because the 18 images moved their default to `/var/lib/postgresql/<major>/docker` and refuse to start when a volume sits on the old path. Existing volumes still hold PostgreSQL 14/15 data directories that an 18 server will not start against: dump and restore before upgrading, or remove the volume for a fresh database. Set `POSTGRES_IMAGE_VERSION` to stay on an older major.
+
+
 ## Released v0.3.3
 
 ### Bug fixes
