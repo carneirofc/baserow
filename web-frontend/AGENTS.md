@@ -17,6 +17,7 @@ Owns everything under `web-frontend/`: `modules/` (feature code), `test/`, `stor
 - Frontend mirrors the backend **registry** pattern — feature types register into module registries; extend via registration, not hardcoding.
 - Keep the frontend contract in sync with the backend API it consumes (serializers, error codes, URLs).
 - User-facing strings go through **i18n** (`locales/`, `i18n.config.ts`), not inline literals.
+- The `prod` image ships only `.output`, and `Dockerfile` deletes the esbuild binary Nitro traces into it: esbuild is Go-compiled, never runs in production, and its embedded Go stdlib shows up in SCA scans of the published image. Keep the strip and its assertion when touching the build stages.
 
 ## Work Guidance
 
@@ -30,6 +31,7 @@ Owns everything under `web-frontend/`: `modules/` (feature code), `test/`, `stor
 
 - Tests: `just frontend test` (Vitest); CI variant `just frontend ci-test`.
 - Lint: `just frontend lint`. Both must pass before commit (also enforced by pre-commit).
+- CI job `web-frontend-prod-image` (`.github/workflows/ci.yml`) builds the `prod` target, asserts no esbuild artefact survives in the image, and boots it against `/_health/`.
 
 ## Child DOX Index
 

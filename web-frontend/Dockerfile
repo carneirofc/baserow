@@ -124,6 +124,14 @@ WORKDIR /baserow/web-frontend
 RUN --mount=type=cache,target=$YARN_CACHE_FOLDER,uid=$UID,gid=$GID,sharing=locked \
     yarn run build
 
+# Nitro traces esbuild into .output/server/node_modules because nitropack and
+# vite depend on it, but the production server (node .output/server/index.mjs)
+# never runs a bundler. esbuild ships as a prebuilt Go binary, so an SCA scan of
+# the runtime image reports the Go standard library it was compiled against
+# (0.28.1 is built with Go 1.26.5). Drop it, then assert none is left behind.
+RUN find /baserow/web-frontend/.output -depth \( -name 'esbuild' -o -name '@esbuild' \) -exec rm -rf {} + && \
+    ! find /baserow/web-frontend/.output -name '*esbuild*' -print -quit | grep -q .
+
 
 # =============================================================================
 # Busybox helper stage for wget binary
