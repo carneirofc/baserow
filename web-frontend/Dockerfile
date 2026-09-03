@@ -18,9 +18,14 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ENV SU_EXEC_VERSION=212b75144bbc06722fbd7661f651390dc47a43d1 \
     SU_EXEC_SHA256=d6c40440609a23483f12eb6295b5191e94baf08298a856bab6e15b10c3b82891
 
+# Ubuntu drops /usr/bin/pebble into the base layer without a dpkg package
+# owning it, so apt can neither patch nor purge the CVEs vendored into it
+# (CVE-2026-39821). No stage here runs it, so every ubuntu-based stage
+# deletes it.
 # hadolint ignore=DL3008
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    rm -f /usr/bin/pebble && rm -rf /var/lib/pebble && \
     apt-get update && \
     apt-get install -y --no-install-recommends ca-certificates curl build-essential dos2unix tini && \
     curl -fsSL -o /usr/local/bin/su-exec.c "https://github.com/ncopa/su-exec/raw/${SU_EXEC_VERSION}/su-exec.c" && \
@@ -43,9 +48,16 @@ ENV NODE_VERSION=v24.18.1 \
     NODE_SHA256_arm64=7201e3a09dc825bac57867c81913e2b8f0ef87d04cb9082af4cda82f6ff3d88c \
     YARN_VERSION=1.22.22
 
+# Ubuntu drops /usr/bin/pebble into the base layer without a dpkg package
+# owning it, so apt can neither patch nor purge the CVEs vendored into it
+# (CVE-2026-39821). Nothing here runs it, and every stage below builds on
+# node-base, so deleting it once covers them all.
 # hadolint ignore=DL3008
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    # Drop Ubuntu's unowned pebble binary (see the tool-builder stage)
+    rm -f /usr/bin/pebble && rm -rf /var/lib/pebble && \
+    rm -f /usr/bin/pebble && rm -rf /var/lib/pebble && \
     apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y --no-install-recommends ca-certificates curl xz-utils && \

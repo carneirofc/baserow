@@ -20,6 +20,8 @@ ENV SU_EXEC_VERSION=212b75144bbc06722fbd7661f651390dc47a43d1 \
 # hadolint ignore=DL3008
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    # Drop Ubuntu's unowned pebble binary (see the ci stage)
+    rm -f /usr/bin/pebble && rm -rf /var/lib/pebble && \
     apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y --no-install-recommends ca-certificates curl build-essential dos2unix tini && \
@@ -39,6 +41,8 @@ ARG GID
 # Runtime dependencies only - this layer is always cached
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    # Drop Ubuntu's unowned pebble binary (see the ci stage)
+    rm -f /usr/bin/pebble && rm -rf /var/lib/pebble && \
     apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
@@ -174,7 +178,12 @@ FROM ${PYTHON_BASE_IMAGE} AS ci
 ARG UID
 ARG GID
 
-RUN apt-get update && \
+# Ubuntu drops /usr/bin/pebble into the base layer without a dpkg package
+# owning it, so apt can neither patch nor purge the CVEs vendored into it
+# (CVE-2026-39821). No stage here runs it, so every ubuntu-based stage
+# deletes it.
+RUN rm -f /usr/bin/pebble && rm -rf /var/lib/pebble && \
+    apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
     python3 \
@@ -227,8 +236,10 @@ ARG GID="9999"
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # Build dependencies - this layer is always cached
+# Drop Ubuntu's unowned pebble binary (see the ci stage)
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    rm -f /usr/bin/pebble && rm -rf /var/lib/pebble && \
     apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
@@ -337,7 +348,9 @@ ENV POSTGRES_VERSION=18 \
 # Runtime dependencies only. postgresql-client comes from Ubuntu itself, so the
 # image carries no third-party apt repository. pg_dump 18 can dump every server
 # version Baserow supports (>= 14).
-RUN apt-get update && \
+# Drop Ubuntu's unowned pebble binary (see the ci stage)
+RUN rm -f /usr/bin/pebble && rm -rf /var/lib/pebble && \
+    apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
     ca-certificates \

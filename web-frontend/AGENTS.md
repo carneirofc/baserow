@@ -18,6 +18,7 @@ Owns everything under `web-frontend/`: `modules/` (feature code), `test/`, `stor
 - Keep the frontend contract in sync with the backend API it consumes (serializers, error codes, URLs).
 - User-facing strings go through **i18n** (`locales/`, `i18n.config.ts`), not inline literals.
 - The `prod` image ships only `.output` (`Dockerfile`), never `node_modules`. That is what keeps Go-compiled npm binaries — esbuild, pulled in by `nitropack` and `vite` — out of the runtime image; SCA scanners read the Go stdlib embedded in such binaries and report it against the image. The `ci` and `dev` targets do carry `node_modules` and therefore do contain them.
+- The `node-base` stage deletes Ubuntu's unowned `/usr/bin/pebble` (CVE-2026-39821) for the same reason npm/yarn are dropped from `local`: unreachable code that scanners still report. Every stage here descends from `node-base`, so the single removal covers them all — see `deploy/AGENTS.md` for the repo-wide rule.
 
 ## Work Guidance
 

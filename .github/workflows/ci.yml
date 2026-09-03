@@ -350,6 +350,21 @@ jobs:
           echo "caddy stdlib: $actual (expected $expected)"
           [ "$actual" = "$expected" ]
 
+      # Ubuntu's base layer ships /usr/bin/pebble, owned by no dpkg package, so
+      # apt cannot patch its vendored CVEs. The Dockerfile deletes it; this
+      # proves it stays deleted.
+      - name: Assert pebble was stripped from the image
+        run: |
+          set -euo pipefail
+          docker create --name caddy_audit baserow/caddy:ci
+          docker export caddy_audit | tar -tf - > ./caddy-files.txt
+          docker rm caddy_audit
+          if grep -E '^usr/bin/pebble$|^var/lib/pebble' ./caddy-files.txt; then
+            echo "::error::Ubuntu's pebble binary (CVE-2026-39821) shipped in the caddy image"
+            exit 1
+          fi
+          echo "no pebble artefacts in image ($(wc -l < ./caddy-files.txt) files scanned)"
+
   # The prod web-frontend target is only built by the release workflow, so build
   # it here too and guard what it ships. The prod stage copies only `.output`,
   # which keeps Go-compiled npm binaries (esbuild, pulled in by nitropack and
@@ -396,7 +411,11 @@ jobs:
             echo "::error::Go-compiled esbuild binary shipped in the prod web-frontend image"
             exit 1
           fi
-          echo "no esbuild artefacts in image ($(wc -l < ./image-files.txt) files scanned)"
+          if grep -E '^usr/bin/pebble$|^var/lib/pebble' ./image-files.txt; then
+            echo "::error::Ubuntu's pebble binary (CVE-2026-39821) shipped in the prod web-frontend image"
+            exit 1
+          fi
+          echo "no esbuild or pebble artefacts in image ($(wc -l < ./image-files.txt) files scanned)"
 
       - name: Check web-frontend startup
         run: |

@@ -31,8 +31,12 @@ FROM ubuntu:26.04
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
+# Ubuntu drops /usr/bin/pebble into the base layer without a dpkg package
+# owning it, so apt can neither patch nor purge the CVEs vendored into it
+# (CVE-2026-39821). This image only runs caddy, so drop it.
 # hadolint ignore=DL3008
-RUN apt-get update && \
+RUN rm -f /usr/bin/pebble && rm -rf /var/lib/pebble && \
+    apt-get update && \
     apt-get upgrade -y && \
     DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
     ca-certificates && \

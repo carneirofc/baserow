@@ -50,7 +50,11 @@ ENV DOCKER_USER=baserow_docker_user \
     BASEROW_PLUGIN_DIR=/baserow/data/plugins
 
 # Runtime dependencies
-RUN apt-get update && \
+# Ubuntu drops /usr/bin/pebble into the base layer without a dpkg package
+# owning it, so apt can neither patch nor purge the CVEs vendored into it
+# (CVE-2026-39821). supervisor runs the services here, so drop it.
+RUN rm -f /usr/bin/pebble && rm -rf /var/lib/pebble && \
+    apt-get update && \
     apt-get upgrade -y && \
     DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get install --no-install-recommends -y \
     curl ca-certificates \
@@ -160,7 +164,12 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # Install postgres + redis, both from the Ubuntu archive so no third-party apt
 # repository is needed.
-RUN apt-get update && \
+# Ubuntu drops /usr/bin/pebble into the base layer without a dpkg package
+# owning it, so apt can neither patch nor purge the CVEs vendored into it
+# (CVE-2026-39821). No stage here runs it, so every ubuntu-based stage
+# deletes it.
+RUN rm -f /usr/bin/pebble && rm -rf /var/lib/pebble && \
+    apt-get update && \
     apt-get install --no-install-recommends -y \
     "postgresql-${POSTGRES_VERSION}" \
     "postgresql-${POSTGRES_VERSION}-pgvector" \
