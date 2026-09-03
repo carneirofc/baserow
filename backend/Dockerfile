@@ -17,10 +17,10 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 ENV SU_EXEC_VERSION=212b75144bbc06722fbd7661f651390dc47a43d1 \
     SU_EXEC_SHA256=d6c40440609a23483f12eb6295b5191e94baf08298a856bab6e15b10c3b82891
 
+# Drop Ubuntu's unowned pebble binary (see the ci stage)
 # hadolint ignore=DL3008
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
-    # Drop Ubuntu's unowned pebble binary (see the ci stage)
     rm -f /usr/bin/pebble && rm -rf /var/lib/pebble && \
     apt-get update && \
     apt-get upgrade -y && \
@@ -39,9 +39,9 @@ ARG UID
 ARG GID
 
 # Runtime dependencies only - this layer is always cached
+# Drop Ubuntu's unowned pebble binary (see the ci stage)
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
-    # Drop Ubuntu's unowned pebble binary (see the ci stage)
     rm -f /usr/bin/pebble && rm -rf /var/lib/pebble && \
     apt-get update && \
     apt-get upgrade -y && \

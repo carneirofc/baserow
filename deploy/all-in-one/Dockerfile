@@ -164,12 +164,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # Install postgres + redis, both from the Ubuntu archive so no third-party apt
 # repository is needed.
-# Ubuntu drops /usr/bin/pebble into the base layer without a dpkg package
-# owning it, so apt can neither patch nor purge the CVEs vendored into it
-# (CVE-2026-39821). No stage here runs it, so every ubuntu-based stage
-# deletes it.
-RUN rm -f /usr/bin/pebble && rm -rf /var/lib/pebble && \
-    apt-get update && \
+RUN apt-get update && \
     apt-get install --no-install-recommends -y \
     "postgresql-${POSTGRES_VERSION}" \
     "postgresql-${POSTGRES_VERSION}-pgvector" \

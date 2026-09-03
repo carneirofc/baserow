@@ -55,8 +55,6 @@ ENV NODE_VERSION=v24.18.1 \
 # hadolint ignore=DL3008
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
-    # Drop Ubuntu's unowned pebble binary (see the tool-builder stage)
-    rm -f /usr/bin/pebble && rm -rf /var/lib/pebble && \
     rm -f /usr/bin/pebble && rm -rf /var/lib/pebble && \
     apt-get update && \
     apt-get upgrade -y && \

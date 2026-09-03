@@ -278,6 +278,29 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Each FROM restarts from the pristine base layer, so every ubuntu:26.04
+      # stage has to delete /usr/bin/pebble itself. The image-level guards below
+      # only cover the images CI builds; this static check catches a new stage in
+      # any Dockerfile, including the prod targets only the release workflow
+      # builds.
+      - name: Assert every Ubuntu stage strips pebble
+        run: |
+          set -euo pipefail
+          awk '
+            function flush() { if (stage != "" && !seen) { print stage; bad = 1 } }
+            /^FROM / {
+              flush(); seen = 0; stage = ""
+              if ($2 ~ /^(ubuntu:26\.04|\$\{(PYTHON|NODE)_BASE_IMAGE\})$/) stage = FILENAME ":" FNR ": " $0
+              next
+            }
+            /rm -f \/usr\/bin\/pebble/ { seen = 1 }
+            END { flush(); exit bad + 0 }
+          ' backend/Dockerfile web-frontend/Dockerfile deploy/*/Dockerfile || {
+            echo "::error::the stages above build on ubuntu:26.04 but never delete /usr/bin/pebble (CVE-2026-39821)"
+            exit 1
+          }
+          echo "every ubuntu:26.04 stage strips pebble"
+
       - name: Run hadolint on all Dockerfiles
         run: |
           mkdir -p reports
