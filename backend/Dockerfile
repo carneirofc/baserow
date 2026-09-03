@@ -21,14 +21,14 @@ ENV SU_EXEC_VERSION=212b75144bbc06722fbd7661f651390dc47a43d1 \
 # hadolint ignore=DL3008
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
-    rm -f /usr/bin/pebble && rm -rf /var/lib/pebble && \
     apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y --no-install-recommends ca-certificates curl build-essential dos2unix tini && \
     curl -fsSL -o /usr/local/bin/su-exec.c "https://github.com/ncopa/su-exec/raw/${SU_EXEC_VERSION}/su-exec.c" && \
     echo "${SU_EXEC_SHA256}  /usr/local/bin/su-exec.c" | sha256sum -c - && \
     gcc -Wall -Werror -static -o /usr/local/bin/su-exec /usr/local/bin/su-exec.c && \
-    chmod 0755 /usr/local/bin/su-exec
+    chmod 0755 /usr/local/bin/su-exec && \
+    rm -f /usr/bin/pebble && rm -rf /var/lib/pebble
 
 
 # =============================================================================
@@ -42,7 +42,6 @@ ARG GID
 # Drop Ubuntu's unowned pebble binary (see the ci stage)
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
-    rm -f /usr/bin/pebble && rm -rf /var/lib/pebble && \
     apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
@@ -53,7 +52,8 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     python3-dev \
     python3-venv \
     # uv needs the git CLI to fetch git-sourced dependencies (pysaml2 fork)
-    git
+    git && \
+    rm -f /usr/bin/pebble && rm -rf /var/lib/pebble
 
 ENV UV_PYTHON_DOWNLOADS=0 \
     UV_COMPILE_BYTECODE=1 \
@@ -182,15 +182,15 @@ ARG GID
 # owning it, so apt can neither patch nor purge the CVEs vendored into it
 # (CVE-2026-39821). No stage here runs it, so every ubuntu-based stage
 # deletes it.
-RUN rm -f /usr/bin/pebble && rm -rf /var/lib/pebble && \
-    apt-get update && \
+RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
     python3 \
     python3-venv \
     gettext \
     xmlsec1 \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    && apt-get clean && rm -rf /var/lib/apt/lists/* \
+    && rm -f /usr/bin/pebble && rm -rf /var/lib/pebble
 
 ENV DOCKER_USER=baserow_docker_user \
     BASEROW_IMAGE_TYPE="backend" \
@@ -239,7 +239,6 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # Drop Ubuntu's unowned pebble binary (see the ci stage)
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
-    rm -f /usr/bin/pebble && rm -rf /var/lib/pebble && \
     apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
@@ -262,7 +261,8 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     tmux \
     vim \
     lsof \
-    sudo
+    sudo && \
+    rm -f /usr/bin/pebble && rm -rf /var/lib/pebble
 
 ENV DOCKER_USER=baserow_docker_user \
     BASEROW_IMAGE_TYPE="backend" \
@@ -349,8 +349,7 @@ ENV POSTGRES_VERSION=18 \
 # image carries no third-party apt repository. pg_dump 18 can dump every server
 # version Baserow supports (>= 14).
 # Drop Ubuntu's unowned pebble binary (see the ci stage)
-RUN rm -f /usr/bin/pebble && rm -rf /var/lib/pebble && \
-    apt-get update && \
+RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
     ca-certificates \
@@ -359,7 +358,8 @@ RUN rm -f /usr/bin/pebble && rm -rf /var/lib/pebble && \
     xmlsec1 \
     gettext \
     postgresql-client-${POSTGRES_VERSION} \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    && apt-get clean && rm -rf /var/lib/apt/lists/* \
+    && rm -f /usr/bin/pebble && rm -rf /var/lib/pebble
 
 RUN groupadd --system --gid $GID ${DOCKER_USER} && \
       useradd --shell /bin/bash -l -u $UID -g $GID -o -c "" -d /baserow -m ${DOCKER_USER} && \

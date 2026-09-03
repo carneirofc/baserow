@@ -35,13 +35,13 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # owning it, so apt can neither patch nor purge the CVEs vendored into it
 # (CVE-2026-39821). This image only runs caddy, so drop it.
 # hadolint ignore=DL3008
-RUN rm -f /usr/bin/pebble && rm -rf /var/lib/pebble && \
-    apt-get update && \
+RUN apt-get update && \
     apt-get upgrade -y && \
     DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
     ca-certificates && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* && \
+    rm -f /usr/bin/pebble && rm -rf /var/lib/pebble
 
 COPY --from=caddy_builder /usr/bin/caddy /usr/bin/caddy
 

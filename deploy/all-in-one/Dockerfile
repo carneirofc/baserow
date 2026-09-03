@@ -53,8 +53,7 @@ ENV DOCKER_USER=baserow_docker_user \
 # Ubuntu drops /usr/bin/pebble into the base layer without a dpkg package
 # owning it, so apt can neither patch nor purge the CVEs vendored into it
 # (CVE-2026-39821). supervisor runs the services here, so drop it.
-RUN rm -f /usr/bin/pebble && rm -rf /var/lib/pebble && \
-    apt-get update && \
+RUN apt-get update && \
     apt-get upgrade -y && \
     DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get install --no-install-recommends -y \
     curl ca-certificates \
@@ -78,7 +77,8 @@ RUN rm -f /usr/bin/pebble && rm -rf /var/lib/pebble && \
     ln -sf /dev/stdout /var/log/supervisor/supervisord.log && \
     # Create data and plugin directories with correct ownership
     mkdir -p "${DATA_DIR}" "${BASEROW_PLUGIN_DIR}" && \
-    chown -R "$UID:$GID" "${DATA_DIR}" "${BASEROW_PLUGIN_DIR}"
+    chown -R "$UID:$GID" "${DATA_DIR}" "${BASEROW_PLUGIN_DIR}" && \
+    rm -f /usr/bin/pebble && rm -rf /var/lib/pebble
 
 COPY --from=caddy_image /usr/bin/caddy /usr/bin/caddy
 

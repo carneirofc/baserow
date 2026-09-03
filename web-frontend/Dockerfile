@@ -25,13 +25,13 @@ ENV SU_EXEC_VERSION=212b75144bbc06722fbd7661f651390dc47a43d1 \
 # hadolint ignore=DL3008
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
-    rm -f /usr/bin/pebble && rm -rf /var/lib/pebble && \
     apt-get update && \
     apt-get install -y --no-install-recommends ca-certificates curl build-essential dos2unix tini && \
     curl -fsSL -o /usr/local/bin/su-exec.c "https://github.com/ncopa/su-exec/raw/${SU_EXEC_VERSION}/su-exec.c" && \
     echo "${SU_EXEC_SHA256}  /usr/local/bin/su-exec.c" | sha256sum -c - && \
     gcc -Wall -Werror -static -o /usr/local/bin/su-exec /usr/local/bin/su-exec.c && \
-    chmod 0755 /usr/local/bin/su-exec
+    chmod 0755 /usr/local/bin/su-exec && \
+    rm -f /usr/bin/pebble && rm -rf /var/lib/pebble
 
 
 # =============================================================================
@@ -55,7 +55,6 @@ ENV NODE_VERSION=v24.18.1 \
 # hadolint ignore=DL3008
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
-    rm -f /usr/bin/pebble && rm -rf /var/lib/pebble && \
     apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y --no-install-recommends ca-certificates curl xz-utils && \
@@ -72,7 +71,8 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     rm /tmp/node.tar.xz && \
     npm install -g "yarn@${YARN_VERSION}" && \
     npm cache clean --force && \
-    node --version && yarn --version
+    node --version && yarn --version && \
+    rm -f /usr/bin/pebble && rm -rf /var/lib/pebble
 
 
 # =============================================================================
