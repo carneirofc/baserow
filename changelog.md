@@ -1,5 +1,11 @@
 # Changelog
 
+## Released v0.5.0
+
+### New features
+* [Core] Disabling an application type in the admin settings now hides it entirely instead of only blocking creation. Applications of a disabled type are left out of the workspace listing and every operation on them, or on anything they contain, is refused. Nothing is deleted, so enabling the type again restores them unchanged.
+
+
 ## Released v0.4.0
 
 ### New features
