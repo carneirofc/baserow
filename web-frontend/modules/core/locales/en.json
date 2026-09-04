@@ -16,7 +16,8 @@
     "errorAuthFlowError": "Something went wrong during the login. Please try again.",
     "errorDifferentProvider": "This account is linked to a different login provider.",
     "errorWorkspaceInvitationEmailMismatch": "The invitation was sent to a different email address than the one you signed in with.",
-    "errorSignupDisabled": "New signups are disabled for this instance."
+    "errorSignupDisabled": "New signups are disabled for this instance.",
+    "errorNoMappedRole": "Your account does not have a role that grants access to this instance. Ask an administrator to assign you one."
   },
   "workspaceSearch": {
     "title": "Search",

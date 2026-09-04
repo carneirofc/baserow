@@ -1,17 +1,21 @@
 """
-Mapping OIDC group membership to Baserow workspace memberships.
+Mapping OIDC client roles to Baserow workspace memberships and granular roles.
 
-On every login, for each configured ``{group, workspace, role}`` mapping whose group
-the user currently belongs to, the user is added to the workspace with that role (or an
-existing membership is updated to it).
+On every login, for each configured ``{client_role, workspace, permissions, role}``
+mapping whose client role the user currently holds, the user is added to the workspace
+with those permissions (or an existing membership is updated to them). The sync is
+authoritative for the workspaces it maps: both ``WorkspaceUser.permissions`` and
+``WorkspaceUser.role`` are written to what the mapping asks for, so dropping ``role``
+from a mapping restores unrestricted member access on the next login.
 
 By default this is additive: memberships are never removed. When a provider enables
 ``strict_membership``, memberships that the sync itself created are recorded and revoked
-once the user loses the mapped group — manually-added memberships are never tracked and
-therefore never revoked.
+once the user loses the mapped client role - manually-added memberships are never tracked
+and therefore never revoked.
 """
 
-from typing import List, Set
+from dataclasses import dataclass
+from typing import Dict, List, Optional, Set
 
 from django.contrib.auth.models import AbstractUser
 
@@ -24,22 +28,34 @@ from baserow.core.auth_provider.models import (
 from baserow.core.exceptions import UserNotInWorkspace, WorkspaceUserIsLastAdmin
 from baserow.core.handler import CoreHandler
 from baserow.core.models import Workspace, WorkspaceUser
+from baserow.core.roles.models import Role
 from baserow.core.signals import workspace_user_added
-from baserow.core.sso.oidc.config import OIDCProviderConfig
+from baserow.core.sso.oidc.config import (
+    WORKSPACE_PERMISSIONS_ADMIN,
+    OIDCProviderConfig,
+)
+
+
+@dataclass(frozen=True)
+class _DesiredMembership:
+    """The membership a user's current client roles ask for in one workspace."""
+
+    permissions: str
+    role: Optional[str]
 
 
 def sync_workspace_memberships(
     user: AbstractUser,
-    groups: List[str],
+    roles: List[str],
     config: OIDCProviderConfig,
     provider: OIDCAuthProviderModel,
 ) -> None:
     """
     Adds/updates (and, in strict mode, revokes) the user's workspace memberships from
-    their current IdP groups.
+    their current IdP client roles.
 
     :param user: The user that just signed in.
-    :param groups: The user's current IdP group memberships.
+    :param roles: The user's current IdP roles.
     :param config: The provider configuration holding the workspace mappings.
     :param provider: The database anchor row for the provider, used to record
         SSO-granted memberships.
@@ -48,32 +64,114 @@ def sync_workspace_memberships(
     if not config.syncs_workspace_memberships:
         return
 
-    group_set = set(groups)
-    desired_workspace_ids: Set[int] = set()
+    desired = _resolve_desired_memberships(roles, config)
+    granted_workspace_ids = _apply_desired_memberships(user, desired, config, provider)
+
+    if config.strict_membership:
+        _revoke_stale_memberships(user, provider, granted_workspace_ids)
+
+
+def _resolve_desired_memberships(
+    roles: List[str], config: OIDCProviderConfig
+) -> Dict[int, _DesiredMembership]:
+    """
+    Collapses the mappings the user's client roles match into one desired membership per
+    workspace.
+
+    When several matching mappings target the same workspace, an ``ADMIN`` mapping wins;
+    otherwise the first matching mapping wins. Conflicts are logged, since two mappings
+    disagreeing about a workspace is a configuration mistake.
+    """
+
+    role_set = set(roles)
+    desired: Dict[int, _DesiredMembership] = {}
 
     for mapping in config.workspace_mappings:
-        if mapping.group not in group_set:
+        if mapping.client_role not in role_set:
             continue
 
-        workspace = Workspace.objects.filter(id=mapping.workspace_id).first()
+        wanted = _DesiredMembership(permissions=mapping.permissions, role=mapping.role)
+        current = desired.get(mapping.workspace_id)
+
+        if current is None:
+            desired[mapping.workspace_id] = wanted
+            continue
+
+        if current == wanted:
+            continue
+
+        if current.permissions == WORKSPACE_PERMISSIONS_ADMIN:
+            winner = current
+        elif wanted.permissions == WORKSPACE_PERMISSIONS_ADMIN:
+            winner = wanted
+        else:
+            winner = current
+
+        logger.warning(
+            "OIDC provider '{0}' has conflicting mappings for workspace {1} "
+            "(the user matches both {2} and {3}); applying {4}.",
+            config.name,
+            mapping.workspace_id,
+            current,
+            wanted,
+            winner,
+        )
+        desired[mapping.workspace_id] = winner
+
+    return desired
+
+
+def _apply_desired_memberships(
+    user: AbstractUser,
+    desired: Dict[int, _DesiredMembership],
+    config: OIDCProviderConfig,
+    provider: OIDCAuthProviderModel,
+) -> Set[int]:
+    """
+    Creates or updates the memberships in ``desired`` and returns the workspace ids that
+    were actually granted.
+    """
+
+    granted_workspace_ids: Set[int] = set()
+
+    for workspace_id, wanted in desired.items():
+        workspace = Workspace.objects.filter(id=workspace_id).first()
         if workspace is None:
             logger.warning(
-                "OIDC provider '{0}' maps group '{1}' to unknown workspace {2}; "
-                "skipping.",
+                "OIDC provider '{0}' maps to unknown workspace {1}; skipping.",
                 config.name,
-                mapping.group,
-                mapping.workspace_id,
+                workspace_id,
             )
             continue
 
-        desired_workspace_ids.add(workspace.id)
+        role = None
+        if wanted.role is not None:
+            role = Role.objects.filter(
+                workspace_id=workspace.id, name=wanted.role
+            ).first()
+            if role is None:
+                # Fail closed: granting the membership without the restricting role
+                # would hand out full member access, the opposite of what the mapping
+                # asks for.
+                logger.error(
+                    "OIDC provider '{0}' maps workspace {1} to unknown role '{2}'; "
+                    "refusing the membership. Declare the role in BASEROW_ROLES and "
+                    "run `sync_roles`.",
+                    config.name,
+                    workspace_id,
+                    wanted.role,
+                )
+                continue
+
+        granted_workspace_ids.add(workspace.id)
 
         workspace_user, created = WorkspaceUser.objects.get_or_create(
             user=user,
             workspace=workspace,
             defaults={
                 "order": WorkspaceUser.get_last_order(user),
-                "permissions": mapping.role,
+                "permissions": wanted.permissions,
+                "role": role,
             },
         )
 
@@ -90,12 +188,20 @@ def sync_workspace_memberships(
                 OIDCSsoWorkspaceMembership.objects.get_or_create(
                     provider=provider, user=user, workspace=workspace
                 )
-        elif workspace_user.permissions != mapping.role:
-            workspace_user.permissions = mapping.role
-            workspace_user.save(update_fields=["permissions"])
+            continue
 
-    if config.strict_membership:
-        _revoke_stale_memberships(user, provider, desired_workspace_ids)
+        update_fields = []
+        if workspace_user.permissions != wanted.permissions:
+            workspace_user.permissions = wanted.permissions
+            update_fields.append("permissions")
+        role_id = role.id if role is not None else None
+        if workspace_user.role_id != role_id:
+            workspace_user.role_id = role_id
+            update_fields.append("role")
+        if update_fields:
+            workspace_user.save(update_fields=update_fields)
+
+    return granted_workspace_ids
 
 
 def _revoke_stale_memberships(
@@ -103,7 +209,7 @@ def _revoke_stale_memberships(
     provider: OIDCAuthProviderModel,
     desired_workspace_ids: Set[int],
 ) -> None:
-    """Revokes SSO-granted memberships the user no longer has a mapped group for."""
+    """Revokes SSO-granted memberships the user no longer has a mapped role for."""
 
     stale = OIDCSsoWorkspaceMembership.objects.filter(provider=provider, user=user)
     if desired_workspace_ids:

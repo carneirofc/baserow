@@ -23,7 +23,7 @@ from baserow.core.auth_provider.types import UserInfo
 from baserow.core.cache import global_cache
 from baserow.core.sso.exceptions import AuthFlowError, InvalidProviderUrl
 from baserow.core.sso.oidc.config import OIDCProviderConfig
-from baserow.core.sso.oidc.groups import extract_groups
+from baserow.core.sso.oidc.roles import extract_roles
 
 DISCOVERY_TIMEOUT_SECONDS = 30
 JWKS_TIMEOUT_SECONDS = 30
@@ -149,7 +149,7 @@ class OIDCHandler:
         :param session: The Django session holding the state / nonce.
         :raises AuthFlowError: When the flow fails or the ID token is invalid.
         :return: The user info, the original (relative) url to redirect to, and the
-            user's IdP group memberships.
+            user's IdP roles.
         """
 
         well_known = get_well_known_urls(config)
@@ -187,7 +187,7 @@ class OIDCHandler:
         if not email:
             raise AuthFlowError("The provider did not return an email address.")
 
-        groups = extract_groups(config, claims, userinfo)
+        roles = extract_roles(config, claims, userinfo)
 
         return (
             UserInfo(
@@ -200,7 +200,7 @@ class OIDCHandler:
                 or None,
             ),
             request_data.get("original", ""),
-            groups,
+            roles,
         )
 
     @classmethod

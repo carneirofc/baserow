@@ -62,15 +62,25 @@ single sign-on as a small, self-contained OIDC implementation configured entirel
 through environment variables — no admin UI, no database provider rows to manage. It is
 the source of truth and is validated at startup, so a bad configuration fails fast.
 
+All access is derived from the IdP's **client roles**: which of them make someone a
+Baserow admin, which put them in a workspace, and what they may do once there. See
+[the RHBK/Keycloak guide](docs/installation/sso-rhbk-keycloak.md) for the realm setup.
+
 * `BASEROW_OIDC_PROVIDERS` — a JSON list of providers. Each provider carries its
-  `issuer`, `client_id`/`client_secret`, and optional claim overrides.
-* **Group → global role mapping** — `staff_groups` and `superuser_groups` grant Baserow
-  global staff / superuser to members of the named IdP groups.
-* **Group → workspace membership mapping** — `workspace_mappings` places users into
-  specific workspaces with an `ADMIN` or `MEMBER` role based on their IdP groups.
+  `issuer`, `client_id`/`client_secret`, and optional claim overrides. `roles_claim`
+  defaults to Keycloak's own `resource_access.${client_id}.roles`.
+* **Client role → global role mapping** — `staff_roles` and `superuser_roles` grant
+  Baserow global staff / superuser to holders of the named client roles.
+* **Client role → workspace membership mapping** — `workspace_mappings` places users into
+  specific workspaces with `ADMIN` or `MEMBER` permissions, and can name a `role`
+  declared in `BASEROW_ROLES` to restrict them to that role's operations.
+* **Deny by default** — a provider that maps any client role refuses to sign in (and
+  refuses to provision) a user holding none of them.
 * **Strict membership** — with `strict_membership: true`, SSO-granted workspace
-  memberships are revoked when the user loses the mapped group. Memberships added
+  memberships are revoked when the user loses the mapped client role. Memberships added
   manually are never touched.
+* **`BASEROW_ROLES`** — a JSON list declaring per-workspace roles and the operations they
+  grant, reconciled into the database after every migrate and by `sync_roles`.
 * **`BASEROW_OIDC_ONLY`** — makes the instance OIDC-only for normal users: password
   signup and password login are refused, while a staff/superuser **break-glass admin**
   can still log in with a password so you can never lock yourself out.
@@ -82,18 +92,23 @@ A minimal single-provider example:
 ```jsonc
 BASEROW_OIDC_PROVIDERS='[
   {
-    "name": "keycloak",
+    "name": "rhbk",
     "display_name": "Company SSO",
     "issuer": "https://idp.example.com/realms/main",
     "client_id": "baserow",
     "client_secret": "…",
-    "groups_claim": "groups",
-    "staff_groups": ["baserow-admins"],
+    "staff_roles": ["baserow-admins"],
     "workspace_mappings": [
-      { "group": "engineering", "workspace": 1, "role": "MEMBER" }
+      { "client_role": "engineering", "workspace": 1, "permissions": "MEMBER" },
+      { "client_role": "analysts", "workspace": 1, "permissions": "MEMBER",
+        "role": "Reader" }
     ],
     "strict_membership": true
   }
+]'
+
+BASEROW_ROLES='[
+  { "workspace": 1, "name": "Reader", "operations": ["database.table.read"] }
 ]'
 ```
 
@@ -144,8 +159,8 @@ Redis, uploads) inside the `baserow_data` volume.
   access — it must match the address you use in the browser.
 * Pin a specific release instead of `latest` with a version tag, e.g.
   `ghcr.io/carneirofc/baserow/baserow:1.2.3`.
-* To enable SSO, pass the `BASEROW_OIDC_PROVIDERS` (and optionally `BASEROW_OIDC_ONLY`)
-  environment variables shown above.
+* To enable SSO, pass the `BASEROW_OIDC_PROVIDERS` (and optionally `BASEROW_ROLES` and
+  `BASEROW_OIDC_ONLY`) environment variables shown above.
 
 Images are published automatically by the
 [`build-publish-image`](.github/workflows/build-publish-image.yml) GitHub Actions

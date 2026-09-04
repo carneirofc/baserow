@@ -26,6 +26,11 @@ x-backend-env: &backend-env
   MIGRATE_ON_STARTUP: "true"
   # Built-in templates are stripped in this fork, so never try to sync them.
   SYNC_TEMPLATES_ON_STARTUP: "false"
+  # Single sign-on and the roles an OIDC client role can be mapped to. See
+  # .env.example and docs/installation/sso-rhbk-keycloak.md.
+  BASEROW_OIDC_PROVIDERS: ${BASEROW_OIDC_PROVIDERS:-}
+  BASEROW_OIDC_ONLY: ${BASEROW_OIDC_ONLY:-}
+  BASEROW_ROLES: ${BASEROW_ROLES:-}
 
 services:
   db:

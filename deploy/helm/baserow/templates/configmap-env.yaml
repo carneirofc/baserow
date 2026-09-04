@@ -54,3 +54,10 @@ data:
   MEDIA_ROOT: "/baserow/media"
   BASEROW_SERVE_FILES_THROUGH_BACKEND: "true"
   {{- end }}
+
+  {{- with .Values.extraEnv }}
+  # --- Operator-supplied environment (e.g. BASEROW_OIDC_PROVIDERS, BASEROW_ROLES) ---
+  {{- range $key, $value := . }}
+  {{ $key }}: {{ $value | quote }}
+  {{- end }}
+  {{- end }}

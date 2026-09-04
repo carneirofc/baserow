@@ -6,6 +6,10 @@ variable as a JSON list. The configuration is the source of truth; a lightweight
 database row (see ``OIDCAuthProviderModel``) is upserted per provider only to anchor
 the user linkage that the shared auth-provider machinery relies on.
 
+Access is expressed in terms of the IdP's client roles: which of them grant global
+staff/superuser, and which grant a membership (and optionally a granular role) in a
+workspace. A provider that maps any client role refuses users carrying none of them.
+
 The env var is parsed and structurally validated once, at startup, so that an invalid
 configuration fails fast with a clear error instead of surfacing at login time. Network
 reachable checks (OIDC discovery) are intentionally deferred to login time.
@@ -19,17 +23,34 @@ models or ``requests_oauthlib`` here, or settings evaluation will break.
 import json
 import re
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Set
 from urllib.parse import urlparse
 
 from django.core.exceptions import ImproperlyConfigured
 
 DEFAULT_SCOPES = ["openid", "email", "profile"]
 
-# The workspace roles an operator may map an IdP group to.
-WORKSPACE_ROLE_ADMIN = "ADMIN"
-WORKSPACE_ROLE_MEMBER = "MEMBER"
-ALLOWED_WORKSPACE_ROLES = (WORKSPACE_ROLE_ADMIN, WORKSPACE_ROLE_MEMBER)
+# Keycloak/RHBK nests a client's roles under this claim, substituting the client id.
+# Matching their built-in mapper's default lets an operator paste the claim name in.
+DEFAULT_ROLES_CLAIM = "resource_access.${client_id}.roles"
+CLIENT_ID_PLACEHOLDER = "${client_id}"
+
+# The workspace permissions an operator may map an IdP client role to.
+WORKSPACE_PERMISSIONS_ADMIN = "ADMIN"
+WORKSPACE_PERMISSIONS_MEMBER = "MEMBER"
+ALLOWED_WORKSPACE_PERMISSIONS = (
+    WORKSPACE_PERMISSIONS_ADMIN,
+    WORKSPACE_PERMISSIONS_MEMBER,
+)
+
+# Config keys retired by the move to client roles, mapped to their replacement. They are
+# refused rather than ignored: silently dropping `staff_groups` would revoke every admin.
+RETIRED_PROVIDER_KEYS = {
+    "groups_claim": "roles_claim",
+    "staff_groups": "staff_roles",
+    "superuser_groups": "superuser_roles",
+}
+RETIRED_MAPPING_KEYS = {"group": "client_role"}
 
 # A provider name is used in URLs and as the database anchor key, so keep it to a
 # conservative, url-safe slug.
@@ -37,12 +58,16 @@ _NAME_RE = re.compile(r"^[a-zA-Z0-9_-]+$")
 
 
 @dataclass(frozen=True)
-class WorkspaceRoleMapping:
-    """Maps one IdP group to a role in one Baserow workspace."""
+class WorkspaceMapping:
+    """Maps one IdP client role to a membership in one Baserow workspace."""
 
-    group: str
+    client_role: str
     workspace_id: int
-    role: str
+    permissions: str
+    # The name of a `core.Role` in the same workspace, restricting the member to that
+    # role's operations. None means today's unrestricted full-member access. Resolved at
+    # login time, since the database is not reachable while settings are evaluated.
+    role: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -59,29 +84,48 @@ class OIDCProviderConfig:
     email_claim: str = "email"
     # The claim that holds the user's display name.
     name_claim: str = "name"
-    # The claim (in the ID token / userinfo) that holds the user's group memberships.
-    groups_claim: str = "groups"
-    # IdP groups whose members are granted Baserow global staff.
-    staff_groups: List[str] = field(default_factory=list)
-    # IdP groups whose members are granted Baserow global superuser.
-    superuser_groups: List[str] = field(default_factory=list)
-    # Maps IdP groups to workspace memberships/roles.
-    workspace_mappings: List[WorkspaceRoleMapping] = field(default_factory=list)
+    # The (possibly dotted) claim path that holds the user's IdP roles.
+    roles_claim: str = DEFAULT_ROLES_CLAIM
+    # IdP client roles whose holders are granted Baserow global staff.
+    staff_roles: List[str] = field(default_factory=list)
+    # IdP client roles whose holders are granted Baserow global superuser.
+    superuser_roles: List[str] = field(default_factory=list)
+    # Maps IdP client roles to workspace memberships.
+    workspace_mappings: List[WorkspaceMapping] = field(default_factory=list)
     # When True, SSO-granted workspace memberships are revoked once the user loses the
-    # mapped group. Manually-added memberships are never touched.
+    # mapped client role. Manually-added memberships are never touched.
     strict_membership: bool = False
 
     @property
     def syncs_global_roles(self) -> bool:
-        """True when this provider maps any IdP group to a global role."""
+        """True when this provider maps any IdP client role to a global role."""
 
-        return bool(self.staff_groups) or bool(self.superuser_groups)
+        return bool(self.staff_roles) or bool(self.superuser_roles)
 
     @property
     def syncs_workspace_memberships(self) -> bool:
-        """True when this provider maps any IdP group to a workspace membership."""
+        """True when this provider maps any IdP client role to a membership."""
 
         return bool(self.workspace_mappings)
+
+    @property
+    def mapped_roles(self) -> Set[str]:
+        """Every IdP client role this provider grants some access to."""
+
+        return (
+            set(self.staff_roles)
+            | set(self.superuser_roles)
+            | {mapping.client_role for mapping in self.workspace_mappings}
+        )
+
+    @property
+    def declares_any_mapping(self) -> bool:
+        """
+        True when this provider derives any access from client roles, and a user
+        carrying none of them must therefore be refused.
+        """
+
+        return bool(self.mapped_roles)
 
 
 def _require_str(provider: Dict[str, Any], key: str, index: int) -> str:
@@ -105,9 +149,25 @@ def _string_list(provider: Dict[str, Any], key: str, index: int) -> List[str]:
     return value
 
 
-def _workspace_mappings(
-    provider: Dict[str, Any], index: int
-) -> List[WorkspaceRoleMapping]:
+def _reject_retired_keys(
+    mapping: Dict[str, Any], retired: Dict[str, str], prefix: str
+) -> None:
+    """
+    Fails fast on a key from the pre-client-role configuration format.
+
+    Ignoring one would silently drop the access it used to grant, so an operator
+    upgrading is told exactly which key to rename.
+    """
+
+    for old_key, new_key in retired.items():
+        if old_key in mapping:
+            raise ImproperlyConfigured(
+                f"{prefix}: '{old_key}' is no longer supported; access is now derived "
+                f"from IdP client roles. Rename it to '{new_key}'."
+            )
+
+
+def _workspace_mappings(provider: Dict[str, Any], index: int) -> List[WorkspaceMapping]:
     """Validates the optional ``workspace_mappings`` provider field."""
 
     raw_mappings = provider.get("workspace_mappings", [])
@@ -122,9 +182,23 @@ def _workspace_mappings(
         if not isinstance(mapping, dict):
             raise ImproperlyConfigured(f"{prefix}: must be a JSON object.")
 
-        group = mapping.get("group")
-        if not isinstance(group, str) or not group.strip():
-            raise ImproperlyConfigured(f"{prefix}: 'group' must be a non-empty string.")
+        _reject_retired_keys(mapping, RETIRED_MAPPING_KEYS, prefix)
+        if (
+            "permissions" not in mapping
+            and mapping.get("role") in ALLOWED_WORKSPACE_PERMISSIONS
+        ):
+            # 'role' used to hold ADMIN/MEMBER; it now names a granular `core.Role`.
+            raise ImproperlyConfigured(
+                f"{prefix}: 'role' no longer holds "
+                f"{list(ALLOWED_WORKSPACE_PERMISSIONS)} — rename it to 'permissions'. "
+                f"'role' now names a role declared in BASEROW_ROLES."
+            )
+
+        client_role = mapping.get("client_role")
+        if not isinstance(client_role, str) or not client_role.strip():
+            raise ImproperlyConfigured(
+                f"{prefix}: 'client_role' must be a non-empty string."
+            )
 
         workspace = mapping.get("workspace")
         # bool is a subclass of int; reject it explicitly.
@@ -133,14 +207,37 @@ def _workspace_mappings(
                 f"{prefix}: 'workspace' must be an integer workspace id."
             )
 
-        role = mapping.get("role")
-        if role not in ALLOWED_WORKSPACE_ROLES:
+        permissions = mapping.get("permissions")
+        if permissions not in ALLOWED_WORKSPACE_PERMISSIONS:
             raise ImproperlyConfigured(
-                f"{prefix}: 'role' must be one of {list(ALLOWED_WORKSPACE_ROLES)}."
+                f"{prefix}: 'permissions' must be one of "
+                f"{list(ALLOWED_WORKSPACE_PERMISSIONS)}."
             )
 
+        role = mapping.get("role")
+        if role is not None:
+            if not isinstance(role, str) or not role.strip():
+                raise ImproperlyConfigured(
+                    f"{prefix}: 'role' must be a non-empty string when provided."
+                )
+            role = role.strip()
+            if permissions == WORKSPACE_PERMISSIONS_ADMIN:
+                # Workspace admins bypass the granular role permission manager, so the
+                # combination would silently grant unrestricted access.
+                raise ImproperlyConfigured(
+                    f"{prefix}: 'role' cannot be combined with permissions "
+                    f"'{WORKSPACE_PERMISSIONS_ADMIN}', because workspace admins are "
+                    f"not restricted by a role. Use "
+                    f"'{WORKSPACE_PERMISSIONS_MEMBER}'."
+                )
+
         mappings.append(
-            WorkspaceRoleMapping(group=group.strip(), workspace_id=workspace, role=role)
+            WorkspaceMapping(
+                client_role=client_role.strip(),
+                workspace_id=workspace,
+                permissions=permissions,
+                role=role,
+            )
         )
     return mappings
 
@@ -150,6 +247,10 @@ def _validate_provider(provider: Any, index: int) -> OIDCProviderConfig:
         raise ImproperlyConfigured(
             f"BASEROW_OIDC_PROVIDERS[{index}]: each provider must be a JSON object."
         )
+
+    _reject_retired_keys(
+        provider, RETIRED_PROVIDER_KEYS, f"BASEROW_OIDC_PROVIDERS[{index}]"
+    )
 
     name = _require_str(provider, "name", index)
     if not _NAME_RE.match(name):
@@ -187,11 +288,11 @@ def _validate_provider(provider: Any, index: int) -> OIDCProviderConfig:
 
     email_claim = provider.get("email_claim", "email")
     name_claim = provider.get("name_claim", "name")
-    groups_claim = provider.get("groups_claim", "groups")
+    roles_claim = provider.get("roles_claim", DEFAULT_ROLES_CLAIM)
     for claim_key, claim_value in (
         ("email_claim", email_claim),
         ("name_claim", name_claim),
-        ("groups_claim", groups_claim),
+        ("roles_claim", roles_claim),
     ):
         if not isinstance(claim_value, str) or not claim_value.strip():
             raise ImproperlyConfigured(
@@ -199,8 +300,12 @@ def _validate_provider(provider: Any, index: int) -> OIDCProviderConfig:
                 f"string."
             )
 
-    staff_groups = _string_list(provider, "staff_groups", index)
-    superuser_groups = _string_list(provider, "superuser_groups", index)
+    # Keycloak writes its mapper claim names with a `${client_id}` placeholder, so the
+    # operator can paste one in verbatim.
+    roles_claim = roles_claim.strip().replace(CLIENT_ID_PLACEHOLDER, client_id)
+
+    staff_roles = _string_list(provider, "staff_roles", index)
+    superuser_roles = _string_list(provider, "superuser_roles", index)
     workspace_mappings = _workspace_mappings(provider, index)
 
     strict_membership = provider.get("strict_membership", False)
@@ -218,9 +323,9 @@ def _validate_provider(provider: Any, index: int) -> OIDCProviderConfig:
         scopes=scopes,
         email_claim=email_claim.strip(),
         name_claim=name_claim.strip(),
-        groups_claim=groups_claim.strip(),
-        staff_groups=staff_groups,
-        superuser_groups=superuser_groups,
+        roles_claim=roles_claim,
+        staff_roles=staff_roles,
+        superuser_roles=superuser_roles,
         workspace_mappings=workspace_mappings,
         strict_membership=strict_membership,
     )
