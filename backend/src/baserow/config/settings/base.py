@@ -1302,6 +1302,10 @@ BASEROW_IMPORT_EXPORT_TABLE_ROWS_COUNT_LIMIT = int(
 )
 
 PERMISSION_MANAGERS = [
+    # Must stay first: an application type disabled through the instance settings is
+    # denied before any manager can allow the operation for another reason, such as the
+    # workspace being a template or the builder application being published publicly.
+    "application_type_enabled",
     "core",
     "setting_operation",
     "staff",

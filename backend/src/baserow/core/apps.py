@@ -152,6 +152,7 @@ class CoreConfig(AppConfig):
 
         from baserow.core.permission_manager import (
             AllowIfTemplatePermissionManagerType,
+            ApplicationTypeEnabledPermissionManagerType,
             BasicPermissionManagerType,
             CorePermissionManagerType,
             StaffOnlyPermissionManagerType,
@@ -172,6 +173,9 @@ class CoreConfig(AppConfig):
 
         email_context_registry.register(CoreEmailContextType())
 
+        permission_manager_type_registry.register(
+            ApplicationTypeEnabledPermissionManagerType()
+        )
         permission_manager_type_registry.register(CorePermissionManagerType())
         permission_manager_type_registry.register(StaffOnlyPermissionManagerType())
         permission_manager_type_registry.register(BasicPermissionManagerType())

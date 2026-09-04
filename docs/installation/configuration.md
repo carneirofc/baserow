@@ -9,6 +9,10 @@ Some environment variables have different defaults, are not supported, are optio
 depending on how you installed Baserow. See the specific installation guides for how
 to set these environment variables.
 
+Not everything is configured this way. A handful of settings live in the database instead
+and are changed at runtime from the admin area — see
+[Instance settings](#instance-settings) at the bottom of this page.
+
 ## Environment Variables
 
 The installation methods referred to in the variable descriptions are:
@@ -358,3 +362,13 @@ domain than your Baserow, you need to make sure CORS is configured correctly.
 | BASEROW\_DISABLE\_PLUGIN\_INSTALL\_ON\_STARTUP | When set to any non-empty values no automatic startup check and/or install of plugins will be run. Disables the above two env variables. |
 | BASEROW\_PLUGIN\_DIR                           | **INTERNAL** Sets the folder where the Baserow plugin scripts look for plugins.                                                          | In the all-in-one image `/baserow/data/plugins`, otherwise `/baserow/plugins` |
 
+
+## Instance settings
+
+A few settings are stored in the database rather than in the environment, and are changed
+at runtime from **Admin → Settings** (`/admin/settings`) by an account with global staff
+permissions. They need no restart and are shared by every backend and worker process.
+
+Among them are four per-application-type switches — `enable_database`, `enable_builder`,
+`enable_dashboard` and `enable_automation` — which turn a kind of application off for the
+whole instance. See [Turning application types off instance-wide](instance-settings.md).

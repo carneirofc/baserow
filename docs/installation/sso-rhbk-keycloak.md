@@ -384,6 +384,24 @@ non-staff accounts. A staff/superuser account can still use the password form (v
 "display password login" on the login page) so an outage of the IdP cannot lock you out
 of your own instance. **Create that break-glass account before turning this on.**
 
+### Reduce the surface: turn off the application types you don't use
+
+Everything above decides *who* gets in and *which* workspaces they land in. It says
+nothing about *what kinds of application* the instance offers. If your deployment only
+ever uses databases, leave the application builder, dashboards and automations switched
+off rather than relying on nobody creating one.
+
+The switches are in the admin area under **Settings → Application features**, and they are
+instance-wide in the same sense as the global staff/superuser flags above — the same
+distinction the [Administrator means the whole instance](#administrator-means-the-whole-instance)
+section draws. A disabled type cannot be created, and its existing applications are hidden
+and refused; the data is not deleted, and re-enabling restores it. This is deliberately
+not something Keycloak can drive: it is a property of the instance, not of a user or a
+workspace, so no client role or `workspace_mappings` entry affects it.
+
+See [Turning application types off instance-wide](instance-settings.md) for what each
+toggle covers and how to set it through the API.
+
 ## Troubleshooting
 
 | Symptom | Cause |

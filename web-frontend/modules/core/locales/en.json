@@ -659,13 +659,13 @@
     "settingsVerifyImportSignatureDescription": "When enabled, the signature of the imported data is verified to ensure the data has not been tampered with.",
     "applicationFeatures": "Application features",
     "settingEnableDatabaseName": "Databases",
-    "settingEnableDatabaseDescription": "When disabled, users can no longer create database applications. Existing databases remain accessible.",
+    "settingEnableDatabaseDescription": "When disabled, databases can no longer be created, and existing ones are hidden and cannot be opened. Nothing is deleted: enabling this again restores them.",
     "settingEnableBuilderName": "Application Builder",
-    "settingEnableBuilderDescription": "When disabled, users can no longer create builder applications. Existing applications remain accessible.",
+    "settingEnableBuilderDescription": "When disabled, builder applications can no longer be created, and existing ones are hidden and cannot be opened, including pages published to a public domain. Nothing is deleted: enabling this again restores them.",
     "settingEnableAutomationName": "Automations",
-    "settingEnableAutomationDescription": "When disabled, users can no longer create automation applications. Existing automations remain accessible.",
+    "settingEnableAutomationDescription": "When disabled, automations can no longer be created, and existing ones are hidden and cannot be opened. Nothing is deleted: enabling this again restores them.",
     "settingEnableDashboardName": "Dashboards",
-    "settingEnableDashboardDescription": "When disabled, users can no longer create dashboard applications. Existing dashboards remain accessible."
+    "settingEnableDashboardDescription": "When disabled, dashboards can no longer be created, and existing ones are hidden and cannot be opened. Nothing is deleted: enabling this again restores them."
   },
   "formSidebar": {
     "fields": "Fields",

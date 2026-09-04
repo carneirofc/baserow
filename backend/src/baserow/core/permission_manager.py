@@ -1,9 +1,11 @@
-from typing import Iterable, List
+from typing import Iterable, List, Optional
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
+from django.contrib.contenttypes.models import ContentType
 
 from baserow.contrib.database.field_rules.operations import ReadFieldRuleOperationType
+from baserow.contrib.database.tokens.subjects import TokenSubjectType
 from baserow.core.cache import local_cache
 from baserow.core.handler import CoreHandler
 from baserow.core.integrations.operations import (
@@ -15,10 +17,12 @@ from baserow.core.notifications.operations import (
     ListNotificationsOperationType,
     MarkNotificationAsReadOperationType,
 )
+from baserow.core.object_scopes import ApplicationObjectScopeType
 from baserow.core.user_sources.operations import (
     ListUserSourcesApplicationOperationType,
     LoginUserSourceOperationType,
 )
+from baserow.core.user_sources.subjects import UserSourceUserSubjectType
 
 from .exceptions import (
     IsNotAdminError,
@@ -43,7 +47,12 @@ from .operations import (
     UpdateWorkspaceOperationType,
     UpdateWorkspaceUserOperationType,
 )
-from .registries import PermissionManagerType
+from .registries import (
+    PermissionManagerType,
+    application_type_registry,
+    object_scope_type_registry,
+    operation_type_registry,
+)
 from .subjects import AnonymousUserSubjectType, UserSubjectType
 
 User = get_user_model()
@@ -427,3 +436,131 @@ class StaffOnlySettingOperationPermissionManagerType(PermissionManagerType):
             "staff_only_operations": staff_only_ops,
             "always_allowed_operations": always_allowed_ops,
         }
+
+
+class ApplicationTypeEnabledPermissionManagerType(PermissionManagerType):
+    """
+    A permission manager which hides applications whose type has been disabled through
+    the instance settings. A disabled type is not deleted: its applications are excluded
+    from the listings and every operation on them, or on anything they contain, is
+    denied until an administrator enables the type again.
+
+    While every application type is enabled, which is the default, this manager decides
+    nothing and never looks at a context.
+    """
+
+    type = "application_type_enabled"
+    # Every actor type there is: a disabled application type is closed to database API
+    # tokens and to user source users just as much as to a signed in user.
+    supported_actor_types = [
+        UserSubjectType.type,
+        AnonymousUserSubjectType.type,
+        UserSourceUserSubjectType.type,
+        TokenSubjectType.type,
+    ]
+
+    def get_disabled_application_types(self) -> List[str]:
+        """
+        Returns the names of the application types that an administrator disabled
+        through the instance settings. The result is cached for the request.
+        """
+
+        def get_disabled():
+            handler = CoreHandler()
+            return [
+                application_type.type
+                for application_type in application_type_registry.get_all()
+                if not handler.application_type_is_enabled(application_type.type)
+            ]
+
+        return local_cache.get("disabled_application_types", get_disabled)
+
+    def _get_disabled_content_type_ids(self, disabled: List[str]) -> List[int]:
+        """
+        Returns the content type ids of the provided disabled application types.
+        """
+
+        models = [
+            application_type_registry.get(type_name).model_class
+            for type_name in disabled
+        ]
+        return [
+            content_type.id
+            for content_type in ContentType.objects.get_for_models(*models).values()
+        ]
+
+    def _operation_happens_in_an_application(self, operation_name: str) -> bool:
+        """
+        Whether the context of the given operation is an application, or something an
+        application contains. Depends only on the registries, so it is cached for the
+        request.
+        """
+
+        def resolve():
+            application_scope = object_scope_type_registry.get(
+                ApplicationObjectScopeType.type
+            )
+            return object_scope_type_registry.scope_type_includes_scope_type(
+                application_scope,
+                operation_type_registry.get(operation_name).context_scope,
+            )
+
+        return local_cache.get(f"operation_in_application_{operation_name}", resolve)
+
+    def _get_application_type(self, check) -> Optional[str]:
+        """
+        Resolves the type of the application the given check operates on, by walking
+        the scope hierarchy up from the check context. Returns `None` when the
+        operation doesn't happen inside an application at all.
+
+        The answer is cached per context for the request, so a batch of checks on the
+        same object walks the hierarchy once.
+        """
+
+        context = check.context
+
+        if context is None or not self._operation_happens_in_an_application(
+            check.operation_name
+        ):
+            return None
+
+        def resolve():
+            application = object_scope_type_registry.get_parent(
+                context, at_scope_type=ApplicationObjectScopeType
+            )
+            return application_type_registry.get_by_model(
+                application.specific_class
+            ).type
+
+        return local_cache.get(
+            f"application_type_of_{type(context).__name__}_{context.pk}", resolve
+        )
+
+    def check_multiple_permissions(self, checks, workspace=None, include_trash=False):
+        disabled = self.get_disabled_application_types()
+
+        if not disabled:
+            return {}
+
+        result = {}
+        for check in checks:
+            if self._get_application_type(check) in disabled:
+                result[check] = PermissionDenied()
+
+        return result
+
+    # No `get_permissions_object`: the frontend already reads the `enable_<type>`
+    # settings straight from the settings store, so there is nothing to send it here.
+
+    def filter_queryset(self, actor, operation_name, queryset, workspace=None):
+        if operation_name != ListApplicationsWorkspaceOperationType.type:
+            return None
+
+        disabled = self.get_disabled_application_types()
+
+        if not disabled:
+            return None
+
+        return queryset.exclude(
+            content_type_id__in=self._get_disabled_content_type_ids(disabled)
+        )

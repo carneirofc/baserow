@@ -355,13 +355,18 @@ const resourceLinksComponents = computed(() =>
     .filter((c) => c !== null)
 )
 
-const orderedApplicationsInSelectedWorkspace = computed(() =>
-  !selectedWorkspace.value
-    ? []
-    : getAllOfWorkspace(selectedWorkspace.value).sort(
-        (a, b) => a.order - b.order
-      )
-)
+// The backend already leaves applications of a disabled type out of the response.
+// Filtering here as well makes an already open session follow the setting instead of
+// waiting for the next page load.
+const orderedApplicationsInSelectedWorkspace = computed(() => {
+  if (!selectedWorkspace.value) return []
+
+  const settings = $store.getters['settings/get']
+
+  return getAllOfWorkspace(selectedWorkspace.value)
+    .filter((application) => settings[`enable_${application.type}`] !== false)
+    .sort((a, b) => a.order - b.order)
+})
 
 const canCreateCreateApplication = computed(() => {
   if (!selectedWorkspace.value) return false
