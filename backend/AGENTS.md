@@ -20,6 +20,11 @@ Owns everything under `backend/`: `src/baserow/` (source), `tests/` (pytest suit
 - Behavior is wired through **registries** (`baserow.core.registry`) — types register themselves; add new types via the registry, don't hardcode.
 - Every model/schema change needs a Django migration; keep migrations forward-compatible.
 - Reuse shared pytest **fixtures** (`test_utils/fixtures/`) rather than hand-building objects.
+- SSO is env-configured only (`core/sso/oidc/`): `BASEROW_OIDC_PROVIDERS` is the source of truth, parsed and validated at startup, with a database row per provider used purely as an anchor for user linkage. There is no admin UI or API for creating providers.
+- **All OIDC access derives from the IdP's client roles** — global staff/superuser, workspace membership, and the granular `core.roles.Role`. A provider that maps any client role refuses a user holding none of them, before any account is provisioned. Keep new access dimensions on that same path rather than adding a parallel source of truth.
+- `core/sso/oidc/config.py` and `core/roles/config.py` are imported from `config/settings/base.py` while settings are still evaluating. Keep them import-light (stdlib + `django.core.exceptions`); never import models or third-party clients there.
+- `BASEROW_ROLES` declares workspace roles; they are reconciled into `core.Role` rows by `sync_declared_roles` on `post_migrate` and by the `sync_roles` management command. Roles no longer declared are left alone, since members may still be assigned to them.
+- Keep `SsoErrorCode` (`core/sso/utils.py`) in sync with the `loginError` keys in `web-frontend/modules/core/locales/en.json`.
 
 ## Work Guidance
 

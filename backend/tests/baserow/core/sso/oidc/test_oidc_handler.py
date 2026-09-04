@@ -79,14 +79,27 @@ def test_full_flow_returns_user_info():
     session, nonce = _authorize(idp, responses)
     idp.register_all(responses, nonce=nonce)
 
-    user_info, original, groups = OIDCHandler.get_user_info(
+    user_info, original, roles = OIDCHandler.get_user_info(
         idp.config, CALLBACK_URL, "the-code", session
     )
 
     assert user_info.email == "alice@example.com"
     assert user_info.name == "Alice Example"
     assert original == "/dashboard"
-    assert groups == []
+    assert roles == []
+
+
+@responses.activate(assert_all_requests_are_fired=False)
+def test_full_flow_returns_the_client_roles():
+    idp = FakeOIDCProvider(client_roles=["analysts", "engineering"])
+    session, nonce = _authorize(idp, responses)
+    idp.register_all(responses, nonce=nonce)
+
+    _, _, roles = OIDCHandler.get_user_info(
+        idp.config, CALLBACK_URL, "the-code", session
+    )
+
+    assert roles == ["analysts", "engineering"]
 
 
 @responses.activate(assert_all_requests_are_fired=False)

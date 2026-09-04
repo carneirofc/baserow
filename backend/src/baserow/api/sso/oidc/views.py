@@ -15,11 +15,15 @@ from baserow.api.decorators import validate_query_parameters
 from baserow.api.sso.oidc.serializers import OIDCLoginRequestSerializer
 from baserow.core.auth_provider.exceptions import DifferentAuthProvider
 from baserow.core.exceptions import WorkspaceInvitationEmailMismatch
-from baserow.core.sso.exceptions import AuthFlowError, OIDCProviderNotFound
+from baserow.core.sso.exceptions import (
+    AuthFlowError,
+    NoMappedRole,
+    OIDCProviderNotFound,
+)
 from baserow.core.sso.oidc.config import get_oidc_provider
-from baserow.core.sso.oidc.groups import sync_global_roles
 from baserow.core.sso.oidc.handler import OIDCHandler
 from baserow.core.sso.oidc.provider import OIDCAuthProviderType
+from baserow.core.sso.oidc.roles import enforce_role_access, sync_global_roles
 from baserow.core.sso.oidc.workspaces import sync_workspace_memberships
 from baserow.core.sso.utils import (
     SsoErrorCode,
@@ -123,6 +127,7 @@ class OIDCCallbackView(APIView):
                 SsoErrorCode.GROUP_INVITATION_EMAIL_MISMATCH
             ),
             DisabledSignupError: SsoErrorCode.SIGNUP_DISABLED,
+            NoMappedRole: SsoErrorCode.NO_MAPPED_ROLE,
         }
     )
     @transaction.atomic
@@ -135,7 +140,7 @@ class OIDCCallbackView(APIView):
         if not code:
             return redirect_to_sign_in_error_page(SsoErrorCode.AUTH_FLOW_ERROR)
 
-        user_info, original_url, groups = OIDCHandler.get_user_info(
+        user_info, original_url, roles = OIDCHandler.get_user_info(
             config,
             OIDCAuthProviderType.get_callback_url(config),
             code,
@@ -143,12 +148,26 @@ class OIDCCallbackView(APIView):
         )
         logger.debug("OIDC extracted user info: {0}", user_info)
 
+        try:
+            # Refuse before anything is written, so a user without a mapped client role
+            # is never provisioned an account.
+            enforce_role_access(config, roles)
+        except NoMappedRole:
+            logger.warning(
+                "Refusing the OIDC login of '{0}' through provider '{1}': none of "
+                "their roles {2} are mapped to access.",
+                user_info.email,
+                config.name,
+                roles,
+            )
+            raise
+
         provider = OIDCAuthProviderType().get_or_create_provider_model(config)
         user, _ = provider.get_type().get_or_create_user_and_sign_in(
             provider, user_info
         )
 
-        sync_global_roles(user, groups, config)
-        sync_workspace_memberships(user, groups, config, provider)
+        sync_global_roles(user, roles, config)
+        sync_workspace_memberships(user, roles, config, provider)
 
         return redirect_user_on_success(user, original_url)

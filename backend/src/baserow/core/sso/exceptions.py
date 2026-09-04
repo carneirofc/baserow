@@ -15,3 +15,10 @@ class InvalidProviderUrl(SsoError):
 
 class OIDCProviderNotFound(SsoError):
     """Raised when no env-configured OIDC provider matches the requested name."""
+
+
+class NoMappedRole(SsoError):
+    """
+    Raised when the identity provider derives access from client roles but the user
+    carries none of the mapped ones, so they must not be signed in or provisioned.
+    """

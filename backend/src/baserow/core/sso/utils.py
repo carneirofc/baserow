@@ -30,6 +30,7 @@ class SsoErrorCode(Enum):
     DIFFERENT_PROVIDER = "errorDifferentProvider"
     GROUP_INVITATION_EMAIL_MISMATCH = "errorWorkspaceInvitationEmailMismatch"
     SIGNUP_DISABLED = "errorSignupDisabled"
+    NO_MAPPED_ROLE = "errorNoMappedRole"
 
 
 class map_sso_exceptions:

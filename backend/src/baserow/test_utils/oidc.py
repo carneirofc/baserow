@@ -30,7 +30,8 @@ class FakeOIDCProvider:
     issuer: str = ISSUER
     email: str = "alice@example.com"
     full_name: str = "Alice Example"
-    groups: Optional[List[str]] = None
+    # The client roles the user holds, emitted the way Keycloak does.
+    client_roles: Optional[List[str]] = None
     private_key: rsa.RSAPrivateKey = field(default=None)
 
     def __post_init__(self):
@@ -48,7 +49,15 @@ class FakeOIDCProvider:
             client_id=self.client_id,
             client_secret=self.client_secret,
             scopes=["openid", "email", "profile"],
+            roles_claim=f"resource_access.{self.client_id}.roles",
         )
+
+    def role_claims(self) -> Dict[str, Any]:
+        """The `resource_access` claim Keycloak emits for this client's roles."""
+
+        if self.client_roles is None:
+            return {}
+        return {"resource_access": {self.client_id: {"roles": self.client_roles}}}
 
     @property
     def discovery_url(self) -> str:
@@ -107,8 +116,7 @@ class FakeOIDCProvider:
         }
         if nonce is not None:
             claims["nonce"] = nonce
-        if self.groups is not None:
-            claims["groups"] = self.groups
+        claims.update(self.role_claims())
         if extra_claims:
             claims.update(extra_claims)
         return jwt.encode(
@@ -124,8 +132,7 @@ class FakeOIDCProvider:
             "email": self.email,
             "name": self.full_name,
         }
-        if self.groups is not None:
-            data["groups"] = self.groups
+        data.update(self.role_claims())
         if extra:
             data.update(extra)
         return data
