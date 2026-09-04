@@ -8,6 +8,7 @@ from django.urls import reverse
 import pytest
 import responses
 
+from baserow.core.sso.oidc.config import WorkspaceMapping
 from baserow.core.sso.oidc.handler import SESSION_NONCE_KEY
 from baserow.test_utils.oidc import FakeOIDCProvider
 
@@ -49,9 +50,46 @@ def test_staff_client_role_grants_staff_on_login(api_client):
 
 @responses.activate(assert_all_requests_are_fired=False)
 @pytest.mark.django_db
-def test_losing_the_staff_client_role_revokes_staff_on_next_login(api_client):
+def test_losing_the_staff_client_role_revokes_staff_on_next_login(
+    api_client, data_fixture
+):
+    workspace = data_fixture.create_workspace()
     idp = FakeOIDCProvider(email="admin@example.com", client_roles=["baserow-staff"])
     # A second mapped role keeps the user past the access gate after they lose staff.
+    # It has to be a workspace mapping: a superuser role would keep them staff too.
+    config = dataclasses.replace(
+        idp.config,
+        staff_roles=["baserow-staff"],
+        workspace_mappings=[
+            WorkspaceMapping(
+                client_role="baserow-member",
+                workspace_id=workspace.id,
+                permissions="MEMBER",
+            )
+        ],
+    )
+
+    with override_settings(BASEROW_OIDC_PROVIDERS=[config]):
+        _drive_callback(api_client, idp, responses)
+        user = User.objects.get(email="admin@example.com")
+        assert user.is_staff is True
+
+        # Next login, the user no longer holds the staff role.
+        idp.client_roles = ["baserow-member"]
+        responses.reset()
+        _drive_callback(api_client, idp, responses)
+
+    user.refresh_from_db()
+    assert user.is_staff is False
+
+
+@responses.activate(assert_all_requests_are_fired=False)
+@pytest.mark.django_db
+def test_superuser_role_keeps_staff_when_the_staff_role_is_lost(api_client):
+    # Superuser implies staff, so an admin who loses the staff role keeps the flag.
+    idp = FakeOIDCProvider(
+        email="admin@example.com", client_roles=["baserow-staff", "baserow-admin"]
+    )
     config = dataclasses.replace(
         idp.config, staff_roles=["baserow-staff"], superuser_roles=["baserow-admin"]
     )
@@ -61,14 +99,13 @@ def test_losing_the_staff_client_role_revokes_staff_on_next_login(api_client):
         user = User.objects.get(email="admin@example.com")
         assert user.is_staff is True
 
-        # Next login, the user no longer holds the staff role.
         idp.client_roles = ["baserow-admin"]
         responses.reset()
         _drive_callback(api_client, idp, responses)
 
     user.refresh_from_db()
-    assert user.is_staff is False
     assert user.is_superuser is True
+    assert user.is_staff is True
 
 
 @responses.activate(assert_all_requests_are_fired=False)
