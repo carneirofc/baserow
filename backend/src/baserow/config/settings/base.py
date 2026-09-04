@@ -1417,6 +1417,13 @@ BASEROW_OIDC_PROVIDERS = parse_oidc_providers_env(
 # superuser (break-glass admin) can still log in with a password.
 BASEROW_OIDC_ONLY = str_to_bool(os.getenv("BASEROW_OIDC_ONLY", ""))
 
+# Env-declared workspace roles, reconciled into `core.Role` rows so that an OIDC
+# workspace mapping can grant a granular role by name. Structurally validated here;
+# the workspace and operation names are checked at reconcile time.
+from baserow.core.roles.config import parse_roles_env  # noqa: E402
+
+BASEROW_ROLES = parse_roles_env(os.getenv("BASEROW_ROLES", ""))
+
 MIGRATION_LOCK_ID = os.getenv("BASEROW_MIGRATION_LOCK_ID", 123456)
 DEFAULT_SEARCH_MODE = os.getenv("BASEROW_DEFAULT_SEARCH_MODE", "compat")
 

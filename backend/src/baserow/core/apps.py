@@ -499,6 +499,8 @@ class CoreConfig(AppConfig):
         post_migrate.connect(start_sync_templates_task_after_migrate, sender=self)
         # Create all operations from registry
         post_migrate.connect(sync_operations_after_migrate, sender=self)
+        # Reconcile the env-declared roles, after the operations they reference exist.
+        post_migrate.connect(sync_declared_roles_after_migrate, sender=self)
 
         if settings.CACHALOT_ENABLED:
             pre_migrate.connect(lambda *a, **kw: clear_cachalot_cache(), sender=self)
@@ -665,3 +667,20 @@ def sync_operations_after_migrate(sender, **kwargs):
             ).delete()
             ops_deleted = deletions.get("core.Operation", 0)
             print(f"Deleted {ops_deleted} un-registered operations...")
+
+
+def sync_declared_roles_after_migrate(sender, **kwargs):
+    apps = kwargs.get("apps", None)
+
+    if apps is None:
+        return
+
+    try:
+        apps.get_model("core", "Role")
+    except LookupError:
+        print("Skipping role sync as the Role model does not exist.")
+        return
+
+    from baserow.core.roles.handler import sync_declared_roles
+
+    sync_declared_roles()
