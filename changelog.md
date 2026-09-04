@@ -1,5 +1,14 @@
 # Changelog
 
+## Released v0.4.0
+
+### New features
+* [Core] Added a BASEROW_ROLES environment variable declaring per-workspace roles and the operations they grant, reconciled into the database after every migrate and on demand with the new sync_roles management command. An OIDC workspace mapping can name one of these roles to restrict the member to its operations; an unknown role fails closed and the membership is refused rather than granted unrestricted.
+
+### Breaking API changes
+* [Core] OIDC access is now driven by the identity provider's client roles instead of groups. In BASEROW_OIDC_PROVIDERS, groups_claim, staff_groups and superuser_groups become roles_claim, staff_roles and superuser_roles, and a workspace_mappings entry now takes client_role plus permissions (ADMIN or MEMBER) instead of group and role. roles_claim defaults to Keycloak's resource_access.${client_id}.roles and accepts a dotted path, so nested claims resolve. A provider that maps any client role now refuses to sign in, and refuses to provision, a user holding none of them. The retired keys are rejected at startup with the name of their replacement.
+
+
 ## Released v0.3.5
 
 ### Bug fixes
