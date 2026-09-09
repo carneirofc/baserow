@@ -10,6 +10,7 @@ from baserow.ws.registries import (
     page_registry,
     presence_focus_type_registry,
 )
+from baserow.ws.telemetry import run_database_sync
 from baserow.ws.types import (
     ActivePresenceEntry,
     PresenceMembershipMessage,
@@ -231,7 +232,7 @@ class PresenceHandler:
         space = None
         already_in_space = False
         try:
-            space_name = self.resolve_space_name(page_type_name, parameters)
+            space_name = await self.resolve_space_name(page_type_name, parameters)
             if space_name is None:
                 return
 
@@ -600,7 +601,9 @@ class PresenceHandler:
                 return
 
     @staticmethod
-    def resolve_space_name(page_type_name: str, parameters: dict) -> Optional[str]:
+    async def resolve_space_name(
+        page_type_name: str, parameters: dict
+    ) -> Optional[str]:
         """
         Look up the presence space name for a page type via the registry.
 
@@ -614,4 +617,6 @@ class PresenceHandler:
             page_type = page_registry.get(page_type_name)
         except page_registry.does_not_exist_exception_class:
             return None
-        return page_type.get_presence_space_name(**parameters)
+        return await run_database_sync(
+            "presence_space", page_type.get_presence_space_name, **parameters
+        )
