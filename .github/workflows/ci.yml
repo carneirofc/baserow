@@ -187,6 +187,7 @@ jobs:
       dockerfiles: ${{ steps.filter.outputs.dockerfiles }}
       mjml: ${{ steps.filter.outputs.mjml }}
       zapier: ${{ steps.filter.outputs.zapier }}
+      e2e: ${{ steps.filter.outputs.e2e }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -210,6 +211,9 @@ jobs:
               - '.github/workflows/ci.yml'
             zapier:
               - 'integrations/zapier/**'
+              - '.github/workflows/ci.yml'
+            e2e:
+              - 'e2e-tests/**'
               - '.github/workflows/ci.yml'
   backend-lint:
     name: Backend Lint
@@ -760,7 +764,7 @@ jobs:
       - detect-changes
       - build-backend
       - build-frontend
-    if: needs.detect-changes.outputs.backend == 'true' || needs.detect-changes.outputs.frontend == 'true' || needs.detect-changes.outputs.dockerfiles == 'true' || github.ref_name == 'develop' || github.ref_name == 'master'
+    if: needs.detect-changes.outputs.backend == 'true' || needs.detect-changes.outputs.frontend == 'true' || needs.detect-changes.outputs.dockerfiles == 'true' || needs.detect-changes.outputs.e2e == 'true' || github.ref_name == 'develop' || github.ref_name == 'master'
     permissions:
       contents: read
       packages: read
