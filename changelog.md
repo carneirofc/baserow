@@ -1,5 +1,20 @@
 # Changelog
 
+## Released v0.5.2
+
+### New features
+* [Core] The Helm chart now supports Amazon EKS. S3 media can authenticate through IRSA or EKS Pod Identity instead of static access keys, in which case no AWS credentials are stored or handed to the pods at all. A new ALB ingress mode puts the backend and web-frontend behind a single load balancer while giving each its own health check, and a values-eks.yaml preset covers the internal-ALB-behind-CloudFront setup. The chart also validates its values before anything reaches the cluster, and now restarts pods when only the configuration changed.
+
+### Bug fixes
+* [Core] Editing Helm chart configuration and running an upgrade now restarts the affected pods. Previously a configuration-only change updated the ConfigMap but left every pod running on the old values until it happened to be restarted for another reason.
+
+### Refactors
+* [Core] Upgraded TipTap to 3.31.3 to resolve a high-severity CVE in @tiptap/core.
+
+### Breaking API changes
+* [Core] The Helm chart no longer creates OpenShift Routes by default, so it installs on a plain Kubernetes cluster out of the box. Set openshift.route.enabled=true (or use values-openshift.yaml, which already does) to keep the previous behaviour.
+
+
 ## Released v0.5.0
 
 ### New features
