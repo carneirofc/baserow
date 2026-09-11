@@ -1,3 +1,4 @@
+{{- include "baserow.validateValues" . -}}
 Baserow (FOSS fork) has been deployed as release "{{ .Release.Name }}" in namespace "{{ .Release.Namespace }}".
 
 Access
@@ -7,6 +8,11 @@ Access
   (OpenShift Routes: "/" -> web-frontend; {{ join ", " .Values.openshift.route.backendPaths }} -> backend)
 {{- else if .Values.ingress.enabled }}
   URL: http(s)://{{ .Values.ingress.host }}
+{{- if eq .Values.ingress.mode "albGroup" }}
+  AWS ALB IngressGroup "{{ .Values.ingress.group.name }}": two Ingress objects share one
+  load balancer so each target group keeps its own health check. Watch it come up with:
+    kubectl get ingress -l app.kubernetes.io/instance={{ .Release.Name }}
+{{- end }}
 {{- else }}
   No Route/Ingress enabled. Port-forward to try it:
     oc port-forward svc/{{ include "baserow.fullname" . }}-web-frontend 3000:3000
@@ -31,6 +37,13 @@ Media storage
 -------------
 {{- if .Values.objectStorage.enabled }}
   S3 object storage, bucket "{{ .Values.objectStorage.bucketName }}". Pods are stateless and scalable.
+  Credentials: {{ if include "baserow.objectStorage.useStaticKeys" . }}static access keys from Secret "{{ include "baserow.s3.secretName" . }}".{{ else if .Values.aws.irsa.enabled }}IRSA - no keys stored; the pods assume
+    {{ .Values.aws.irsa.roleArn }}
+    via the ServiceAccount "{{ include "baserow.serviceAccountName" . }}". If uploads fail with
+    AccessDenied, check that role's trust policy names
+    system:serviceaccount:{{ .Release.Namespace }}:{{ include "baserow.serviceAccountName" . }}{{ else }}EKS Pod Identity - no keys stored. Make sure an association exists for
+    ServiceAccount "{{ include "baserow.serviceAccountName" . }}" in namespace "{{ .Release.Namespace }}".{{ end }}
+  ACL: {{ if .Values.objectStorage.defaultACL }}"{{ .Values.objectStorage.defaultACL }}" - only valid on a bucket with ACLs ENABLED.{{ else }}none sent (correct for buckets with ACLs disabled).{{ end }}
 {{- else }}
   PVC "{{ include "baserow.fullname" . }}-media" (RWO). Keep backend replicas at 1 unless the
   storage class supports ReadWriteMany.
@@ -38,10 +51,14 @@ Media storage
 
 Hardening
 ---------
-  All app pods run under the default restricted-v2 SCC: non-root, arbitrary UID,
-  read-only root filesystem, dropped capabilities, unprivileged ports (8000/3000).
-  No SCC change is required. runAsUser/fsGroup are intentionally NOT set so the SCC
-  assigns them from the namespace range.
+  All app pods run non-root with a read-only root filesystem, dropped capabilities and
+  unprivileged ports (8000/3000). runAsUser/fsGroup are intentionally NOT set, so on
+  OpenShift the restricted-v2 SCC assigns them from the namespace range and no SCC
+  change is required.
+{{- if not .Values.objectStorage.enabled }}
+  NOTE: outside OpenShift nothing assigns an fsGroup, so the media PVC may mount
+  unwritable. Set podSecurityContext.fsGroup if the backend cannot write to /baserow/media.
+{{- end }}
 
 Branding
 --------
@@ -52,5 +69,5 @@ Branding
 
 Verify
 ------
-  oc get pods -l app.kubernetes.io/instance={{ .Release.Name }}
-  oc logs deploy/{{ include "baserow.fullname" . }}-backend
+  kubectl get pods -l app.kubernetes.io/instance={{ .Release.Name }}
+  kubectl logs deploy/{{ include "baserow.fullname" . }}-backend

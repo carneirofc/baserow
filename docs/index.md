@@ -29,11 +29,13 @@ You can easily self-host Baserow by following one of the guides below:
   Docker and use it to install Baserow on a fresh ubuntu install.
 * [Third party hosting providers](installation/third-party-hosting-providers.md): A list
   of hosting/deployment providers that allow to easily self-host Baserow.
+* [Install with Helm](installation/install-with-helm.md): The recommended Kubernetes
+  path. Deploys the split backend/web-frontend/Celery pods with optional bundled
+  PostgreSQL/Redis and S3 media, and runs unmodified under OpenShift's restricted-v2 SCC.
+* [Install on Amazon EKS](installation/install-on-eks.md): Baserow on EKS behind an
+  internal ALB fronted by CloudFront, with S3 media authenticated through IRSA.
 * [Install with K8S](installation/install-with-k8s.md): An example performant 
   production ready K8S configuration for use as a starting point.
-* [Helm chart (OpenShift-hardened)](../deploy/helm/README.md): Deploy the split
-  backend/web-frontend/Celery pods under the default restricted-v2 SCC, with optional
-  bundled PostgreSQL/Redis and S3 media.
 * [DEPRECATED: Install on Ubuntu](installation/old-install-on-ubuntu.md): A deprecated
   and now unsupported guide on how to manually install Baserow and its required services
   on a fresh Ubuntu install. Please use the guides above instead.

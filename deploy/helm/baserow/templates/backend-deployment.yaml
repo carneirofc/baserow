@@ -12,6 +12,8 @@ spec:
       {{- include "baserow.componentSelectorLabels" (dict "root" . "component" "backend") | nindent 6 }}
   template:
     metadata:
+      annotations:
+        {{- include "baserow.podAnnotations" . | nindent 8 }}
       labels:
         {{- include "baserow.componentSelectorLabels" (dict "root" . "component" "backend") | nindent 8 }}
     spec:
@@ -87,6 +89,10 @@ metadata:
   labels:
     {{- include "baserow.labels" . | nindent 4 }}
     app.kubernetes.io/component: backend
+  {{- with .Values.service.backend.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   type: ClusterIP
   selector:

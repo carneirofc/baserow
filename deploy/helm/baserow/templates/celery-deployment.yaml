@@ -12,6 +12,8 @@ spec:
       {{- include "baserow.componentSelectorLabels" (dict "root" . "component" "celery") | nindent 6 }}
   template:
     metadata:
+      annotations:
+        {{- include "baserow.podAnnotations" . | nindent 8 }}
       labels:
         {{- include "baserow.componentSelectorLabels" (dict "root" . "component" "celery") | nindent 8 }}
     spec:

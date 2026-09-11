@@ -181,11 +181,21 @@ This fork supports two deployment paths:
   docker compose up -d --build   # http://localhost
   ```
 
-* **Kubernetes / OpenShift** — the [Helm chart](deploy/helm/baserow) deploys the backend,
-  web-frontend and Celery workers as hardened pods that run under OpenShift's default
-  `restricted-v2` SCC (no security-profile changes needed). PostgreSQL and Redis are
-  optional, toggleable subcharts; media uses S3 object storage. See
-  [`deploy/helm/README.md`](deploy/helm/README.md).
+* **Kubernetes, OpenShift or Amazon EKS** — the [Helm chart](deploy/helm/baserow) deploys
+  the backend, web-frontend and Celery workers as hardened pods. It is published to GHCR
+  as an OCI artifact:
+
+  ```bash
+  helm install baserow oci://ghcr.io/carneirofc/baserow/charts/baserow \
+    -n baserow --create-namespace --set publicURL=https://baserow.example.com
+  ```
+
+  PostgreSQL and Redis are optional, toggleable subcharts; media uses S3 object storage.
+  Routing works through an Ingress, an AWS ALB IngressGroup or OpenShift Routes, and the
+  pods run under OpenShift's default `restricted-v2` SCC with no security-profile changes.
+  On EKS, S3 access can use IRSA or Pod Identity so no AWS credentials are stored at all.
+  See [Installing with Helm](docs/installation/install-with-helm.md) and
+  [Installing on Amazon EKS](docs/installation/install-on-eks.md).
 
 For a single-container deployment, the all-in-one image
 `ghcr.io/carneirofc/baserow/baserow` (embedded PostgreSQL + Redis) is published by CI and

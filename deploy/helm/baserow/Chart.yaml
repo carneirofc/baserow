@@ -1,13 +1,21 @@
 apiVersion: v2
 name: baserow
 description: >-
-  Baserow (FOSS fork) for OpenShift. Deploys the backend, web-frontend and
-  Celery workers as separate hardened pods that run unmodified under the
-  restricted-v2 SCC (arbitrary UID, non-root, no privileged ports). PostgreSQL
-  and Redis are optional, toggleable subcharts; point at an external managed
-  database instead by disabling them.
+  Baserow (FOSS fork) for Kubernetes, OpenShift and Amazon EKS. Deploys the
+  backend, web-frontend and Celery workers as separate hardened pods that run
+  unmodified under OpenShift's restricted-v2 SCC (arbitrary UID, non-root, no
+  privileged ports). Routing is via Ingress, an AWS ALB IngressGroup, or
+  OpenShift Routes. S3 media can authenticate with static keys, EKS IRSA or EKS
+  Pod Identity. PostgreSQL and Redis are optional, toggleable subcharts; point
+  at an external managed database instead by disabling them.
 type: application
-version: 0.1.5
+keywords:
+  - baserow
+  - no-code
+  - database
+  - openshift
+  - eks
+version: 0.2.0
 # Tracks the application version shipped by this fork's images.
 appVersion: "0.5.1"
 home: https://github.com/carneirofc/baserow
@@ -16,6 +24,19 @@ sources:
 maintainers:
   - name: carneirofc
     email: claudiofcarneiro@gmail.com
+
+annotations:
+  artifacthub.io/changes: |
+    - kind: added
+      description: Opt-in Amazon EKS support - IRSA and Pod Identity for S3 media (aws.irsa, aws.podIdentity, objectStorage.auth), with no static credentials rendered in those modes.
+    - kind: added
+      description: ingress.mode=albGroup renders two Ingress objects merged onto a single AWS ALB so the backend and web-frontend target groups keep separate health checks.
+    - kind: added
+      description: values-eks.yaml preset, values.schema.json validation, per-Service annotations and objectStorage.defaultACL/querystringAuth.
+    - kind: fixed
+      description: Pods now carry checksum/config and checksum/secret annotations, so a config-only helm upgrade actually restarts them.
+    - kind: changed
+      description: "openshift.route.enabled now defaults to false so the stock chart installs on a plain cluster; values-openshift.yaml still enables it."
 
 dependencies:
   - name: postgresql

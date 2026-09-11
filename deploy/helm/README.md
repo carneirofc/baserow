@@ -1,43 +1,66 @@
-# Baserow Helm chart (OpenShift-hardened)
+# Baserow Helm chart
 
-Deploys this Baserow fork on Kubernetes/OpenShift as separate, hardened pods —
-`backend`, `web-frontend`, `celery` worker and `celery-beat` — plus optional,
-toggleable PostgreSQL and Redis subcharts.
+Deploys this Baserow fork on Kubernetes as separate, hardened pods — `backend`,
+`web-frontend`, `celery` worker and `celery-beat` — plus optional, toggleable
+PostgreSQL and Redis subcharts.
 
-The chart is built to run **unmodified under OpenShift's default `restricted-v2`
-SCC**: non-root, arbitrary UID, read-only root filesystem, dropped capabilities,
-unprivileged ports (8000/3000). **No cluster security change is required** and the
-chart never sets `runAsUser`/`fsGroup` (the SCC assigns them).
+The chart runs on plain Kubernetes, on OpenShift under the default `restricted-v2`
+SCC, and on Amazon EKS behind an ALB. All pods are non-root with a read-only root
+filesystem, dropped capabilities and unprivileged ports (8000/3000), and the chart
+never sets `runAsUser`/`fsGroup`, so **no cluster security change is required** on
+OpenShift.
 
 > The all-in-one image is intentionally **not** used here: it starts as root,
 > drops to a fixed UID via `su-exec`, chowns its data dir and binds `:80` — none
 > of which is allowed under `restricted-v2`. The standalone `backend` and
 > `web-frontend` images already satisfy the policy.
 
-## Routing
+**Full documentation:**
 
-Backend and web-frontend share one origin (the Route host). OpenShift Routes
-demux by path — `/api`, `/ws`, `/mcp`, `/assistant`, `/static` go to the backend,
-everything else to the web-frontend — so there is no reverse-proxy pod and no CORS
-configuration. `/media` is served from object storage.
+- [Installing with Helm](../../docs/installation/install-with-helm.md) — the complete
+  values reference and day-two operations.
+- [Installing on Amazon EKS](../../docs/installation/install-on-eks.md) — internal ALB
+  behind a CloudFront VPC origin, IRSA, S3 media.
 
 ## Quick start
 
 ```sh
-# 1. Fetch the PostgreSQL/Redis subcharts
-helm dependency build deploy/helm/baserow
-
-# 2. Render/inspect (both DB modes)
-helm template baserow deploy/helm/baserow -f deploy/helm/baserow/values-openshift.yaml
-helm template baserow deploy/helm/baserow --set postgresql.enabled=true
-
-# 3. Install
-helm install baserow deploy/helm/baserow \
+# From the published chart
+helm install baserow oci://ghcr.io/carneirofc/baserow/charts/baserow \
   -n baserow --create-namespace \
-  -f deploy/helm/baserow/values-openshift.yaml
+  --set publicURL=https://baserow.example.com
+
+# Or from a checkout
+helm dependency build deploy/helm/baserow
+helm install baserow deploy/helm/baserow -n baserow --create-namespace \
+  --set publicURL=https://baserow.example.com
 ```
 
-## Database provisioning (optional & configurable)
+The stock values bring up the bundled PostgreSQL and Redis subcharts and expose
+nothing externally — add an Ingress (or an OpenShift Route) and set `publicURL` to the
+URL users will actually reach.
+
+## Routing
+
+Backend and web-frontend share one origin, so there is no reverse-proxy pod and no
+CORS configuration. `/api`, `/ws`, `/mcp`, `/assistant` and `/static` go to the
+backend; everything else goes to the web-frontend. `/media` is served from object
+storage. Three ways to wire it up:
+
+| Platform | Values |
+| --- | --- |
+| Plain Kubernetes | `ingress.enabled: true`, `ingress.className: nginx` (or your controller). One Ingress carries both path sets. |
+| Amazon EKS | `ingress.enabled: true`, `ingress.className: alb`, `ingress.mode: albGroup`. Two Ingress objects are merged onto a single ALB so the backend and web-frontend target groups keep separate health checks. See [`baserow/values-eks.yaml`](baserow/values-eks.yaml). |
+| OpenShift | `openshift.route.enabled: true`. See [`baserow/values-openshift.yaml`](baserow/values-openshift.yaml). |
+
+`ingress.mode: albGroup` exists because the AWS Load Balancer Controller resolves
+`alb.ingress.kubernetes.io/healthcheck-path` per Ingress, not per path — one Ingress
+would force both target groups to share a single health endpoint. The controller also
+merges *Service* annotations over Ingress annotations when building a target group, so
+`service.backend.annotations` / `service.webFrontend.annotations` can set per-target
+options without leaving `mode: single`.
+
+## Database provisioning
 
 | Mode | Values |
 | --- | --- |
@@ -50,13 +73,32 @@ Redis mirrors this with `redis.enabled` / `externalRedis.*`. Subcharts set
 
 ## Media storage
 
-- **Object storage (default, recommended):** `objectStorage.enabled: true` with
-  `bucketName`, `endpointURL`, `region` and S3 credentials (inline or
-  `existingSecret` with keys `s3-access-key-id` / `s3-secret-access-key`). Pods
-  stay stateless and scale past one replica.
-- **PVC fallback:** `objectStorage.enabled: false` creates an RWO PVC mounted on
-  backend + celery and serves uploads through the backend. Keep `replicaCount.backend: 1`
-  unless your storage class supports ReadWriteMany.
+**Object storage (default, recommended).** `objectStorage.enabled: true` with
+`bucketName`, `endpointURL`, `region` and an auth mode. Pods stay stateless and scale
+past one replica.
+
+| `objectStorage.auth` | Credentials |
+| --- | --- |
+| `staticKeys` (default) | `accessKeyId`/`secretAccessKey`, or `existingSecret` with keys `s3-access-key-id` / `s3-secret-access-key`. Works with any S3-compatible endpoint. |
+| `irsa` | EKS IAM Roles for Service Accounts. Set `aws.irsa.enabled` and `aws.irsa.roleArn`; the chart annotates the ServiceAccount. |
+| `podIdentity` | EKS Pod Identity. Set `aws.podIdentity.enabled`; the association is created outside the chart. |
+
+In the `irsa` and `podIdentity` modes the chart renders **no** AWS credential
+environment variables and writes **no** `s3-*` keys into its Secret, so boto3 falls
+through to its default credential chain. This is deliberate and load-bearing: the
+backend treats a present-but-empty variable as a real value, so emitting
+`AWS_ACCESS_KEY_ID=""` would break the credential chain rather than fall back.
+
+Set `objectStorage.defaultACL: ""` (the default) on any bucket with ACLs disabled —
+S3 Object Ownership "Bucket owner enforced", the default for buckets created since
+April 2023. The backend would otherwise send `public-read` and every upload would fail
+with `AccessControlListNotSupported`.
+
+**PVC fallback.** `objectStorage.enabled: false` creates an RWO PVC mounted on backend
++ celery and serves uploads through the backend. Keep `replicaCount.backend: 1` unless
+your storage class supports ReadWriteMany. Outside OpenShift nothing assigns an
+`fsGroup`, so set `podSecurityContext.fsGroup` if the backend cannot write to
+`/baserow/media`.
 
 ## Personalization
 
@@ -71,14 +113,28 @@ Redis mirrors this with `redis.enabled` / `externalRedis.*`. Subcharts set
 
 Unless `secrets.existingSecret` is set, the chart creates `<release>-baserow`
 with a generated `secret-key` and `jwt-signing-key` (preserved across upgrades).
-For external DB/Redis/S3 without their own secrets, it also holds
-`database-password`, `redis-password`, `s3-access-key-id`, `s3-secret-access-key`.
+For an external DB/Redis without its own secret it also holds `database-password` and
+`redis-password`, and in `objectStorage.auth: staticKeys` the two `s3-*` keys.
+
+## Validation
+
+`values.schema.json` is enforced by Helm on every `lint`, `template` and `install`, so
+typos and bad enums fail before anything reaches the cluster. The chart additionally
+fails the render with an explanatory message for combinations a schema cannot express —
+IRSA without a role ARN, IRSA and Pod Identity together, `albGroup` without a group
+name, or a non-`staticKeys` auth mode with no AWS identity configured.
+
+Config and Secret checksums are stamped onto every pod, so a config-only
+`helm upgrade` actually restarts the pods.
 
 ## Notes / limitations
 
 - Custom builder domains (the all-in-one's on-demand-TLS feature) are not wired
-  through path Routes; use the primary Route host.
+  through path Routes; use the primary Route/Ingress host.
 - `migrateOnStartup: true` runs migrations from the backend pod on boot. For
   strict zero-downtime upgrades, split this into a pre-upgrade Job later.
-- Validate on your cluster: `helm lint deploy/helm/baserow`,
-  `helm install --dry-run`, then `oc get pods -l app.kubernetes.io/instance=<release>`.
+- No PodDisruptionBudget, HorizontalPodAutoscaler, per-component scheduling or
+  configurable probe timings yet.
+- Validate on your cluster: `helm lint --strict deploy/helm/baserow`,
+  `helm install --dry-run`, then
+  `kubectl get pods -l app.kubernetes.io/instance=<release>`.

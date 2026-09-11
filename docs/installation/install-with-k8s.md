@@ -1,5 +1,10 @@
 # Install with K8S
 
+> Prefer the [Helm chart](./install-with-helm.md) for anything you intend to operate.
+> It covers the same split-service layout with configurable routing, secret management,
+> object storage and upgrades. The raw manifests below are a starting point to adapt by
+> hand. On EKS, see [Installing on Amazon EKS](./install-on-eks.md).
+
 ## Raw K8S starting point
 
 See below for a starting point for a K8S configuration file which deploys a production
