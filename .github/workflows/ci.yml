@@ -27,6 +27,9 @@ env:
   IMAGE_REPO: ${{ github.repository }}
   CI_IMAGE_TAG_PREFIX: ci-
   REAL_GITHUB_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+  # CVE gate: keep TRIVY_IMAGE identical to `trivy_image` in the root justfile.
+  TRIVY_IMAGE: docker.io/aquasec/trivy:0.74.0
+  TRIVY_GATE: --scanners vuln --severity HIGH,CRITICAL --ignore-unfixed --ignorefile .trivyignore.yaml --exit-code 1
 
 jobs:
   # ==========================================================================
@@ -270,6 +273,23 @@ jobs:
           docker run --rm \
             ${{ needs.build-frontend.outputs.image }} lint
 
+  # Scans every uv.lock / yarn.lock for HIGH/CRITICAL CVEs that have a fix.
+  # Runs on every PR (not path-filtered): new advisories land against unchanged
+  # lockfiles. Exceptions go in .trivyignore.yaml with a statement and expiry.
+  dependency-audit:
+    name: Dependency CVE Audit
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Scan lockfiles with Trivy
+        run: |
+          docker run --rm -v "$PWD:/src" -w /src "$TRIVY_IMAGE" \
+            fs $TRIVY_GATE --include-dev-deps --skip-dirs '**/node_modules' .
+
   dockerfile-lint:
     name: Dockerfile Lint (hadolint)
     runs-on: ubuntu-latest
@@ -392,6 +412,12 @@ jobs:
           fi
           echo "no pebble artefacts in image ($(wc -l < ./caddy-files.txt) files scanned)"
 
+      - name: Scan caddy image for CVEs
+        run: |
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+            -v "$PWD:/src" -w /src "$TRIVY_IMAGE" \
+            image $TRIVY_GATE baserow/caddy:ci
+
   # The prod web-frontend target is only built by the release workflow, so build
   # it here too and guard what it ships. The prod stage copies only `.output`,
   # which keeps Go-compiled npm binaries (esbuild, pulled in by nitropack and
@@ -443,6 +469,12 @@ jobs:
             exit 1
           fi
           echo "no esbuild or pebble artefacts in image ($(wc -l < ./image-files.txt) files scanned)"
+
+      - name: Scan web-frontend prod image for CVEs
+        run: |
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+            -v "$PWD:/src" -w /src "$TRIVY_IMAGE" \
+            image $TRIVY_GATE baserow/web-frontend:ci-prod
 
       - name: Check web-frontend startup
         run: |
@@ -1128,6 +1160,8 @@ jobs:
     runs-on: ubuntu-latest
     if: always()
     needs:
+      # CVE gate (always runs)
+      - dependency-audit
       # Lint jobs (can be skipped based on path changes)
       - backend-lint
       - frontend-lint
@@ -1150,6 +1184,7 @@ jobs:
         env:
           OPTIONAL_CHECKS: ${{ vars.OPTIONAL_CHECKS || '' }}
           RESULTS: |
+            dependency-audit=${{ needs.dependency-audit.result }}
             backend-lint=${{ needs.backend-lint.result }}
             frontend-lint=${{ needs.frontend-lint.result }}
             dockerfile-lint=${{ needs.dockerfile-lint.result }}

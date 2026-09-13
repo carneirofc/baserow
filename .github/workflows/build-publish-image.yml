@@ -183,3 +183,25 @@ jobs:
             fi
             echo "no pebble artefacts in $ref ($(wc -l < ./image-files.txt) files scanned)"
           done
+
+      # CVE gate on every published image (HIGH/CRITICAL with a fix; exceptions
+      # in .trivyignore.yaml). Pushes happen in the build steps above, so a
+      # failure here marks the release red rather than blocking the push; ci.yml
+      # scans the caddy and web-frontend prod images before merge. Keep
+      # TRIVY_IMAGE identical to ci.yml and the root justfile.
+      - name: Scan published images for CVEs
+        env:
+          TRIVY_IMAGE: docker.io/aquasec/trivy:0.74.0
+        run: |
+          set -euo pipefail
+          allinone=$(printf '%s\n' "${{ steps.meta.outputs.tags }}" | head -n1)
+          caddy=$(printf '%s\n' "${{ steps.meta-caddy.outputs.tags }}" | head -n1)
+          status=0
+          for ref in "${{ steps.refs.outputs.backend }}" "${{ steps.refs.outputs.webfrontend }}" "$caddy" "$allinone"; do
+            docker pull -q "$ref"
+            docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+              -v "$PWD:/src" -w /src "$TRIVY_IMAGE" \
+              image --scanners vuln --severity HIGH,CRITICAL --ignore-unfixed \
+              --ignorefile .trivyignore.yaml --exit-code 1 "$ref" || status=1
+          done
+          exit $status

@@ -3,21 +3,54 @@ updates:
   # =============================================================================
   # npm ecosystems
   # =============================================================================
-  # Note: We only monitor directories with actual dependencies declared.
-  # /integrations/zapier is excluded intentionally.
+  # Every directory with a yarn.lock is monitored: the CVE gate
+  # (`just audit deps`) scans all of them, so all of them need update PRs.
 
   - package-ecosystem: "npm"
     directory: "/web-frontend"
     schedule:
-      interval: "monthly"
+      interval: "weekly"
+
+  - package-ecosystem: "npm"
+    directory: "/e2e-tests"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "npm"
+    directory: "/backend/email_compiler"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "npm"
+    directory: "/integrations/zapier"
+    schedule:
+      interval: "weekly"
 
   # =============================================================================
   # uv (Python) ecosystem
   # =============================================================================
-  # Note: We only monitor /backend, which declares all Python dependencies in
-  # backend/pyproject.toml and resolves them in backend/uv.lock.
+  # backend/pyproject.toml declares all Python dependencies, resolved in
+  # backend/uv.lock.
 
   - package-ecosystem: "uv"
     directory: "/backend"
     schedule:
-      interval: "monthly"
+      interval: "weekly"
+
+  # =============================================================================
+  # Base images and CI actions
+  # =============================================================================
+
+  - package-ecosystem: "docker"
+    directories:
+      - "/backend"
+      - "/web-frontend"
+      - "/deploy/all-in-one"
+      - "/deploy/caddy"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"

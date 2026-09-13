@@ -92,6 +92,7 @@ Layout: `backend/` (Django API + workers), `web-frontend/` (Nuxt app), `e2e-test
 - Every user-facing or behavioral change needs a changelog entry — `just changelog add`. See `changelog/AGENTS.md`.
 - Commits: Conventional Commits; never add a `Co-Authored-By` or tooling-attribution trailer.
 - `.pre-commit-config.yaml` runs lint/format gates; keep changes passing before committing.
+- CVE gate: `just audit deps` (every `uv.lock`/`yarn.lock`) and `just audit images <refs>` run the pinned Trivy image and fail on HIGH/CRITICAL findings that have a fix. CI enforces the same gate (`dependency-audit` job plus image scans). Fix findings by upgrading (yarn `resolutions`, uv constraints) rather than suppressing; a suppression goes in `.trivyignore.yaml` with a `statement` and `expired_at`. Keep the Trivy version identical in the root `justfile`, `ci.yml` and `build-publish-image.yml`.
 - Domain docs: read root `CONTEXT.md` and `docs/adr/` (per `docs/agents/domain.md`) before deep work; proceed silently if absent.
 
 ## Child DOX Index
