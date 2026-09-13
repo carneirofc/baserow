@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import TYPE_CHECKING, List, Optional
 
 from django.contrib.auth.models import AbstractUser
 from django.core.files.storage import Storage
@@ -17,6 +17,11 @@ from baserow.core.storage import (
     _create_storage_dir_if_missing_and_open,
     get_default_storage,
 )
+
+from .job_types import ExportApplicationsToDestinationJobType
+
+if TYPE_CHECKING:
+    from .models import BackupSchedule
 
 COPY_CHUNK_SIZE = 1024 * 1024
 
@@ -37,6 +42,9 @@ class BackupHandler:
         workspace_id: int,
         application_ids: Optional[List[int]] = None,
         only_structure: bool = False,
+        destination: Optional[str] = None,
+        backup_schedule: Optional["BackupSchedule"] = None,
+        sync: bool = False,
     ) -> ExportApplicationsJob:
         """
         Starts an asynchronous backup of a workspace or of a subset of its
@@ -47,12 +55,29 @@ class BackupHandler:
         :param application_ids: The applications to back up. None or an empty list
             means every application of the workspace.
         :param only_structure: If true the row data is left out of the archive.
+        :param destination: The name of a data destination the archive is uploaded
+            to once it is made. None keeps it on the instance storage only.
+        :param backup_schedule: The schedule starting the backup, if any.
+        :param sync: Run the job in the current process instead of a worker.
         :return: The started job.
         """
+
+        if destination:
+            return JobHandler().create_and_start_job(
+                user,
+                ExportApplicationsToDestinationJobType.type,
+                sync=sync,
+                workspace_id=workspace_id,
+                application_ids=application_ids,
+                only_structure=only_structure,
+                destination=destination,
+                backup_schedule=backup_schedule,
+            )
 
         return JobHandler().create_and_start_job(
             user,
             ExportApplicationsJobType.type,
+            sync=sync,
             workspace_id=workspace_id,
             application_ids=application_ids,
             only_structure=only_structure,
@@ -118,6 +143,7 @@ class BackupHandler:
         workspace_id: int,
         resource_id: int,
         application_ids: Optional[List[int]] = None,
+        sync: bool = False,
     ) -> ImportApplicationsJob:
         """
         Starts an asynchronous restore of a backup into a workspace.
@@ -130,6 +156,7 @@ class BackupHandler:
         :param resource_id: The resource holding the archive to restore.
         :param application_ids: The applications from the archive to restore. None or
             an empty list means every application in the archive.
+        :param sync: Run the job in the current process instead of a worker.
         :return: The started job.
         """
 
@@ -138,6 +165,7 @@ class BackupHandler:
         return JobHandler().create_and_start_job(
             user,
             ImportApplicationsJobType.type,
+            sync=sync,
             workspace_id=workspace_id,
             resource_id=resource_id,
             application_ids=application_ids,

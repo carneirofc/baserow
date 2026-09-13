@@ -15,6 +15,14 @@ from baserow.api.api_clients.authentication import (
 from baserow.api.backups.errors import (
     ERROR_BACKUP_SCHEDULE_DOES_NOT_EXIST,
     ERROR_INVALID_BACKUP_SCHEDULE_CRON,
+    ERROR_REMOTE_BACKUP_CORRUPTED,
+    ERROR_REMOTE_BACKUP_DOES_NOT_EXIST,
+    ERROR_REMOTE_BACKUP_TRUST_NOT_ALLOWED,
+)
+from baserow.api.data_destinations.errors import (
+    ERROR_DATA_DESTINATION_DOES_NOT_EXIST,
+    ERROR_DATA_DESTINATION_PURPOSE_NOT_ALLOWED,
+    ERROR_INVALID_DATA_DESTINATION_KEY,
 )
 from baserow.api.decorators import map_exceptions, validate_body
 from baserow.api.errors import ERROR_GROUP_DOES_NOT_EXIST, ERROR_USER_NOT_IN_GROUP
@@ -23,16 +31,26 @@ from baserow.api.import_export.errors import (
     ERROR_RESOURCE_DOES_NOT_EXIST,
     ERROR_RESOURCE_IS_BEING_IMPORTED,
     ERROR_RESOURCE_IS_INVALID,
+    ERROR_UNTRUSTED_PUBLIC_KEY,
 )
 from baserow.api.jobs.errors import ERROR_MAX_JOB_COUNT_EXCEEDED
 from baserow.api.jobs.serializers import JobSerializer
 from baserow.api.schemas import get_error_schema
+from baserow.core.backups.destination import BackupDestinationHandler
 from baserow.core.backups.exceptions import (
     BackupScheduleDoesNotExist,
     InvalidBackupScheduleCron,
+    RemoteBackupCorrupted,
+    RemoteBackupDoesNotExist,
+    RemoteBackupTrustNotAllowed,
 )
 from baserow.core.backups.handler import BackupHandler
 from baserow.core.backups.schedule_handler import BackupScheduleHandler
+from baserow.core.data_destinations.exceptions import (
+    DataDestinationDoesNotExist,
+    DataDestinationPurposeNotAllowed,
+    InvalidDataDestinationKey,
+)
 from baserow.core.exceptions import (
     ApplicationDoesNotExist,
     UserNotInWorkspace,
@@ -44,6 +62,7 @@ from baserow.core.import_export.exceptions import (
     ImportExportResourceDoesNotExist,
     ImportExportResourceInBeingImported,
     ImportExportResourceInvalidFile,
+    ImportExportResourceUntrustedSignature,
 )
 from baserow.core.jobs.exceptions import MaxJobCountExceeded
 from baserow.core.jobs.registries import job_type_registry
@@ -53,7 +72,9 @@ from .serializers import (
     CreateBackupScheduleSerializer,
     CreateBackupSerializer,
     ListBackupsSerializer,
+    ListRemoteBackupsSerializer,
     RestoreBackupSerializer,
+    RestoreRemoteBackupSerializer,
     UpdateBackupScheduleSerializer,
 )
 
@@ -67,6 +88,13 @@ COMMON_EXCEPTIONS = {
     ImportExportApplicationIdsNotFound: ERROR_APPLICATION_IDS_NOT_FOUND,
     BackupScheduleDoesNotExist: ERROR_BACKUP_SCHEDULE_DOES_NOT_EXIST,
     InvalidBackupScheduleCron: ERROR_INVALID_BACKUP_SCHEDULE_CRON,
+    DataDestinationDoesNotExist: ERROR_DATA_DESTINATION_DOES_NOT_EXIST,
+    DataDestinationPurposeNotAllowed: ERROR_DATA_DESTINATION_PURPOSE_NOT_ALLOWED,
+    InvalidDataDestinationKey: ERROR_INVALID_DATA_DESTINATION_KEY,
+    RemoteBackupDoesNotExist: ERROR_REMOTE_BACKUP_DOES_NOT_EXIST,
+    RemoteBackupCorrupted: ERROR_REMOTE_BACKUP_CORRUPTED,
+    RemoteBackupTrustNotAllowed: ERROR_REMOTE_BACKUP_TRUST_NOT_ALLOWED,
+    ImportExportResourceUntrustedSignature: ERROR_UNTRUSTED_PUBLIC_KEY,
 }
 
 WORKSPACE_ID_PARAMETER = OpenApiParameter(
@@ -143,6 +171,7 @@ class StartBackupView(APIView):
             workspace_id,
             application_ids=data.get("application_ids"),
             only_structure=data.get("only_structure", False),
+            destination=data.get("destination") or None,
         )
         serializer = job_type_registry.get_serializer(job, JobSerializer)
         return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
@@ -326,6 +355,7 @@ class BackupSchedulesView(APIView):
             tz_name=data["timezone"],
             application_ids=data["application_ids"],
             only_structure=data["only_structure"],
+            destination=data["destination"],
             keep_last=data["keep_last"],
             keep_days=data["keep_days"],
             is_active=data["is_active"],
@@ -449,5 +479,109 @@ class RunBackupScheduleView(APIView):
         handler = BackupScheduleHandler()
         schedule = handler.get_schedule(request.user, schedule_id)
         job = handler.run_schedule(schedule, requested_by=request.user)
+        serializer = job_type_registry.get_serializer(job, JobSerializer)
+        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+
+
+DESTINATION_PARAMETER = OpenApiParameter(
+    name="destination",
+    location=OpenApiParameter.PATH,
+    type=OpenApiTypes.STR,
+    description="The name of the data destination.",
+    required=True,
+)
+
+
+class RemoteBackupsView(APIView):
+    authentication_classes = APIView.authentication_classes + [ApiClientAuthentication]
+    permission_classes = (IsAuthenticated, HasApiClientScope)
+    api_client_scopes = {"GET": "backup.read"}
+
+    @extend_schema(
+        parameters=[DESTINATION_PARAMETER, WORKSPACE_ID_PARAMETER],
+        tags=["Backups"],
+        operation_id="list_remote_backups",
+        description=(
+            "Lists the backups of a workspace that were uploaded to a data "
+            "destination, most recent first. Unlike the local listing this also shows "
+            "backups made by other users or by another instance, which makes it the "
+            "starting point of a disaster recovery."
+        ),
+        responses={
+            200: ListRemoteBackupsSerializer,
+            400: get_error_schema(
+                [
+                    "ERROR_USER_NOT_IN_GROUP",
+                    "ERROR_DATA_DESTINATION_PURPOSE_NOT_ALLOWED",
+                ]
+            ),
+            404: get_error_schema(
+                ["ERROR_GROUP_DOES_NOT_EXIST", "ERROR_DATA_DESTINATION_DOES_NOT_EXIST"]
+            ),
+        },
+    )
+    @map_exceptions(COMMON_EXCEPTIONS)
+    def get(self, request, destination: str, workspace_id: int):
+        backups = BackupDestinationHandler().list_remote_backups(
+            request.user, workspace_id, destination
+        )
+        return Response(ListRemoteBackupsSerializer({"results": backups}).data)
+
+
+class RestoreRemoteBackupView(APIView):
+    authentication_classes = APIView.authentication_classes + [ApiClientAuthentication]
+    permission_classes = (IsAuthenticated, HasApiClientScope)
+    api_client_scopes = {"POST": "backup.restore"}
+
+    @extend_schema(
+        parameters=[DESTINATION_PARAMETER, WORKSPACE_ID_PARAMETER],
+        tags=["Backups"],
+        operation_id="restore_remote_backup",
+        description=(
+            "Downloads a backup from a data destination and restores it into a "
+            "workspace. The applications are installed as new applications. A backup "
+            "made by another instance is signed with a key this instance does not "
+            "trust yet: a staff member can pass `trust_public_key` to trust it, when "
+            "the destination allows that. The response is a job, poll "
+            "`/api/jobs/{job_id}/` for its progress."
+        ),
+        request=RestoreRemoteBackupSerializer,
+        responses={
+            202: JobSerializer,
+            400: get_error_schema(
+                [
+                    "ERROR_USER_NOT_IN_GROUP",
+                    "ERROR_REQUEST_BODY_VALIDATION",
+                    "ERROR_INVALID_DATA_DESTINATION_KEY",
+                    "ERROR_REMOTE_BACKUP_CORRUPTED",
+                    "ERROR_UNTRUSTED_PUBLIC_KEY",
+                    "ERROR_RESOURCE_IS_INVALID",
+                    "ERROR_MAX_JOB_COUNT_EXCEEDED",
+                ]
+            ),
+            403: get_error_schema(["ERROR_REMOTE_BACKUP_TRUST_NOT_ALLOWED"]),
+            404: get_error_schema(
+                [
+                    "ERROR_GROUP_DOES_NOT_EXIST",
+                    "ERROR_DATA_DESTINATION_DOES_NOT_EXIST",
+                    "ERROR_REMOTE_BACKUP_DOES_NOT_EXIST",
+                ]
+            ),
+        },
+    )
+    @map_exceptions(
+        {**COMMON_EXCEPTIONS, MaxJobCountExceeded: ERROR_MAX_JOB_COUNT_EXCEEDED}
+    )
+    @validate_body(RestoreRemoteBackupSerializer, return_validated=True)
+    @transaction.atomic
+    def post(self, request, data, destination: str, workspace_id: int):
+        job = BackupDestinationHandler().restore_remote_backup(
+            request.user,
+            workspace_id,
+            destination,
+            data["key"],
+            application_ids=data.get("application_ids"),
+            trust_public_key=data["trust_public_key"],
+        )
         serializer = job_type_registry.get_serializer(job, JobSerializer)
         return Response(serializer.data, status=status.HTTP_202_ACCEPTED)

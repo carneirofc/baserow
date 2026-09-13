@@ -8,6 +8,8 @@ from django.utils import timezone
 
 from celery.schedules import crontab
 
+from baserow.core.data_destinations.config import PURPOSE_BACKUP
+from baserow.core.data_destinations.handler import DataDestinationHandler
 from baserow.core.handler import CoreHandler
 from baserow.core.import_export.handler import ImportExportHandler
 from baserow.core.models import ExportApplicationsJob, Workspace
@@ -152,6 +154,7 @@ class BackupScheduleHandler:
         keep_last: Optional[int] = None,
         keep_days: Optional[int] = None,
         is_active: bool = True,
+        destination: str = "",
     ) -> BackupSchedule:
         """
         Creates a new backup schedule for a workspace.
@@ -163,6 +166,8 @@ class BackupScheduleHandler:
         :param tz_name: The timezone the cron expression is evaluated in.
         :param application_ids: The applications to back up, None means all of them.
         :param only_structure: If true the row data is left out of the archive.
+        :param destination: The data destination every backup is uploaded to, empty
+            keeps the backups on the instance storage only.
         :param keep_last: Count based retention, None disables it.
         :param keep_days: Age based retention in days, None disables it.
         :param is_active: Whether the schedule runs.
@@ -177,6 +182,7 @@ class BackupScheduleHandler:
         )
 
         tz_name = self.validate_timezone(tz_name)
+        self._validate_destination(destination)
 
         return BackupSchedule.objects.create(
             name=name,
@@ -186,6 +192,7 @@ class BackupScheduleHandler:
             timezone=tz_name,
             application_ids=application_ids,
             only_structure=only_structure,
+            destination=destination,
             keep_last=keep_last,
             keep_days=keep_days,
             is_active=is_active,
@@ -217,6 +224,7 @@ class BackupScheduleHandler:
             "timezone",
             "application_ids",
             "only_structure",
+            "destination",
             "keep_last",
             "keep_days",
             "is_active",
@@ -227,6 +235,8 @@ class BackupScheduleHandler:
                 setattr(schedule, field, values[field])
 
         schedule.timezone = self.validate_timezone(schedule.timezone)
+        if "destination" in values:
+            self._validate_destination(schedule.destination)
 
         if "cron" in values or "timezone" in values or values.get("is_active"):
             schedule.next_run_on = self.compute_next_run_on(
@@ -282,7 +292,22 @@ class BackupScheduleHandler:
             schedule.workspace_id,
             application_ids=schedule.application_ids,
             only_structure=schedule.only_structure,
+            destination=schedule.destination or None,
+            backup_schedule=schedule,
         )
+
+    def _validate_destination(self, destination: str):
+        """
+        Checks that a non-empty destination is configured and meant for backups.
+
+        :raises DataDestinationDoesNotExist: When it is not configured.
+        :raises DataDestinationPurposeNotAllowed: When it is not meant for backups.
+        """
+
+        if destination:
+            DataDestinationHandler().get_destination(
+                destination, purpose=PURPOSE_BACKUP
+            )
 
     def apply_retention(self, schedule: BackupSchedule) -> int:
         """

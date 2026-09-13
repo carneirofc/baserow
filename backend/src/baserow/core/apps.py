@@ -439,6 +439,10 @@ class CoreConfig(AppConfig):
         job_type_registry.register(ExportApplicationsJobType())
         job_type_registry.register(ImportApplicationsJobType())
 
+        from .backups.job_types import ExportApplicationsToDestinationJobType
+
+        job_type_registry.register(ExportApplicationsToDestinationJobType())
+
         from baserow.api.notifications.user_data_types import (
             UnreadUserNotificationsCountPermissionsDataType,
         )
