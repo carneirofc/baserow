@@ -18,14 +18,10 @@ Owns everything under `web-frontend/`: `modules/` (feature code), `test/`, `stor
 - Keep the frontend contract in sync with the backend API it consumes (serializers, error codes, URLs).
 - User-facing strings go through **i18n** (`locales/`, `i18n.config.ts`), not inline literals.
 - The `prod` image ships only `.output` (`Dockerfile`), never `node_modules`. That is what keeps Go-compiled npm binaries — esbuild, pulled in by `nitropack` and `vite` — out of the runtime image; SCA scanners read the Go stdlib embedded in such binaries and report it against the image. The `ci` and `dev` targets do carry `node_modules` and therefore do contain them.
-- Runtime branding (`docs/installation/branding.md`) must keep working without a rebuild:
-    - `modules/core/server/branding/` (Nitro handlers registered in `modules/core/module.js`) serves `/_branding/theme.css`, `/_branding/config.json` and `/_branding/assets/{img,icons,files}/…` from `BASEROW_BRANDING_DIR`, falling back to defaults bundled as Nitro server assets (`branding-img`, `branding-icons`).
-    - `plugins/branding.js` applies the title, translation overrides and theme stylesheet during SSR.
-    - Anything branding may override must go through that route, never a bundled `?url` import or a `public`/`static` path. Nitro serves public assets before any handler, so a public path cannot be overridden. This covers logo and favicon references and the `baserow-icon` masks in `icons.scss`.
-- Color tokens in `assets/scss/colors.scss` are CSS custom properties (`token()` → `var(--name, default)`):
-    - Never apply Sass color functions (`rgba`, `darken`, `mix`, `red()`…) to `$palette-*`/`$color-*`, because the build fails on `var()`. Use `alpha($color, $opacity)` or CSS `color-mix()`.
-    - Never interpolate tokens into data URIs.
-    - `$white`/`$black` stay literal.
+- Runtime branding (`docs/installation/branding.md`) must keep working without a rebuild. `modules/core/server/branding/` (Nitro handlers registered in `modules/core/module.js`) serves `/_branding/theme.css`, `/_branding/config.json` and `/_branding/assets/{img,icons,files}/…` from `BASEROW_BRANDING_DIR`, falling back to defaults bundled as Nitro server assets (`branding-img`, `branding-icons`); `plugins/branding.js` applies the title, translation overrides and theme stylesheet during SSR.
+- Anything branding may override (logo and favicon references, the `baserow-icon` masks in `icons.scss`) must load through the `/_branding/assets/` route, never a bundled `?url` import or a `public`/`static` path: Nitro serves public assets before any handler, so a public path cannot be overridden.
+- Color tokens in `assets/scss/colors.scss` are CSS custom properties (`token()` → `var(--name, default)`). Never apply Sass color functions (`rgba`, `darken`, `mix`, `red()`…) to `$palette-*`/`$color-*` — the build fails on `var()` — use `alpha($color, $opacity)` or CSS `color-mix()`, and never interpolate tokens into data URIs. `$white`/`$black` stay literal.
+- Keep this file free of nested lists: the root `.editorconfig` (4-space Markdown indent) is absent from the CI image, so prettier formats nested list indentation differently locally and in CI.
 - `branding.json` values are validated server-side (token names, CSS color values, font, locale keys) so they cannot inject CSS; keep that validation when adding settings.
 - The `node-base` stage deletes Ubuntu's unowned `/usr/bin/pebble` (CVE-2026-39821) for the same reason npm/yarn are dropped from `local`: unreachable code that scanners still report. Every stage here descends from `node-base`, so the single removal covers them all — see `deploy/AGENTS.md` for the repo-wide rule.
 
