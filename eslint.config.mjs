@@ -75,7 +75,7 @@ export const createBaserowConfig = ({ extraSourceFiles = [] } = {}) => {
       rules: {
         ...vitest.configs.recommended.rules,
         // Not part of the recommended set of the deprecated eslint-plugin-vitest
-        // this plugin replaced; existing specs predate them.
+        // this plugin replaced; existing specs predate them. See #30.
         "vitest/no-conditional-expect": "off",
         "vitest/no-standalone-expect": "off",
         "vitest/prefer-called-exactly-once-with": "off",
