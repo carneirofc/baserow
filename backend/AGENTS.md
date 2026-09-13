@@ -9,7 +9,7 @@ Django backend for Baserow: REST API, real-time WebSocket layer, Celery workers,
 Owns everything under `backend/`: `src/baserow/` (source), `tests/` (pytest suite), `Dockerfile`, `pyproject.toml`, `pytest.ini`, `mypy.ini`, `justfile`, and packaging.
 
 - `src/baserow/core/` — cross-cutting platform: registries, permissions, jobs, import/export, backups and backup schedules, cron scheduling helpers (`core/scheduling/cron.py`, shared by every cron-driven schedule), contents, API clients, auth, formulas, notifications, MCP.
-- `src/baserow/contrib/` — feature domains: `database/`, `builder/`, `automation/`, `dashboard/`, `integrations/`.
+- `src/baserow/contrib/` — feature domains: `database/`, `builder/`, `automation/`, `dashboard/`, `integrations/`. `contrib/database/data_export/` owns the scheduled Parquet (datalake) table exports: field-type column mapping, the writer, schedules, watermarks and run history.
 - `src/baserow/api/` — DRF serializers, views, URL routing, error handling.
 - `src/baserow/config/` — Django settings, Celery, Gunicorn config.
 
@@ -28,6 +28,7 @@ Owns everything under `backend/`: `src/baserow/` (source), `tests/` (pytest suit
 - `BASEROW_ROLES` declares workspace roles; they are reconciled into `core.Role` rows by `sync_declared_roles` on `post_migrate` and by the `sync_roles` management command. Roles no longer declared are left alone, since members may still be assigned to them.
 - External data destinations (S3, Azure Blob, filesystem) are env-configured only (`core/data_destinations/`): `BASEROW_DATA_DESTINATIONS` is parsed at startup and holds every credential. Models and API payloads reference a destination by `name` and must never persist or return its credentials or location. `core/data_destinations/config.py` is imported from settings, so it follows the same import-light rule as the OIDC config below.
 - Backups shipped to a destination (`core/backups/destination.py`) write the archive first and its `.zip.json` sidecar last; the sidecar is the completion marker and the only thing listing and remote retention trust. A restore verifies the archive's sha256 against the sidecar. Trusting a remote backup's signing key stays staff-only and opt-in per destination (`allow_trust_public_key`), and the key inside the archive must match the sidecar's.
+- Datalake table exports publish part files, then `_manifest.json`, then `_SUCCESS`; a table's watermark only advances after `_SUCCESS` is written. Password and form edit-link fields are never exported, and new field types fall back to a JSON column unless they register a mapper in `data_export/parquet/types.py`. Exports run with the permissions of the schedule's user, re-checked on every run.
 - Any code that trashes, restores or bulk-updates rows must bump `updated_on` (`QuerySet.update()` and `save(update_fields=...)` skip `auto_now`); incremental datalake exports select changed rows by `updated_on` and would otherwise miss them.
 - Keep `SsoErrorCode` (`core/sso/utils.py`) in sync with the `loginError` keys in `web-frontend/modules/core/locales/en.json`.
 

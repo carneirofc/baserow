@@ -1182,6 +1182,24 @@ class DatabaseConfig(AppConfig):
         operation_type_registry.register(SetFieldRuleOperationType())
         operation_type_registry.register(ReadFieldRuleOperationType())
 
+        from baserow.contrib.database.data_export.object_scopes import (
+            TableExportScheduleObjectScopeType,
+        )
+        from baserow.contrib.database.data_export.operations import (
+            CreateTableExportScheduleOperationType,
+            DeleteTableExportScheduleOperationType,
+            ListTableExportSchedulesOperationType,
+            ReadTableExportScheduleOperationType,
+            UpdateTableExportScheduleOperationType,
+        )
+
+        object_scope_type_registry.register(TableExportScheduleObjectScopeType())
+        operation_type_registry.register(ListTableExportSchedulesOperationType())
+        operation_type_registry.register(CreateTableExportScheduleOperationType())
+        operation_type_registry.register(ReadTableExportScheduleOperationType())
+        operation_type_registry.register(UpdateTableExportScheduleOperationType())
+        operation_type_registry.register(DeleteTableExportScheduleOperationType())
+
         action_type_registry.register(CreateFieldRuleActionType())
         action_type_registry.register(UpdateFieldRuleActionType())
         action_type_registry.register(DeleteFieldRuleActionType())
@@ -1204,6 +1222,7 @@ class DatabaseConfig(AppConfig):
         post_migrate.connect(safely_update_formula_versions, sender=self)
         pre_migrate.connect(clear_generated_model_cache_receiver, sender=self)
 
+        import baserow.contrib.database.data_export.tasks  # noqa: F401
         import baserow.contrib.database.field_rules.receivers  # noqa: F401
         import baserow.contrib.database.field_rules.signals  # noqa: F401
         import baserow.contrib.database.fields.receivers  # noqa: F401

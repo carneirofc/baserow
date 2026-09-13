@@ -1225,6 +1225,28 @@ BASEROW_BACKUP_SCHEDULE_TICK_CRONTAB = get_crontab_from_env(
     "BASEROW_BACKUP_SCHEDULE_TICK_CRONTAB", default_crontab="* * * * *"
 )
 
+# Datalake (Parquet) table exports. The tick is how often due schedules are looked
+# for; rows are read in chunks and split over part files of a bounded row count.
+BASEROW_TABLE_EXPORT_SCHEDULE_TICK_CRONTAB = get_crontab_from_env(
+    "BASEROW_TABLE_EXPORT_SCHEDULE_TICK_CRONTAB", default_crontab="* * * * *"
+)
+BASEROW_DATA_EXPORT_CHUNK_SIZE = int(
+    os.getenv("BASEROW_DATA_EXPORT_CHUNK_SIZE", "5000")
+)
+BASEROW_DATA_EXPORT_MAX_ROWS_PER_FILE = int(
+    os.getenv("BASEROW_DATA_EXPORT_MAX_ROWS_PER_FILE", "1000000")
+)
+# How far an incremental export reaches back before the previous snapshot, to catch
+# rows committed with an older `updated_on` while that export was running.
+BASEROW_DATA_EXPORT_WATERMARK_OVERLAP_SECONDS = int(
+    os.getenv("BASEROW_DATA_EXPORT_WATERMARK_OVERLAP_SECONDS", "300")
+)
+# Where part files are written before they are uploaded. Empty uses the system default.
+BASEROW_DATA_EXPORT_TMP_DIR = os.getenv("BASEROW_DATA_EXPORT_TMP_DIR", "") or None
+BASEROW_DATA_EXPORT_SOFT_TIME_LIMIT = int(
+    os.getenv("BASEROW_DATA_EXPORT_SOFT_TIME_LIMIT", str(6 * 60 * 60))
+)
+
 # The maximum amount of rows the `/api/contents/` endpoints return in one synchronous
 # response. Larger requests are refused with ERROR_CONTENTS_TOO_LARGE and should use
 # `/api/backups/` instead. Set to 0 to disable the limit.
