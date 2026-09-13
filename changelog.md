@@ -1,5 +1,25 @@
 # Changelog
 
+## Released v0.7.0
+
+### New features
+* [Core] Declare external data destinations (S3 or S3-compatible, Azure Blob Storage, or a mounted filesystem) with BASEROW_DATA_DESTINATIONS. Credentials stay in the environment and can be read from secret files; GET /api/data-destinations/ lists the names only.
+* [Core] Harden OIDC sign-in with PKCE (S256), callback state verification and a check that the userinfo subject matches the ID token.
+* [Core] The Helm chart adds extraVolumes and extraVolumeMounts to the backend and Celery pods, and Docker Compose forwards BASEROW_DATA_DESTINATIONS, so destination credentials can be mounted as files.
+* [Database] Schedule Parquet exports of database tables to a datalake destination: the first export is full, later ones only hold changed and deleted rows, with a manifest and _SUCCESS marker per run. Manage schedules through /api/database/data-export/ or run them with the export_table_parquet command.
+* [Core] Backups and backup schedules can upload their archives to a data destination, with retention applied there too. Remote backups can be listed and restored through the API or the backup_to_destination, list_destination_backups and restore_from_destination commands, including onto a fresh instance.
+
+### Bug fixes
+* [Core] Hide actions a member's workspace role does not allow instead of showing them and failing when used.
+* [Database] Trashing or restoring rows now updates their last modified time, so incremental consumers of a table, such as datalake exports, see rows disappear and come back.
+
+### Refactors
+* [Core] Update frontend, e2e, email compiler and Zapier dependencies to their latest compatible versions and GitHub Actions to their current major versions.
+
+### Breaking API changes
+* [Core] OIDC sign-in now refuses users whose email the identity provider has not verified, and SSO sessions end after 8 hours by default so role changes in Keycloak apply sooner. Configure with require_verified_email and session_lifetime_minutes.
+
+
 ## Released v0.6.0
 
 ### New features
