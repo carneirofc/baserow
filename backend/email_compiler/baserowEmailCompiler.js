@@ -27,12 +27,14 @@ async function compileEtaAndMjml(mjmlEtaFile) {
   const FgGreen = '\x1B[32m'
 
   console.log(`Compiling ${mjmlEtaFile}`)
-  // Set views to the directory of the file to template so it can use layout(path)
-  // statements relative to its own directory.
-  const eta = new Eta({ views: path.dirname(mjmlEtaFile) })
+  // Eta only resolves templates inside `views`, and resolves relative
+  // layout(path) statements against the calling template's own path. Rendering
+  // the file by name (not as a string) under the search root lets templates
+  // use layouts from parent directories, e.g. layout('../base.layout.eta').
+  const eta = new Eta({ views: MJML_FILE_SEARCH_ROOT, cache: false })
 
-  const tmplText = fs.readFileSync(mjmlEtaFile, 'utf8')
-  const mjmlText = eta.renderString(tmplText, {})
+  const relativeName = path.relative(MJML_FILE_SEARCH_ROOT, mjmlEtaFile)
+  const mjmlText = eta.render(`./${relativeName}`, {})
 
   const { html } = await mjml2html(mjmlText, {
     validationLevel: 'strict',
