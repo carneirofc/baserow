@@ -233,6 +233,34 @@ Single sign-on and RBAC are configured this way; see
 [SSO with Keycloak/RHBK](sso-rhbk-keycloak.md) and
 [Configuration](configuration.md) for the full environment variable list.
 
+### Data destinations
+
+External storage for backups and datalake exports is declared with
+`BASEROW_DATA_DESTINATIONS` in `extraEnv`. Keep its credentials out of the ConfigMap: put
+them in a Secret, mount it with `extraVolumes`/`extraVolumeMounts` (added to the backend,
+Celery worker and Celery beat pods) and reference the files with `*_file` keys. A
+`filesystem` destination mounts its PVC the same way.
+
+```yaml
+extraEnv:
+  BASEROW_DATA_DESTINATIONS: |
+    [{"name": "lake", "type": "s3", "bucket": "baserow-lake", "region": "eu-west-1",
+      "purposes": ["datalake"],
+      "access_key_id_file": "/run/secrets/lake/access-key-id",
+      "secret_access_key_file": "/run/secrets/lake/secret-access-key"}]
+extraVolumes:
+  - name: lake-credentials
+    secret:
+      secretName: baserow-lake-credentials
+extraVolumeMounts:
+  - name: lake-credentials
+    mountPath: /run/secrets/lake
+    readOnly: true
+```
+
+With IRSA or Pod Identity, leave the key files out and the pod's AWS identity is used.
+See [Data destinations, backups and datalake exports](data-destinations.md).
+
 ## Validation and safety nets
 
 `values.schema.json` ships with the chart, so Helm rejects unknown keys, wrong types

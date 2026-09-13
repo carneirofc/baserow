@@ -31,6 +31,10 @@ x-backend-env: &backend-env
   BASEROW_OIDC_PROVIDERS: ${BASEROW_OIDC_PROVIDERS:-}
   BASEROW_OIDC_ONLY: ${BASEROW_OIDC_ONLY:-}
   BASEROW_ROLES: ${BASEROW_ROLES:-}
+  # External storage for backups and datalake exports. Secrets referenced through
+  # `*_file` keys must be mounted into the backend and celery containers. See
+  # docs/installation/data-destinations.md.
+  BASEROW_DATA_DESTINATIONS: ${BASEROW_DATA_DESTINATIONS:-}
 
 services:
   db:

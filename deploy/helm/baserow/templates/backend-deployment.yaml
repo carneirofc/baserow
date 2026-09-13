@@ -62,12 +62,18 @@ spec:
             - name: media
               mountPath: /baserow/media
             {{- end }}
+            {{- with .Values.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
       volumes:
         {{- include "baserow.tmpVolumes" . | nindent 8 }}
         {{- if not .Values.objectStorage.enabled }}
         - name: media
           persistentVolumeClaim:
             claimName: {{ include "baserow.fullname" . }}-media
+        {{- end }}
+        {{- with .Values.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
         {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:

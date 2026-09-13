@@ -45,6 +45,9 @@ You can easily self-host Baserow by following one of the guides below:
   server using open telemetry.
 * [Single sign-on with RHBK/Keycloak](installation/sso-rhbk-keycloak.md): Configure
   OpenID Connect login and drive every level of access from Keycloak client roles.
+* [Data destinations, backups and datalake exports](installation/data-destinations.md):
+  Ship backups to S3, Azure Blob Storage or a volume and restore them, and export table
+  rows as Parquet to a datalake on a schedule.
 * [Turning application types off instance-wide](installation/instance-settings.md): Use
   the admin settings to disable databases, the application builder, dashboards or
   automations for the whole instance.

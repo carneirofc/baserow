@@ -52,8 +52,14 @@ spec:
             {{- toYaml .Values.resources.celeryBeat | nindent 12 }}
           volumeMounts:
             {{- include "baserow.tmpVolumeMounts" . | nindent 12 }}
+            {{- with .Values.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
       volumes:
         {{- include "baserow.tmpVolumes" . | nindent 8 }}
+        {{- with .Values.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

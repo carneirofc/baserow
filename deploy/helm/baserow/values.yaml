@@ -263,7 +263,29 @@ migrateOnStartup: true # runs Django migrations from the backend pod on boot
 #        BASEROW_ROLES: |
 #          [{"workspace": 1, "name": "Editor",
 #            "operations": ["database.table.read", "database.table.update_row"]}]
+#
+#    So are the external destinations for backups and datalake exports; keep their
+#    credentials in a Secret mounted through `extraVolumes` and point at the files:
+#      extraEnv:
+#        BASEROW_DATA_DESTINATIONS: |
+#          [{"name": "lake", "type": "s3", "bucket": "baserow-lake",
+#            "access_key_id_file": "/run/secrets/lake/access-key-id",
+#            "secret_access_key_file": "/run/secrets/lake/secret-access-key"}]
 extraEnv: {}
+
+# -- Extra volumes and mounts added to the backend, Celery worker and Celery beat
+#    pods. Typically the Secret or PVC a `BASEROW_DATA_DESTINATIONS` entry refers to
+#    (docs/installation/data-destinations.md), for example:
+#      extraVolumes:
+#        - name: lake-credentials
+#          secret:
+#            secretName: baserow-lake-credentials
+#      extraVolumeMounts:
+#        - name: lake-credentials
+#          mountPath: /run/secrets/lake
+#          readOnly: true
+extraVolumes: []
+extraVolumeMounts: []
 
 # ---------------------------------------------------------------------------
 # Branding / personalization

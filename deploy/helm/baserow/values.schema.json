@@ -177,6 +177,8 @@
       "type": "object",
       "additionalProperties": { "type": ["string", "number", "boolean"] }
     },
+    "extraVolumes": { "type": "array", "items": { "type": "object" } },
+    "extraVolumeMounts": { "type": "array", "items": { "type": "object" } },
 
     "branding": {
       "type": "object",

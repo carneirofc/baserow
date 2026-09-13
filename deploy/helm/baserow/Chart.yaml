@@ -15,7 +15,7 @@ keywords:
   - database
   - openshift
   - eks
-version: 0.3.0
+version: 0.4.0
 # Tracks the application version shipped by this fork's images.
 appVersion: "0.6.0"
 home: https://github.com/carneirofc/baserow
@@ -28,15 +28,7 @@ maintainers:
 annotations:
   artifacthub.io/changes: |
     - kind: added
-      description: Opt-in Amazon EKS support - IRSA and Pod Identity for S3 media (aws.irsa, aws.podIdentity, objectStorage.auth), with no static credentials rendered in those modes.
-    - kind: added
-      description: ingress.mode=albGroup renders two Ingress objects merged onto a single AWS ALB so the backend and web-frontend target groups keep separate health checks.
-    - kind: added
-      description: values-eks.yaml preset, values.schema.json validation, per-Service annotations and objectStorage.defaultACL/querystringAuth.
-    - kind: fixed
-      description: Pods now carry checksum/config and checksum/secret annotations, so a config-only helm upgrade actually restarts them.
-    - kind: changed
-      description: "openshift.route.enabled now defaults to false so the stock chart installs on a plain cluster; values-openshift.yaml still enables it."
+      description: extraVolumes and extraVolumeMounts add volumes to the backend, Celery worker and Celery beat pods, for example the credential files and PVCs referenced by BASEROW_DATA_DESTINATIONS.
 
 dependencies:
   - name: postgresql
