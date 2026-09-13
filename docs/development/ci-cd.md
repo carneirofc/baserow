@@ -45,22 +45,42 @@ job, using only the built-in `GITHUB_TOKEN` (no external secrets):
 Because backend and web-frontend are built from this repository's source, the published
 image contains the fork's changes.
 
-The result is pushed to this repo's GitHub Container Registry as
-`ghcr.io/<owner>/<repo>/baserow`, tagged by `docker/metadata-action` with the full
-version, `major.minor`, `major`, and `latest`. Steps 1 and 2 also push short-lived
-`backend:build-<sha>` / `web-frontend:build-<sha>` intermediates that the all-in-one
-build consumes.
+The results are pushed to this repo's GitHub Container Registry as
+`ghcr.io/<owner>/<repo>/{baserow,backend,web-frontend,caddy}`, tagged by
+`docker/metadata-action` with the full version, `major.minor`, `major`, and `latest`.
+Steps 1 and 2 also push short-lived `backend:build-<sha>` / `web-frontend:build-<sha>`
+intermediates that the all-in-one build consumes. Every published image is CVE-scanned
+after the push. `publish-helm-chart.yml` publishes the chart on the same tag as
+`oci://ghcr.io/<owner>/<repo>/charts/baserow:<Chart.yaml version>`.
+
+The GHCR packages are public, so the images and chart pull anonymously. A newly created
+package starts private: make it public once under its package settings (**Danger Zone →
+Change visibility**). That change cannot be undone.
 
 ## Cutting a release
 
-```bash
-git tag v1.2.3
-git push origin v1.2.3
-```
+1. On `develop`, bump the release version everywhere it is pinned:
+   * the `BASEROW_VERSION` defaults in `docker-compose.yml` and
+     `deploy/all-in-one/docker-compose.yml`;
+   * `appVersion` in `deploy/helm/baserow/Chart.yaml`, plus `version` if the chart
+     changed since its last publish;
+   * the `ghcr.io/carneirofc/baserow/*:<version>` image tags in `docs/installation/`,
+     `docs/plugins/` and `deploy/all-in-one/README.md`, the image tag in
+     `docs/installation/install-on-digital-ocean.md`, and the version heading in
+     `docs/installation/supported.md`
+     (`grep -rn 'baserow/.*:<old version>' docs deploy README.md` finds them).
+2. Cut the changelog release: `just changelog release v1.2.3`.
+3. Commit (`chore(release): cut release v1.2.3`), push, and wait for CI to pass.
+4. Tag and push:
 
-Pushing the tag triggers `build-publish-image.yml`, which publishes
-`ghcr.io/carneirofc/baserow/baserow:1.2.3` and `:latest`. GHCR packages are private by
-default — make the package public (or `docker login ghcr.io`) to allow anonymous pulls.
+   ```bash
+   git tag -a v1.2.3 -m v1.2.3
+   git push origin v1.2.3
+   ```
+
+5. Once `build-publish-image.yml` and `publish-helm-chart.yml` succeed, create the GitHub
+   Release with the version's `changelog.md` section as notes:
+   `gh release create v1.2.3 --title v1.2.3 --notes-file <notes> --latest`.
 
 ## Reproducing CI locally
 

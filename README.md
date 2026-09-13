@@ -158,15 +158,15 @@ Redis, uploads) inside the `baserow_data` volume.
 * Set `BASEROW_PUBLIC_URL` to `https://YOUR_DOMAIN` or `http://YOUR_IP` for external
   access — it must match the address you use in the browser.
 * Pin a specific release instead of `latest` with a version tag, e.g.
-  `ghcr.io/carneirofc/baserow/baserow:1.2.3`.
+  `ghcr.io/carneirofc/baserow/baserow:0.6.0`.
 * To enable SSO, pass the `BASEROW_OIDC_PROVIDERS` (and optionally `BASEROW_ROLES` and
   `BASEROW_OIDC_ONLY`) environment variables shown above.
 
 Images are published automatically by the
 [`build-publish-image`](.github/workflows/build-publish-image.yml) GitHub Actions
 workflow whenever a `v*` version tag is pushed; the `latest` tag always points at the
-most recent release. The GHCR package may be private by default — make it public (or
-`docker login ghcr.io`) if a pull is denied.
+most recent release. The images and the Helm chart are public on GHCR, so they pull
+without `docker login`.
 
 ## Installation
 
