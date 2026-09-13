@@ -41,6 +41,11 @@ class MappingSerializerExtension(OpenApiSerializerExtension):
             )
             sub_components.append((key, resolved_sub_serializer.ref))
 
+        if not sub_components:
+            # An empty registry must not produce `anyOf: []`, which is invalid
+            # OpenAPI (the keyword requires at least one subschema).
+            return {"type": "object", "additionalProperties": True}
+
         return {"anyOf": [ref for _, ref in sub_components]}
 
 
@@ -131,6 +136,11 @@ class DiscriminatorMappingSerializerExtension(OpenApiSerializerExtension):
                     sub_components.append((key, item))
             else:
                 sub_components.append((key, schema))
+
+        if not sub_components:
+            # An empty registry must not produce `oneOf: []`, which is invalid
+            # OpenAPI (the keyword requires at least one subschema).
+            return {"type": "object", "additionalProperties": True}
 
         return {
             "oneOf": [schema for _, schema in sub_components],

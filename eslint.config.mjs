@@ -1,7 +1,7 @@
 // @ts-check
 import withNuxt from "./web-frontend/.nuxt/eslint.config.mjs";
 import globals from "./web-frontend/node_modules/globals/index.js";
-import vitest from "./web-frontend/node_modules/eslint-plugin-vitest/dist/index.mjs";
+import vitest from "./web-frontend/node_modules/@vitest/eslint-plugin/dist/index.mjs";
 import eslintConfigPrettier from "./web-frontend/node_modules/eslint-config-prettier/index.js";
 
 // Export factory function for reusability in plugins
@@ -74,6 +74,11 @@ export const createBaserowConfig = ({ extraSourceFiles = [] } = {}) => {
       },
       rules: {
         ...vitest.configs.recommended.rules,
+        // Not part of the recommended set of the deprecated eslint-plugin-vitest
+        // this plugin replaced; existing specs predate them.
+        "vitest/no-conditional-expect": "off",
+        "vitest/no-standalone-expect": "off",
+        "vitest/prefer-called-exactly-once-with": "off",
       },
     },
   ]);
