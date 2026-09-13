@@ -163,6 +163,7 @@ dev = [
     "build",
     "rust-just>=1.57.0",
     "syrupy==6.0.0",
+    "moto[s3]==5.2.3",
 ]
 changelog = [
     "typer==0.27.2",

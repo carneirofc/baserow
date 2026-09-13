@@ -15,6 +15,7 @@ from .applications import urls as application_urls
 from .auth_provider import urls as auth_provider_urls
 from .backups import urls as backup_urls
 from .contents import urls as contents_urls
+from .data_destinations import urls as data_destination_urls
 from .health import urls as health_urls
 from .integrations import urls as integrations_urls
 from .jobs import urls as jobs_urls
@@ -57,6 +58,10 @@ urlpatterns = (
         path("jobs/", include(jobs_urls, namespace="jobs")),
         path("snapshots/", include(snapshots_urls, namespace="snapshots")),
         path("backups/", include(backup_urls, namespace="backups")),
+        path(
+            "data-destinations/",
+            include(data_destination_urls, namespace="data_destinations"),
+        ),
         path("contents/", include(contents_urls, namespace="contents")),
         path("api-clients/", include(api_client_urls, namespace="api_clients")),
         path("_health/", include(health_urls, namespace="health")),

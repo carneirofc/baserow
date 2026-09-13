@@ -26,6 +26,7 @@ Owns everything under `backend/`: `src/baserow/` (source), `tests/` (pytest suit
 - SSO sessions are bounded by the provider's `session_lifetime_minutes` (default 480): the refresh token issued on callback gets that lifetime and refreshing never re-issues it, so a client role removed in the IdP stops applying once the user must sign in again.
 - `core/sso/oidc/config.py` and `core/roles/config.py` are imported from `config/settings/base.py` while settings are still evaluating. Keep them import-light (stdlib + `django.core.exceptions`); never import models or third-party clients there.
 - `BASEROW_ROLES` declares workspace roles; they are reconciled into `core.Role` rows by `sync_declared_roles` on `post_migrate` and by the `sync_roles` management command. Roles no longer declared are left alone, since members may still be assigned to them.
+- External data destinations (S3, Azure Blob, filesystem) are env-configured only (`core/data_destinations/`): `BASEROW_DATA_DESTINATIONS` is parsed at startup and holds every credential. Models and API payloads reference a destination by `name` and must never persist or return its credentials or location. `core/data_destinations/config.py` is imported from settings, so it follows the same import-light rule as the OIDC config below.
 - Keep `SsoErrorCode` (`core/sso/utils.py`) in sync with the `loginError` keys in `web-frontend/modules/core/locales/en.json`.
 
 ## Work Guidance

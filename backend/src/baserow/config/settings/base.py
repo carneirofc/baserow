@@ -1428,6 +1428,17 @@ from baserow.core.roles.config import parse_roles_env  # noqa: E402
 
 BASEROW_ROLES = parse_roles_env(os.getenv("BASEROW_ROLES", ""))
 
+# Env-declared external data destinations (S3, Azure Blob Storage or a mounted
+# filesystem) that backups and datalake table exports are written to. Declared as a
+# JSON list so credentials never live in the database; validated here to fail fast.
+from baserow.core.data_destinations.config import (  # noqa: E402
+    parse_data_destinations_env,
+)
+
+BASEROW_DATA_DESTINATIONS = parse_data_destinations_env(
+    os.getenv("BASEROW_DATA_DESTINATIONS", "")
+)
+
 MIGRATION_LOCK_ID = os.getenv("BASEROW_MIGRATION_LOCK_ID", 123456)
 DEFAULT_SEARCH_MODE = os.getenv("BASEROW_DEFAULT_SEARCH_MODE", "compat")
 
