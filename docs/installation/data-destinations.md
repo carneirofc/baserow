@@ -11,6 +11,11 @@ Baserow can write two kinds of data to storage outside the instance:
 Both write to a **data destination**: an S3 or S3-compatible bucket, an Azure Blob
 Storage container, or a mounted filesystem.
 
+In the app, backups live under the workspace menu → **Backups** (back up now, restore,
+schedules and external storage), and datalake exports under a database's menu →
+**Datalake exports**. Everything below is also available through the API and management
+commands.
+
 ## Declaring destinations
 
 Destinations are declared by the operator with the `BASEROW_DATA_DESTINATIONS`

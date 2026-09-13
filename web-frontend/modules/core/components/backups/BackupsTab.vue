@@ -1,0 +1,240 @@
+<template>
+  <div>
+    <Error :error="error"></Error>
+    <div class="row">
+      <div class="col col-6">
+        <FormGroup
+          small-label
+          :label="$t('backupsModal.destination')"
+          class="margin-bottom-2"
+        >
+          <Dropdown v-model="destination" :disabled="busy">
+            <DropdownItem
+              :name="$t('backupsModal.noDestination')"
+              value=""
+            ></DropdownItem>
+            <DropdownItem
+              v-for="item in destinations"
+              :key="item.name"
+              :name="item.name"
+              :value="item.name"
+            ></DropdownItem>
+          </Dropdown>
+        </FormGroup>
+      </div>
+      <div class="col col-6">
+        <FormGroup
+          small-label
+          :label="$t('backupsModal.content')"
+          class="margin-bottom-2"
+        >
+          <Checkbox v-model="onlyStructure" :disabled="busy">
+            {{ $t('backupsModal.onlyStructure') }}
+          </Checkbox>
+        </FormGroup>
+      </div>
+    </div>
+    <ProgressBar
+      v-if="jobIsRunning"
+      class="margin-bottom-2"
+      :value="job.progress_percentage || 0"
+      :status="jobHumanReadableState"
+    />
+    <Button :loading="busy" :disabled="busy" @click="startBackup">
+      {{ $t('backupsModal.backupNow') }}
+    </Button>
+
+    <div v-if="loading" class="loading margin-top-3"></div>
+    <p v-else-if="backups.length === 0" class="margin-top-3">
+      {{ $t('backupsModal.noBackups') }}
+    </p>
+    <div v-else class="export-workspace__list margin-top-3">
+      <div
+        v-for="backup in backups"
+        :key="backup.id"
+        class="export-workspace__export"
+      >
+        <div class="export-workspace__info">
+          <div>
+            <div class="export-workspace__name">
+              {{ formatDate(backup.created_on) }}
+            </div>
+            <div class="export-workspace__detail">
+              {{ backup.exported_file_name }}
+              <template v-if="backup.destination">
+                ·
+                {{
+                  $t('backupsModal.uploadedTo', { name: backup.destination })
+                }}
+              </template>
+            </div>
+          </div>
+        </div>
+        <div class="export-workspace__actions">
+          <DownloadLink
+            :url="backup.url"
+            :filename="backup.exported_file_name"
+            :loading-class="'button--loading'"
+          >
+            {{ $t('backupsModal.download') }}
+          </DownloadLink>
+          <Button
+            type="secondary"
+            size="small"
+            :disabled="busy"
+            @click="restore(backup)"
+          >
+            {{ $t('backupsModal.restore') }}
+          </Button>
+          <Button
+            type="secondary"
+            size="small"
+            icon="iconoir-bin"
+            :disabled="busy"
+            :title="$t('backupsModal.delete')"
+            @click="remove(backup)"
+          ></Button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import error from '@baserow/modules/core/mixins/error'
+import job from '@baserow/modules/core/mixins/job'
+import moment from '@baserow/modules/core/moment'
+import BackupService from '@baserow/modules/core/services/backup'
+import { notifyIf } from '@baserow/modules/core/utils/error'
+
+export default {
+  name: 'BackupsTab',
+  mixins: [error, job],
+  props: {
+    workspace: {
+      type: Object,
+      required: true,
+    },
+    destinations: {
+      type: Array,
+      required: true,
+    },
+  },
+  data() {
+    return {
+      loading: false,
+      starting: false,
+      jobKind: null,
+      destination: '',
+      onlyStructure: false,
+      backups: [],
+    }
+  },
+  computed: {
+    busy() {
+      return this.starting || this.jobIsRunning
+    },
+  },
+  mounted() {
+    this.load()
+  },
+  methods: {
+    formatDate(value) {
+      return moment(value).format('YYYY-MM-DD HH:mm')
+    },
+    async load() {
+      this.loading = true
+      try {
+        const { data } = await BackupService(this.$client).listBackups(
+          this.workspace.id
+        )
+        this.backups = data.results || []
+      } catch (error) {
+        this.handleError(error)
+      } finally {
+        this.loading = false
+      }
+    },
+    async run(kind, request) {
+      this.starting = true
+      this.hideError()
+      try {
+        const { data } = await request()
+        this.jobKind = kind
+        await this.createAndMonitorJob(data)
+      } catch (error) {
+        this.handleError(error)
+      } finally {
+        this.starting = false
+      }
+    },
+    startBackup() {
+      const values = { only_structure: this.onlyStructure }
+      if (this.destination) {
+        values.destination = this.destination
+      }
+      return this.run('backup', () =>
+        BackupService(this.$client).startBackup(this.workspace.id, values)
+      )
+    },
+    restore(backup) {
+      return this.run('restore', () =>
+        BackupService(this.$client).restoreBackup(
+          this.workspace.id,
+          backup.resource_id
+        )
+      )
+    },
+    async remove(backup) {
+      this.hideError()
+      try {
+        await BackupService(this.$client).deleteBackup(
+          this.workspace.id,
+          backup.resource_id
+        )
+        this.backups = this.backups.filter((item) => item.id !== backup.id)
+      } catch (error) {
+        this.handleError(error)
+      }
+    },
+    async onJobFinished() {
+      if (this.jobKind === 'restore') {
+        await restoredApplicationsFinished(this, this.job)
+      } else {
+        this.$store.dispatch('toast/info', {
+          title: this.$t('backupsModal.backupFinishedTitle'),
+          message: this.$t('backupsModal.backupFinishedMessage'),
+        })
+        await this.load()
+      }
+    },
+    onJobFailed() {
+      this.showError(
+        this.$t('clientHandler.notCompletedTitle'),
+        this.job.human_readable_error
+      )
+    },
+  },
+}
+
+/**
+ * Adds the applications installed by a finished restore job to the sidebar and tells
+ * the user. Shared by the local and remote restore tabs.
+ */
+export async function restoredApplicationsFinished(component, finishedJob) {
+  const installed = finishedJob.installed_applications || []
+  try {
+    for (const application of installed) {
+      await component.$store.dispatch('application/forceCreate', application)
+    }
+    component.$store.dispatch('toast/info', {
+      title: component.$t('backupsModal.restoreFinishedTitle'),
+      message: component.$t('backupsModal.restoreFinishedMessage', {
+        count: installed.length,
+      }),
+    })
+  } catch (error) {
+    notifyIf(error, 'application')
+  }
+}
+</script>

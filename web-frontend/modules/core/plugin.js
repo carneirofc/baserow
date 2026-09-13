@@ -10,6 +10,7 @@ import {
   CreateSnapshotJobType,
   DuplicateApplicationJobType,
   ExportApplicationsJobType,
+  ExportApplicationsToDestinationJobType,
   ImportApplicationsJobType,
   InstallTemplateJobType,
   RestoreSnapshotJobType,
@@ -225,6 +226,10 @@ export default defineNuxtPlugin({
     registry.register('job', new CreateSnapshotJobType(context))
     registry.register('job', new RestoreSnapshotJobType(context))
     registry.register('job', new ExportApplicationsJobType(context))
+    registry.register(
+      'job',
+      new ExportApplicationsToDestinationJobType(context)
+    )
     registry.register('job', new ImportApplicationsJobType(context))
 
     registry.register(

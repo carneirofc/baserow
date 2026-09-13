@@ -3,9 +3,42 @@ from rest_framework import serializers
 from baserow.core.backups.models import BackupSchedule
 from baserow.core.job_types import ExportApplicationsJobType
 
-# A finished backup is the export job that produced it: the same serializer already
-# exposes the archive name and its download URL.
-BackupSerializer = ExportApplicationsJobType().response_serializer_class
+_ExportJobSerializer = ExportApplicationsJobType().response_serializer_class
+
+
+class BackupSerializer(_ExportJobSerializer):
+    """
+    A finished backup is the export job that produced it: the export serializer
+    already exposes the archive name and its download URL. The resource id is what
+    the restore and delete endpoints take, and the destination fields tell whether
+    the archive was also uploaded to external storage.
+    """
+
+    resource_id = serializers.IntegerField(read_only=True, allow_null=True)
+    destination = serializers.SerializerMethodField(
+        help_text="The data destination the archive was uploaded to, if any."
+    )
+    remote_key = serializers.SerializerMethodField(
+        help_text="The key of the uploaded archive on the destination, if any."
+    )
+
+    class Meta(_ExportJobSerializer.Meta):
+        ref_name = "BackupSerializer"
+        fields = tuple(_ExportJobSerializer.Meta.fields) + (
+            "resource_id",
+            "destination",
+            "remote_key",
+        )
+
+    def _destination_job(self, instance):
+        # Backups uploaded to a destination are a multi-table child of the export.
+        return getattr(instance, "exportapplicationstodestinationjob", instance)
+
+    def get_destination(self, instance) -> str:
+        return getattr(self._destination_job(instance), "destination", "") or ""
+
+    def get_remote_key(self, instance) -> str:
+        return getattr(self._destination_job(instance), "remote_key", "") or ""
 
 
 class ListBackupsSerializer(serializers.Serializer):
