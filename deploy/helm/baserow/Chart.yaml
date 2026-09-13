@@ -15,9 +15,9 @@ keywords:
   - database
   - openshift
   - eks
-version: 0.4.0
+version: 0.4.1
 # Tracks the application version shipped by this fork's images.
-appVersion: "0.7.0"
+appVersion: "0.8.0"
 home: https://github.com/carneirofc/baserow
 sources:
   - https://github.com/carneirofc/baserow
@@ -27,8 +27,8 @@ maintainers:
 
 annotations:
   artifacthub.io/changes: |
-    - kind: added
-      description: extraVolumes and extraVolumeMounts add volumes to the backend, Celery worker and Celery beat pods, for example the credential files and PVCs referenced by BASEROW_DATA_DESTINATIONS.
+    - kind: changed
+      description: appVersion 0.8.0, shipping the backups and datalake exports UI.
 
 dependencies:
   - name: postgresql

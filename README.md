@@ -158,7 +158,7 @@ Redis, uploads) inside the `baserow_data` volume.
 * Set `BASEROW_PUBLIC_URL` to `https://YOUR_DOMAIN` or `http://YOUR_IP` for external
   access — it must match the address you use in the browser.
 * Pin a specific release instead of `latest` with a version tag, e.g.
-  `ghcr.io/carneirofc/baserow/baserow:0.7.0`.
+  `ghcr.io/carneirofc/baserow/baserow:0.8.0`.
 * To enable SSO, pass the `BASEROW_OIDC_PROVIDERS` (and optionally `BASEROW_ROLES` and
   `BASEROW_OIDC_ONLY`) environment variables shown above.
 

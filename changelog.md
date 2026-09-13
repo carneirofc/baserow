@@ -1,5 +1,11 @@
 # Changelog
 
+## Released v0.8.0
+
+### New features
+* [Core] Manage backups from the workspace menu: back up now (optionally to external storage), restore or delete backups, schedule recurring backups and restore backups kept on external storage. Manage a database's datalake export schedules, run them and follow their runs from the database menu.
+
+
 ## Released v0.7.0
 
 ### New features
