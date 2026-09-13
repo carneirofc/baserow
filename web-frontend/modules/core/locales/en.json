@@ -17,7 +17,8 @@
     "errorDifferentProvider": "This account is linked to a different login provider.",
     "errorWorkspaceInvitationEmailMismatch": "The invitation was sent to a different email address than the one you signed in with.",
     "errorSignupDisabled": "New signups are disabled for this instance.",
-    "errorNoMappedRole": "Your account does not have a role that grants access to this instance. Ask an administrator to assign you one."
+    "errorNoMappedRole": "Your account does not have a role that grants access to this instance. Ask an administrator to assign you one.",
+    "errorEmailNotVerified": "Your login provider has not verified your email address. Verify it there, then try again."
   },
   "workspaceSearch": {
     "title": "Search",

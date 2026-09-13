@@ -1,14 +1,22 @@
+from urllib.parse import parse_qs, urlparse
+
 from django.core.cache import cache
 
 import pytest
 import responses
 from cryptography.hazmat.primitives.asymmetric import rsa
 
-from baserow.core.sso.exceptions import AuthFlowError, InvalidProviderUrl
+from baserow.core.sso.exceptions import (
+    AuthFlowError,
+    EmailNotVerified,
+    InvalidProviderUrl,
+)
 from baserow.core.sso.oidc.handler import (
+    SESSION_CODE_VERIFIER_KEY,
     SESSION_NONCE_KEY,
     SESSION_STATE_KEY,
     OIDCHandler,
+    create_pkce_code_challenge,
     get_well_known_urls,
 )
 from baserow.test_utils.oidc import FakeOIDCProvider
@@ -80,7 +88,7 @@ def test_full_flow_returns_user_info():
     idp.register_all(responses, nonce=nonce)
 
     user_info, original, roles = OIDCHandler.get_user_info(
-        idp.config, CALLBACK_URL, "the-code", session
+        idp.config, CALLBACK_URL, "the-code", session[SESSION_STATE_KEY], session
     )
 
     assert user_info.email == "alice@example.com"
@@ -96,7 +104,7 @@ def test_full_flow_returns_the_client_roles():
     idp.register_all(responses, nonce=nonce)
 
     _, _, roles = OIDCHandler.get_user_info(
-        idp.config, CALLBACK_URL, "the-code", session
+        idp.config, CALLBACK_URL, "the-code", session[SESSION_STATE_KEY], session
     )
 
     assert roles == ["analysts", "engineering"]
@@ -112,7 +120,9 @@ def test_tampered_signature_is_rejected():
     idp.register_all(responses, id_token=bad_token)
 
     with pytest.raises(AuthFlowError):
-        OIDCHandler.get_user_info(idp.config, CALLBACK_URL, "the-code", session)
+        OIDCHandler.get_user_info(
+            idp.config, CALLBACK_URL, "the-code", session[SESSION_STATE_KEY], session
+        )
 
 
 @responses.activate(assert_all_requests_are_fired=False)
@@ -123,7 +133,9 @@ def test_expired_token_is_rejected():
     idp.register_all(responses, id_token=expired)
 
     with pytest.raises(AuthFlowError):
-        OIDCHandler.get_user_info(idp.config, CALLBACK_URL, "the-code", session)
+        OIDCHandler.get_user_info(
+            idp.config, CALLBACK_URL, "the-code", session[SESSION_STATE_KEY], session
+        )
 
 
 @responses.activate(assert_all_requests_are_fired=False)
@@ -134,7 +146,9 @@ def test_wrong_audience_is_rejected():
     idp.register_all(responses, id_token=wrong_aud)
 
     with pytest.raises(AuthFlowError):
-        OIDCHandler.get_user_info(idp.config, CALLBACK_URL, "the-code", session)
+        OIDCHandler.get_user_info(
+            idp.config, CALLBACK_URL, "the-code", session[SESSION_STATE_KEY], session
+        )
 
 
 @responses.activate(assert_all_requests_are_fired=False)
@@ -145,7 +159,9 @@ def test_wrong_issuer_is_rejected():
     idp.register_all(responses, id_token=wrong_iss)
 
     with pytest.raises(AuthFlowError):
-        OIDCHandler.get_user_info(idp.config, CALLBACK_URL, "the-code", session)
+        OIDCHandler.get_user_info(
+            idp.config, CALLBACK_URL, "the-code", session[SESSION_STATE_KEY], session
+        )
 
 
 @responses.activate(assert_all_requests_are_fired=False)
@@ -156,7 +172,9 @@ def test_nonce_mismatch_is_rejected():
     idp.register_all(responses, id_token=mismatched)
 
     with pytest.raises(AuthFlowError):
-        OIDCHandler.get_user_info(idp.config, CALLBACK_URL, "the-code", session)
+        OIDCHandler.get_user_info(
+            idp.config, CALLBACK_URL, "the-code", session[SESSION_STATE_KEY], session
+        )
 
 
 @responses.activate(assert_all_requests_are_fired=False)
@@ -168,7 +186,9 @@ def test_missing_session_nonce_fails_closed():
     idp.register_all(responses, nonce=nonce)
 
     with pytest.raises(AuthFlowError):
-        OIDCHandler.get_user_info(idp.config, CALLBACK_URL, "the-code", session)
+        OIDCHandler.get_user_info(
+            idp.config, CALLBACK_URL, "the-code", session[SESSION_STATE_KEY], session
+        )
 
 
 @responses.activate(assert_all_requests_are_fired=False)
@@ -183,4 +203,142 @@ def test_missing_id_token_is_rejected():
     )
 
     with pytest.raises(AuthFlowError):
-        OIDCHandler.get_user_info(idp.config, CALLBACK_URL, "the-code", session)
+        OIDCHandler.get_user_info(
+            idp.config, CALLBACK_URL, "the-code", session[SESSION_STATE_KEY], session
+        )
+
+
+def _get_user_info(idp, session, state=None):
+    return OIDCHandler.get_user_info(
+        idp.config,
+        CALLBACK_URL,
+        "the-code",
+        session.get(SESSION_STATE_KEY) if state is None else state,
+        session,
+    )
+
+
+@responses.activate
+def test_authorization_url_carries_a_pkce_s256_challenge():
+    idp = FakeOIDCProvider()
+    responses.add(responses.GET, idp.discovery_url, json=idp.discovery_document())
+
+    session = {}
+    url = OIDCHandler.get_authorization_redirect_url(
+        idp.config, CALLBACK_URL, session, {}
+    )
+
+    query = parse_qs(urlparse(url).query)
+    assert query["code_challenge_method"] == ["S256"]
+    assert query["code_challenge"] == [
+        create_pkce_code_challenge(session[SESSION_CODE_VERIFIER_KEY])
+    ]
+
+
+@responses.activate(assert_all_requests_are_fired=False)
+def test_code_verifier_is_sent_to_the_token_endpoint():
+    idp = FakeOIDCProvider()
+    session, nonce = _authorize(idp, responses)
+    verifier = session[SESSION_CODE_VERIFIER_KEY]
+    idp.register_all(responses, nonce=nonce)
+
+    _get_user_info(idp, session)
+
+    token_call = next(
+        call for call in responses.calls if call.request.url == idp.token_endpoint
+    )
+    assert parse_qs(token_call.request.body)["code_verifier"] == [verifier]
+
+
+@responses.activate(assert_all_requests_are_fired=False)
+def test_missing_code_verifier_fails_closed():
+    idp = FakeOIDCProvider()
+    session, nonce = _authorize(idp, responses)
+    session.pop(SESSION_CODE_VERIFIER_KEY)
+    idp.register_all(responses, nonce=nonce)
+
+    with pytest.raises(AuthFlowError):
+        _get_user_info(idp, session)
+
+
+@responses.activate(assert_all_requests_are_fired=False)
+def test_state_mismatch_is_rejected():
+    idp = FakeOIDCProvider()
+    session, nonce = _authorize(idp, responses)
+    idp.register_all(responses, nonce=nonce)
+
+    with pytest.raises(AuthFlowError):
+        _get_user_info(idp, session, state="not-the-session-state")
+
+
+@responses.activate(assert_all_requests_are_fired=False)
+def test_missing_returned_state_is_rejected():
+    idp = FakeOIDCProvider()
+    session, nonce = _authorize(idp, responses)
+    idp.register_all(responses, nonce=nonce)
+
+    with pytest.raises(AuthFlowError):
+        _get_user_info(idp, session, state="")
+
+
+@responses.activate(assert_all_requests_are_fired=False)
+def test_missing_session_state_fails_closed():
+    idp = FakeOIDCProvider()
+    session, nonce = _authorize(idp, responses)
+    state = session.pop(SESSION_STATE_KEY)
+    idp.register_all(responses, nonce=nonce)
+
+    with pytest.raises(AuthFlowError):
+        _get_user_info(idp, session, state=state)
+
+
+@responses.activate(assert_all_requests_are_fired=False)
+def test_userinfo_subject_mismatch_is_rejected():
+    idp = FakeOIDCProvider()
+    session, nonce = _authorize(idp, responses)
+    idp.register_all(responses, nonce=nonce, userinfo_extra={"sub": "someone-else"})
+
+    with pytest.raises(AuthFlowError):
+        _get_user_info(idp, session)
+
+
+@pytest.mark.parametrize("email_verified", [False, None, "true"])
+@responses.activate(assert_all_requests_are_fired=False)
+def test_unverified_email_is_rejected(email_verified):
+    idp = FakeOIDCProvider()
+    session, nonce = _authorize(idp, responses)
+    idp.register_all(
+        responses, nonce=nonce, userinfo_extra={"email_verified": email_verified}
+    )
+
+    with pytest.raises(EmailNotVerified):
+        _get_user_info(idp, session)
+
+
+@responses.activate(assert_all_requests_are_fired=False)
+def test_email_verified_falls_back_to_the_id_token():
+    idp = FakeOIDCProvider()
+    session, nonce = _authorize(idp, responses)
+    id_token = idp.mint_id_token(nonce=nonce, extra_claims={"email_verified": True})
+    idp.register_all(responses, id_token=id_token)
+    # Drop the claim from userinfo so only the ID token vouches for the email.
+    responses.replace(
+        responses.GET,
+        idp.userinfo_endpoint,
+        json={k: v for k, v in idp.userinfo().items() if k != "email_verified"},
+    )
+
+    user_info, _, _ = _get_user_info(idp, session)
+
+    assert user_info.email == "alice@example.com"
+
+
+@responses.activate(assert_all_requests_are_fired=False)
+def test_unverified_email_is_accepted_when_the_provider_opts_out():
+    idp = FakeOIDCProvider(require_verified_email=False)
+    session, nonce = _authorize(idp, responses)
+    idp.register_all(responses, nonce=nonce, userinfo_extra={"email_verified": False})
+
+    user_info, _, _ = _get_user_info(idp, session)
+
+    assert user_info.email == "alice@example.com"

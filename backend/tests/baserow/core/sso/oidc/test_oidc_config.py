@@ -6,6 +6,7 @@ import pytest
 
 from baserow.core.sso.oidc.config import (
     DEFAULT_SCOPES,
+    DEFAULT_SESSION_LIFETIME_MINUTES,
     OIDCProviderConfig,
     parse_oidc_providers_env,
 )
@@ -300,5 +301,36 @@ def test_strict_membership_must_be_boolean():
 def test_invalid_workspace_mapping_fails_fast(mapping):
     provider = dict(VALID_PROVIDER, workspace_mappings=[mapping])
 
+    with pytest.raises(ImproperlyConfigured):
+        parse_oidc_providers_env(_env(provider))
+
+
+def test_require_verified_email_defaults_true_and_parses():
+    assert parse_oidc_providers_env(_env(VALID_PROVIDER))[0].require_verified_email
+
+    provider = dict(VALID_PROVIDER, require_verified_email=False)
+    assert not parse_oidc_providers_env(_env(provider))[0].require_verified_email
+
+
+def test_require_verified_email_must_be_boolean():
+    provider = dict(VALID_PROVIDER, require_verified_email="false")
+    with pytest.raises(ImproperlyConfigured):
+        parse_oidc_providers_env(_env(provider))
+
+
+def test_session_lifetime_defaults_and_parses():
+    default = parse_oidc_providers_env(_env(VALID_PROVIDER))[0]
+    assert default.session_lifetime_minutes == DEFAULT_SESSION_LIFETIME_MINUTES
+
+    provider = dict(VALID_PROVIDER, session_lifetime_minutes=15)
+    assert parse_oidc_providers_env(_env(provider))[0].session_lifetime_minutes == 15
+
+    provider = dict(VALID_PROVIDER, session_lifetime_minutes=None)
+    assert parse_oidc_providers_env(_env(provider))[0].session_lifetime_minutes is None
+
+
+@pytest.mark.parametrize("value", [0, -5, True, "60", 1.5])
+def test_session_lifetime_must_be_a_positive_integer(value):
+    provider = dict(VALID_PROVIDER, session_lifetime_minutes=value)
     with pytest.raises(ImproperlyConfigured):
         parse_oidc_providers_env(_env(provider))

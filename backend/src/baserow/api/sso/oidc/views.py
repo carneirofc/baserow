@@ -1,3 +1,4 @@
+from datetime import timedelta
 from typing import Any, Dict
 
 from django.db import transaction
@@ -17,6 +18,7 @@ from baserow.core.auth_provider.exceptions import DifferentAuthProvider
 from baserow.core.exceptions import WorkspaceInvitationEmailMismatch
 from baserow.core.sso.exceptions import (
     AuthFlowError,
+    EmailNotVerified,
     NoMappedRole,
     OIDCProviderNotFound,
 )
@@ -128,6 +130,7 @@ class OIDCCallbackView(APIView):
             ),
             DisabledSignupError: SsoErrorCode.SIGNUP_DISABLED,
             NoMappedRole: SsoErrorCode.NO_MAPPED_ROLE,
+            EmailNotVerified: SsoErrorCode.EMAIL_NOT_VERIFIED,
         }
     )
     @transaction.atomic
@@ -144,6 +147,7 @@ class OIDCCallbackView(APIView):
             config,
             OIDCAuthProviderType.get_callback_url(config),
             code,
+            request.query_params.get("state", None),
             request.session,
         )
         logger.debug("OIDC extracted user info: {0}", user_info)
@@ -170,4 +174,11 @@ class OIDCCallbackView(APIView):
         sync_global_roles(user, roles, config)
         sync_workspace_memberships(user, roles, config, provider)
 
-        return redirect_user_on_success(user, original_url)
+        # Bounding the session is what makes a client role removed in the IdP stop
+        # applying: the next sign-in re-runs the syncs above.
+        refresh_lifetime = (
+            timedelta(minutes=config.session_lifetime_minutes)
+            if config.session_lifetime_minutes is not None
+            else None
+        )
+        return redirect_user_on_success(user, original_url, refresh_lifetime)

@@ -1,14 +1,18 @@
+from datetime import timedelta
 from urllib.parse import parse_qs, urlparse
 
+from django.conf import settings
 from django.core.cache import cache
 from django.test.utils import override_settings
 from django.urls import reverse
 
 import pytest
 import responses
+from freezegun import freeze_time
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from baserow.core.auth_provider.models import OIDCAuthProviderModel
-from baserow.core.sso.oidc.handler import SESSION_NONCE_KEY
+from baserow.core.sso.oidc.handler import SESSION_NONCE_KEY, SESSION_STATE_KEY
 from baserow.test_utils.oidc import FakeOIDCProvider
 
 
@@ -96,7 +100,8 @@ def _drive_callback(api_client, idp, responses_mock):
     nonce = api_client.session[SESSION_NONCE_KEY]
     idp.register_all(responses_mock, nonce=nonce)
     return api_client.get(
-        reverse("api:sso:oidc:callback", args=(idp.name,)) + "?code=the-code"
+        reverse("api:sso:oidc:callback", args=(idp.name,))
+        + f"?code=the-code&state={api_client.session[SESSION_STATE_KEY]}"
     )
 
 
@@ -142,3 +147,97 @@ def test_callback_signs_in_existing_user(api_client, data_fixture):
     assert "error=" not in response.headers["Location"]
     query = parse_qs(urlparse(response.headers["Location"]).query)
     assert "token" in query
+
+
+@responses.activate(assert_all_requests_are_fired=False)
+@pytest.mark.django_db
+def test_callback_with_a_mismatched_state_redirects_to_error(api_client):
+    idp = FakeOIDCProvider()
+    responses.add(responses.GET, idp.discovery_url, json=idp.discovery_document())
+
+    with override_settings(BASEROW_OIDC_PROVIDERS=[idp.config]):
+        api_client.get(reverse("api:sso:oidc:login", args=(idp.name,)))
+        idp.register_all(responses, nonce=api_client.session[SESSION_NONCE_KEY])
+        response = api_client.get(
+            reverse("api:sso:oidc:callback", args=(idp.name,))
+            + "?code=the-code&state=forged"
+        )
+
+    assert response.status_code == 302
+    assert "errorAuthFlowError" in response.headers["Location"]
+
+
+@responses.activate(assert_all_requests_are_fired=False)
+@pytest.mark.django_db
+def test_callback_refuses_an_unverified_email(api_client):
+    from django.contrib.auth import get_user_model
+
+    idp = FakeOIDCProvider(email="unverified@example.com")
+    responses.add(responses.GET, idp.discovery_url, json=idp.discovery_document())
+
+    with override_settings(BASEROW_OIDC_PROVIDERS=[idp.config]):
+        api_client.get(reverse("api:sso:oidc:login", args=(idp.name,)))
+        idp.register_all(
+            responses,
+            nonce=api_client.session[SESSION_NONCE_KEY],
+            userinfo_extra={"email_verified": False},
+        )
+        response = api_client.get(
+            reverse("api:sso:oidc:callback", args=(idp.name,))
+            + f"?code=the-code&state={api_client.session[SESSION_STATE_KEY]}"
+        )
+
+    assert response.status_code == 302
+    assert "errorEmailNotVerified" in response.headers["Location"]
+    assert not get_user_model().objects.filter(email="unverified@example.com").exists()
+
+
+def _refresh_token_lifetime(response):
+    token = parse_qs(urlparse(response.headers["Location"]).query)["token"][0]
+    refresh = RefreshToken(token)
+    return timedelta(seconds=refresh["exp"] - refresh["iat"])
+
+
+@responses.activate(assert_all_requests_are_fired=False)
+@pytest.mark.django_db
+def test_callback_bounds_the_session_to_the_provider_lifetime(api_client):
+    idp = FakeOIDCProvider(session_lifetime_minutes=30)
+
+    with override_settings(BASEROW_OIDC_PROVIDERS=[idp.config]):
+        response = _drive_callback(api_client, idp, responses)
+
+    assert _refresh_token_lifetime(response) == timedelta(minutes=30)
+
+
+@responses.activate(assert_all_requests_are_fired=False)
+@pytest.mark.django_db
+def test_callback_without_a_provider_lifetime_uses_the_global_one(api_client):
+    idp = FakeOIDCProvider(session_lifetime_minutes=None)
+
+    with override_settings(BASEROW_OIDC_PROVIDERS=[idp.config]):
+        response = _drive_callback(api_client, idp, responses)
+
+    assert _refresh_token_lifetime(response) == settings.REFRESH_TOKEN_LIFETIME
+
+
+@responses.activate(assert_all_requests_are_fired=False)
+@pytest.mark.django_db
+def test_sso_session_cannot_be_refreshed_past_its_lifetime(api_client):
+    idp = FakeOIDCProvider(session_lifetime_minutes=30)
+
+    with freeze_time("2026-01-01 09:00"):
+        with override_settings(BASEROW_OIDC_PROVIDERS=[idp.config]):
+            response = _drive_callback(api_client, idp, responses)
+        token = parse_qs(urlparse(response.headers["Location"]).query)["token"][0]
+
+    with freeze_time("2026-01-01 09:20"):
+        ok = api_client.post(
+            reverse("api:user:token_refresh"), {"refresh_token": token}, format="json"
+        )
+    with freeze_time("2026-01-01 09:31"):
+        expired = api_client.post(
+            reverse("api:user:token_refresh"), {"refresh_token": token}, format="json"
+        )
+
+    assert ok.status_code == 200
+    assert expired.status_code == 401

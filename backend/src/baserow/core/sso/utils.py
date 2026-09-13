@@ -6,6 +6,7 @@ FOSS OIDC login can reuse them. The license gate that used to guard SSO is gone:
 this fork SSO is always available.
 """
 
+from datetime import timedelta
 from enum import Enum
 from functools import wraps
 from typing import Callable, Dict, Optional, Type
@@ -31,6 +32,7 @@ class SsoErrorCode(Enum):
     GROUP_INVITATION_EMAIL_MISMATCH = "errorWorkspaceInvitationEmailMismatch"
     SIGNUP_DISABLED = "errorSignupDisabled"
     NO_MAPPED_ROLE = "errorNoMappedRole"
+    EMAIL_NOT_VERIFIED = "errorEmailNotVerified"
 
 
 class map_sso_exceptions:
@@ -116,13 +118,22 @@ def get_valid_frontend_url(requested_original_url: Optional[str] = None) -> str:
     return requested_parsed.geturl()
 
 
-def urlencode_user_tokens(frontend_url: str, user: AbstractUser) -> str:
+def urlencode_user_tokens(
+    frontend_url: str,
+    user: AbstractUser,
+    refresh_lifetime: Optional[timedelta] = None,
+) -> str:
     """
     Adds a fresh refresh token and signed user session as query parameters to the
     frontend url so the SPA can start an authenticated session.
+
+    :param refresh_lifetime: Optionally bounds the session to this lifetime instead of
+        the global `REFRESH_TOKEN_LIFETIME`.
     """
 
-    user_tokens = generate_session_tokens_for_user(user, include_refresh_token=True)
+    user_tokens = generate_session_tokens_for_user(
+        user, include_refresh_token=True, refresh_lifetime=refresh_lifetime
+    )
     refresh_token = user_tokens["refresh_token"]
     user_session = sign_user_session(user.id, refresh_token)
     return urlencode_query_params(
@@ -132,13 +143,18 @@ def urlencode_user_tokens(frontend_url: str, user: AbstractUser) -> str:
 
 
 def redirect_user_on_success(
-    user: AbstractUser, requested_original_url: Optional[str] = None
+    user: AbstractUser,
+    requested_original_url: Optional[str] = None,
+    refresh_lifetime: Optional[timedelta] = None,
 ) -> HttpResponse:
     """
     Redirects the freshly authenticated user to a valid frontend url, embedding the
     JWT refresh token so the SPA can start a new session.
+
+    :param refresh_lifetime: Optionally bounds the session to this lifetime instead of
+        the global `REFRESH_TOKEN_LIFETIME`.
     """
 
     valid_frontend_url = get_valid_frontend_url(requested_original_url)
-    redirect_url = urlencode_user_tokens(valid_frontend_url, user)
+    redirect_url = urlencode_user_tokens(valid_frontend_url, user, refresh_lifetime)
     return redirect(redirect_url)

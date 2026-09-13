@@ -38,6 +38,9 @@ CLIENT_ID_PLACEHOLDER = "${client_id}"
 # The workspace permissions an operator may map an IdP client role to.
 WORKSPACE_PERMISSIONS_ADMIN = "ADMIN"
 WORKSPACE_PERMISSIONS_MEMBER = "MEMBER"
+# A working day: client roles removed in the IdP stop applying within this window, since
+# the user has to sign in again (and be re-synced) once the session ends.
+DEFAULT_SESSION_LIFETIME_MINUTES = 8 * 60
 ALLOWED_WORKSPACE_PERMISSIONS = (
     WORKSPACE_PERMISSIONS_ADMIN,
     WORKSPACE_PERMISSIONS_MEMBER,
@@ -95,6 +98,13 @@ class OIDCProviderConfig:
     # When True, SSO-granted workspace memberships are revoked once the user loses the
     # mapped client role. Manually-added memberships are never touched.
     strict_membership: bool = False
+    # When True, a user whose `email_verified` claim is not true is refused, since the
+    # email is what links the identity to a Baserow account.
+    require_verified_email: bool = True
+    # How long a session started through this provider lasts before the user has to
+    # sign in again, which is also when their client roles are re-synced. None falls
+    # back to the global `REFRESH_TOKEN_LIFETIME`.
+    session_lifetime_minutes: Optional[int] = DEFAULT_SESSION_LIFETIME_MINUTES
 
     @property
     def syncs_global_roles(self) -> bool:
@@ -314,6 +324,27 @@ def _validate_provider(provider: Any, index: int) -> OIDCProviderConfig:
             f"BASEROW_OIDC_PROVIDERS[{index}]: 'strict_membership' must be a boolean."
         )
 
+    require_verified_email = provider.get("require_verified_email", True)
+    if not isinstance(require_verified_email, bool):
+        raise ImproperlyConfigured(
+            f"BASEROW_OIDC_PROVIDERS[{index}]: 'require_verified_email' must be a "
+            f"boolean."
+        )
+
+    session_lifetime_minutes = provider.get(
+        "session_lifetime_minutes", DEFAULT_SESSION_LIFETIME_MINUTES
+    )
+    # bool is a subclass of int; reject it explicitly.
+    if session_lifetime_minutes is not None and (
+        not isinstance(session_lifetime_minutes, int)
+        or isinstance(session_lifetime_minutes, bool)
+        or session_lifetime_minutes <= 0
+    ):
+        raise ImproperlyConfigured(
+            f"BASEROW_OIDC_PROVIDERS[{index}]: 'session_lifetime_minutes' must be a "
+            f"positive integer, or null to use the global refresh token lifetime."
+        )
+
     return OIDCProviderConfig(
         name=name,
         display_name=display_name.strip(),
@@ -328,6 +359,8 @@ def _validate_provider(provider: Any, index: int) -> OIDCProviderConfig:
         superuser_roles=superuser_roles,
         workspace_mappings=workspace_mappings,
         strict_membership=strict_membership,
+        require_verified_email=require_verified_email,
+        session_lifetime_minutes=session_lifetime_minutes,
     )
 
 

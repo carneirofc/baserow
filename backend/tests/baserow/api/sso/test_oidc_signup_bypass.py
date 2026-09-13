@@ -8,7 +8,7 @@ from django.urls import reverse
 import pytest
 import responses
 
-from baserow.core.sso.oidc.handler import SESSION_NONCE_KEY
+from baserow.core.sso.oidc.handler import SESSION_NONCE_KEY, SESSION_STATE_KEY
 from baserow.core.user.exceptions import DisabledSignupError
 from baserow.core.user.handler import UserHandler
 from baserow.test_utils.oidc import FakeOIDCProvider
@@ -31,7 +31,8 @@ def _drive_callback(api_client, idp, responses_mock):
     nonce = api_client.session[SESSION_NONCE_KEY]
     idp.register_all(responses_mock, nonce=nonce)
     return api_client.get(
-        reverse("api:sso:oidc:callback", args=(idp.name,)) + "?code=the-code"
+        reverse("api:sso:oidc:callback", args=(idp.name,))
+        + f"?code=the-code&state={api_client.session[SESSION_STATE_KEY]}"
     )
 
 

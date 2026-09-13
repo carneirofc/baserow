@@ -32,6 +32,8 @@ class FakeOIDCProvider:
     full_name: str = "Alice Example"
     # The client roles the user holds, emitted the way Keycloak does.
     client_roles: Optional[List[str]] = None
+    require_verified_email: bool = True
+    session_lifetime_minutes: Optional[int] = None
     private_key: rsa.RSAPrivateKey = field(default=None)
 
     def __post_init__(self):
@@ -50,6 +52,8 @@ class FakeOIDCProvider:
             client_secret=self.client_secret,
             scopes=["openid", "email", "profile"],
             roles_claim=f"resource_access.{self.client_id}.roles",
+            require_verified_email=self.require_verified_email,
+            session_lifetime_minutes=self.session_lifetime_minutes,
         )
 
     def role_claims(self) -> Dict[str, Any]:
@@ -130,6 +134,7 @@ class FakeOIDCProvider:
         data = {
             "sub": "user-subject-123",
             "email": self.email,
+            "email_verified": True,
             "name": self.full_name,
         }
         data.update(self.role_claims())

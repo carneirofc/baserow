@@ -36,7 +36,10 @@ In the realm you want Baserow to use:
    `<BASEROW_PUBLIC_URL>/api/sso/oidc/callback/<name>/`, where `<name>` is the provider
    `name` you will put in `BASEROW_OIDC_PROVIDERS` — for example
    `https://baserow.example.com/api/sso/oidc/callback/rhbk/`.
-5. Copy the secret from the client's **Credentials** tab.
+5. Under **Advanced → Advanced settings**, set **Proof Key for Code Exchange Code
+   Challenge Method** to `S256`. Baserow always sends a PKCE challenge; this makes
+   Keycloak refuse any code exchange that lacks one.
+6. Copy the secret from the client's **Credentials** tab.
 
 ## 2. Define the client roles
 
@@ -245,7 +248,16 @@ BASEROW_OIDC_PROVIDERS='[
 
     // Revoke the memberships this sync created once the user loses the client role
     // that granted them. Memberships added by hand are never touched.
-    "strict_membership": true
+    "strict_membership": true,
+
+    // How long a session started through Keycloak lasts before the user must sign in
+    // again, which is when role changes are applied. Default 480 (8 hours); null
+    // falls back to BASEROW_REFRESH_TOKEN_LIFETIME_HOURS.
+    "session_lifetime_minutes": 480,
+
+    // Refuse users whose email Keycloak has not verified (default true). The email is
+    // what links a Keycloak identity to a Baserow account.
+    "require_verified_email": true
   }
 ]'
 ```
@@ -285,18 +297,23 @@ Work through these in order, so a failure tells you which layer is wrong.
 
 ## How access is decided on each login
 
-1. Baserow reads the client roles from the ID token and the userinfo response and unions
+1. Baserow verifies the callback: the `state` and PKCE verifier must match the ones it
+   issued, the ID token's signature, issuer, audience, expiry and nonce must check out,
+   and the userinfo `sub` must equal the ID token's. With `require_verified_email` (the
+   default), a user whose `email_verified` claim is not `true` is refused with
+   `errorEmailNotVerified`.
+2. Baserow reads the client roles from the ID token and the userinfo response and unions
    them.
-2. If the provider maps any client role and the user holds none of them, the login is
+3. If the provider maps any client role and the user holds none of them, the login is
    refused with `errorNoMappedRole` — **before** any account is provisioned.
-3. `staff_roles` / `superuser_roles` are reconciled onto the user: granted when held,
+4. `staff_roles` / `superuser_roles` are reconciled onto the user: granted when held,
    revoked when not. Only the dimensions you configure are touched.
-4. Each matching workspace mapping is applied, as a `MEMBER` of that workspace. The sync
-   is authoritative for the workspaces it maps, writing both the membership level and the
-   granular role, so removing `role` from a mapping restores full member access on the
-   next login. What distinguishes one workspace profile from another is the granular role,
-   not the membership level.
-5. With `strict_membership: true`, memberships this sync previously created are revoked
+5. Each matching workspace mapping is applied with its `permissions` (`MEMBER` or
+   `ADMIN`) in that workspace. The sync is authoritative for the workspaces it maps,
+   writing both the membership level and the granular role, so removing `role` from a
+   mapping restores full member access on the next login. When two matching mappings
+   disagree about one workspace, `ADMIN` wins.
+6. With `strict_membership: true`, memberships this sync previously created are revoked
    once the user loses the mapped client role. Memberships added by hand are never
    tracked and never revoked.
 
@@ -306,7 +323,8 @@ never signs in through Keycloak is never modified.
 ## Day-to-day operations
 
 Everything below reconciles on the user's **next login**. Nothing in Keycloak reaches into
-a session that is already open.
+a session that is already open, but a session only lasts `session_lifetime_minutes`
+(8 hours by default), so every change applies within that window.
 
 ### Onboard someone
 
@@ -337,17 +355,23 @@ login — including revocation, so a demotion takes effect the next time they si
 
 ### Give a workspace an administrator
 
-SSO only ever grants `MEMBER`, so a workspace's own `ADMIN` never arrives from Keycloak.
-It is whoever created the workspace, or someone promoted by hand from the workspace's
-members list. Do not wait for a client role to produce one.
+The setup in this guide grants only `MEMBER`, so a workspace's own `ADMIN` is whoever
+created the workspace or someone promoted by hand from its members list.
+
+If you do want Keycloak to hand out workspace admin, map a client role with
+`"permissions": "ADMIN"` (see [Administrator means the whole
+instance](#administrator-means-the-whole-instance)). Such a mapping cannot carry a `role`,
+and revocation never removes a workspace's last admin, so keep a hand-promoted admin as
+well.
 
 ### Offboard someone
 
-Remove the client roles, or remove them from the group. With `strict_membership: true`
-the memberships this sync created are revoked the next time they log in.
+Remove the client roles, or remove them from the group. Their current session ends within
+`session_lifetime_minutes`; with `strict_membership: true` the memberships this sync
+created are revoked the next time they log in.
 
-> Removing a role does **not** end an active session, and a user who simply never logs in
-> again keeps the memberships they already have. To cut access immediately, disable or
+> Removing a role does **not** end an active session early, and a user who simply never
+> logs in again keeps the memberships they already have. To cut access immediately, disable or
 > delete the user in Keycloak, and deactivate the account from Baserow's admin area if
 > they must lose access to data they can already see.
 
@@ -406,6 +430,8 @@ toggle covers and how to set it through the API.
 
 | Symptom | Cause |
 | --- | --- |
+| Every login redirects to `/login?error=errorEmailNotVerified` | Keycloak reports `email_verified: false`. Verify the users' emails, enable **Trust Email** on an LDAP/AD federation provider, or set `require_verified_email: false` if the realm's addresses are authoritative. |
+| Every login redirects to `/login?error=errorAuthFlowError` after a Keycloak upgrade or client change | Check the backend log: a `state`, PKCE or `sub` mismatch means something is rewriting the callback URL or the client's PKCE method is not `S256`. |
 | Every login redirects to `/login?error=errorNoMappedRole` | The client-roles mapper is not enabled on the ID token *and* userinfo, or the user holds none of the mapped client roles. Check **Evaluate** (step 4). |
 | The user signs in but lands in no workspace | The client role in `workspace_mappings[].client_role` does not match the Keycloak role name exactly, or `workspace` points at an id that does not exist — the backend logs a warning naming it. |
 | The user is refused a workspace they should get | The mapping names a `role` that is not in the database. Declare it in `BASEROW_ROLES` and run `sync_roles`; Baserow fails closed rather than granting unrestricted access. |

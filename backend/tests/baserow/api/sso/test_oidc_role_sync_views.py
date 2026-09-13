@@ -9,7 +9,7 @@ import pytest
 import responses
 
 from baserow.core.sso.oidc.config import WorkspaceMapping
-from baserow.core.sso.oidc.handler import SESSION_NONCE_KEY
+from baserow.core.sso.oidc.handler import SESSION_NONCE_KEY, SESSION_STATE_KEY
 from baserow.test_utils.oidc import FakeOIDCProvider
 
 User = get_user_model()
@@ -30,7 +30,8 @@ def _drive_callback(api_client, idp, responses_mock):
     nonce = api_client.session[SESSION_NONCE_KEY]
     idp.register_all(responses_mock, nonce=nonce)
     return api_client.get(
-        reverse("api:sso:oidc:callback", args=(idp.name,)) + "?code=the-code"
+        reverse("api:sso:oidc:callback", args=(idp.name,))
+        + f"?code=the-code&state={api_client.session[SESSION_STATE_KEY]}"
     )
 
 
@@ -125,7 +126,8 @@ def test_roles_are_read_from_the_userinfo_endpoint(api_client):
         )
         idp.register_all(responses, id_token=id_token)
         response = api_client.get(
-            reverse("api:sso:oidc:callback", args=(idp.name,)) + "?code=the-code"
+            reverse("api:sso:oidc:callback", args=(idp.name,))
+            + f"?code=the-code&state={api_client.session[SESSION_STATE_KEY]}"
         )
 
     assert response.status_code == 302
