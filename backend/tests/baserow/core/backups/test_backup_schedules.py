@@ -22,44 +22,11 @@ def utc(*args):
     return datetime(*args, tzinfo=dt_timezone.utc)
 
 
-@pytest.mark.parametrize(
-    "cron,after,expected",
-    [
-        # Every night at 03:00.
-        ("0 3 * * *", utc(2026, 1, 1, 0, 0), utc(2026, 1, 1, 3, 0)),
-        ("0 3 * * *", utc(2026, 1, 1, 3, 0), utc(2026, 1, 2, 3, 0)),
-        ("0 3 * * *", utc(2026, 1, 1, 4, 0), utc(2026, 1, 2, 3, 0)),
-        # Every 15 minutes.
-        ("*/15 * * * *", utc(2026, 1, 1, 9, 7), utc(2026, 1, 1, 9, 15)),
-        ("*/15 * * * *", utc(2026, 1, 1, 9, 45), utc(2026, 1, 1, 10, 0)),
-        # Only on the first of the month.
-        ("30 2 1 * *", utc(2026, 1, 5, 0, 0), utc(2026, 2, 1, 2, 30)),
-        # Only on Mondays, cron counts weekdays from Sunday.
-        ("0 6 * * 1", utc(2026, 1, 1, 0, 0), utc(2026, 1, 5, 6, 0)),
-        # Only in June.
-        ("0 0 1 6 *", utc(2026, 7, 1, 0, 0), utc(2027, 6, 1, 0, 0)),
-    ],
-)
-def test_compute_next_run_on(cron, after, expected):
-    assert BackupScheduleHandler().compute_next_run_on(cron, "UTC", after) == expected
-
-
-def test_compute_next_run_on_respects_the_timezone():
-    handler = BackupScheduleHandler()
-
-    # 03:00 in Sao Paulo (UTC-3) is 06:00 UTC.
-    assert handler.compute_next_run_on(
-        "0 3 * * *", "America/Sao_Paulo", utc(2026, 1, 1, 0, 0)
-    ) == utc(2026, 1, 1, 6, 0)
-
-
-def test_compute_next_run_on_is_always_in_the_future():
-    handler = BackupScheduleHandler()
-    moment = utc(2026, 1, 1, 3, 0)
-
-    # Asking from exactly the due moment must move on to the next one, otherwise a
-    # schedule would keep firing on the same tick forever.
-    assert handler.compute_next_run_on("0 3 * * *", "UTC", moment) > moment
+def test_compute_next_run_on_delegates_to_the_cron_util():
+    # The cron computation itself is covered in `core/scheduling/test_cron.py`.
+    assert BackupScheduleHandler().compute_next_run_on(
+        "0 3 * * *", "UTC", utc(2026, 1, 1, 0, 0)
+    ) == utc(2026, 1, 1, 3, 0)
 
 
 @pytest.mark.parametrize(
