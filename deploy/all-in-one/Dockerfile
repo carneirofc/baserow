@@ -94,11 +94,18 @@ COPY --from=caddy_image /usr/bin/caddy /usr/bin/caddy
 # the recipe in web-frontend/Dockerfile's node-base stage rather than copying the
 # runtime out of the web-frontend image: that image's prod target deletes npm and
 # yarn to shed their CVEs, but the plugin scripts in deploy/plugins/ run
-# `yarn add`/`yarn remove` inside this image. Keep NODE_VERSION, the SHA256s and
-# YARN_VERSION in sync with web-frontend/Dockerfile.
+# `yarn add`/`yarn remove` inside this image. Keep NODE_VERSION, the SHA256s,
+# NPM_VERSION and YARN_VERSION in sync with web-frontend/Dockerfile.
+#
+# npm stays in this image (plugin install scripts may call it), so it is pinned
+# rather than left at the version bundled with Node: the bundled npm can ship
+# vulnerable copies of its own dependencies (tar, brace-expansion, ip-address),
+# which the release image CVE scan fails on. Raise NPM_VERSION when that scan
+# flags a package under /usr/local/lib/node_modules/npm.
 ENV NODE_VERSION=v24.21.0 \
     NODE_SHA256_amd64=fd8e59d5a511510f6a298afb548f18c7d2b1be404d8b4a27d94fbe49f56cb2d6 \
     NODE_SHA256_arm64=6ad1325edbdb5649c379b75a237147a666c95d4f9ae8d340fef2d1575d289ad2 \
+    NPM_VERSION=11.19.1 \
     YARN_VERSION=1.22.22
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
@@ -114,10 +121,11 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     tar -xJf /tmp/node.tar.xz -C /usr/local --strip-components=1 --no-same-owner \
     --exclude=CHANGELOG.md --exclude=LICENSE --exclude=README.md && \
     rm /tmp/node.tar.xz && \
+    npm install -g "npm@${NPM_VERSION}" && \
     npm install -g "yarn@${YARN_VERSION}" && \
     npm cache clean --force && \
     apt-get clean && rm -rf /var/lib/apt/lists/* && \
-    node --version && yarn --version
+    node --version && npm --version && yarn --version
 
 # Copy su-exec from backend image (already built with pinned version + SHA256 verification)
 COPY --from=backend_image /usr/local/bin/su-exec /usr/local/bin/su-exec

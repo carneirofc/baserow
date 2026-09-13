@@ -43,9 +43,13 @@ FROM ${NODE_BASE_IMAGE} AS node-base
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 ARG TARGETARCH
+# Keep NODE_VERSION, the SHA256s, NPM_VERSION and YARN_VERSION in sync with
+# deploy/all-in-one/Dockerfile. npm is pinned because the release bundled with
+# Node can carry vulnerable copies of its own dependencies (see deploy/AGENTS.md).
 ENV NODE_VERSION=v24.21.0 \
     NODE_SHA256_amd64=fd8e59d5a511510f6a298afb548f18c7d2b1be404d8b4a27d94fbe49f56cb2d6 \
     NODE_SHA256_arm64=6ad1325edbdb5649c379b75a237147a666c95d4f9ae8d340fef2d1575d289ad2 \
+    NPM_VERSION=11.19.1 \
     YARN_VERSION=1.22.22
 
 # Ubuntu drops /usr/bin/pebble into the base layer without a dpkg package
@@ -69,9 +73,10 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     tar -xJf /tmp/node.tar.xz -C /usr/local --strip-components=1 --no-same-owner \
     --exclude=CHANGELOG.md --exclude=LICENSE --exclude=README.md && \
     rm /tmp/node.tar.xz && \
+    npm install -g "npm@${NPM_VERSION}" && \
     npm install -g "yarn@${YARN_VERSION}" && \
     npm cache clean --force && \
-    node --version && yarn --version && \
+    node --version && npm --version && yarn --version && \
     rm -f /usr/bin/pebble && rm -rf /var/lib/pebble
 
 
