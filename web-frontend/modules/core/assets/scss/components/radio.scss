@@ -72,15 +72,15 @@
 }
 
 .radio__input input[type='radio']:checked + label {
-  @include fill-radio('#{$palette-blue-500}');
+  @include fill-radio($palette-blue-500);
 }
 
 .radio__input input[type='radio']:checked + label:hover {
-  @include fill-radio('#{$palette-blue-700}');
+  @include fill-radio($palette-blue-700);
 }
 
 .radio__input input[type='radio']:disabled:checked + label {
-  @include fill-radio('#{$palette-neutral-200}');
+  @include fill-radio($palette-neutral-200);
 }
 
 .radio__loading {

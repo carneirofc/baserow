@@ -5,7 +5,9 @@ import WorkspaceInvitationAcceptedNotification from '@baserow/modules/core/compo
 import WorkspaceInvitationRejectedNotification from '@baserow/modules/core/components/notifications/WorkspaceInvitationRejectedNotification'
 import BaserowVersionUpgradeNotification from '@baserow/modules/core/components/notifications/BaserowVersionUpgradeNotification'
 import NotificationImgIcon from '@baserow/modules/core/components/notifications/NotificationImgIcon'
-import BaserowIcon from '@baserow/modules/core/static/img/logoOnly.svg?url'
+
+// Served by the runtime branding assets route so it follows a custom logo.
+const BaserowIcon = '/_branding/assets/img/logoOnly.svg'
 
 export class NotificationType extends Registerable {
   getIconComponent() {

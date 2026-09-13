@@ -123,6 +123,13 @@ services:
     environment:
       BASEROW_PUBLIC_URL: ${BASEROW_PUBLIC_URL:-http://localhost}
       PRIVATE_BACKEND_URL: http://backend:8000
+      # Runtime branding (docs/installation/branding.md): no rebuild needed.
+      BASEROW_BRANDING_APP_NAME: ${BASEROW_BRANDING_APP_NAME:-}
+      BASEROW_BRANDING_COLORS: ${BASEROW_BRANDING_COLORS:-}
+    # To customize logos, colors, icons and CSS, mount a branding directory
+    # (start from deploy/branding-example) read-only at /baserow/branding:
+    # volumes:
+    #   - ./branding:/baserow/branding:ro
     depends_on:
       - backend
 

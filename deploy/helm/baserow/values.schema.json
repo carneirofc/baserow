@@ -182,10 +182,28 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "faviconBase64": { "type": "string" },
         "appName": { "type": "string" },
-        "logo": { "type": "string" },
-        "palette": { "type": "object" }
+        "colors": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        "fontFamily": { "type": "string" },
+        "messages": { "type": "object" },
+        "themeCss": { "type": "string" },
+        "files": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        "existingClaim": { "type": "string" },
+        "faviconBase64": { "type": "string" },
+        "logo": {
+          "type": "string",
+          "description": "Deprecated and ignored: use files[\"img/logo.svg\"]."
+        },
+        "palette": {
+          "type": "object",
+          "description": "Deprecated and ignored: use colors."
+        }
       }
     },
 

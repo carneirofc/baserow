@@ -269,18 +269,29 @@ extraEnv: {}
 # Branding / personalization
 # ---------------------------------------------------------------------------
 branding:
-  # Runtime override: base64-encoded favicon (.ico/.png) mounted over the
-  # web-frontend favicon. Leave empty to keep the default.
+  # Runtime web-frontend branding, applied without rebuilding the image; see
+  # docs/installation/branding.md. Everything is optional and rendered into a
+  # ConfigMap mounted at /baserow/branding.
+  appName: ""
+  # Color token overrides, keyed by the palette-*/color-* tokens of
+  # web-frontend/modules/core/assets/scss/colors.scss, e.g.
+  #   colors: {"color-primary-500": "#0f766e"}
+  colors: {}
+  # CSS font-family for the whole UI, e.g. "'Roboto', sans-serif".
+  fontFamily: ""
+  # Translation overrides per locale, e.g. {en: {"some.key": "Text"}}.
+  messages: {}
+  # Extra CSS appended after the built-in styles.
+  themeCss: ""
+  # Image, icon and font overrides as base64, keyed by their path inside the
+  # branding directory, e.g. {"img/logo.svg": "<base64>"}. A ConfigMap holds at
+  # most ~1 MiB; mount a volume with existingClaim for larger asset sets.
+  files: {}
+  # Mount this PersistentVolumeClaim (holding a complete branding directory) at
+  # /baserow/branding instead of rendering the values above.
+  existingClaim: ""
+  # Base64-encoded favicon (.ico), also mounted over the served /favicon.ico.
   faviconBase64: ""
-  # The following are BUILD-TIME only in Baserow FOSS (compiled into the image)
-  # and cannot be changed at deploy time. To customise, rebuild the fork image
-  # and point image.*.tag at it. Pointers for the rebuild:
-  #   appName -> web-frontend app title strings / i18n
-  #   logo    -> web-frontend/modules/core/components/Logo.vue
-  #   palette -> web-frontend/modules/core/assets/scss/colors.scss ($palette-*)
-  appName: "" # documentation only; not applied at runtime
-  logo: "" # documentation only; not applied at runtime
-  palette: {} # documentation only; not applied at runtime
 
 # ---------------------------------------------------------------------------
 # Pod hardening (restricted-v2 friendly). Do NOT set runAsUser/fsGroup here on

@@ -102,12 +102,23 @@ your storage class supports ReadWriteMany. Outside OpenShift nothing assigns an
 
 ## Personalization
 
-- **Favicon (runtime):** set `branding.faviconBase64` to the base64 of your
-  `.ico`; it is mounted over the served favicon. No rebuild needed.
-- **App name, logo, color palette (build-time):** these are compiled into the
-  web-frontend image and cannot be changed at deploy time. Rebuild the fork image
-  (`Logo.vue`, `colors.scss` `$palette-*`, app title strings) and point
-  `image.webFrontend.tag` / `image.backend.tag` at it.
+All personalization is applied at runtime; no image rebuild is needed. See
+`docs/installation/branding.md` for the full reference.
+
+- **App name, colors, font, translations, CSS:** set `branding.appName`,
+  `branding.colors` (palette/color token overrides), `branding.fontFamily`,
+  `branding.messages` and `branding.themeCss`.
+- **Logo, favicons, icons, fonts:** put their base64 content in
+  `branding.files`, keyed by path inside the branding directory. For example,
+  `img/logo.svg`, `img/favicon_32.png` or `icons/formula.svg`.
+- **Favicon.ico:** `branding.faviconBase64` is also mounted over the served
+  `/favicon.ico`.
+- **Large asset sets:** a ConfigMap holds at most about 1 MiB. Instead, set
+  `branding.existingClaim` to a PersistentVolumeClaim that holds a complete
+  branding directory.
+
+The values are rendered into a ConfigMap mounted read-only at
+`/baserow/branding` in the web-frontend pod. Changing them rolls the pod.
 
 ## Secrets
 

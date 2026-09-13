@@ -55,6 +55,12 @@ spec:
             {{- toYaml .Values.resources.webFrontend | nindent 12 }}
           volumeMounts:
             {{- include "baserow.tmpVolumeMounts" . | nindent 12 }}
+            {{- if or .Values.branding.existingClaim (include "baserow.branding.inline" .) }}
+            # Runtime branding directory, read by the web-frontend server.
+            - name: branding
+              mountPath: /baserow/branding
+              readOnly: true
+            {{- end }}
             {{- if .Values.branding.faviconBase64 }}
             - name: favicon
               mountPath: /baserow/web-frontend/.output/public/favicon.ico
@@ -63,10 +69,34 @@ spec:
             {{- end }}
       volumes:
         {{- include "baserow.tmpVolumes" . | nindent 8 }}
+        {{- if .Values.branding.existingClaim }}
+        - name: branding
+          persistentVolumeClaim:
+            claimName: {{ .Values.branding.existingClaim }}
+            readOnly: true
+        {{- else if include "baserow.branding.inline" . }}
+        - name: branding
+          configMap:
+            name: {{ include "baserow.fullname" . }}-branding
+            items:
+              - key: branding.json
+                path: branding.json
+              {{- if .Values.branding.themeCss }}
+              - key: theme.css
+                path: theme.css
+              {{- end }}
+              {{- range $path, $_ := .Values.branding.files }}
+              - key: {{ $path | replace "/" "__" }}
+                path: {{ $path }}
+              {{- end }}
+        {{- end }}
         {{- if .Values.branding.faviconBase64 }}
         - name: favicon
           configMap:
-            name: {{ include "baserow.fullname" . }}-favicon
+            name: {{ include "baserow.fullname" . }}-branding
+            items:
+              - key: favicon.ico
+                path: favicon.ico
         {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:

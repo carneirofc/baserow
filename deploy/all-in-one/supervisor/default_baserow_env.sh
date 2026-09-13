@@ -8,6 +8,8 @@ set -euo pipefail
 export DOCKER_USER=${DOCKER_USER:-baserow_docker_user}
 export DATA_DIR=${DATA_DIR:-/baserow/data}
 export BASEROW_PLUGIN_DIR=${BASEROW_PLUGIN_DIR:-$DATA_DIR/plugins}
+# Runtime web-frontend branding (docs/installation/branding.md).
+export BASEROW_BRANDING_DIR=${BASEROW_BRANDING_DIR:-$DATA_DIR/branding}
 
 export BASEROW_AMOUNT_OF_WORKERS=${BASEROW_AMOUNT_OF_WORKERS:-1}
 export BASEROW_AMOUNT_OF_GUNICORN_WORKERS=${BASEROW_AMOUNT_OF_GUNICORN_WORKERS:-3}

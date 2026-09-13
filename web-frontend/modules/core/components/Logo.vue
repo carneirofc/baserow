@@ -2,11 +2,7 @@
   <component :is="getComponent()" v-if="getComponent()"></component>
   <template v-else>
     <div class="logo">
-      <img
-        src="@baserow/modules/core/static/img/logo.svg?url"
-        v-bind="$attrs"
-        :class="[$attrs.class]"
-      />
+      <img :src="logoUrl" v-bind="$attrs" :class="[$attrs.class]" />
     </div>
   </template>
 </template>
@@ -14,6 +10,14 @@
 <script>
 export default {
   name: 'Logo',
+  data() {
+    return {
+      // Served by the runtime branding assets route, so it can be replaced by
+      // putting img/logo.svg in the branding directory. Bound (not a static
+      // `src`) so the template compiler doesn't turn it into a build import.
+      logoUrl: '/_branding/assets/img/logo.svg',
+    }
+  },
   methods: {
     getComponent() {
       return (

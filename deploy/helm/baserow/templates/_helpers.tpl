@@ -130,8 +130,8 @@ anyway, so they are not a reason to restart.
 */}}
 {{- define "baserow.podAnnotations" -}}
 checksum/config: {{ include (print $.Template.BasePath "/configmap-env.yaml") . | sha256sum }}
-{{- if .Values.branding.faviconBase64 }}
-checksum/favicon: {{ include (print $.Template.BasePath "/configmap-favicon.yaml") . | sha256sum }}
+{{- if or .Values.branding.faviconBase64 (include "baserow.branding.inline" .) }}
+checksum/branding: {{ include (print $.Template.BasePath "/configmap-branding.yaml") . | sha256sum }}
 {{- end }}
 checksum/secret: {{ list .Values.secrets.existingSecret
                         .Values.secrets.secretKey
@@ -309,4 +309,13 @@ redis-password
   mountPath: /tmp
 - name: dshm
   mountPath: /dev/shm
+{{- end -}}
+
+{{/*
+Whether any inline runtime branding value is set (branding.json, theme.css or
+files); see templates/configmap-branding.yaml.
+*/}}
+{{- define "baserow.branding.inline" -}}
+{{- $b := .Values.branding -}}
+{{- if or $b.appName $b.colors $b.fontFamily $b.messages $b.themeCss $b.files -}}true{{- end -}}
 {{- end -}}

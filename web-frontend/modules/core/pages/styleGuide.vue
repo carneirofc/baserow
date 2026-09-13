@@ -2061,7 +2061,6 @@
 
 <script>
 import Toasts from '@baserow/modules/core/components/toasts/Toasts'
-import BaserowIcon from '@baserow/modules/core/static/img/logoOnly.svg?url'
 import ColorPickerContext from '@baserow/modules/core/components/ColorPickerContext.vue'
 import ColorPicker from '@baserow/modules/core/components/ColorPicker.vue'
 import Paginator from '@baserow/modules/core/components/Paginator.vue'
@@ -2087,7 +2086,7 @@ export default {
       longDropdown: '0',
       date: '',
       formula: 'concat(field("Text"), field("Text"))',
-      image: BaserowIcon,
+      image: '/_branding/assets/img/logoOnly.svg',
       input: '',
       color: 'primary',
       colorVariables: [

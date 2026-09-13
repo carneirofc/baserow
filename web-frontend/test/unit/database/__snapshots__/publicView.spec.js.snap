@@ -59,7 +59,7 @@ exports[`Public View Page Tests > Can see a publicly shared grid view 1`] = `
                   alt="Baserow - open source no-code database tool and Airtable alternative"
                   class=""
                   height="14"
-                  src="/modules/core/static/img/logo.svg"
+                  src="/_branding/assets/img/logo.svg"
                 />
               </div>
             </a>
