@@ -105,6 +105,28 @@ export class BasicPermissionManagerType extends PermissionManagerType {
   }
 }
 
+/**
+ * Mirrors the backend `granular_role` manager: a member with a custom role may only
+ * perform the role-controllable operations that role allows. Everything else, and
+ * everyone without a role, is left to the other managers.
+ */
+export class GranularRolePermissionManagerType extends PermissionManagerType {
+  static getType() {
+    return 'granular_role'
+  }
+
+  hasPermission(permissions, operation, context, workspaceId) {
+    if (
+      !permissions ||
+      permissions.allowed_operations === null ||
+      !permissions.controllable_operations.includes(operation)
+    ) {
+      return null
+    }
+    return permissions.allowed_operations.includes(operation)
+  }
+}
+
 export class StaffOnlySettingOperationPermissionManagerType extends PermissionManagerType {
   static getType() {
     return 'setting_operation'
