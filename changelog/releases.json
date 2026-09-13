@@ -1,6 +1,10 @@
 {
     "releases": [
         {
+            "name": "v0.6.0",
+            "created_at": "2026-09-13"
+        },
+        {
             "name": "v0.5.2",
             "created_at": "2026-09-11"
         },

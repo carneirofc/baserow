@@ -1,5 +1,15 @@
 # Changelog
 
+## Released v0.6.0
+
+### New features
+* [Core] Add a CVE gate: `just audit` and CI scan all lockfiles and images with Trivy and fail on fixable HIGH/CRITICAL vulnerabilities.
+* [Core] Customize the app name, colors, font, logos, favicons, icons, translations and CSS at runtime from a mounted branding directory, without rebuilding the frontend.
+
+### Refactors
+* [Core] Upgrade backend, frontend, e2e, email compiler and Zapier dependencies, Node 24.21, Go 1.26.8 and Caddy's bundled Go modules, fixing all fixable HIGH/CRITICAL CVEs.
+
+
 ## Released v0.5.2
 
 ### New features
