@@ -31,7 +31,7 @@ Owns everything under `web-frontend/`: `modules/` (feature code), `test/`, `stor
 - Run frontend tasks via `just frontend <recipe>` (aliases `just f …`): `check`/`lint`, `fix`/`format`, `test`, `run-dev-server`, `storybook`, `build-nuxt`.
 - Lint/format is **eslint** + **stylelint** (`eslint.config.mjs`, `stylelint.config.mjs`).
 - Tests are **Vitest** (Vue Test Utils / TestApp); update snapshots with `just frontend update-snapshots` only when intended.
-- Prefer the `write-frontend-unit-test` skill; UI element work is covered by `add-update-builder-element-type` and `create-in-app-notification`.
+- Prefer the `write-frontend-unit-test` skill; UI element work is covered by `add-update-builder-element-type` and `create-in-app-notification`. Locate files to change first with `find-change-candidates`.
 - Add a changelog entry for user-facing changes (`just changelog add`).
 
 ## Verification

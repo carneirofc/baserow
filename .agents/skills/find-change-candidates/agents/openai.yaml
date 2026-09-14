@@ -1,0 +1,4 @@
+interface:
+  display_name: "Find Change Candidates"
+  short_description: "Locate Baserow files likely to change for a task"
+  default_prompt: "Use $find-change-candidates to list the files that need to change for this task before planning or editing."
