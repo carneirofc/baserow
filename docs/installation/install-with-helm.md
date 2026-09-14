@@ -230,6 +230,7 @@ extraEnv:
 ```
 
 Single sign-on and RBAC are configured this way; see
+[Single sign-on with OpenID Connect](sso-oidc.md#helm),
 [SSO with Keycloak/RHBK](sso-rhbk-keycloak.md) and
 [Configuration](configuration.md) for the full environment variable list.
 

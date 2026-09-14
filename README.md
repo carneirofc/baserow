@@ -59,58 +59,54 @@ stripped-down core.
 
 Enterprise SSO/SAML was deleted with `enterprise/`, but this fork reintroduces
 single sign-on as a small, self-contained OIDC implementation configured entirely
-through environment variables — no admin UI, no database provider rows to manage. It is
-the source of truth and is validated at startup, so a bad configuration fails fast.
+through environment variables — no admin UI, no database provider rows to manage. It
+works with any OpenID Connect provider (Keycloak/RHBK, Authentik, Zitadel, Entra ID,
+Okta, …) and is validated at startup, so a bad configuration fails fast.
 
-All access is derived from the IdP's **client roles**: which of them make someone a
-Baserow admin, which put them in a workspace, and what they may do once there. See
-[the RHBK/Keycloak guide](docs/installation/sso-rhbk-keycloak.md) for the realm setup.
+All access is derived from **roles in the IdP's token**: which of them make someone a
+Baserow staff/superuser, which put them in a workspace as `ADMIN` or `MEMBER`, and which
+granular operations they may perform there.
 
-* `BASEROW_OIDC_PROVIDERS` — a JSON list of providers. Each provider carries its
-  `issuer`, `client_id`/`client_secret`, and optional claim overrides. `roles_claim`
-  defaults to Keycloak's own `resource_access.${client_id}.roles`.
-* **Client role → global role mapping** — `staff_roles` and `superuser_roles` grant
-  Baserow global staff / superuser to holders of the named client roles.
-* **Client role → workspace membership mapping** — `workspace_mappings` places users into
-  specific workspaces with `ADMIN` or `MEMBER` permissions, and can name a `role`
-  declared in `BASEROW_ROLES` to restrict them to that role's operations.
-* **Deny by default** — a provider that maps any client role refuses to sign in (and
-  refuses to provision) a user holding none of them.
-* **Strict membership** — with `strict_membership: true`, SSO-granted workspace
-  memberships are revoked when the user loses the mapped client role. Memberships added
-  manually are never touched.
-* **`BASEROW_ROLES`** — a JSON list declaring per-workspace roles and the operations they
-  grant, reconciled into the database after every migrate and by `sync_roles`.
-* **`BASEROW_OIDC_ONLY`** — makes the instance OIDC-only for normal users: password
-  signup and password login are refused, while a staff/superuser **break-glass admin**
-  can still log in with a password so you can never lock yourself out.
-* **Auto-provisioning** — SSO users are created on first login even when open signups
-  are disabled.
+* **`BASEROW_OIDC_PROVIDERS`** — a JSON list of providers: `issuer`, `client_id` /
+  `client_secret`, claim overrides and the role mappings below.
+* **Global roles** — `superuser_roles` and `staff_roles`, reconciled on every login.
+* **Workspace memberships** — `workspace_mappings` grants `ADMIN` or `MEMBER` in a
+  workspace, optionally restricted to a granular role.
+* **Granular roles** — `BASEROW_ROLES` declares per-workspace roles built from 35
+  create/read/update/delete operations on tables, fields, rows, views, builder pages and
+  elements, automation workflows and nodes, and the workspace itself.
+* **Deny by default** — a provider that maps any role refuses (and never provisions) a
+  user holding none of them.
+* **Strict membership** — optionally revoke SSO-granted memberships when the role is gone;
+  hand-added memberships are never touched.
+* **`BASEROW_OIDC_ONLY`** — password signup and login off for normal users, with a
+  staff **break-glass** password login so an IdP outage cannot lock you out.
+* **Auto-provisioning** — SSO users are created on first login even with signups disabled.
 
-A minimal single-provider example:
-
-```jsonc
-BASEROW_OIDC_PROVIDERS='[
-  {
-    "name": "rhbk",
-    "display_name": "Company SSO",
-    "issuer": "https://idp.example.com/realms/main",
-    "client_id": "baserow",
-    "client_secret": "…",
-    "staff_roles": ["baserow-admins"],
-    "workspace_mappings": [
-      { "client_role": "engineering", "workspace": 1, "permissions": "MEMBER" },
-      { "client_role": "analysts", "workspace": 1, "permissions": "MEMBER",
-        "role": "Reader" }
-    ],
-    "strict_membership": true
-  }
-]'
-
-BASEROW_ROLES='[
-  { "workspace": 1, "name": "Reader", "operations": ["database.table.read"] }
-]'
+```json
+BASEROW_OIDC_PROVIDERS='[{
+  "name": "rhbk",
+  "display_name": "Company SSO",
+  "issuer": "https://keycloak.example.com/realms/main",
+  "client_id": "baserow",
+  "client_secret": "change-me",
+  "staff_roles": ["baserow-staff"],
+  "workspace_mappings": [
+    { "client_role": "eng", "workspace": 1, "permissions": "MEMBER" },
+    { "client_role": "eng-readonly", "workspace": 1, "permissions": "MEMBER", "role": "Reader" }
+  ],
+  "strict_membership": true
+}]'
+BASEROW_ROLES='[{ "workspace": 1, "name": "Reader",
+  "operations": ["workspace.read", "database.table.read", "database.table.field.read",
+                 "database.table.read_row", "database.table.view.read"] }]'
 ```
+
+**Full guide: [Single sign-on with OpenID Connect](docs/installation/sso-oidc.md)** —
+every provider key, all roles and operations, the login decision flow, a complete
+multi-provider example, Docker/Compose/Helm wiring, RHBK/Keycloak setup, error codes and
+troubleshooting. A step-by-step Keycloak walkthrough lives in
+[the RHBK/Keycloak guide](docs/installation/sso-rhbk-keycloak.md).
 
 ### Per-application-type admin feature flags
 
@@ -160,7 +156,8 @@ Redis, uploads) inside the `baserow_data` volume.
 * Pin a specific release instead of `latest` with a version tag, e.g.
   `ghcr.io/carneirofc/baserow/baserow:0.8.0`.
 * To enable SSO, pass the `BASEROW_OIDC_PROVIDERS` (and optionally `BASEROW_ROLES` and
-  `BASEROW_OIDC_ONLY`) environment variables shown above.
+  `BASEROW_OIDC_ONLY`) environment variables — see
+  [Passing the configuration to Baserow](docs/installation/sso-oidc.md#passing-the-configuration-to-baserow).
 
 Images are published automatically by the
 [`build-publish-image`](.github/workflows/build-publish-image.yml) GitHub Actions

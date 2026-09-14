@@ -12,6 +12,10 @@ users.
 It applies equally to upstream Keycloak and the Red Hat build (RHBK); the admin console
 paths are the same.
 
+For the provider-agnostic reference — every configuration key, all roles and operations,
+a complete multi-provider example and the login error codes — see
+[Single sign-on with OpenID Connect](sso-oidc.md).
+
 ## What this guide assumes
 
 Deploying Keycloak itself is out of scope. Before you start you need:
@@ -267,7 +271,8 @@ BASEROW_OIDC_PROVIDERS='[
 `client_id`. Override it to read realm roles (`realm_access.roles`) or a custom mapper's
 claim instead. A literal dot inside a claim name is escaped as `\.`.
 
-The full key reference lives in [configuration.md](configuration.md).
+The full key reference, and every operation a `BASEROW_ROLES` entry can grant, lives in
+[Single sign-on with OpenID Connect](sso-oidc.md).
 
 > `BASEROW_OIDC_PROVIDERS` and `BASEROW_ROLES` are parsed and validated once, at startup.
 > **Every change to either needs a backend restart** before it takes effect, and an
