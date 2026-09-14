@@ -110,10 +110,31 @@ troubleshooting. A step-by-step Keycloak walkthrough lives in
 
 ### Per-application-type admin feature flags
 
-The instance settings gain `enable_database`, `enable_builder`, `enable_automation` and
-`enable_dashboard` toggles (all on by default), settable from the admin settings page.
-Disabling a type hides it from the create-application menu and rejects creation of new
-applications of that type; existing applications remain accessible.
+An instance administrator can switch whole application types off — databases, the
+application builder, dashboards and automations — for everyone on the instance.
+
+* **Four toggles** — `enable_database`, `enable_builder`, `enable_dashboard` and
+  `enable_automation`, all on by default. Only global staff can change them; a
+  workspace ADMIN cannot.
+* **Admin UI or API** — flip them under **Admin → Settings → Application features**, or
+  send `PATCH /api/settings/update/` as a staff user.
+* **Refused everywhere** — a disabled type is gone from the **Create new** menu, creating
+  one returns `400 ERROR_APPLICATION_TYPE_DISABLED`, and existing applications of that
+  type are hidden from listings and denied on every request (including published builder
+  pages and database API tokens).
+* **Nothing is deleted** — the data stays in place, and enabling the type again brings
+  every application back exactly as it was.
+* **No redeploy** — these are database-backed settings, not environment variables, and
+  take effect on the next request.
+
+```jsonc
+// PATCH /api/settings/update/  (Authorization: JWT <staff token>)
+{ "enable_builder": false, "enable_dashboard": false, "enable_automation": false }
+```
+
+**Full guide: [Turning application types off instance-wide](docs/installation/instance-settings.md)** —
+what each toggle blocks, the admin page and API, scripting the settings after an
+install, and a worked database-only example.
 
 ## Telemetry
 

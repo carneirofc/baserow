@@ -63,6 +63,35 @@ These are database-backed settings, not environment variables. They are stored o
 single `Settings` row, survive restarts, and are shared by every backend and worker
 process — there is nothing to redeploy after changing one.
 
+They are also unrelated to the developer `FEATURE_FLAGS` environment variable described
+in [Feature flags](../development/feature-flags.md), which gates unfinished features in
+development builds.
+
+## Scripting the settings after an install
+
+Because the toggles live in the database, a Docker Compose or Helm deployment cannot set
+them through its environment. Apply them once the instance is up, with a staff account:
+
+```bash
+BASEROW=https://baserow.example.com
+
+TOKEN=$(curl -s -X POST "$BASEROW/api/user/token-auth/" \
+  -H 'Content-Type: application/json' \
+  -d '{"email": "admin@example.com", "password": "change-me"}' \
+  | jq -r .access_token)
+
+curl -s -X PATCH "$BASEROW/api/settings/update/" \
+  -H "Authorization: JWT $TOKEN" \
+  -H 'Content-Type: application/json' \
+  -d '{"enable_builder": false, "enable_dashboard": false, "enable_automation": false}'
+```
+
+The call is idempotent, so it is safe to run from a post-install job on every deploy. If
+the account has two-factor authentication enabled, `token-auth` returns a two-factor
+challenge instead of an `access_token`; use a dedicated staff account without it. With
+`BASEROW_OIDC_ONLY` set, password login still works for staff accounts (the break-glass
+login), so the same script applies.
+
 ## Worked example: a database-only instance
 
 An instance that exists to hold structured data, with the builder, dashboards and
@@ -83,5 +112,7 @@ applications hidden in step 4.
 
 * [Configuring Baserow](configuration.md) — environment variables, including the ones
   that must be set before startup.
+* [Single sign-on with OpenID Connect](sso-oidc.md) — granting the global staff role
+  that can change these settings from your IdP's roles.
 * [Single sign-on with RHBK/Keycloak](sso-rhbk-keycloak.md) — driving instance and
   workspace access from Keycloak client roles.
