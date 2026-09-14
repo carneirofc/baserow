@@ -20,13 +20,20 @@ from baserow.api.schemas import (
 )
 from baserow.api.trash.errors import ERROR_CANNOT_DELETE_ALREADY_DELETED_ITEM
 from baserow.contrib.database.api.fields.errors import (
+    ERROR_FIELD_NOT_IN_TABLE,
+    ERROR_INCOMPATIBLE_FIELD,
     ERROR_INVALID_BASEROW_FIELD_NAME,
     ERROR_MAX_FIELD_COUNT_EXCEEDED,
     ERROR_MAX_FIELD_NAME_LENGTH_EXCEEDED,
     ERROR_RESERVED_BASEROW_FIELD_NAME,
 )
+from baserow.contrib.database.api.rows.errors import (
+    ERROR_CANNOT_CREATE_ROWS_IN_TABLE,
+)
 from baserow.contrib.database.api.tokens.authentications import TokenAuthentication
 from baserow.contrib.database.fields.exceptions import (
+    FieldNotInTable,
+    IncompatibleField,
     InvalidBaserowFieldName,
     MaxFieldLimitExceeded,
     MaxFieldNameLengthExceeded,
@@ -38,6 +45,8 @@ from baserow.contrib.database.operations import (
     CreateTableDatabaseTableOperationType,
     ListTablesDatabaseTableOperationType,
 )
+from baserow.contrib.database.rows.exceptions import CannotCreateRowsInTable
+from baserow.contrib.database.rows.import_preview import TableImportPreviewHandler
 from baserow.contrib.database.table.actions import (
     CreateTableActionType,
     DeleteTableActionType,
@@ -79,6 +88,8 @@ from .errors import (
 from .serializers import (
     OrderTablesSerializer,
     TableCreateSerializer,
+    TableImportPreviewResponseSerializer,
+    TableImportPreviewSerializer,
     TableImportSerializer,
     TableSerializer,
     TableUpdateSerializer,
@@ -576,6 +587,66 @@ class AsyncTableImportView(APIView):
 
         serializer = job_type_registry.get_serializer(file_import_job, JobSerializer)
         return Response(serializer.data)
+
+
+class TableImportPreviewView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="table_id",
+                location=OpenApiParameter.PATH,
+                type=OpenApiTypes.INT,
+                description="The table the data would be imported into.",
+            ),
+        ],
+        tags=["Database tables"],
+        operation_id="preview_import_table",
+        description=(
+            "Computes what importing the provided data into the table would change, "
+            "without changing anything: the rows that would be created, updated "
+            "(with the changed fields), left unchanged, trashed and skipped, and the "
+            "match keys that are ambiguous. It accepts the same body as the "
+            "asynchronous import endpoint."
+        ),
+        request=TableImportPreviewSerializer,
+        responses={
+            200: TableImportPreviewResponseSerializer,
+            400: get_error_schema(
+                [
+                    "ERROR_USER_NOT_IN_GROUP",
+                    "ERROR_REQUEST_BODY_VALIDATION",
+                    "ERROR_FIELD_NOT_IN_TABLE",
+                    "ERROR_INCOMPATIBLE_FIELD",
+                    "ERROR_CANNOT_CREATE_ROWS_IN_TABLE",
+                ]
+            ),
+            404: get_error_schema(["ERROR_TABLE_DOES_NOT_EXIST"]),
+        },
+    )
+    @map_exceptions(
+        {
+            TableDoesNotExist: ERROR_TABLE_DOES_NOT_EXIST,
+            UserNotInWorkspace: ERROR_USER_NOT_IN_GROUP,
+            FieldNotInTable: ERROR_FIELD_NOT_IN_TABLE,
+            IncompatibleField: ERROR_INCOMPATIBLE_FIELD,
+            CannotCreateRowsInTable: ERROR_CANNOT_CREATE_ROWS_IN_TABLE,
+        }
+    )
+    @validate_body(TableImportPreviewSerializer)
+    def post(self, request, data, table_id):
+        """Preview the changes of an import into an existing table."""
+
+        table = TableHandler().get_table(table_id)
+        preview = TableImportPreviewHandler().preview(
+            request.user,
+            table,
+            data["data"],
+            configuration=data.get("configuration"),
+            sample_size=data["sample_size"],
+        )
+        return Response(TableImportPreviewResponseSerializer(preview).data)
 
 
 class OrderTablesView(APIView):

@@ -1,5 +1,6 @@
 from django.urls import include, path
 
+from .access import urls as access_urls
 from .data_export import urls as data_export_urls
 from .data_sync import urls as data_sync_urls
 from .export import urls as export_urls
@@ -15,6 +16,7 @@ from .webhooks import urls as webhook_urls
 app_name = "baserow.contrib.database.api"
 
 urlpatterns = [
+    path("access/", include(access_urls, namespace="access")),
     path("tables/", include(table_urls, namespace="tables")),
     path("views/", include(view_urls, namespace="views")),
     path("fields/", include(field_urls, namespace="fields")),

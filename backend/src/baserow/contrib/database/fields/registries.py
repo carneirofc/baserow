@@ -2112,6 +2112,35 @@ class FieldType(
 
         return value1 == value2
 
+    def are_import_values_equal(self, existing_value: Any, prepared_value: Any) -> bool:
+        """
+        Determines if an imported value would change an existing row. Used by the
+        file import to skip rows that wouldn't change and to preview changes.
+
+        :param existing_value: The current value of the row, as returned by
+            `get_internal_value_from_db`.
+        :param prepared_value: The imported value, as returned by
+            `prepare_value_for_db`.
+        :return: True if writing the prepared value wouldn't change the row.
+        """
+
+        def normalize(value):
+            if isinstance(value, Model):
+                return value.pk
+            if isinstance(value, (list, tuple)):
+                return [normalize(v) for v in value]
+            return value
+
+        existing_value = normalize(existing_value)
+        prepared_value = normalize(prepared_value)
+
+        empty_values = (None, "", [])
+        if existing_value in empty_values and prepared_value in empty_values:
+            return True
+        if existing_value in empty_values or prepared_value in empty_values:
+            return False
+        return self.are_row_values_equal(existing_value, prepared_value)
+
     def parse_filter_value(
         self, field: "Field", model_field: DjangoField, value: str
     ) -> Any:

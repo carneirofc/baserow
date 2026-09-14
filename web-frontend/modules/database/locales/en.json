@@ -103,9 +103,42 @@
   "sidebar": {
     "viewAPI": "View API Docs",
     "datalakeExports": "Datalake exports",
+    "manageAccess": "Manage access",
     "createTable": "New table"
   },
+  "databaseAccessModal": {
+    "title": "Access to {name}",
+    "workspaceTitle": "Default access in {name}",
+    "description": "Workspace admins always have full access. Members and teams without a level here inherit it from the database or the workspace default.",
+    "subject": "Member or team",
+    "level": "Access",
+    "team": "Team",
+    "admin": "Admin",
+    "inherit": "Inherit",
+    "inheritedFrom": "Inherits {level} from {scope}",
+    "inheritsFullAccess": "Inherits full member access",
+    "scopes": {
+      "workspace": "workspace",
+      "database": "database",
+      "table": "table"
+    },
+    "levels": {
+      "none": "No access",
+      "viewer": "Viewer",
+      "editor": "Editor",
+      "builder": "Builder"
+    },
+    "levelDescriptions": {
+      "none": "Hidden",
+      "viewer": "Read rows, fields and views",
+      "editor": "Viewer and change rows",
+      "builder": "Editor and change fields, views and tables"
+    },
+    "save": "Save",
+    "saved": "Access updated"
+  },
   "sidebarItem": {
+    "manageAccess": "Manage access",
     "exportTable": "Export table",
     "importFile": "Import file",
     "webhooks": "Webhooks",
@@ -513,7 +546,20 @@
   "importErrorReport": {
     "reportTitleFailure": "Failing rows",
     "reportTitleSuccess": "Import successful but...",
-    "reportMessage": "The following row indexes couldn't be imported:"
+    "reportMessage": "The following row indexes couldn't be imported:",
+    "summary": "{created} created, {updated} updated, {unchanged} unchanged, {deleted} trashed, {skipped} skipped."
+  },
+  "importDiffPreview": {
+    "create": "Inserted",
+    "update": "Updated",
+    "unchanged": "Unchanged",
+    "delete": "Trashed",
+    "skipped": "Skipped",
+    "errors": "Errors",
+    "index": "File row",
+    "noChanges": "This import wouldn't change the table.",
+    "empty": "No rows.",
+    "sampleNotice": "Only the first {count} rows are shown."
   },
   "importFileModal": {
     "defaultName": "Table",
@@ -530,8 +576,28 @@
     "selectImportMessage": "Please select data to import.",
     "filePreview": "File content preview",
     "importPreview": "Import preview",
-    "useUpsertField": "Update rows if they already exist",
-    "upsertTooltip": "Match existing rows using a unique field to overwrite data with imported values.",
+    "modeLabel": "Import mode",
+    "modeInsert": "Insert",
+    "modeUpsert": "Upsert",
+    "modeUpdate": "Update matching",
+    "modeReplace": "Replace all",
+    "modeInsertDescription": "Append every row of the file to the table.",
+    "modeUpsertDescription": "Update the rows matching the file and insert the other rows.",
+    "modeUpdateDescription": "Only update the rows matching the file, other file rows are ignored.",
+    "modeReplaceDescription": "Move every existing row to the trash, then insert the rows of the file.",
+    "matchFieldsLabel": "Match rows on",
+    "matchFieldsHelp": "A file row matches an existing row when all the selected fields are equal.",
+    "matchFieldsEmpty": "Map a column to a field that supports matching first.",
+    "deleteUnmatched": "Move the rows that are not in the file to the trash",
+    "replaceWarning": "All existing rows will be moved to the trash. They can be restored from the trash or by undoing the import.",
+    "previewChanges": "Preview changes",
+    "changesTab": "Changes",
+    "previewStale": "The import settings changed since the last preview.",
+    "previewRequired": "Preview the changes first, this import moves rows to the trash.",
+    "ambiguousTitle": "Ambiguous matches",
+    "ambiguousMessage": "These match values are not unique in the file or in the table, so rows can't be paired reliably:",
+    "ambiguousKey": "{values} ({fileCount} in the file, {tableCount} in the table)",
+    "allowAmbiguous": "Allow ambiguous matches and pair duplicates in order",
     "stateRowCreation": "Importing...",
     "statePreValidation": "Validating data...",
     "stateCreateTable": "Creating table...",
