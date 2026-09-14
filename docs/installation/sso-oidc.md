@@ -4,12 +4,15 @@ Baserow signs users in through any OpenID Connect provider — Keycloak/RHBK, Au
 Zitadel, Entra ID, Okta and so on — configured entirely through environment variables.
 There is no admin UI and no provider row to manage: the environment is the source of truth.
 
-Access is derived from **roles the IdP puts in the token**. A provider maps those roles
-to three things:
+The IdP decides **who someone is at instance level**, through roles it puts in the token:
 
-* **Global authority** — Baserow staff or superuser, instance-wide.
-* **Workspace membership** — which workspaces a user joins, as `ADMIN` or `MEMBER`.
-* **Granular workspace roles** — a named set of operations a `MEMBER` is restricted to.
+* **User** — may sign in and gets an account.
+* **Staff** — the Baserow admin area, instance-wide.
+* **Superuser** — staff plus superuser-only actions.
+
+Everything inside a workspace — who is a member, who administers it, teams, and what
+members can do with each database and table — is managed **in the app** by workspace
+admins. New workspaces therefore need no IdP or environment change.
 
 A user holding none of the mapped roles is refused at login, and no account is created.
 
@@ -22,12 +25,14 @@ day-to-day operations and hardening, see
 * [Environment variables](#environment-variables)
 * [Registering Baserow with the IdP](#registering-baserow-with-the-idp)
 * [Provider reference](#provider-reference)
-* [Roles and permissions](#roles-and-permissions)
+* [Global profiles](#global-profiles)
+* [Workspace access in the app](#workspace-access-in-the-app)
 * [How access is decided on each login](#how-access-is-decided-on-each-login)
 * [Complete example](#complete-example)
 * [Passing the configuration to Baserow](#passing-the-configuration-to-baserow)
 * [Configuring RHBK/Keycloak](#configuring-rhbkkeycloak)
 * [Login error codes](#login-error-codes)
+* [Upgrading from workspace mappings](#upgrading-from-workspace-mappings)
 * [Security notes](#security-notes)
 * [Troubleshooting](#troubleshooting)
 
@@ -36,19 +41,16 @@ day-to-day operations and hardening, see
 | Variable | Default | Purpose |
 | --- | --- | --- |
 | `BASEROW_OIDC_PROVIDERS` | `[]` | JSON list of providers. See [Provider reference](#provider-reference). |
-| `BASEROW_ROLES` | `[]` | JSON list of granular workspace roles a mapping may grant. See [Granular roles](#3-granular-workspace-roles-baserow_roles). |
 | `BASEROW_OIDC_ONLY` | `false` | OIDC-only mode for normal users: password signup is disabled, password login is refused for non-staff accounts and the login page shows only the SSO buttons. A staff/superuser account can still use the password form through **display password login**, so an IdP outage cannot lock you out. Create that break-glass account **before** turning this on. |
 | `BASEROW_ALLOW_MULTIPLE_SSO_PROVIDERS_FOR_SAME_ACCOUNT` | unset | When set, an account created through one method (password, another provider) may also sign in through this provider. Leave unset unless you need it; see [Security notes](#security-notes). |
 
-`BASEROW_OIDC_PROVIDERS` and `BASEROW_ROLES` are parsed and validated **once, at
-startup**:
+`BASEROW_OIDC_PROVIDERS` is parsed and validated **once, at startup**:
 
 * An invalid value stops the backend from starting with an `ImproperlyConfigured` error
   naming the offending entry and key — it never fails later at login.
 * **Every change needs a backend restart** (and the Celery workers, which share the
   settings).
-* Checks that need the network or the database — issuer discovery, workspace ids, role
-  and operation names — happen at login or reconcile time, and are logged.
+* Issuer discovery needs the network and happens at login, and is logged.
 
 ## Registering Baserow with the IdP
 
@@ -123,23 +125,16 @@ Common values:
 
 The rest of this page says "client role" for whatever strings `roles_claim` yields.
 
-### Access mapping
+### Profile mapping
 
 | Key | Default | Description |
 | --- | --- | --- |
-| `superuser_roles` | `[]` | Roles whose holders become Baserow **superuser** (which also implies staff). |
-| `staff_roles` | `[]` | Roles whose holders become Baserow **staff**. |
-| `workspace_mappings` | `[]` | List of workspace mappings, below. |
-| `strict_membership` | `false` | When `true`, workspace memberships this provider created are revoked once the user no longer holds the mapped role. Memberships added by hand are never touched. |
+| `user_roles` | `[]` | Roles whose holders may sign in as regular users. |
+| `staff_roles` | `[]` | Roles whose holders become Baserow **staff** (and may sign in). |
+| `superuser_roles` | `[]` | Roles whose holders become Baserow **superuser**, which also implies staff (and may sign in). |
 
-Each `workspace_mappings` entry:
-
-| Key | Required | Description |
-| --- | --- | --- |
-| `client_role` | yes | The role (as found under `roles_claim`) that triggers this mapping. Matched exactly. |
-| `workspace` | yes | **Numeric** workspace id (not the name). |
-| `permissions` | yes | `ADMIN` or `MEMBER`. |
-| `role` | no | Name of a [`BASEROW_ROLES`](#3-granular-workspace-roles-baserow_roles) entry declared for the **same** workspace, restricting the member to its operations. Cannot be combined with `ADMIN`. Omit for an unrestricted member. |
+A user needs **at least one** role from any of the three lists. Staff and superuser holders
+do not also need a `user_roles` entry.
 
 ### Session and verification
 
@@ -147,228 +142,62 @@ Each `workspace_mappings` entry:
 | --- | --- | --- |
 | `require_verified_email` | `true` | Refuse users whose `email_verified` claim is not `true` (`errorEmailNotVerified`). Set `false` only when the IdP's email addresses are authoritative, for example LDAP/AD-federated. |
 | `link_existing_accounts` | `false` | When `true`, an existing account created by another method (password, another provider) is linked to this provider on first sign-in instead of being refused with `errorDifferentProvider` — only when the IdP sends `email_verified: true` (even with `require_verified_email: false`), and never for staff or superuser accounts. See [Recovering locked-out accounts](#recovering-locked-out-accounts). |
-| `session_lifetime_minutes` | `480` | Lifetime of a session started through this provider. Once it ends the user signs in again, which is when role changes apply. Positive integer, or `null` to use `BASEROW_REFRESH_TOKEN_LIFETIME_HOURS`. |
+| `session_lifetime_minutes` | `480` | Lifetime of a session started through this provider. Once it ends the user signs in again, which is when profile changes apply. Positive integer, or `null` to use `BASEROW_REFRESH_TOKEN_LIFETIME_HOURS`. |
 
-### Retired keys
+### Refused keys
 
-Older configurations are refused at startup with a message naming the replacement,
-because silently ignoring them would drop the access they used to grant:
+Keys from older configurations are refused at startup, because silently ignoring them would
+drop the access they used to grant:
 
-| Retired | Replacement |
+| Key | What to do |
 | --- | --- |
-| `groups_claim` | `roles_claim` |
-| `staff_groups` | `staff_roles` |
-| `superuser_groups` | `superuser_roles` |
-| `workspace_mappings[].group` | `workspace_mappings[].client_role` |
-| `workspace_mappings[].role: "ADMIN"` / `"MEMBER"` | `workspace_mappings[].permissions` (`role` now names a `BASEROW_ROLES` entry) |
+| `groups_claim` | Rename to `roles_claim`. |
+| `staff_groups` | Rename to `staff_roles`. |
+| `superuser_groups` | Rename to `superuser_roles`. |
+| `workspace_mappings`, `team_mappings`, `strict_membership` | Remove. Add members, teams and access in the app. See [Upgrading from workspace mappings](#upgrading-from-workspace-mappings). |
 
-## Roles and permissions
+`BASEROW_ROLES` and the `sync_roles` command no longer exist; the variable is ignored.
 
-Baserow has three independent layers. A provider can set any combination of them.
+## Global profiles
 
-### 1. Global roles
-
-| Baserow role | Granted by | What it allows |
+| Profile | Granted by | What it allows |
 | --- | --- | --- |
 | Superuser | `superuser_roles` | Everything staff can do, plus superuser-only admin actions. Always also staff. |
-| Staff | `staff_roles` | The admin area: instance settings, users, all workspaces, application-type toggles. |
-| Regular user | neither | Only the workspaces they are a member of. |
+| Staff | `staff_roles` | The admin area: instance settings, users, all workspaces, application-type toggles, and managing access in any workspace. |
+| User | `user_roles` | Signing in. Only the workspaces they are added to, and creating workspaces when the instance allows it. |
 
-Global roles are **reconciled on every login through this provider**: granted when the
-user holds a mapped role, revoked when not. Only the dimension you configure is touched —
+Staff and superuser are **reconciled on every login through this provider**: granted when
+the user holds a mapped role, revoked when not. Only the dimension you configure is touched —
 a provider with no `staff_roles` never changes anyone's staff flag. A local admin who never
 signs in through SSO is never modified.
 
-### 2. Workspace permissions
+## Workspace access in the app
 
-| `permissions` | What it allows in that workspace |
+Once signed in, a user has no workspace until someone adds them. All of this is done by the
+workspace's admins, or by staff — the full guide is
+[Managing workspace access](workspace-access.md):
+
+| Task | Where |
 | --- | --- |
-| `ADMIN` | Everything, including inviting and removing members, changing their permissions and deleting the workspace. **Not restricted by granular roles.** |
-| `MEMBER` | Work with the workspace's applications. Unrestricted unless the mapping names a `role`. |
+| Add people who already signed in | *Workspace settings → Members → Add members* — search by name or email (at least 3 characters) and pick `MEMBER` or `ADMIN`. |
+| Invite someone who has not signed in yet | *Members → Invite member* (email invitation). |
+| Promote or demote a workspace admin | The role column in the members list. |
+| Group members | *Workspace settings → Teams*. |
+| Restrict databases and tables | *Manage access* in the context menu of a database or table, or *Workspace default access* on the Teams page. Staff: *Admin → Workspaces → Manage default access*. |
 
-`ADMIN` is scoped to one workspace and carries no instance-wide authority; that is what
-staff/superuser is for.
+Access levels, per member or team:
 
-### 3. Granular workspace roles (`BASEROW_ROLES`)
+| Level | Allows |
+| --- | --- |
+| No access | The database or table is hidden. |
+| Viewer | Read rows, fields and views; export. |
+| Editor | Viewer, plus create, update and delete rows. |
+| Builder | Editor, plus fields, views, filters, webhooks and the table or database itself. |
 
-A granular role restricts a `MEMBER` to an explicit list of operations; **anything not
-listed is denied**. Declare roles in `BASEROW_ROLES`:
-
-| Key | Required | Description |
-| --- | --- | --- |
-| `workspace` | yes | Numeric workspace id the role belongs to. |
-| `name` | yes | Role name, unique per workspace. Referenced by `workspace_mappings[].role`. |
-| `operations` | no (default `[]`) | Operation names from the table below. |
-
-Reconciliation:
-
-* Roles are written to the database after every `migrate` and whenever you run the
-  `sync_roles` management command. Workspaces are usually created after deploying, so
-  **run `sync_roles` once the workspace exists**:
-
-  ```bash
-  # all-in-one image
-  docker exec baserow ./baserow.sh backend-cmd manage sync_roles
-  # Compose stack
-  docker compose exec backend /baserow/backend/docker/docker-entrypoint.sh manage sync_roles
-  # Helm
-  kubectl -n baserow exec deploy/baserow-backend -- \
-    /baserow/backend/docker/docker-entrypoint.sh manage sync_roles
-  # development checkout
-  just backend manage sync_roles
-  ```
-
-  Adjust the container, service or deployment name to your installation.
-* A role for a workspace id that does not exist is skipped with a warning.
-* An operation that is misspelled or not in the table below is skipped with a warning; the
-  rest of the role is still applied.
-* Re-running replaces the role's operations with the declared list.
-* A role removed from `BASEROW_ROLES` is **left in the database**, because members may
-  still be assigned to it. Remove the mapping first.
-
-#### All available operations
-
-These are every operation a granular role can grant:
-
-| Component | Create | Read | Update | Delete |
-| --- | --- | --- | --- | --- |
-| Database tables | `database.create_table` | `database.table.read` | `database.table.update` | `database.table.delete` |
-| Database fields | `database.table.create_field` | `database.table.field.read` | `database.table.field.update` | `database.table.field.delete` |
-| Database rows | `database.table.create_row` | `database.table.read_row` | `database.table.update_row` | `database.table.delete_row` |
-| Database views | `database.table.create_view` | `database.table.view.read` | `database.table.view.update` | `database.table.view.delete` |
-| Application builder pages | `builder.create_page` | `builder.page.read` | `builder.page.update` | `builder.page.delete` |
-| Application builder elements | `builder.page.create_element` | `builder.page.element.read` | `builder.page.element.update` | `builder.page.element.delete` |
-| Automation workflows | `automation.create_workflow` | `automation.workflow.read` | `automation.workflow.update` | `automation.workflow.delete` |
-| Automation nodes | `automation.workflow.create_node` | `automation.node.read` | `automation.node.update` | `automation.node.delete` |
-| Workspace | — | `workspace.read` | `workspace.update` | `workspace.delete` |
-
-Operations build on each other: reading rows is useless without reading the table, its
-fields and a view. Grant the whole read path for every component you expose.
-
-#### Role recipes
-
-Starting points — adjust the workspace id and trim what you do not use.
-
-**Reader** — browse databases, change nothing:
-
-```json
-{
-  "workspace": 1,
-  "name": "Reader",
-  "operations": [
-    "workspace.read",
-    "database.table.read",
-    "database.table.field.read",
-    "database.table.read_row",
-    "database.table.view.read"
-  ]
-}
-```
-
-**Data editor** — create, edit and delete rows, but not change the schema:
-
-```json
-{
-  "workspace": 1,
-  "name": "Data editor",
-  "operations": [
-    "workspace.read",
-    "database.table.read",
-    "database.table.field.read",
-    "database.table.view.read",
-    "database.table.read_row",
-    "database.table.create_row",
-    "database.table.update_row",
-    "database.table.delete_row"
-  ]
-}
-```
-
-**Schema designer** — full database authoring, no workspace settings:
-
-```json
-{
-  "workspace": 1,
-  "name": "Schema designer",
-  "operations": [
-    "workspace.read",
-    "database.create_table",
-    "database.table.read",
-    "database.table.update",
-    "database.table.delete",
-    "database.table.create_field",
-    "database.table.field.read",
-    "database.table.field.update",
-    "database.table.field.delete",
-    "database.table.create_row",
-    "database.table.read_row",
-    "database.table.update_row",
-    "database.table.delete_row",
-    "database.table.create_view",
-    "database.table.view.read",
-    "database.table.view.update",
-    "database.table.view.delete"
-  ]
-}
-```
-
-**App builder** — build pages on existing data:
-
-```json
-{
-  "workspace": 1,
-  "name": "App builder",
-  "operations": [
-    "workspace.read",
-    "database.table.read",
-    "database.table.field.read",
-    "database.table.read_row",
-    "database.table.view.read",
-    "builder.create_page",
-    "builder.page.read",
-    "builder.page.update",
-    "builder.page.delete",
-    "builder.page.create_element",
-    "builder.page.element.read",
-    "builder.page.element.update",
-    "builder.page.element.delete"
-  ]
-}
-```
-
-**Automation operator** — maintain workflows without touching data design:
-
-```json
-{
-  "workspace": 1,
-  "name": "Automation operator",
-  "operations": [
-    "workspace.read",
-    "database.table.read",
-    "database.table.field.read",
-    "database.table.read_row",
-    "automation.create_workflow",
-    "automation.workflow.read",
-    "automation.workflow.update",
-    "automation.workflow.delete",
-    "automation.workflow.create_node",
-    "automation.node.read",
-    "automation.node.update",
-    "automation.node.delete"
-  ]
-}
-```
-
-### Finding workspace ids
-
-Mappings and roles use the numeric workspace id:
-
-* **Admin area → Workspaces** (`/admin/workspaces`, staff only), sortable by id.
-* **The URL** of an open workspace: `/workspace/<id>`.
-* **The API**: `GET /api/admin/workspaces/` with a staff token.
-
-Ids are per database. A configuration copied from staging to production grants access
-to whatever workspaces hold those ids there — re-check them after every copy.
+For a `MEMBER`, the most specific scope with a level decides: table, then database, then the
+workspace default. A level given to the member directly beats their teams' levels; between
+teams the highest wins. With no level anywhere the member has full member access. Workspace
+`ADMIN`s are never restricted. Changes apply immediately, without signing in again.
 
 ## How access is decided on each login
 
@@ -376,10 +205,10 @@ to whatever workspaces hold those ids there — re-check them after every copy.
    nonce) and userinfo `sub` must all check out, otherwise `errorAuthFlowError`. A missing
    email is also `errorAuthFlowError`; an unverified one is `errorEmailNotVerified`.
 2. **Collect roles** from `roles_claim` in the ID token and userinfo, unioned.
-3. **Deny by default.** If the provider maps any role (`superuser_roles`, `staff_roles`
-   or `workspace_mappings`) and the user holds none of them, the login is refused with
+3. **Deny by default.** If the provider maps any role (`user_roles`, `staff_roles` or
+   `superuser_roles`) and the user holds none of them, the login is refused with
    `errorNoMappedRole` — **before** an account is created. A provider that maps no role at
-   all is not gated: every IdP user may sign in, with no memberships.
+   all is not gated: every IdP user may sign in.
 4. **Find or create the account** by email. New accounts are provisioned automatically,
    even when the instance has new signups disabled and even with `BASEROW_OIDC_ONLY`. An
    existing account created by another method is refused with `errorDifferentProvider`,
@@ -387,47 +216,24 @@ to whatever workspaces hold those ids there — re-check them after every copy.
    only — the account is then linked) or
    `BASEROW_ALLOW_MULTIPLE_SSO_PROVIDERS_FOR_SAME_ACCOUNT` is set. A deactivated
    account is refused with `errorUserDeactivated`.
-5. **Reconcile global roles** (`superuser_roles`, `staff_roles`), grant and revoke.
-6. **Reconcile workspace memberships** for every mapping whose `client_role` the user holds:
-   * the membership is created, or an existing one is updated, to the mapping's
-     `permissions` and `role` — the sync is authoritative for the workspaces it maps, so
-     removing `role` from a mapping restores full member access on the next login;
-   * if two matching mappings target the same workspace, `ADMIN` wins; between two
-     `MEMBER` mappings, the first listed wins (a warning is logged);
-   * a workspace id that does not exist is skipped with a warning;
-   * a `role` that does not exist in that workspace **fails closed**: the membership is
-     not granted, and an error is logged.
-7. **Revoke** (only with `strict_membership: true`): memberships this provider created
-   earlier, whose role the user no longer holds, are removed. Memberships added by hand
-   are never tracked and never revoked, and a workspace's last admin is never removed.
-8. **Start a session** bounded by `session_lifetime_minutes`.
+5. **Reconcile staff and superuser**, grant and revoke.
+6. **Start a session** bounded by `session_lifetime_minutes`.
 
-Everything is applied at login. Removing a role in the IdP does not end a session that is
-already open; it applies when the session expires and the user signs in again. To cut
-access immediately, disable the user in the IdP **and** deactivate the account in
-Baserow's admin area.
+Workspace memberships are never touched by a login. Removing a role in the IdP does not end
+a session that is already open; it applies when the session expires and the user signs in
+again. To cut access immediately, disable the user in the IdP **and** deactivate the account
+in Baserow's admin area.
 
 ## Complete example
 
-Scenario: two identity providers and three workspaces.
+Scenario: company staff through Keycloak, partners through a second IdP.
 
-| Workspace | Id |
-| --- | --- |
-| Engineering | `1` |
-| Finance | `2` |
-| Customer portal | `3` |
-
-| Provider | Role in token | Grants |
+| Provider | Role in token | Profile |
 | --- | --- | --- |
-| `rhbk` (Keycloak client roles) | `baserow-superusers` | global superuser |
-| | `baserow-staff` | global staff |
-| | `eng-leads` | Engineering `ADMIN` |
-| | `eng` | Engineering `MEMBER`, unrestricted |
-| | `eng-readonly` | Engineering `MEMBER`, `Reader` |
-| | `finance` | Finance `MEMBER`, `Data editor` |
-| | `portal-builders` | Customer portal `MEMBER`, `App builder` |
-| `partners` (generic IdP, `groups` claim) | `partner-ops` | Customer portal `MEMBER`, `Automation operator` |
-| | `partner-viewers` | Finance `MEMBER`, `Reader` |
+| `rhbk` (Keycloak client roles) | `baserow-superusers` | superuser |
+| | `baserow-staff` | staff |
+| | `baserow-user` | user |
+| `partners` (generic IdP, `groups` claim) | `baserow-partner` | user |
 
 `BASEROW_OIDC_PROVIDERS` — every key shown, defaults written out explicitly:
 
@@ -443,17 +249,11 @@ Scenario: two identity providers and three workspaces.
     "email_claim": "email",
     "name_claim": "name",
     "roles_claim": "resource_access.${client_id}.roles",
-    "superuser_roles": ["baserow-superusers"],
+    "user_roles": ["baserow-user"],
     "staff_roles": ["baserow-staff"],
-    "workspace_mappings": [
-      { "client_role": "eng-leads", "workspace": 1, "permissions": "ADMIN" },
-      { "client_role": "eng", "workspace": 1, "permissions": "MEMBER" },
-      { "client_role": "eng-readonly", "workspace": 1, "permissions": "MEMBER", "role": "Reader" },
-      { "client_role": "finance", "workspace": 2, "permissions": "MEMBER", "role": "Data editor" },
-      { "client_role": "portal-builders", "workspace": 3, "permissions": "MEMBER", "role": "App builder" }
-    ],
-    "strict_membership": true,
+    "superuser_roles": ["baserow-superusers"],
     "require_verified_email": true,
+    "link_existing_accounts": false,
     "session_lifetime_minutes": 480
   },
   {
@@ -462,18 +262,8 @@ Scenario: two identity providers and three workspaces.
     "issuer": "https://idp.partners.example.org/application/o/baserow/",
     "client_id": "baserow-partners",
     "client_secret": "change-me-partner-secret",
-    "scopes": ["openid", "email", "profile"],
-    "email_claim": "email",
-    "name_claim": "name",
     "roles_claim": "groups",
-    "superuser_roles": [],
-    "staff_roles": [],
-    "workspace_mappings": [
-      { "client_role": "partner-ops", "workspace": 3, "permissions": "MEMBER", "role": "Automation operator" },
-      { "client_role": "partner-viewers", "workspace": 2, "permissions": "MEMBER", "role": "Reader" }
-    ],
-    "strict_membership": true,
-    "require_verified_email": true,
+    "user_roles": ["baserow-partner"],
     "session_lifetime_minutes": 240
   }
 ]
@@ -481,111 +271,23 @@ Scenario: two identity providers and three workspaces.
 
 Notes on this configuration:
 
-* A user holding both `eng-leads` and `eng` is an Engineering `ADMIN` — `ADMIN` wins.
-* `eng-readonly` plus `eng` in the same token is a configuration smell: the first matching
-  `MEMBER` mapping in list order wins, so the user becomes an unrestricted member. Keep
-  profiles for one workspace mutually exclusive in the IdP.
-* The `partners` provider maps no global roles, so it never makes anyone staff, and it
-  never revokes a staff flag granted through `rhbk` either — only configured dimensions
-  are reconciled.
-* Both providers use `strict_membership`, so each only revokes the memberships it created
-  itself.
-
-`BASEROW_ROLES` — every role referenced above, per workspace:
-
-```json
-[
-  {
-    "workspace": 1,
-    "name": "Reader",
-    "operations": [
-      "workspace.read",
-      "database.table.read",
-      "database.table.field.read",
-      "database.table.read_row",
-      "database.table.view.read"
-    ]
-  },
-  {
-    "workspace": 2,
-    "name": "Reader",
-    "operations": [
-      "workspace.read",
-      "database.table.read",
-      "database.table.field.read",
-      "database.table.read_row",
-      "database.table.view.read"
-    ]
-  },
-  {
-    "workspace": 2,
-    "name": "Data editor",
-    "operations": [
-      "workspace.read",
-      "database.table.read",
-      "database.table.field.read",
-      "database.table.view.read",
-      "database.table.read_row",
-      "database.table.create_row",
-      "database.table.update_row",
-      "database.table.delete_row"
-    ]
-  },
-  {
-    "workspace": 3,
-    "name": "App builder",
-    "operations": [
-      "workspace.read",
-      "database.table.read",
-      "database.table.field.read",
-      "database.table.read_row",
-      "database.table.view.read",
-      "builder.create_page",
-      "builder.page.read",
-      "builder.page.update",
-      "builder.page.delete",
-      "builder.page.create_element",
-      "builder.page.element.read",
-      "builder.page.element.update",
-      "builder.page.element.delete"
-    ]
-  },
-  {
-    "workspace": 3,
-    "name": "Automation operator",
-    "operations": [
-      "workspace.read",
-      "database.table.read",
-      "database.table.field.read",
-      "database.table.read_row",
-      "automation.create_workflow",
-      "automation.workflow.read",
-      "automation.workflow.update",
-      "automation.workflow.delete",
-      "automation.workflow.create_node",
-      "automation.node.read",
-      "automation.node.update",
-      "automation.node.delete"
-    ]
-  }
-]
-```
-
-A role is resolved per workspace, so `Reader` is declared once for workspace 1 and once
-for workspace 2.
+* The `partners` provider maps no staff or superuser roles, so it never makes anyone staff,
+  and it never revokes a staff flag granted through `rhbk` either.
+* Partners land in no workspace. A workspace admin adds them where they collaborate and
+  restricts them with access levels, for example a *Partners* team with *No access* as
+  workspace default and *Editor* on the shared tables.
 
 Rollout order:
 
-1. Deploy with `BASEROW_ROLES` set and restart.
-2. Create the workspaces (or confirm their ids) and run `sync_roles`.
-3. Create the roles and assignments in each IdP.
-4. Set `BASEROW_OIDC_PROVIDERS` and restart.
-5. Sign in with one test user per profile, plus one with no mapped role (must be refused).
+1. Create the roles and assignments in each IdP.
+2. Set `BASEROW_OIDC_PROVIDERS` and restart.
+3. Sign in with one test user per profile, plus one with no mapped role (must be refused).
+4. Have workspace admins add the signed-in users to their workspaces.
 
 ## Passing the configuration to Baserow
 
-The values are JSON, so the only difficulty is quoting. Store them compacted to one line
-where the format requires it, and keep secrets out of version control.
+The value is JSON, so the only difficulty is quoting. Store it compacted to one line where
+the format requires it, and keep secrets out of version control.
 
 ### `docker run`
 
@@ -594,8 +296,7 @@ breaks:
 
 ```bash
 # baserow-sso.env
-BASEROW_OIDC_PROVIDERS=[{"name":"rhbk","display_name":"Company SSO","issuer":"https://keycloak.example.com/realms/main","client_id":"baserow","client_secret":"change-me","staff_roles":["baserow-staff"],"workspace_mappings":[{"client_role":"eng","workspace":1,"permissions":"MEMBER"}]}]
-BASEROW_ROLES=[{"workspace":1,"name":"Reader","operations":["workspace.read","database.table.read"]}]
+BASEROW_OIDC_PROVIDERS=[{"name":"rhbk","display_name":"Company SSO","issuer":"https://keycloak.example.com/realms/main","client_id":"baserow","client_secret":"change-me","user_roles":["baserow-user"],"staff_roles":["baserow-staff"]}]
 BASEROW_OIDC_ONLY=true
 ```
 
@@ -611,14 +312,13 @@ Compact a pretty-printed file with `jq -c . providers.json`.
 
 ### Docker Compose
 
-The root [`docker-compose.yaml`](../../docker-compose.yaml) passes `BASEROW_OIDC_PROVIDERS`,
-`BASEROW_OIDC_ONLY` and `BASEROW_ROLES` through from `.env`. Wrap each JSON value in
-single quotes on one line:
+The root [`docker-compose.yaml`](../../docker-compose.yaml) passes `BASEROW_OIDC_PROVIDERS`
+and `BASEROW_OIDC_ONLY` through from `.env`. Wrap the JSON value in single quotes on one
+line:
 
 ```bash
 # .env
-BASEROW_OIDC_PROVIDERS='[{"name":"rhbk","issuer":"https://keycloak.example.com/realms/main","client_id":"baserow","client_secret":"change-me","staff_roles":["baserow-staff"]}]'
-BASEROW_ROLES='[]'
+BASEROW_OIDC_PROVIDERS='[{"name":"rhbk","issuer":"https://keycloak.example.com/realms/main","client_id":"baserow","client_secret":"change-me","user_roles":["baserow-user"],"staff_roles":["baserow-staff"]}]'
 BASEROW_OIDC_ONLY=true
 ```
 
@@ -635,12 +335,8 @@ extraEnv:
     [{"name": "rhbk", "display_name": "Company SSO",
       "issuer": "https://keycloak.example.com/realms/main",
       "client_id": "baserow", "client_secret": "change-me",
-      "staff_roles": ["baserow-staff"],
-      "workspace_mappings": [
-        {"client_role": "eng", "workspace": 1, "permissions": "MEMBER"}]}]
-  BASEROW_ROLES: |
-    [{"workspace": 1, "name": "Reader",
-      "operations": ["workspace.read", "database.table.read"]}]
+      "user_roles": ["baserow-user"],
+      "staff_roles": ["baserow-staff"]}]
 ```
 
 > `extraEnv` is rendered into the chart's ConfigMap, which is not encrypted, and
@@ -664,10 +360,10 @@ The issuer is `https://<keycloak-host>/realms/<realm>`.
    * **Advanced → Advanced settings → Proof Key for Code Exchange Code Challenge Method**:
      `S256`.
    * Copy the secret from **Credentials**.
-2. **Create client roles.** **Clients → baserow → Roles → Create role**, one per profile:
-   `baserow-superusers`, `baserow-staff`, `eng-leads`, `eng`, `eng-readonly`, `finance`,
-   `portal-builders`. Baserow reads **client** roles by default, not realm roles.
-3. **Assign roles through groups.** **Groups → Create group** (e.g. `baserow-eng`), then
+2. **Create client roles.** **Clients → baserow → Roles → Create role**: `baserow-user`,
+   `baserow-staff`, `baserow-superusers`. Baserow reads **client** roles by default, not
+   realm roles.
+3. **Assign roles through groups.** **Groups → Create group** (e.g. `baserow-users`), then
    **Role mapping → Assign role → Filter by clients** and pick the `baserow` roles — the
    default filter lists only realm roles. Add users under **Members**.
 4. **Put client roles in the ID token and userinfo.** Keycloak's built-in client roles
@@ -692,7 +388,7 @@ The issuer is `https://<keycloak-host>/realms/<realm>`.
    open **Generated ID token**, and look for:
 
    ```json
-   "resource_access": { "baserow": { "roles": ["eng"] } }
+   "resource_access": { "baserow": { "roles": ["baserow-user"] } }
    ```
 
 6. **Check email verification.** Users need `email_verified: true`. For LDAP/AD
@@ -701,8 +397,8 @@ The issuer is `https://<keycloak-host>/realms/<realm>`.
 7. **Keep self-registration off** in **Realm settings → Login**, since Baserow links
    accounts by email.
 8. **Configure Baserow** with the `rhbk` provider from the
-   [complete example](#complete-example) (the default `roles_claim` already matches step 4),
-   declare `BASEROW_ROLES`, restart, and run `sync_roles`.
+   [complete example](#complete-example) (the default `roles_claim` already matches step 4)
+   and restart.
 9. **Test** with one user per group and one user in no group — the latter must land on
    `/login?error=errorNoMappedRole` and no account may appear in the admin area.
 
@@ -746,6 +442,19 @@ docker compose exec backend /baserow/backend/docker/docker-entrypoint.sh manage 
 accounts too. To link many regular accounts without operator action, set
 `link_existing_accounts: true` on the provider instead.
 
+## Upgrading from workspace mappings
+
+Earlier versions let the IdP place users in workspaces (`workspace_mappings`,
+`strict_membership`) and restrict them with `BASEROW_ROLES`. On upgrade:
+
+1. **Before upgrading**, note which roles restricted which members: those restrictions are
+   dropped and affected members become unrestricted members.
+2. Remove `workspace_mappings`, `team_mappings` and `strict_membership` from each provider
+   (the backend refuses to start otherwise) and add a `user_roles` entry listing the roles
+   that used to grant a membership, so those users keep signing in. Remove `BASEROW_ROLES`.
+3. Existing memberships stay as they are. Restrict members again with teams and access
+   levels, and add new people from *Members → Add members*.
+
 ## Security notes
 
 * **Accounts are linked by email.** Anyone who can obtain a verified token for an address
@@ -756,10 +465,13 @@ accounts too. To link many regular accounts without operator action, set
   IdP whose verified emails are authoritative. Staff and superuser accounts are never
   linked automatically; link them with `link_oidc_account`.
 * **Deny by default only applies when something is mapped.** A provider with no
-  `superuser_roles`, `staff_roles` or `workspace_mappings` lets every user of that IdP
-  create an account.
-* **Prefer granular roles over workspace `ADMIN`.** A workspace admin can invite anyone and
-  change members' permissions, bypassing roles entirely.
+  `user_roles`, `staff_roles` or `superuser_roles` lets every user of that IdP create an
+  account.
+* **Workspace admins can look up accounts.** *Add members* searches every active account by
+  name or email (at least 3 characters, at most 20 results). Choose workspace admins
+  accordingly.
+* **Workspace `ADMIN`s are unrestricted.** They can add members, change permissions and
+  manage access; give most people `MEMBER` with access levels instead.
 * **Keep a break-glass admin.** A local staff account that signs in with a password is
   never touched by SSO reconciliation, and still works under `BASEROW_OIDC_ONLY`.
 * **Set the instance's email verification to "no verification"** (admin settings).
@@ -772,7 +484,7 @@ accounts too. To link many regular accounts without operator action, set
 
 1. **Backend will not start** — read the `ImproperlyConfigured` message; it names the
    provider index and key (for example
-   `BASEROW_OIDC_PROVIDERS[0].workspace_mappings[1]: 'workspace' must be an integer workspace id.`).
+   `BASEROW_OIDC_PROVIDERS[0]: 'workspace_mappings' is no longer supported.`).
    Validate syntax with `jq . <<< "$BASEROW_OIDC_PROVIDERS"`.
 2. **Config change ignored** — restart the backend and workers.
 3. **Issuer reachable?** From inside the backend container:
@@ -784,20 +496,15 @@ accounts too. To link many regular accounts without operator action, set
    A failure here is DNS, network or TLS trust, not Baserow configuration.
 4. **Roles in the token?** Inspect the ID token and userinfo in the IdP (Keycloak:
    **Evaluate**) and confirm the path matches `roles_claim`.
-5. **Signed in but no workspace** — the role string does not match `client_role` exactly,
-   or the workspace id does not exist (backend warning: `maps to unknown workspace`).
-6. **Membership refused** — the mapping's `role` is not in the database for that workspace
-   (backend error: `maps workspace <id> to unknown role`). Declare it in `BASEROW_ROLES`
-   and run `sync_roles`.
-7. **Role grants too little** — an operation was misspelled (backend warning:
-   `lists operation ... which is not controllable by a role`), or a prerequisite read
-   operation is missing.
-8. **Access not revoked** — revocation needs `strict_membership: true` and a new login;
-   hand-added memberships and a workspace's last admin are never revoked.
+5. **Signed in but no workspace** — expected: a workspace admin must add the user in the
+   app. Users only appear in *Add members* after their first sign-in.
+6. **A member sees too much or too little** — check *Manage access* on the table, its
+   database and the workspace default, for the member and each of their teams.
 
 ## Related
 
 * [Single sign-on with RHBK/Keycloak](sso-rhbk-keycloak.md) — detailed Keycloak guide.
+* [Managing workspace access](workspace-access.md) — members, teams and access levels.
 * [Configuration](configuration.md) — every environment variable.
 * [Turning application types off instance-wide](instance-settings.md).
 * [Installing with Helm](install-with-helm.md).

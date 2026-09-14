@@ -390,6 +390,16 @@ app.$registry.register('permissionManager', new OwnedTablePermissionManagerType(
 
 And that's it, you have a fully functionnal frontend permission manager.
 
+## 🗂️ Database access levels
+
+The `database_access` manager (`contrib/database/access/`) applies the access levels
+workspace admins give members and teams on the workspace default, a database or a table.
+It only answers database-family operations for non-admin members with an applicable grant
+and passes everything else through. `builder` covers every operation whose context scope
+lives inside a database, so a new database operation is builder-only until it is added to
+the `viewer` or `editor` lists in `access/levels.py`. See
+[ADR 005](../adr/005-in-app-database-access-grants.md).
+
 ## 📝 Conclusion
 
 If you want to create a new way to validate Permissions, you'll have to:

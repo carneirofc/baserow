@@ -44,10 +44,13 @@ You can easily self-host Baserow by following one of the guides below:
 * [Monitoring Baserow](installation/monitoring.md): Learn how to monitor your Baserow
   server using open telemetry.
 * [Single sign-on with OpenID Connect](installation/sso-oidc.md): Full OIDC reference —
-  provider keys, global/workspace/granular roles and every operation, a complete example
-  and error codes.
+  provider keys, the user/staff/superuser profiles the IdP defines, a complete example and
+  error codes.
 * [Single sign-on with RHBK/Keycloak](installation/sso-rhbk-keycloak.md): Configure
-  OpenID Connect login and drive every level of access from Keycloak client roles.
+  OpenID Connect login with Keycloak client roles deciding who may sign in and who is staff.
+* [Managing workspace access](installation/workspace-access.md): Add existing users to
+  workspaces, group them into teams, and set no access, viewer, editor or builder levels
+  per database and table.
 * [Data destinations, backups and datalake exports](installation/data-destinations.md):
   Ship backups to S3, Azure Blob Storage or a volume and restore them, and export table
   rows as Parquet to a datalake on a schedule.

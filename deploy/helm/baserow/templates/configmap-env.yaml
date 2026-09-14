@@ -68,7 +68,7 @@ data:
   {{- end }}
 
   {{- with .Values.extraEnv }}
-  # --- Operator-supplied environment (e.g. BASEROW_OIDC_PROVIDERS, BASEROW_ROLES) ---
+  # --- Operator-supplied environment (e.g. BASEROW_OIDC_PROVIDERS) ---
   {{- range $key, $value := . }}
   {{ $key }}: {{ $value | quote }}
   {{- end }}

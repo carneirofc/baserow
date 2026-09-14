@@ -253,16 +253,12 @@ migrateOnStartup: true # runs Django migrations from the backend pod on boot
 #    settings the chart does not model explicitly. Values are rendered as strings.
 #    Do not put secrets here; the ConfigMap is not encrypted.
 #
-#    Single sign-on and RBAC are configured this way, for example:
+#    Single sign-on is configured this way, for example:
 #      extraEnv:
 #        BASEROW_OIDC_PROVIDERS: |
 #          [{"name": "rhbk", "issuer": "https://idp.example.com/realms/main",
 #            "client_id": "baserow", "client_secret": "…",
-#            "workspace_mappings": [{"client_role": "engineering", "workspace": 1,
-#                                    "permissions": "MEMBER", "role": "Editor"}]}]
-#        BASEROW_ROLES: |
-#          [{"workspace": 1, "name": "Editor",
-#            "operations": ["database.table.read", "database.table.update_row"]}]
+#            "user_roles": ["baserow-user"], "staff_roles": ["baserow-staff"]}]
 #
 #    So are the external destinations for backups and datalake exports; keep their
 #    credentials in a Secret mounted through `extraVolumes` and point at the files:

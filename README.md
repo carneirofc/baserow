@@ -63,22 +63,16 @@ through environment variables — no admin UI, no database provider rows to mana
 works with any OpenID Connect provider (Keycloak/RHBK, Authentik, Zitadel, Entra ID,
 Okta, …) and is validated at startup, so a bad configuration fails fast.
 
-All access is derived from **roles in the IdP's token**: which of them make someone a
-Baserow staff/superuser, which put them in a workspace as `ADMIN` or `MEMBER`, and which
-granular operations they may perform there.
+The IdP only defines **global profiles** through roles in its token — who may sign in,
+who is staff and who is superuser. Everything inside a workspace is managed in the app, so
+creating workspaces never needs an IdP or environment change.
 
 * **`BASEROW_OIDC_PROVIDERS`** — a JSON list of providers: `issuer`, `client_id` /
-  `client_secret`, claim overrides and the role mappings below.
-* **Global roles** — `superuser_roles` and `staff_roles`, reconciled on every login.
-* **Workspace memberships** — `workspace_mappings` grants `ADMIN` or `MEMBER` in a
-  workspace, optionally restricted to a granular role.
-* **Granular roles** — `BASEROW_ROLES` declares per-workspace roles built from 35
-  create/read/update/delete operations on tables, fields, rows, views, builder pages and
-  elements, automation workflows and nodes, and the workspace itself.
+  `client_secret`, claim overrides and the profile mappings below.
+* **Profiles** — `user_roles` (may sign in), `staff_roles` and `superuser_roles`, the last
+  two reconciled on every login.
 * **Deny by default** — a provider that maps any role refuses (and never provisions) a
   user holding none of them.
-* **Strict membership** — optionally revoke SSO-granted memberships when the role is gone;
-  hand-added memberships are never touched.
 * **`BASEROW_OIDC_ONLY`** — password signup and login off for normal users, with a
   staff **break-glass** password login so an IdP outage cannot lock you out.
 * **Auto-provisioning** — SSO users are created on first login even with signups disabled.
@@ -90,20 +84,24 @@ BASEROW_OIDC_PROVIDERS='[{
   "issuer": "https://keycloak.example.com/realms/main",
   "client_id": "baserow",
   "client_secret": "change-me",
-  "staff_roles": ["baserow-staff"],
-  "workspace_mappings": [
-    { "client_role": "eng", "workspace": 1, "permissions": "MEMBER" },
-    { "client_role": "eng-readonly", "workspace": 1, "permissions": "MEMBER", "role": "Reader" }
-  ],
-  "strict_membership": true
+  "user_roles": ["baserow-user"],
+  "staff_roles": ["baserow-staff"]
 }]'
-BASEROW_ROLES='[{ "workspace": 1, "name": "Reader",
-  "operations": ["workspace.read", "database.table.read", "database.table.field.read",
-                 "database.table.read_row", "database.table.view.read"] }]'
 ```
 
+### In-app workspace access
+
+Workspace admins manage who is in their workspace and what they can do:
+
+* **Add members** — pick users who already signed in, by name or email, without an
+  invitation.
+* **Teams** — group members.
+* **Access levels** — *No access*, *Viewer*, *Editor* or *Builder* per member or team, on
+  the workspace default, a database or a table; the most specific wins. Staff can manage
+  access in any workspace.
+
 **Full guide: [Single sign-on with OpenID Connect](docs/installation/sso-oidc.md)** —
-every provider key, all roles and operations, the login decision flow, a complete
+every provider key, in-app workspace access, the login decision flow, a complete
 multi-provider example, Docker/Compose/Helm wiring, RHBK/Keycloak setup, error codes and
 troubleshooting. A step-by-step Keycloak walkthrough lives in
 [the RHBK/Keycloak guide](docs/installation/sso-rhbk-keycloak.md).
@@ -176,8 +174,8 @@ Redis, uploads) inside the `baserow_data` volume.
   access — it must match the address you use in the browser.
 * Pin a specific release instead of `latest` with a version tag, e.g.
   `ghcr.io/carneirofc/baserow/baserow:0.8.0`.
-* To enable SSO, pass the `BASEROW_OIDC_PROVIDERS` (and optionally `BASEROW_ROLES` and
-  `BASEROW_OIDC_ONLY`) environment variables — see
+* To enable SSO, pass the `BASEROW_OIDC_PROVIDERS` (and optionally `BASEROW_OIDC_ONLY`)
+  environment variables — see
   [Passing the configuration to Baserow](docs/installation/sso-oidc.md#passing-the-configuration-to-baserow).
 
 Images are published automatically by the
