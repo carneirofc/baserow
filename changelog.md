@@ -1,5 +1,19 @@
 # Changelog
 
+## Released 0.9.0
+
+### New features
+* [Database] Import into a table can now update, upsert or replace rows and preview the changes first
+* [Core] Added recovery from errorDifferentProvider OIDC lockouts: a per-provider link_existing_accounts option links an existing non-staff account on sign-in when the IdP verifies its email, and the link_oidc_account management command lists, links, unlinks and carries over account links after a provider rename.
+* [Core] Workspace admins can add existing users directly, group members into teams and set no access, viewer, editor or builder levels per database and table
+
+### Bug fixes
+* [Core] BASEROW_ALLOW_MULTIPLE_SSO_PROVIDERS_FOR_SAME_ACCOUNT is now parsed as a boolean, so values like "false" or "0" no longer enable it.
+
+### Breaking API changes
+* [Core] SSO now only defines who may sign in (new user_roles), staff and superuser. workspace_mappings, strict_membership, BASEROW_ROLES, sync_roles and granular roles were removed and are refused at startup; members that had a granular role become unrestricted members until restricted again with in-app access levels
+
+
 ## Released v0.8.0
 
 ### New features

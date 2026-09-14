@@ -15,9 +15,9 @@ keywords:
   - database
   - openshift
   - eks
-version: 0.4.1
+version: 0.4.2
 # Tracks the application version shipped by this fork's images.
-appVersion: "0.8.0"
+appVersion: "0.9.0"
 home: https://github.com/carneirofc/baserow
 sources:
   - https://github.com/carneirofc/baserow
@@ -28,7 +28,9 @@ maintainers:
 annotations:
   artifacthub.io/changes: |
     - kind: changed
-      description: appVersion 0.8.0, shipping the backups and datalake exports UI.
+      description: >-
+        appVersion 0.9.0, replacing granular RBAC roles with in-app teams and
+        database access grants, and adding import upsert/replace modes.
 
 dependencies:
   - name: postgresql
