@@ -38,6 +38,18 @@ export default (client) => {
       fetchAllUsers(workspaceId) {
         return client.get(`/workspaces/users/workspace/${workspaceId}/`)
       },
+      searchUserCandidates(workspaceId, search) {
+        return client.get(
+          `/workspaces/users/workspace/${workspaceId}/candidates/`,
+          { params: { search } }
+        )
+      },
+      addUsers(workspaceId, userIds, permissions) {
+        return client.post(`/workspaces/users/workspace/${workspaceId}/`, {
+          user_ids: userIds,
+          permissions,
+        })
+      },
       updateUser(workspaceUserId, values) {
         return client.patch(`/workspaces/users/${workspaceUserId}/`, values)
       },

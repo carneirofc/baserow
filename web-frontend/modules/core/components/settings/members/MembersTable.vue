@@ -20,6 +20,21 @@
         <Button
           v-if="
             $hasPermission(
+              'workspace.add_workspace_users',
+              workspace,
+              workspace.id
+            )
+          "
+          type="secondary"
+          size="large"
+          class="margin-left-2"
+          @click="$refs.addMembersModal.show()"
+        >
+          {{ $t('membersSettings.membersTable.addMembers') }}
+        </Button>
+        <Button
+          v-if="
+            $hasPermission(
               'workspace.create_invitation',
               workspace,
               workspace.id
@@ -49,6 +64,11 @@
         ></EditRoleContext>
       </template>
     </CrudTable>
+    <AddWorkspaceMembersModal
+      ref="addMembersModal"
+      :workspace="workspace"
+      @added="$refs.crudTable.refresh()"
+    />
     <WorkspaceMemberInviteModal
       ref="inviteModal"
       :workspace="workspace"
@@ -77,12 +97,14 @@ import TwoFactorAuthField from '@baserow/modules/core/components/crudTable/field
 import MoreField from '@baserow/modules/core/components/crudTable/fields/MoreField'
 import MemberRoleField from '@baserow/modules/core/components/settings/members/MemberRoleField'
 import WorkspaceMemberInviteModal from '@baserow/modules/core/components/workspace/WorkspaceMemberInviteModal'
+import AddWorkspaceMembersModal from '@baserow/modules/core/components/workspace/AddWorkspaceMembersModal'
 import EditMemberContext from '@baserow/modules/core/components/settings/members/EditMemberContext'
 import EditRoleContext from '@baserow/modules/core/components/settings/members/EditRoleContext'
 
 export default {
   name: 'MembersTable',
   components: {
+    AddWorkspaceMembersModal,
     EditMemberContext,
     EditRoleContext,
     CrudTable,

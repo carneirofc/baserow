@@ -39,7 +39,7 @@ import {
 
 import {
   BasicPermissionManagerType,
-  GranularRolePermissionManagerType,
+  DatabaseAccessPermissionManagerType,
   CorePermissionManagerType,
   StaffPermissionManagerType,
   WorkspaceMemberPermissionManagerType,
@@ -50,6 +50,7 @@ import {
 import {
   MembersWorkspaceSettingsPageType,
   InvitesWorkspaceSettingsPageType,
+  TeamsWorkspaceSettingsPageType,
 } from '@baserow/modules/core/workspaceSettingsPageTypes'
 import {
   WorkspaceInvitationCreatedNotificationType,
@@ -189,7 +190,7 @@ export default defineNuxtPlugin({
     )
     registry.register(
       'permissionManager',
-      new GranularRolePermissionManagerType(context)
+      new DatabaseAccessPermissionManagerType(context)
     )
     registry.register(
       'permissionManager',
@@ -239,6 +240,10 @@ export default defineNuxtPlugin({
     registry.register(
       'workspaceSettingsPage',
       new InvitesWorkspaceSettingsPageType(context)
+    )
+    registry.register(
+      'workspaceSettingsPage',
+      new TeamsWorkspaceSettingsPageType(context)
     )
 
     registry.register('runtimeFormulaFunction', new RuntimeConcat(context))

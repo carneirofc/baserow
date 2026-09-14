@@ -39,6 +39,28 @@
           :workspace="workspace"
         ></DataExportModal>
       </li>
+      <li
+        v-if="
+          $hasPermission(
+            'workspace.manage_database_access',
+            workspace,
+            workspace.id
+          )
+        "
+        class="context__menu-item"
+      >
+        <a class="context__menu-item-link" @click="openAccess">
+          <i class="context__menu-item-icon iconoir-lock"></i>
+          {{ $t('sidebar.manageAccess') }}
+        </a>
+        <DatabaseAccessModal
+          ref="accessModal"
+          :workspace="workspace"
+          scope-type="database"
+          :scope-id="application.id"
+          :scope-name="application.name"
+        ></DatabaseAccessModal>
+      </li>
     </template>
   </ApplicationContext>
 </template>
@@ -47,11 +69,13 @@
 import ApplicationContext from '@baserow/modules/core/components/application/ApplicationContext.vue'
 import applicationContext from '@baserow/modules/core/mixins/applicationContext'
 import DataExportModal from '@baserow/modules/database/components/dataExport/DataExportModal'
+import DatabaseAccessModal from '@baserow/modules/database/components/access/DatabaseAccessModal'
 
 export default {
   components: {
     ApplicationContext,
     DataExportModal,
+    DatabaseAccessModal,
   },
   mixins: [applicationContext],
   props: {
@@ -68,6 +92,10 @@ export default {
     openDataExport() {
       this.hide()
       this.$refs.dataExportModal.show()
+    },
+    openAccess() {
+      this.hide()
+      this.$refs.accessModal.show()
     },
   },
 }

@@ -100,3 +100,31 @@ export class InvitesWorkspaceSettingsPageType extends WorkspaceSettingsPageType 
     }
   }
 }
+
+export class TeamsWorkspaceSettingsPageType extends WorkspaceSettingsPageType {
+  static getType() {
+    return 'teams'
+  }
+
+  getName() {
+    const { $i18n: i18n } = this.app
+    return i18n.t('teamsSettings.tabTitle')
+  }
+
+  hasPermission(workspace) {
+    return this.app.$hasPermission(
+      'workspace.list_teams',
+      workspace,
+      workspace.id
+    )
+  }
+
+  getRoute(workspace) {
+    return {
+      name: 'settings-teams',
+      params: {
+        workspaceId: workspace.id,
+      },
+    }
+  }
+}

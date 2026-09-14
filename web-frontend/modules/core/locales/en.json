@@ -817,6 +817,7 @@
     "invitesTabTitle": "Invites",
     "membersTable": {
       "title": "{userAmount} Members in {workspaceName}",
+      "addMembers": "Add members",
       "inviteMember": "Invite member",
       "columns": {
         "name": "Name",
@@ -864,6 +865,34 @@
     "invite": "Invite {count}",
     "deselectAll": "Deselect all",
     "selectAll": "Select all"
+  },
+  "addWorkspaceMembersModal": {
+    "title": "Add members to {name}",
+    "description": "Add people who already signed in. To reach someone who hasn't signed in yet, send an invite instead.",
+    "search": "Find users",
+    "searchPlaceholder": "Name or email",
+    "minSearch": "Type at least {count} characters.",
+    "noResults": "No users found. They may not have signed in yet or are already members.",
+    "selected": "{count} selected:",
+    "permissions": "Add as",
+    "add": "Add {count}"
+  },
+  "teamsSettings": {
+    "tabTitle": "Teams",
+    "title": "{count} Teams in {workspaceName}",
+    "description": "Group members into teams, then give teams access to databases and tables from their context menu.",
+    "newTeamPlaceholder": "Team name",
+    "createTeam": "Create team",
+    "defaultAccess": "Workspace default access",
+    "rename": "Rename",
+    "save": "Save",
+    "delete": "Delete",
+    "members": "Members",
+    "noMembers": "No members yet.",
+    "addMember": "Add member",
+    "removeMember": "Remove",
+    "ssoManaged": "Managed by SSO",
+    "empty": "No teams yet."
   },
   "removeFromWorkspaceModal": {
     "title": "Confirm removal from workspace",
@@ -1062,6 +1091,7 @@
     "usageHelpText": "Calculated nightly when the track workspace usage setting is enabled"
   },
   "editWorkspaceContext": {
+    "manageAccess": "Manage default access",
     "delete": "Permanently delete"
   },
   "deleteWorkspaceModal": {

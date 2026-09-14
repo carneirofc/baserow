@@ -47,6 +47,12 @@
             :database="database"
           ></component>
         </li>
+        <li v-if="canManageAccess" class="context__menu-item">
+          <a class="context__menu-item-link" @click="openAccessModal()">
+            <i class="context__menu-item-icon iconoir-lock"></i>
+            {{ $t('sidebarItem.manageAccess') }}
+          </a>
+        </li>
         <li
           v-if="
             $hasPermission(
@@ -212,6 +218,14 @@
       />
       <WebhookModal ref="webhookModal" :database="database" :table="table" />
       <SyncTableModal ref="syncModal" :table="table"></SyncTableModal>
+      <DatabaseAccessModal
+        v-if="canManageAccess"
+        ref="accessModal"
+        :workspace="database.workspace"
+        scope-type="table"
+        :scope-id="table.id"
+        :scope-name="table.name"
+      ></DatabaseAccessModal>
     </Context>
   </li>
 </template>
@@ -225,6 +239,7 @@ import SidebarDuplicateTableContextItem from '@baserow/modules/database/componen
 import SidebarImportTableContextItem from '@baserow/modules/database/components/sidebar/table/SidebarImportTableContextItem'
 import SyncTableModal from '@baserow/modules/database/components/dataSync/SyncTableModal'
 import ConfigureDataSyncModal from '@baserow/modules/database/components/dataSync/ConfigureDataSyncModal.vue'
+import DatabaseAccessModal from '@baserow/modules/database/components/access/DatabaseAccessModal'
 import { pageFinished } from '@baserow/modules/core/utils/routing'
 import { nextTick, useNuxtApp } from '#imports'
 
@@ -232,6 +247,7 @@ export default {
   name: 'SidebarItem',
   components: {
     ConfigureDataSyncModal,
+    DatabaseAccessModal,
     ExportTableModal,
     WebhookModal,
     SyncTableModal,
@@ -258,8 +274,16 @@ export default {
     }
   },
   computed: {
+    canManageAccess() {
+      return this.$hasPermission(
+        'workspace.manage_database_access',
+        this.database.workspace,
+        this.database.workspace.id
+      )
+    },
     showOptions() {
       return (
+        this.canManageAccess ||
         this.additionalContextComponents.length > 0 ||
         this.$hasPermission(
           'database.table.run_export',
@@ -360,6 +384,10 @@ export default {
     exportTable() {
       this.$refs.context.hide()
       this.$refs.exportTableModal.show()
+    },
+    openAccessModal() {
+      this.$refs.context.hide()
+      this.$refs.accessModal.show()
     },
     openWebhookModal() {
       this.$refs.context.hide()

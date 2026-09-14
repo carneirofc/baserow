@@ -116,6 +116,11 @@ export const routes = [
             path: 'invites',
             file: path.resolve(__dirname, 'pages/settings/invites.vue'),
           },
+          {
+            name: 'settings-teams',
+            path: 'teams',
+            file: path.resolve(__dirname, 'pages/settings/teams.vue'),
+          },
         ],
       },
     ],
