@@ -1028,14 +1028,22 @@ class DatabaseConfig(AppConfig):
         operation_type_registry.register(ListPropertiesOperationType())
         operation_type_registry.register(GetIncludingPublicValuesOperationType())
 
+        import baserow.contrib.database.access.receivers  # noqa: F401
+
+        from .access.operations import ManageDatabaseAccessWorkspaceOperationType
+
+        operation_type_registry.register(ManageDatabaseAccessWorkspaceOperationType())
+
         from baserow.core.registries import permission_manager_type_registry
 
+        from .access.permission_manager import DatabaseAccessPermissionManagerType
         from .permission_manager import (
             AllowIfTemplatePermissionManagerType,
             FieldValuePermissionManagerType,
         )
         from .tokens.permission_manager import TokenPermissionManagerType
 
+        permission_manager_type_registry.register(DatabaseAccessPermissionManagerType())
         permission_manager_type_registry.register(TokenPermissionManagerType())
         permission_manager_type_registry.register(FieldValuePermissionManagerType())
 

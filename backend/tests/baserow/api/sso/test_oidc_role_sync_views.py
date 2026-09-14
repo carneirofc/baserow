@@ -8,7 +8,6 @@ from django.urls import reverse
 import pytest
 import responses
 
-from baserow.core.sso.oidc.config import WorkspaceMapping
 from baserow.core.sso.oidc.handler import SESSION_NONCE_KEY, SESSION_STATE_KEY
 from baserow.test_utils.oidc import FakeOIDCProvider
 
@@ -51,23 +50,13 @@ def test_staff_client_role_grants_staff_on_login(api_client):
 
 @responses.activate(assert_all_requests_are_fired=False)
 @pytest.mark.django_db
-def test_losing_the_staff_client_role_revokes_staff_on_next_login(
-    api_client, data_fixture
-):
-    workspace = data_fixture.create_workspace()
+def test_losing_the_staff_client_role_revokes_staff_on_next_login(api_client):
     idp = FakeOIDCProvider(email="admin@example.com", client_roles=["baserow-staff"])
-    # A second mapped role keeps the user past the access gate after they lose staff.
-    # It has to be a workspace mapping: a superuser role would keep them staff too.
+    # A user role keeps the user past the access gate after they lose staff.
     config = dataclasses.replace(
         idp.config,
         staff_roles=["baserow-staff"],
-        workspace_mappings=[
-            WorkspaceMapping(
-                client_role="baserow-member",
-                workspace_id=workspace.id,
-                permissions="MEMBER",
-            )
-        ],
+        user_roles=["baserow-member"],
     )
 
     with override_settings(BASEROW_OIDC_PROVIDERS=[config]):
@@ -160,6 +149,23 @@ def test_login_refused_when_the_user_holds_no_client_role(api_client):
 
     assert "error=errorNoMappedRole" in response.url
     assert not User.objects.filter(email="nobody@example.com").exists()
+
+
+@responses.activate(assert_all_requests_are_fired=False)
+@pytest.mark.django_db
+def test_user_role_signs_in_without_workspace_access(api_client, data_fixture):
+    workspace = data_fixture.create_workspace()
+    idp = FakeOIDCProvider(email="user@example.com", client_roles=["baserow-user"])
+    config = dataclasses.replace(idp.config, user_roles=["baserow-user"])
+
+    with override_settings(BASEROW_OIDC_PROVIDERS=[config]):
+        response = _drive_callback(api_client, idp, responses)
+
+    assert "error=" not in response.url
+    user = User.objects.get(email="user@example.com")
+    assert user.is_staff is False
+    # Workspace membership is managed in the app, never granted by the IdP.
+    assert not workspace.workspaceuser_set.filter(user=user).exists()
 
 
 @responses.activate(assert_all_requests_are_fired=False)

@@ -113,6 +113,7 @@ def test_role_mapping_defaults():
 
     # The default claim is Keycloak's own, with the client id substituted in.
     assert provider.roles_claim == "resource_access.baserow.roles"
+    assert provider.user_roles == []
     assert provider.staff_roles == []
     assert provider.superuser_roles == []
     assert provider.syncs_global_roles is False
@@ -149,7 +150,18 @@ def test_role_mapping_parsed():
     assert config.declares_any_mapping is True
 
 
-@pytest.mark.parametrize("key", ["staff_roles", "superuser_roles"])
+def test_user_roles_parsed_and_gate_sign_in():
+    provider = dict(VALID_PROVIDER, user_roles=["baserow-user"])
+
+    config = parse_oidc_providers_env(_env(provider))[0]
+
+    assert config.user_roles == ["baserow-user"]
+    assert config.syncs_global_roles is False
+    assert config.mapped_roles == {"baserow-user"}
+    assert config.declares_any_mapping is True
+
+
+@pytest.mark.parametrize("key", ["user_roles", "staff_roles", "superuser_roles"])
 def test_role_lists_must_be_lists_of_strings(key):
     provider = dict(VALID_PROVIDER, **{key: "not-a-list"})
 
@@ -164,68 +176,22 @@ def test_roles_claim_must_be_non_empty_string():
         parse_oidc_providers_env(_env(provider))
 
 
-def test_workspace_mappings_defaults_to_empty():
-    provider = parse_oidc_providers_env(_env(VALID_PROVIDER))[0]
+@pytest.mark.parametrize(
+    "key,value",
+    [
+        (
+            "workspace_mappings",
+            [{"client_role": "team-a", "workspace": 7, "permissions": "MEMBER"}],
+        ),
+        ("team_mappings", [{"client_role": "team-a", "workspace": 7, "team": "A"}]),
+        ("strict_membership", True),
+    ],
+)
+def test_removed_workspace_keys_fail_fast(key, value):
+    # Refused rather than ignored, so an operator learns their mappings stopped applying.
+    provider = dict(VALID_PROVIDER, **{key: value})
 
-    assert provider.workspace_mappings == []
-    assert provider.syncs_workspace_memberships is False
-
-
-def test_workspace_mappings_parsed():
-    provider = dict(
-        VALID_PROVIDER,
-        workspace_mappings=[
-            {"client_role": "team-a", "workspace": 7, "permissions": "ADMIN"},
-            {"client_role": "team-b", "workspace": 9, "permissions": "MEMBER"},
-        ],
-    )
-
-    config = parse_oidc_providers_env(_env(provider))[0]
-
-    assert config.syncs_workspace_memberships is True
-    assert config.workspace_mappings[0].client_role == "team-a"
-    assert config.workspace_mappings[0].workspace_id == 7
-    assert config.workspace_mappings[0].permissions == "ADMIN"
-    assert config.workspace_mappings[0].role is None
-    assert config.workspace_mappings[1].workspace_id == 9
-    assert config.workspace_mappings[1].permissions == "MEMBER"
-    assert config.mapped_roles == {"team-a", "team-b"}
-
-
-def test_workspace_mapping_can_name_a_granular_role():
-    provider = dict(
-        VALID_PROVIDER,
-        workspace_mappings=[
-            {
-                "client_role": "analyst",
-                "workspace": 7,
-                "permissions": "MEMBER",
-                "role": "analyst",
-            }
-        ],
-    )
-
-    config = parse_oidc_providers_env(_env(provider))[0]
-
-    assert config.workspace_mappings[0].role == "analyst"
-
-
-def test_granular_role_is_refused_alongside_admin():
-    # Workspace admins bypass the granular role permission manager, so the pair would
-    # silently grant unrestricted access.
-    provider = dict(
-        VALID_PROVIDER,
-        workspace_mappings=[
-            {
-                "client_role": "analyst",
-                "workspace": 7,
-                "permissions": "ADMIN",
-                "role": "analyst",
-            }
-        ],
-    )
-
-    with pytest.raises(ImproperlyConfigured, match="not restricted by a role"):
+    with pytest.raises(ImproperlyConfigured, match="managed in the app"):
         parse_oidc_providers_env(_env(provider))
 
 
@@ -242,66 +208,6 @@ def test_retired_provider_keys_fail_fast(key, replacement):
     provider = dict(VALID_PROVIDER, **{key: ["a"] if key != "groups_claim" else "a"})
 
     with pytest.raises(ImproperlyConfigured, match=replacement):
-        parse_oidc_providers_env(_env(provider))
-
-
-def test_retired_mapping_group_key_fails_fast():
-    provider = dict(
-        VALID_PROVIDER,
-        workspace_mappings=[
-            {"group": "team-a", "workspace": 7, "permissions": "MEMBER"}
-        ],
-    )
-
-    with pytest.raises(ImproperlyConfigured, match="client_role"):
-        parse_oidc_providers_env(_env(provider))
-
-
-def test_retired_mapping_role_semantics_fail_fast():
-    # 'role' used to hold ADMIN/MEMBER; it now names a granular role.
-    provider = dict(
-        VALID_PROVIDER,
-        workspace_mappings=[{"client_role": "team-a", "workspace": 7, "role": "ADMIN"}],
-    )
-
-    with pytest.raises(ImproperlyConfigured, match="rename it to 'permissions'"):
-        parse_oidc_providers_env(_env(provider))
-
-
-def test_strict_membership_defaults_false_and_parses():
-    assert parse_oidc_providers_env(_env(VALID_PROVIDER))[0].strict_membership is False
-
-    provider = dict(VALID_PROVIDER, strict_membership=True)
-    assert parse_oidc_providers_env(_env(provider))[0].strict_membership is True
-
-
-def test_strict_membership_must_be_boolean():
-    provider = dict(VALID_PROVIDER, strict_membership="yes")
-
-    with pytest.raises(ImproperlyConfigured):
-        parse_oidc_providers_env(_env(provider))
-
-
-@pytest.mark.parametrize(
-    "mapping",
-    [
-        {"client_role": "team", "workspace": 1},  # missing permissions
-        # permissions not allowed
-        {"client_role": "team", "workspace": 1, "permissions": "VIEWER"},
-        # workspace not an int
-        {"client_role": "team", "workspace": "1", "permissions": "ADMIN"},
-        # bool rejected
-        {"client_role": "team", "workspace": True, "permissions": "ADMIN"},
-        {"workspace": 1, "permissions": "ADMIN"},  # missing client_role
-        # granular role must be a non-empty string
-        {"client_role": "team", "workspace": 1, "permissions": "MEMBER", "role": ""},
-        "not-an-object",
-    ],
-)
-def test_invalid_workspace_mapping_fails_fast(mapping):
-    provider = dict(VALID_PROVIDER, workspace_mappings=[mapping])
-
-    with pytest.raises(ImproperlyConfigured):
         parse_oidc_providers_env(_env(provider))
 
 

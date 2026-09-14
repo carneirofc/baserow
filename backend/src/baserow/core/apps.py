@@ -165,9 +165,6 @@ class CoreConfig(AppConfig):
             operation_type_registry,
             permission_manager_type_registry,
         )
-        from baserow.core.roles.permission_manager import (
-            GranularRolePermissionManagerType,
-        )
 
         from .emails_context_types import CoreEmailContextType
 
@@ -188,7 +185,6 @@ class CoreConfig(AppConfig):
         permission_manager_type_registry.register(
             AllowIfTemplatePermissionManagerType()
         )
-        permission_manager_type_registry.register(GranularRolePermissionManagerType())
 
         from .object_scopes import (
             ApplicationObjectScopeType,
@@ -221,6 +217,7 @@ class CoreConfig(AppConfig):
             MarkNotificationAsReadOperationType,
         )
         from .operations import (
+            AddWorkspaceUsersWorkspaceOperationType,
             CreateApplicationsWorkspaceOperationType,
             CreateInvitationsWorkspaceOperationType,
             CreateWorkspaceOperationType,
@@ -273,6 +270,16 @@ class CoreConfig(AppConfig):
         operation_type_registry.register(ListWorkspacesOperationType())
         operation_type_registry.register(UpdateWorkspaceInvitationType())
         operation_type_registry.register(ReadWorkspaceOperationType())
+
+        operation_type_registry.register(AddWorkspaceUsersWorkspaceOperationType())
+
+        from .teams.operations import TEAM_OPERATION_TYPES
+
+        for team_operation_type in TEAM_OPERATION_TYPES:
+            operation_type_registry.register(team_operation_type())
+
+        import baserow.core.teams.receivers  # noqa: F401
+
         operation_type_registry.register(ExportWorkspaceOperationType())
         operation_type_registry.register(UpdateWorkspaceOperationType())
         operation_type_registry.register(ListWorkspaceUsersWorkspaceOperationType())
@@ -507,8 +514,6 @@ class CoreConfig(AppConfig):
         post_migrate.connect(start_sync_templates_task_after_migrate, sender=self)
         # Create all operations from registry
         post_migrate.connect(sync_operations_after_migrate, sender=self)
-        # Reconcile the env-declared roles, after the operations they reference exist.
-        post_migrate.connect(sync_declared_roles_after_migrate, sender=self)
 
         if settings.CACHALOT_ENABLED:
             pre_migrate.connect(lambda *a, **kw: clear_cachalot_cache(), sender=self)
@@ -675,20 +680,3 @@ def sync_operations_after_migrate(sender, **kwargs):
             ).delete()
             ops_deleted = deletions.get("core.Operation", 0)
             print(f"Deleted {ops_deleted} un-registered operations...")
-
-
-def sync_declared_roles_after_migrate(sender, **kwargs):
-    apps = kwargs.get("apps", None)
-
-    if apps is None:
-        return
-
-    try:
-        apps.get_model("core", "Role")
-    except LookupError:
-        print("Skipping role sync as the Role model does not exist.")
-        return
-
-    from baserow.core.roles.handler import sync_declared_roles
-
-    sync_declared_roles()

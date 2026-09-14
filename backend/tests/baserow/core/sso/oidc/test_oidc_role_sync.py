@@ -3,7 +3,7 @@ import dataclasses
 import pytest
 
 from baserow.core.sso.exceptions import NoMappedRole
-from baserow.core.sso.oidc.config import OIDCProviderConfig, WorkspaceMapping
+from baserow.core.sso.oidc.config import OIDCProviderConfig
 from baserow.core.sso.oidc.roles import (
     enforce_role_access,
     extract_roles,
@@ -136,26 +136,12 @@ def test_access_granted_by_a_superuser_role():
     enforce_role_access(_config(superuser_roles=["admins"]), ["admins"])
 
 
-def test_access_granted_by_a_workspace_mapping():
-    config = _config(
-        workspace_mappings=[
-            WorkspaceMapping(
-                client_role="analyst", workspace_id=1, permissions="MEMBER"
-            )
-        ]
-    )
-    enforce_role_access(config, ["analyst"])
+def test_access_granted_by_a_user_role():
+    enforce_role_access(_config(user_roles=["baserow-user"]), ["baserow-user"])
 
 
 def test_access_refused_without_a_mapped_role():
-    config = _config(
-        staff_roles=["ops"],
-        workspace_mappings=[
-            WorkspaceMapping(
-                client_role="analyst", workspace_id=1, permissions="MEMBER"
-            )
-        ],
-    )
+    config = _config(staff_roles=["ops"], user_roles=["baserow-user"])
     with pytest.raises(NoMappedRole):
         enforce_role_access(config, ["something-else"])
 

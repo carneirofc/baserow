@@ -31,8 +31,8 @@ from .mixins import (
     WithRegistry,
 )
 from .notifications.models import Notification
-from .roles.models import Role
 from .services.models import Service
+from .teams.models import Team, TeamMember
 
 __all__ = [
     "Settings",
@@ -52,7 +52,8 @@ __all__ = [
     "Integration",
     "Service",
     "Notification",
-    "Role",
+    "Team",
+    "TeamMember",
     "BlacklistedToken",
     "ExportApplicationsJob",
     "ImportApplicationsJob",
@@ -368,15 +369,6 @@ class WorkspaceUser(
         default=WORKSPACE_USER_PERMISSION_MEMBER,
         max_length=32,
         help_text="The permissions that the user has within the workspace.",
-    )
-    role = models.ForeignKey(
-        "core.Role",
-        on_delete=models.SET_NULL,
-        null=True,
-        db_default=None,
-        related_name="workspace_users",
-        help_text="The custom role restricting this member's operations. NULL "
-        "means no custom role is assigned, i.e. today's full-member access.",
     )
 
     def get_parent(self):

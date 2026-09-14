@@ -37,6 +37,22 @@ from .tasks import (
 )
 
 
+@receiver(signals.permissions_updated)
+def permissions_updated(sender, workspace, user_ids, **kwargs):
+    """
+    Tells the affected users their permissions in the workspace changed so the
+    frontend refetches its permission object and visible applications.
+    """
+
+    user_ids = list(user_ids)
+    transaction.on_commit(
+        lambda: broadcast_to_users.delay(
+            user_ids,
+            {"type": "permissions_updated", "workspace_id": workspace.id},
+        )
+    )
+
+
 @receiver(signals.user_updated)
 def user_updated(sender, performed_by, user, **kwargs):
     workspace_ids = list(

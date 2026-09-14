@@ -4,6 +4,9 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.models import ContentType
 
+from baserow.contrib.database.access.operations import (
+    ManageDatabaseAccessWorkspaceOperationType,
+)
 from baserow.contrib.database.field_rules.operations import ReadFieldRuleOperationType
 from baserow.contrib.database.tokens.subjects import TokenSubjectType
 from baserow.core.cache import local_cache
@@ -31,6 +34,7 @@ from .exceptions import (
     UserNotInWorkspace,
 )
 from .operations import (
+    AddWorkspaceUsersWorkspaceOperationType,
     CreateInvitationsWorkspaceOperationType,
     CreateWorkspaceOperationType,
     DeleteWorkspaceInvitationOperationType,
@@ -54,6 +58,7 @@ from .registries import (
     operation_type_registry,
 )
 from .subjects import AnonymousUserSubjectType, UserSubjectType
+from .teams.operations import TEAM_OPERATION_TYPES
 
 User = get_user_model()
 
@@ -312,6 +317,9 @@ class BasicPermissionManagerType(PermissionManagerType):
         DeleteWorkspaceOperationType.type,
         UpdateWorkspaceUserOperationType.type,
         DeleteWorkspaceUserOperationType.type,
+        AddWorkspaceUsersWorkspaceOperationType.type,
+        *[team_operation_type.type for team_operation_type in TEAM_OPERATION_TYPES],
+        ManageDatabaseAccessWorkspaceOperationType.type,
     ]
 
     def check_multiple_permissions(self, checks, workspace=None, include_trash=False):

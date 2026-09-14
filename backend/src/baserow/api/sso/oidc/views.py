@@ -27,7 +27,6 @@ from baserow.core.sso.oidc.handler import OIDCHandler
 from baserow.core.sso.oidc.linking import link_existing_account
 from baserow.core.sso.oidc.provider import OIDCAuthProviderType
 from baserow.core.sso.oidc.roles import enforce_role_access, sync_global_roles
-from baserow.core.sso.oidc.workspaces import sync_workspace_memberships
 from baserow.core.sso.utils import (
     SsoErrorCode,
     map_sso_exceptions,
@@ -174,8 +173,8 @@ class OIDCCallbackView(APIView):
             provider, user_info
         )
 
+        # The IdP only defines global profiles; workspace access is managed in the app.
         sync_global_roles(user, roles, config)
-        sync_workspace_memberships(user, roles, config, provider)
 
         # Bounding the session is what makes a client role removed in the IdP stop
         # applying: the next sign-in re-runs the syncs above.

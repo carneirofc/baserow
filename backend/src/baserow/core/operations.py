@@ -72,6 +72,12 @@ class ListWorkspaceUsersWorkspaceOperationType(WorkspaceCoreOperationType):
     object_scope_name = "workspace_user"
 
 
+class AddWorkspaceUsersWorkspaceOperationType(WorkspaceCoreOperationType):
+    """Adds users that already have an account directly, without an invitation."""
+
+    type = "workspace.add_workspace_users"
+
+
 class InvitationWorkspaceOperationType(CoreOperationType, ABC):
     context_scope_name = "workspace_invitation"
 

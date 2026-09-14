@@ -42,9 +42,6 @@ from baserow.core.registries import (
     operation_type_registry,
     permission_manager_type_registry,
 )
-from baserow.core.roles.controllable_operations import (
-    CONTROLLABLE_OPERATION_TYPES,
-)
 from baserow.core.types import PermissionCheck
 from baserow.core.user_sources.models import UserSource
 from baserow.core.user_sources.operations import (
@@ -52,29 +49,6 @@ from baserow.core.user_sources.operations import (
     LoginUserSourceOperationType,
     UpdateUserSourceOperationType,
 )
-
-
-def sort_granular_role_operations(permissions):
-    """
-    `CONTROLLABLE_OPERATION_TYPES` is a set, so the granular role manager reports
-    its operations in an arbitrary order. Sort them in place so the result can be
-    compared against a literal.
-    """
-
-    for permission in permissions:
-        if permission["name"] == "granular_role" and permission["permissions"]:
-            permission["permissions"]["controllable_operations"].sort()
-    return permissions
-
-
-def granular_role_permissions(allowed_operations=None):
-    return {
-        "name": "granular_role",
-        "permissions": {
-            "controllable_operations": sorted(CONTROLLABLE_OPERATION_TYPES),
-            "allowed_operations": allowed_operations,
-        },
-    }
 
 
 @pytest.mark.django_db
@@ -553,9 +527,7 @@ def test_get_permissions(data_fixture):
         {"name": "member", "permissions": False},
     ]
 
-    result = sort_granular_role_operations(
-        CoreHandler().get_permissions(admin, workspace)
-    )
+    result = CoreHandler().get_permissions(admin, workspace)
 
     assert result == [
         {"name": "core", "permissions": ["list_workspaces"]},
@@ -609,7 +581,6 @@ def test_get_permissions(data_fixture):
                 "workspace_template_ids": [],
             },
         },
-        granular_role_permissions(),
         {
             "name": "basic",
             "permissions": {
@@ -624,6 +595,13 @@ def test_get_permissions(data_fixture):
                     "workspace.delete",
                     "workspace_user.update",
                     "workspace_user.delete",
+                    "workspace.add_workspace_users",
+                    "workspace.list_teams",
+                    "workspace.create_team",
+                    "workspace.update_team",
+                    "workspace.delete_team",
+                    "workspace.manage_team_members",
+                    "workspace.manage_database_access",
                 ],
                 "is_admin": True,
             },
@@ -687,9 +665,7 @@ def test_get_permissions(data_fixture):
         {"name": "member", "permissions": False},
     ]
 
-    result = sort_granular_role_operations(
-        CoreHandler().get_permissions(user_2, workspace)
-    )
+    result = CoreHandler().get_permissions(user_2, workspace)
 
     assert result == [
         {"name": "core", "permissions": ["list_workspaces"]},
@@ -743,7 +719,6 @@ def test_get_permissions(data_fixture):
                 "workspace_template_ids": [],
             },
         },
-        granular_role_permissions(),
         {
             "name": "basic",
             "permissions": {
@@ -758,6 +733,13 @@ def test_get_permissions(data_fixture):
                     "workspace.delete",
                     "workspace_user.update",
                     "workspace_user.delete",
+                    "workspace.add_workspace_users",
+                    "workspace.list_teams",
+                    "workspace.create_team",
+                    "workspace.update_team",
+                    "workspace.delete_team",
+                    "workspace.manage_team_members",
+                    "workspace.manage_database_access",
                 ],
                 "is_admin": True,
             },
@@ -821,9 +803,7 @@ def test_get_permissions(data_fixture):
         {"name": "member", "permissions": False},
     ]
 
-    result = sort_granular_role_operations(
-        CoreHandler().get_permissions(user_3, workspace)
-    )
+    result = CoreHandler().get_permissions(user_3, workspace)
 
     assert result == [
         {"name": "core", "permissions": ["list_workspaces"]},
@@ -877,7 +857,6 @@ def test_get_permissions(data_fixture):
                 "workspace_template_ids": [],
             },
         },
-        granular_role_permissions(),
         {
             "name": "basic",
             "permissions": {
@@ -892,6 +871,13 @@ def test_get_permissions(data_fixture):
                     "workspace.delete",
                     "workspace_user.update",
                     "workspace_user.delete",
+                    "workspace.add_workspace_users",
+                    "workspace.list_teams",
+                    "workspace.create_team",
+                    "workspace.update_team",
+                    "workspace.delete_team",
+                    "workspace.manage_team_members",
+                    "workspace.manage_database_access",
                 ],
                 "is_admin": False,
             },

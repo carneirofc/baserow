@@ -1335,7 +1335,8 @@ PERMISSION_MANAGERS = [
     "allow_public_builder",
     "element_visibility",
     "member",
-    "granular_role",
+    # In-app database/table access levels given to members and teams.
+    "database_access",
     "token",
     "write_field_values",
     "basic",
@@ -1442,13 +1443,6 @@ BASEROW_OIDC_PROVIDERS = parse_oidc_providers_env(
 # signup is disabled and password login is refused for non-staff accounts. A staff /
 # superuser (break-glass admin) can still log in with a password.
 BASEROW_OIDC_ONLY = str_to_bool(os.getenv("BASEROW_OIDC_ONLY", ""))
-
-# Env-declared workspace roles, reconciled into `core.Role` rows so that an OIDC
-# workspace mapping can grant a granular role by name. Structurally validated here;
-# the workspace and operation names are checked at reconcile time.
-from baserow.core.roles.config import parse_roles_env  # noqa: E402
-
-BASEROW_ROLES = parse_roles_env(os.getenv("BASEROW_ROLES", ""))
 
 # Env-declared external data destinations (S3, Azure Blob Storage or a mounted
 # filesystem) that backups and datalake table exports are written to. Declared as a

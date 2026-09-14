@@ -29,6 +29,7 @@ from baserow.api.user.registries import member_data_registry
 from baserow.api.workspaces.users.errors import (
     ERROR_CANNOT_DELETE_YOURSELF_FROM_GROUP,
     ERROR_GROUP_USER_DOES_NOT_EXIST,
+    ERROR_USERS_CANNOT_BE_ADDED,
 )
 from baserow.core.db import specific_queryset
 from baserow.core.exceptions import (
@@ -42,11 +43,15 @@ from baserow.core.handler import CoreHandler
 from baserow.core.models import WorkspaceUser
 from baserow.core.operations import ListWorkspaceUsersWorkspaceOperationType
 from baserow.core.two_factor_auth.models import TwoFactorAuthProviderModel
+from baserow.core.workspace_users import UsersNotFound, WorkspaceUsersService
 
 from .generated_serializers import ListWorkspaceUsersWithMemberDataSerializer
 from .serializers import (
+    AddWorkspaceUsersSerializer,
     GetWorkspaceUsersViewParamsSerializer,
     UpdateWorkspaceUserSerializer,
+    WorkspaceUserCandidateSerializer,
+    WorkspaceUserCandidatesQuerySerializer,
     WorkspaceUserSerializer,
 )
 
@@ -151,6 +156,105 @@ class WorkspaceUsersView(APIView, SearchableViewMixin, SortableViewMixin):
             )
 
         return Response(serializer.data)
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="workspace_id",
+                location=OpenApiParameter.PATH,
+                type=OpenApiTypes.INT,
+                description="Adds users to this workspace.",
+            ),
+        ],
+        tags=["Workspaces"],
+        operation_id="add_workspace_users",
+        description=(
+            "Adds users that already have an account to the workspace directly, "
+            "without an invitation. Users that are already members keep their "
+            "permissions. Requires workspace admin."
+        ),
+        request=AddWorkspaceUsersSerializer,
+        responses={
+            200: WorkspaceUserSerializer(many=True),
+            400: get_error_schema(
+                [
+                    "ERROR_USER_NOT_IN_GROUP",
+                    "ERROR_USER_INVALID_GROUP_PERMISSIONS",
+                    "ERROR_USERS_CANNOT_BE_ADDED",
+                    "ERROR_REQUEST_BODY_VALIDATION",
+                ]
+            ),
+            404: get_error_schema(["ERROR_GROUP_DOES_NOT_EXIST"]),
+        },
+    )
+    @transaction.atomic
+    @validate_body(AddWorkspaceUsersSerializer)
+    @map_exceptions(
+        {
+            WorkspaceDoesNotExist: ERROR_GROUP_DOES_NOT_EXIST,
+            UserNotInWorkspace: ERROR_USER_NOT_IN_GROUP,
+            UserInvalidWorkspacePermissionsError: ERROR_USER_INVALID_GROUP_PERMISSIONS,
+            UsersNotFound: ERROR_USERS_CANNOT_BE_ADDED,
+        }
+    )
+    def post(self, request, data, workspace_id):
+        workspace = CoreHandler().get_workspace(workspace_id)
+        workspace_users = WorkspaceUsersService().add_users(
+            request.user, workspace, data["user_ids"], data["permissions"]
+        )
+        return Response(WorkspaceUserSerializer(workspace_users, many=True).data)
+
+
+class WorkspaceUserCandidatesView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="workspace_id",
+                location=OpenApiParameter.PATH,
+                type=OpenApiTypes.INT,
+                description="The workspace to find users to add for.",
+            ),
+            OpenApiParameter(
+                name="search",
+                location=OpenApiParameter.QUERY,
+                type=OpenApiTypes.STR,
+                description="At least 3 characters of the name or email.",
+            ),
+        ],
+        tags=["Workspaces"],
+        operation_id="list_workspace_user_candidates",
+        description=(
+            "Finds active accounts, not yet members of the workspace, whose name or "
+            "email contains the search. Returns at most 20. Requires workspace admin."
+        ),
+        responses={
+            200: WorkspaceUserCandidateSerializer(many=True),
+            400: get_error_schema(
+                [
+                    "ERROR_USER_NOT_IN_GROUP",
+                    "ERROR_USER_INVALID_GROUP_PERMISSIONS",
+                    "ERROR_QUERY_PARAMETER_VALIDATION",
+                ]
+            ),
+            404: get_error_schema(["ERROR_GROUP_DOES_NOT_EXIST"]),
+        },
+    )
+    @map_exceptions(
+        {
+            WorkspaceDoesNotExist: ERROR_GROUP_DOES_NOT_EXIST,
+            UserNotInWorkspace: ERROR_USER_NOT_IN_GROUP,
+            UserInvalidWorkspacePermissionsError: ERROR_USER_INVALID_GROUP_PERMISSIONS,
+        }
+    )
+    @validate_query_parameters(WorkspaceUserCandidatesQuerySerializer)
+    def get(self, request, workspace_id, query_params):
+        workspace = CoreHandler().get_workspace(workspace_id)
+        users = WorkspaceUsersService().search_candidates(
+            request.user, workspace, query_params["search"]
+        )
+        return Response(WorkspaceUserCandidateSerializer(users, many=True).data)
 
 
 class WorkspaceUserView(APIView):

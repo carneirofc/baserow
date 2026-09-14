@@ -149,6 +149,30 @@ class UpdateWorkspaceUserSerializer(serializers.ModelSerializer):
         fields = ("permissions",)
 
 
+class AddWorkspaceUsersSerializer(serializers.Serializer):
+    user_ids = serializers.ListField(
+        child=serializers.IntegerField(), min_length=1, max_length=100
+    )
+    permissions = serializers.ChoiceField(
+        choices=["ADMIN", "MEMBER"],
+        default="MEMBER",
+        help_text="The permissions the added users get in the workspace.",
+    )
+
+
+class WorkspaceUserCandidateSerializer(serializers.ModelSerializer):
+    user_id = serializers.IntegerField(source="id")
+    name = serializers.CharField(source="first_name")
+
+    class Meta:
+        model = User
+        fields = ("user_id", "name", "email")
+
+
+class WorkspaceUserCandidatesQuerySerializer(serializers.Serializer):
+    search = serializers.CharField(min_length=3, max_length=255)
+
+
 class GetWorkspaceUsersViewParamsSerializer(serializers.Serializer):
     search = serializers.CharField(required=False, allow_null=True, default=None)
     sorts = serializers.CharField(required=False, allow_null=True, default=None)
