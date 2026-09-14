@@ -234,9 +234,8 @@ class OIDCHandler:
         if not email:
             raise AuthFlowError("The provider did not return an email address.")
 
-        if config.require_verified_email and not cls._is_email_verified(
-            claims, userinfo
-        ):
+        email_verified = cls._is_email_verified(claims, userinfo)
+        if config.require_verified_email and not email_verified:
             raise EmailNotVerified()
 
         roles = extract_roles(config, claims, userinfo)
@@ -250,6 +249,7 @@ class OIDCHandler:
                     "workspace_invitation_token"
                 )
                 or None,
+                email_verified=email_verified,
             ),
             request_data.get("original", ""),
             roles,

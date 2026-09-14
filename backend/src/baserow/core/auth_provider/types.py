@@ -19,3 +19,5 @@ class UserInfo:
     name: str
     language: Optional[str] = None
     workspace_invitation_token: Optional[str] = None
+    # True only when the identity provider explicitly vouches for the email.
+    email_verified: bool = False

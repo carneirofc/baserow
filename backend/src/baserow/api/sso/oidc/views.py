@@ -24,6 +24,7 @@ from baserow.core.sso.exceptions import (
 )
 from baserow.core.sso.oidc.config import get_oidc_provider
 from baserow.core.sso.oidc.handler import OIDCHandler
+from baserow.core.sso.oidc.linking import link_existing_account
 from baserow.core.sso.oidc.provider import OIDCAuthProviderType
 from baserow.core.sso.oidc.roles import enforce_role_access, sync_global_roles
 from baserow.core.sso.oidc.workspaces import sync_workspace_memberships
@@ -167,6 +168,8 @@ class OIDCCallbackView(APIView):
             raise
 
         provider = OIDCAuthProviderType().get_or_create_provider_model(config)
+        # Runs inside the transaction, so a refusal further down undoes the link.
+        link_existing_account(config, provider, user_info)
         user, _ = provider.get_type().get_or_create_user_and_sign_in(
             provider, user_info
         )

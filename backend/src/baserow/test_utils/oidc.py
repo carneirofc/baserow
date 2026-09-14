@@ -33,6 +33,7 @@ class FakeOIDCProvider:
     # The client roles the user holds, emitted the way Keycloak does.
     client_roles: Optional[List[str]] = None
     require_verified_email: bool = True
+    link_existing_accounts: bool = False
     session_lifetime_minutes: Optional[int] = None
     private_key: rsa.RSAPrivateKey = field(default=None)
 
@@ -53,6 +54,7 @@ class FakeOIDCProvider:
             scopes=["openid", "email", "profile"],
             roles_claim=f"resource_access.{self.client_id}.roles",
             require_verified_email=self.require_verified_email,
+            link_existing_accounts=self.link_existing_accounts,
             session_lifetime_minutes=self.session_lifetime_minutes,
         )
 

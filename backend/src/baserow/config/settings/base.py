@@ -1424,8 +1424,8 @@ BASEROW_USER_SOURCE_COUNTING_TASK_INTERVAL_MINUTES = int(
 # Set this to True to enable users to login with auth providers different than the one
 # they were originally created with. Read by `AuthProviderType.get_user_and_sign_in`,
 # which third party authentication plugins inherit.
-BASEROW_ALLOW_MULTIPLE_SSO_PROVIDERS_FOR_SAME_ACCOUNT = bool(
-    os.getenv("BASEROW_ALLOW_MULTIPLE_SSO_PROVIDERS_FOR_SAME_ACCOUNT", False)
+BASEROW_ALLOW_MULTIPLE_SSO_PROVIDERS_FOR_SAME_ACCOUNT = str_to_bool(
+    os.getenv("BASEROW_ALLOW_MULTIPLE_SSO_PROVIDERS_FOR_SAME_ACCOUNT", "")
 )
 
 # Env-configured OpenID Connect providers. Declared as a JSON list; parsed and

@@ -318,6 +318,19 @@ def test_require_verified_email_must_be_boolean():
         parse_oidc_providers_env(_env(provider))
 
 
+def test_link_existing_accounts_defaults_false_and_parses():
+    assert not parse_oidc_providers_env(_env(VALID_PROVIDER))[0].link_existing_accounts
+
+    provider = dict(VALID_PROVIDER, link_existing_accounts=True)
+    assert parse_oidc_providers_env(_env(provider))[0].link_existing_accounts
+
+
+def test_link_existing_accounts_must_be_boolean():
+    provider = dict(VALID_PROVIDER, link_existing_accounts="true")
+    with pytest.raises(ImproperlyConfigured):
+        parse_oidc_providers_env(_env(provider))
+
+
 def test_session_lifetime_defaults_and_parses():
     default = parse_oidc_providers_env(_env(VALID_PROVIDER))[0]
     assert default.session_lifetime_minutes == DEFAULT_SESSION_LIFETIME_MINUTES

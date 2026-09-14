@@ -400,7 +400,9 @@ consequences:
 * Leave `BASEROW_ALLOW_MULTIPLE_SSO_PROVIDERS_FOR_SAME_ACCOUNT` unset. By default, an
   account created through a different authentication method cannot be taken over through
   this provider — Baserow refuses with `errorDifferentProvider`. That env var removes the
-  check.
+  check instance-wide; to recover specific accounts use the `link_oidc_account` command or
+  the provider's `link_existing_accounts` key (see
+  [Recovering locked-out accounts](sso-oidc.md#recovering-locked-out-accounts)).
 
 ### The Baserow instance
 
@@ -443,7 +445,7 @@ toggle covers and how to set it through the API.
 | A configuration change had no effect | The provider JSON is read at startup. Restart the backend. |
 | The backend refuses to start after an upgrade | The provider JSON still uses the retired `groups_claim` / `staff_groups` / `superuser_groups` keys, or the old `workspace_mappings` shape. The error names the replacement for each. |
 | `errorAuthFlowError` immediately after the Keycloak redirect | The redirect URI registered on the client does not match `<BASEROW_PUBLIC_URL>/api/sso/oidc/callback/<name>/`, or the backend cannot reach the issuer. Check the backend log and step 8.2. |
-| `errorDifferentProvider` on login | The email already exists under another authentication method. See `BASEROW_ALLOW_MULTIPLE_SSO_PROVIDERS_FOR_SAME_ACCOUNT`. |
+| `errorDifferentProvider` on login | The email already exists under another authentication method, or the provider `name` was changed. See [Recovering locked-out accounts](sso-oidc.md#recovering-locked-out-accounts). |
 
 ## Appendix: configuring the realm declaratively
 

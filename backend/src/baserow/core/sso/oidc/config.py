@@ -101,6 +101,10 @@ class OIDCProviderConfig:
     # When True, a user whose `email_verified` claim is not true is refused, since the
     # email is what links the identity to a Baserow account.
     require_verified_email: bool = True
+    # When True, an existing non-staff account whose email the IdP explicitly verifies
+    # is linked to this provider on first sign-in instead of being refused as belonging
+    # to a different authentication provider.
+    link_existing_accounts: bool = False
     # How long a session started through this provider lasts before the user has to
     # sign in again, which is also when their client roles are re-synced. None falls
     # back to the global `REFRESH_TOKEN_LIFETIME`.
@@ -331,6 +335,13 @@ def _validate_provider(provider: Any, index: int) -> OIDCProviderConfig:
             f"boolean."
         )
 
+    link_existing_accounts = provider.get("link_existing_accounts", False)
+    if not isinstance(link_existing_accounts, bool):
+        raise ImproperlyConfigured(
+            f"BASEROW_OIDC_PROVIDERS[{index}]: 'link_existing_accounts' must be a "
+            f"boolean."
+        )
+
     session_lifetime_minutes = provider.get(
         "session_lifetime_minutes", DEFAULT_SESSION_LIFETIME_MINUTES
     )
@@ -360,6 +371,7 @@ def _validate_provider(provider: Any, index: int) -> OIDCProviderConfig:
         workspace_mappings=workspace_mappings,
         strict_membership=strict_membership,
         require_verified_email=require_verified_email,
+        link_existing_accounts=link_existing_accounts,
         session_lifetime_minutes=session_lifetime_minutes,
     )
 

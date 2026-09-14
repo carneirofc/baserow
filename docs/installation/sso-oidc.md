@@ -146,6 +146,7 @@ Each `workspace_mappings` entry:
 | Key | Default | Description |
 | --- | --- | --- |
 | `require_verified_email` | `true` | Refuse users whose `email_verified` claim is not `true` (`errorEmailNotVerified`). Set `false` only when the IdP's email addresses are authoritative, for example LDAP/AD-federated. |
+| `link_existing_accounts` | `false` | When `true`, an existing account created by another method (password, another provider) is linked to this provider on first sign-in instead of being refused with `errorDifferentProvider` — only when the IdP sends `email_verified: true` (even with `require_verified_email: false`), and never for staff or superuser accounts. See [Recovering locked-out accounts](#recovering-locked-out-accounts). |
 | `session_lifetime_minutes` | `480` | Lifetime of a session started through this provider. Once it ends the user signs in again, which is when role changes apply. Positive integer, or `null` to use `BASEROW_REFRESH_TOKEN_LIFETIME_HOURS`. |
 
 ### Retired keys
@@ -381,8 +382,10 @@ to whatever workspaces hold those ids there — re-check them after every copy.
    all is not gated: every IdP user may sign in, with no memberships.
 4. **Find or create the account** by email. New accounts are provisioned automatically,
    even when the instance has new signups disabled and even with `BASEROW_OIDC_ONLY`. An
-   existing account created by another method is refused with `errorDifferentProvider`
-   unless `BASEROW_ALLOW_MULTIPLE_SSO_PROVIDERS_FOR_SAME_ACCOUNT` is set. A deactivated
+   existing account created by another method is refused with `errorDifferentProvider`,
+   unless the provider sets `link_existing_accounts` (verified email, non-staff accounts
+   only — the account is then linked) or
+   `BASEROW_ALLOW_MULTIPLE_SSO_PROVIDERS_FOR_SAME_ACCOUNT` is set. A deactivated
    account is refused with `errorUserDeactivated`.
 5. **Reconcile global roles** (`superuser_roles`, `staff_roles`), grant and revoke.
 6. **Reconcile workspace memberships** for every mapping whose `client_role` the user holds:
@@ -718,10 +721,30 @@ A failed login redirects to `/login?error=<code>`, and the backend log has detai
 | `errorEmailNotVerified` | `require_verified_email` is on and `email_verified` is not `true`. | Verify the email in the IdP, trust federated emails, or set `require_verified_email: false`. |
 | `errorAuthFlowError` | Discovery or JWKS unreachable; token signature/issuer/audience/nonce check failed; userinfo `sub` mismatch; no email returned; `state`/PKCE mismatch; the IdP returned no code. | Read the backend log. Check network and TLS trust to the issuer, the exact `issuer` string, `client_id`, the redirect URI, and the client's PKCE method. |
 | `errorProviderDoesNotExist` | The callback or login URL names a provider not in `BASEROW_OIDC_PROVIDERS`. | Match the redirect URI's `<name>` to the provider `name`; restart after config changes. |
-| `errorDifferentProvider` | An account with this email exists under a different sign-in method. | Expected protection. Delete or rename the old account, or set `BASEROW_ALLOW_MULTIPLE_SSO_PROVIDERS_FOR_SAME_ACCOUNT` knowingly. |
+| `errorDifferentProvider` | An account with this email exists under a different sign-in method. | Expected protection. Link the account with the `link_oidc_account` command, or set `link_existing_accounts` on the provider. See [Recovering locked-out accounts](#recovering-locked-out-accounts). |
 | `errorUserDeactivated` | The Baserow account is deactivated. | Reactivate it in the admin area. |
 | `errorWorkspaceInvitationEmailMismatch` | The user followed a workspace invitation addressed to another email. | Sign in with the invited address, or send a new invitation. |
 | `errorSignupDisabled` | The signup layer refused to create the account. SSO provisioning normally bypasses the signup setting, so this indicates an unusual flow. | Check the backend log. |
+
+## Recovering locked-out accounts
+
+`errorDifferentProvider` means the account exists but is not linked to this provider:
+it was created with a password or another provider, or the provider's `name` changed
+(each `name` has its own links, so a rename locks every user out). Link it with the
+`link_oidc_account` management command — no restart needed:
+
+```sh
+# Docker Compose (all-in-one image: docker exec baserow ./baserow.sh backend-cmd manage ...)
+docker compose exec backend /baserow/backend/docker/docker-entrypoint.sh manage link_oidc_account list alice@example.com
+docker compose exec backend /baserow/backend/docker/docker-entrypoint.sh manage link_oidc_account link keycloak --email alice@example.com
+# after renaming a provider from "old-name" to "keycloak"
+docker compose exec backend /baserow/backend/docker/docker-entrypoint.sh manage link_oidc_account link keycloak --from-provider old-name
+docker compose exec backend /baserow/backend/docker/docker-entrypoint.sh manage link_oidc_account unlink keycloak --email alice@example.com
+```
+
+`link` requires the provider to be in `BASEROW_OIDC_PROVIDERS` and works for staff
+accounts too. To link many regular accounts without operator action, set
+`link_existing_accounts: true` on the provider instead.
 
 ## Security notes
 
@@ -729,6 +752,9 @@ A failed login redirects to `/login?error=<code>`, and the backend log has detai
   can sign in as the Baserow account with that address. Keep IdP self-registration off,
   keep `require_verified_email` on unless the IdP's addresses are authoritative, and leave
   `BASEROW_ALLOW_MULTIPLE_SSO_PROVIDERS_FOR_SAME_ACCOUNT` unset.
+* **`link_existing_accounts` trusts the IdP with existing accounts.** Enable it only on an
+  IdP whose verified emails are authoritative. Staff and superuser accounts are never
+  linked automatically; link them with `link_oidc_account`.
 * **Deny by default only applies when something is mapped.** A provider with no
   `superuser_roles`, `staff_roles` or `workspace_mappings` lets every user of that IdP
   create an account.
