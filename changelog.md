@@ -1,5 +1,11 @@
 # Changelog
 
+## Released 0.9.1
+
+### Bug fixes
+* [Database] Importing rows with upsert fields but no import mode pairs duplicate match values in order again instead of failing with an ambiguous matches error.
+
+
 ## Released 0.9.0
 
 ### New features
