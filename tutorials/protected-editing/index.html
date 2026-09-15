@@ -8,13 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://carneirofc.github.io/baserow/development/create-a-template/">
+        <link rel="canonical" href="https://carneirofc.github.io/baserow/tutorials/protected-editing/">
       
       
-        <link rel="prev" href="../debugging/">
+        <link rel="prev" href="../prefill-forms/">
       
       
-        <link rel="next" href="../justfile/">
+        <link rel="next" href="../../apis/rest-api/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -22,7 +22,7 @@
     
     
       
-        <title>Create a template - Baserow (carneirofc fork) Docs</title>
+        <title>Protected editing - Baserow (carneirofc fork) Docs</title>
       
     
     
@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#create-a-template" class="md-skip">
+        <a href="#protected-editing" class="md-skip">
           Skip to content
         </a>
       
@@ -108,7 +108,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Create a template
+              Protected editing
             
           </span>
         </div>
@@ -250,11 +250,13 @@
         
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../../tutorials/understanding-baserow-formulas/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../understanding-baserow-formulas/" class="md-tabs__link">
           
   
   Tutorials
@@ -304,13 +306,11 @@
         
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../development-environment/" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../development/development-environment/" class="md-tabs__link">
           
   
   Development
@@ -875,7 +875,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../sso-saml/" class="md-nav__link">
+      <a href="../../development/sso-saml/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1005,23 +1005,28 @@
       
   
   
+    
   
   
+  
     
     
     
-      
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
             
   
   <span class="md-ellipsis">
@@ -1032,7 +1037,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             Tutorials
@@ -1046,7 +1051,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/understanding-baserow-formulas/" class="md-nav__link">
+      <a href="../understanding-baserow-formulas/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1067,7 +1072,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/debugging-connection-issues/" class="md-nav__link">
+      <a href="../debugging-connection-issues/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1088,7 +1093,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/prefill-forms/" class="md-nav__link">
+      <a href="../prefill-forms/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1106,10 +1111,30 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../tutorials/protected-editing/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Protected editing
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -1118,6 +1143,62 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#enabling-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      Enabling it
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      What changes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      Logging
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-it-doesnt-do" class="md-nav__link">
+    <span class="md-ellipsis">
+      What it doesn't do
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1497,28 +1578,23 @@
       
   
   
-    
   
   
-  
     
     
     
       
-        
-        
-      
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -1529,7 +1605,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             Development
@@ -1543,7 +1619,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../development-environment/" class="md-nav__link">
+      <a href="../../development/development-environment/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1564,7 +1640,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../running-the-dev-env-locally/" class="md-nav__link">
+      <a href="../../development/running-the-dev-env-locally/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1585,7 +1661,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../running-the-dev-env-with-docker/" class="md-nav__link">
+      <a href="../../development/running-the-dev-env-with-docker/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1606,7 +1682,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../directory-structure/" class="md-nav__link">
+      <a href="../../development/directory-structure/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1627,7 +1703,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tools/" class="md-nav__link">
+      <a href="../../development/tools/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1648,7 +1724,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../code-quality/" class="md-nav__link">
+      <a href="../../development/code-quality/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1669,7 +1745,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../debugging/" class="md-nav__link">
+      <a href="../../development/debugging/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1687,30 +1763,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    Create a template
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../development/create-a-template/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1719,104 +1775,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#build-your-own" class="md-nav__link">
-    <span class="md-ellipsis">
-      Build your own
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#exporting-the-applications" class="md-nav__link">
-    <span class="md-ellipsis">
-      Exporting the applications
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Exporting the applications">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#development-environment" class="md-nav__link">
-    <span class="md-ellipsis">
-      Development environment
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#cloudron-environment" class="md-nav__link">
-    <span class="md-ellipsis">
-      Cloudron environment
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#ubuntu-environment" class="md-nav__link">
-    <span class="md-ellipsis">
-      Ubuntu environment
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#the-export" class="md-nav__link">
-    <span class="md-ellipsis">
-      The export
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#creating-the-template-file" class="md-nav__link">
-    <span class="md-ellipsis">
-      Creating the template file
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#synchronizing-the-template" class="md-nav__link">
-    <span class="md-ellipsis">
-      Synchronizing the template
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1829,7 +1787,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../justfile/" class="md-nav__link">
+      <a href="../../development/justfile/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1850,7 +1808,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../intellij-setup/" class="md-nav__link">
+      <a href="../../development/intellij-setup/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1871,7 +1829,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../feature-flags/" class="md-nav__link">
+      <a href="../../development/feature-flags/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1892,7 +1850,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../e2e-testing/" class="md-nav__link">
+      <a href="../../development/e2e-testing/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1913,7 +1871,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../metrics-and-logs/" class="md-nav__link">
+      <a href="../../development/metrics-and-logs/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1934,7 +1892,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../running-tests/" class="md-nav__link">
+      <a href="../../development/running-tests/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1955,7 +1913,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../building-and-running-production-images/" class="md-nav__link">
+      <a href="../../development/building-and-running-production-images/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1976,7 +1934,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../ci-cd/" class="md-nav__link">
+      <a href="../../development/ci-cd/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1997,7 +1955,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../mcp-server/" class="md-nav__link">
+      <a href="../../development/mcp-server/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2018,7 +1976,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../read-replicas/" class="md-nav__link">
+      <a href="../../development/read-replicas/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2039,7 +1997,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../vscode-setup/" class="md-nav__link">
+      <a href="../../development/vscode-setup/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2060,7 +2018,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../zed-setup/" class="md-nav__link">
+      <a href="../../development/zed-setup/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2903,78 +2861,36 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#build-your-own" class="md-nav__link">
+  <a href="#enabling-it" class="md-nav__link">
     <span class="md-ellipsis">
-      Build your own
+      Enabling it
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#exporting-the-applications" class="md-nav__link">
+  <a href="#what-changes" class="md-nav__link">
     <span class="md-ellipsis">
-      Exporting the applications
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Exporting the applications">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#development-environment" class="md-nav__link">
-    <span class="md-ellipsis">
-      Development environment
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#cloudron-environment" class="md-nav__link">
-    <span class="md-ellipsis">
-      Cloudron environment
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#ubuntu-environment" class="md-nav__link">
-    <span class="md-ellipsis">
-      Ubuntu environment
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#the-export" class="md-nav__link">
-    <span class="md-ellipsis">
-      The export
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#creating-the-template-file" class="md-nav__link">
-    <span class="md-ellipsis">
-      Creating the template file
+      What changes
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#synchronizing-the-template" class="md-nav__link">
+  <a href="#logging" class="md-nav__link">
     <span class="md-ellipsis">
-      Synchronizing the template
+      Logging
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-it-doesnt-do" class="md-nav__link">
+    <span class="md-ellipsis">
+      What it doesn't do
     </span>
   </a>
   
@@ -2995,7 +2911,7 @@
                   
 
   
-    <a href="https://github.com/carneirofc/baserow/edit/develop/docs/development/create-a-template.md" title="Edit this page" class="md-content__button md-icon">
+    <a href="https://github.com/carneirofc/baserow/edit/develop/docs/tutorials/protected-editing.md" title="Edit this page" class="md-content__button md-icon">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
     </a>
@@ -3003,96 +2919,35 @@
   
 
 
-<h1 id="create-a-template">Create a template<a class="headerlink" href="#create-a-template" title="Permanent link">&para;</a></h1>
-<p>Templates are a starting point for other users. They can use them for inspiration and
-easily install them into their workspaces. A template consists of one or more applications
-that will be copied into the desired workspace if a user decides to install it. It is also
-possible for the user to see an preview of the template before installing.</p>
-<h2 id="build-your-own">Build your own<a class="headerlink" href="#build-your-own" title="Permanent link">&para;</a></h2>
-<p>If you want to create your own template, you first need to make one in an installation
-of Baserow. You need at least version 1.1 because that contains the exporting
-functionality that you are going to need later.</p>
-<p>The first step is creating a new empty workspace. It doesn't matter what it is named. Next
-you can create the applications that you want to have in your template in the workspace
-you just created.</p>
-<p>If you for example want to create a content calendar, you might want to create a
-database named <code>Content Calendar</code> that contains three tables names <code>Pipeline</code>,
-<code>Campaigns</code> and <code>Authors</code>. Once you have filled in all the tables in the way you want,
-you can proceed to the next step, which is exporting the workspace you just made to then
-create a template based off it.</p>
-<h2 id="exporting-the-applications">Exporting the applications<a class="headerlink" href="#exporting-the-applications" title="Permanent link">&para;</a></h2>
-<p>It is possible to make an export of all the applications that are in a workspace. When a
-user installs a template, then that export is used to import the applications
-into the user's desired workspace. It is only possible to make this export via the command
-line interface of Baserow.</p>
-<p>Before you can export the application, you first need to figure out what the ID of your
-workspace is. You will see a list of all your workspaces when you click on the name of your
-workspace in the sidebar. If you hover over a workspace there, you will see the click-able
-three dots. If you click on that you will see another context menu containing the name
-of that workspace, and a number between brackets. That number is your workspace ID.</p>
-<p>Now that you have the workspace ID that contains your template, you need to export it to
-JSON format. In order to do that you need access to the command line of your Baserow
-environment. This could be different depending on how your environment is installed.
-A couple of examples:</p>
-<h3 id="development-environment">Development environment<a class="headerlink" href="#development-environment" title="Permanent link">&para;</a></h3>
-<p>Inside the backend container you need to execute the following command:</p>
-<div class="highlight"><pre><span></span><code>$ python src/baserow/manage.py export_workspace_applications YOUR_WORKSPACE_ID --indent
-</code></pre></div>
-<h3 id="cloudron-environment">Cloudron environment<a class="headerlink" href="#cloudron-environment" title="Permanent link">&para;</a></h3>
-<p>By logging into your Cloudron environment, you can access to the terminal of your
-Baserow app. There you can enter the following command to export your application:</p>
-<div class="highlight"><pre><span></span><code>$ /app/code/env/bin/python /app/code/baserow/backend/src/baserow/manage.py export_workspace_applications YOUR_WORKSPACE_ID --indent --settings=cloudron.settings
-</code></pre></div>
-<h3 id="ubuntu-environment">Ubuntu environment<a class="headerlink" href="#ubuntu-environment" title="Permanent link">&para;</a></h3>
-<p>Connect to your server via SSH and execute the following commands:</p>
-<div class="highlight"><pre><span></span><code>$ cd /baserow
-$ source backend/env/bin/activate
-$ export DJANGO_SETTINGS_MODULE='baserow.config.settings.base'
-$ export DATABASE_PASSWORD='yourpassword'
-$ export DATABASE_HOST='localhost'
-$ baserow export_workspace_applications YOUR_WORKSPACE_ID --indent
-</code></pre></div>
-<h3 id="the-export">The export<a class="headerlink" href="#the-export" title="Permanent link">&para;</a></h3>
-<p>After running the management command, you will notice that two files have created in
-your working directory, <code>workspace_YOUR_WORKSPACE_ID.json</code> and <code>workspace_YOUR_WORKSPACE_ID.zip</code>. The
-JSON file contains the structure of your export, which are the databases, tables,
-fields, views and rows. The ZIP file has all uploaded files related to the exported
-applications. A file could for example be included in the ZIP file if a table contains
-a file field and files have been uploaded.</p>
-<h2 id="creating-the-template-file">Creating the template file<a class="headerlink" href="#creating-the-template-file" title="Permanent link">&para;</a></h2>
-<p>Inside the <code>backend/templates</code> directory you will find all the existing templates. You
-need to create a new JSON file here that has the same content as shown below. You can
-replace the values with something that matches your template. We keep all the templates
-as JSON files so that everyone who self hosts also has access them.</p>
+<h1 id="protected-editing">Protected editing<a class="headerlink" href="#protected-editing" title="Permanent link">&para;</a></h1>
+<p>Protected editing is a per-table safeguard against accidental data changes in the
+web interface. By default Baserow saves every change as soon as you make it. With
+protected editing enabled, changes wait for an explicit OK.</p>
+<h2 id="enabling-it">Enabling it<a class="headerlink" href="#enabling-it" title="Permanent link">&para;</a></h2>
+<p>Open the table's menu in the sidebar (the three dots next to the table name) and click
+<strong>Protected editing</strong>. A check mark shows it is enabled. Anyone who can rename the
+table can toggle it. Toggling is recorded in the audit log.</p>
+<h2 id="what-changes">What changes<a class="headerlink" href="#what-changes" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>name</strong>: The name of the template that is visible to the user.</li>
-<li><strong>icon</strong>: An icon class name that is visible to the user (<code>iconoir-{icon}</code> or <code>baserow-icon-{icon}</code>).</li>
-<li><strong>keyword</strong>: Invisible keywords will only be used to improve searching.</li>
-<li><strong>categories</strong>: The categories that the template belongs to.</li>
-<li><strong>export</strong>: The export value must contain the contents of the exported JSON file
-    after running the <code>export_workspace_applications</code>. This file is named
-    <code>workspace_YOUR_WORKSPACE_ID.json</code>.</li>
+<li><strong>Editing cells</strong> in the grid or gallery view, or fields in the expanded row modal,
+  no longer saves right away. A bar at the bottom of the view shows the number of
+  unsaved changes with <strong>Save</strong> and <strong>Discard</strong> buttons. <code>Ctrl/Cmd + S</code> saves too.
+  Saving sends all changes in a single request.</li>
+<li><strong>Creating, pasting, clearing, deleting and moving rows</strong> ask for confirmation first.</li>
+<li><strong>Undo and redo</strong> (<code>Ctrl/Cmd + Z</code>) ask for confirmation first.</li>
+<li><strong>Leaving the table or switching views</strong> with unsaved changes asks whether to
+  discard them. Closing or reloading the browser tab shows the browser's warning.</li>
+<li>Protected editing can't be disabled while the table has unsaved changes.</li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="p">{</span>
-<span class="w">    </span><span class="nt">"baserow_template_version"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Content Calendar"</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"icon"</span><span class="p">:</span><span class="w"> </span><span class="s2">"iconoir-user"</span><span class="p">,</span>
-<span class="w">    </span><span class="nt">"keywords"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"Example"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Template"</span><span class="p">,</span><span class="w"> </span><span class="s2">"For"</span><span class="p">,</span><span class="w"> </span><span class="s2">"Search"</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">"categories"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"Test category 1"</span><span class="p">],</span>
-<span class="w">    </span><span class="nt">"export"</span><span class="p">:</span><span class="w"> </span><span class="p">[]</span>
-<span class="p">}</span>
-</code></pre></div>
-<p>The export has also generated a ZIP file containing all the related files. This file is
-named <code>workspace_YOUR_WORKSPACE_ID.zip</code>. It must be placed inside the <code>backend/templates</code>
-directory and should have the same name as the template JSON file. If for example the
-template is called <code>applicant-tracker.json</code>, the ZIP file must be named
-<code>applicant-tracker.zip</code>.</p>
-<h2 id="synchronizing-the-template">Synchronizing the template<a class="headerlink" href="#synchronizing-the-template" title="Permanent link">&para;</a></h2>
-<p>In order to try out your template, you need to run the <code>sync_templates</code> management
-command. This will make sure that a copy of the template is added to the database so
-that the user can see a quick preview.</p>
-<p>If everything works, you could create a merge request and share your template with the
-community.</p>
+<h2 id="logging">Logging<a class="headerlink" href="#logging" title="Permanent link">&para;</a></h2>
+<p>Every saved change goes through the regular row actions, so it is recorded in the
+staff audit log (<strong>Admin → Audit log</strong>). Row updates include the values before and
+after the change, and deleted rows include their values.</p>
+<h2 id="what-it-doesnt-do">What it doesn't do<a class="headerlink" href="#what-it-doesnt-do" title="Permanent link">&para;</a></h2>
+<p>Protected editing is a user interface safeguard, not a permission. The REST API,
+database tokens, integrations, automations and form submissions keep writing directly.
+These writes are still recorded in the audit log. To restrict who can change data, use
+<a href="../../installation/workspace-access/">workspace and database access</a>.</p>
 
 
 
