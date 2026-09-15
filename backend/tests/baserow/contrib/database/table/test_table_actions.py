@@ -238,9 +238,9 @@ def test_can_undo_redo_update_table_edit_confirmation(data_fixture):
     )
     scopes = [ApplicationActionScopeType.value(application_id=database.id)]
 
-    table = action_type_registry.get_by_type(
-        UpdateTableEditConfirmationActionType
-    ).do(user, table, require_edit_confirmation=True)
+    table = action_type_registry.get_by_type(UpdateTableEditConfirmationActionType).do(
+        user, table, require_edit_confirmation=True
+    )
     table.refresh_from_db()
     assert table.require_edit_confirmation is True
     assert table.name == "Protected"
@@ -258,6 +258,52 @@ def test_can_undo_redo_update_table_edit_confirmation(data_fixture):
     )
     table.refresh_from_db()
     assert table.require_edit_confirmation is True
+
+
+@pytest.mark.django_db
+@pytest.mark.undo_redo
+def test_undo_redo_update_table_edit_confirmation_to_same_value(data_fixture):
+    session_id = "session-id"
+    user = data_fixture.create_user(session_id=session_id)
+    database = data_fixture.create_database_application(user=user)
+    table = data_fixture.create_database_table(database=database, user=user)
+    table.require_edit_confirmation = True
+    table.save()
+    scopes = [ApplicationActionScopeType.value(application_id=database.id)]
+
+    action_type_registry.get_by_type(UpdateTableEditConfirmationActionType).do(
+        user, table, require_edit_confirmation=True
+    )
+
+    actions_undone = ActionHandler.undo(user, scopes, session_id)
+    assert_undo_redo_actions_are_valid(
+        actions_undone, [UpdateTableEditConfirmationActionType]
+    )
+    table.refresh_from_db()
+    assert table.require_edit_confirmation is True
+
+
+@pytest.mark.django_db
+@pytest.mark.undo_redo
+def test_undo_update_table_edit_confirmation_keeps_later_rename(data_fixture):
+    session_id = "session-id"
+    user = data_fixture.create_user(session_id=session_id)
+    database = data_fixture.create_database_application(user=user)
+    table = data_fixture.create_database_table(
+        database=database, user=user, name="Original"
+    )
+    scopes = [ApplicationActionScopeType.value(application_id=database.id)]
+
+    action_type_registry.get_by_type(UpdateTableEditConfirmationActionType).do(
+        user, table, require_edit_confirmation=True
+    )
+    TableHandler().update_table(user, table, name="Renamed outside undo")
+
+    ActionHandler.undo(user, scopes, session_id)
+
+    table.refresh_from_db()
+    assert table.require_edit_confirmation is False
+    assert table.name == "Renamed outside undo"
 
 
 @pytest.mark.django_db

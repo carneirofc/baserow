@@ -310,6 +310,65 @@ def test_update_database_table(send_mock, data_fixture):
 
 
 @pytest.mark.django_db
+@patch("baserow.contrib.database.table.signals.table_updated.send")
+def test_update_database_table_require_edit_confirmation(send_mock, data_fixture):
+    user = data_fixture.create_user()
+    user_2 = data_fixture.create_user()
+    table = data_fixture.create_database_table(user=user, name="Original")
+
+    handler = TableHandler()
+
+    with pytest.raises(UserNotInWorkspace):
+        handler.update_table(user=user_2, table=table, require_edit_confirmation=True)
+
+    handler.update_table(user=user, table=table, require_edit_confirmation=True)
+
+    send_mock.assert_called_once()
+    assert send_mock.call_args[1]["table"].id == table.id
+
+    table.refresh_from_db()
+    assert table.require_edit_confirmation is True
+    # Values that are not provided are left untouched.
+    assert table.name == "Original"
+
+    handler.update_table(user=user, table=table, name="Renamed")
+    table.refresh_from_db()
+    assert table.name == "Renamed"
+    assert table.require_edit_confirmation is True
+
+
+@pytest.mark.django_db
+def test_update_database_table_by_id_require_edit_confirmation(data_fixture):
+    user = data_fixture.create_user()
+    table = data_fixture.create_database_table(user=user, name="Original")
+
+    handler = TableHandler()
+    updated = handler.update_table_by_id(user, table.id, require_edit_confirmation=True)
+
+    assert updated.id == table.id
+    table.refresh_from_db()
+    assert table.require_edit_confirmation is True
+    assert table.name == "Original"
+
+    handler.update_table_by_id(user, table.id, require_edit_confirmation=False)
+    table.refresh_from_db()
+    assert table.require_edit_confirmation is False
+
+    with pytest.raises(TableDoesNotExist):
+        handler.update_table_by_id(user, 0, require_edit_confirmation=True)
+
+
+@pytest.mark.django_db
+def test_new_table_does_not_require_edit_confirmation(data_fixture):
+    user = data_fixture.create_user()
+    database = data_fixture.create_database_application(user=user)
+
+    table, _ = TableHandler().create_table(user, database, name="Table")
+
+    assert table.require_edit_confirmation is False
+
+
+@pytest.mark.django_db
 @patch("baserow.contrib.database.table.signals.tables_reordered.send")
 def test_order_tables(send_mock, data_fixture):
     user = data_fixture.create_user()

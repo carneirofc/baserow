@@ -147,6 +147,70 @@ def test_import_export_database(data_fixture):
 
 
 @pytest.mark.django_db
+def test_import_export_database_keeps_require_edit_confirmation(data_fixture):
+    user = data_fixture.create_user()
+    workspace = data_fixture.create_workspace(user=user)
+    database = data_fixture.create_database_application(workspace=workspace)
+    protected = data_fixture.create_database_table(database=database, order=1)
+    protected.require_edit_confirmation = True
+    protected.save()
+    data_fixture.create_text_field(table=protected, primary=True)
+    unprotected = data_fixture.create_database_table(database=database, order=2)
+    data_fixture.create_text_field(table=unprotected, primary=True)
+
+    database_type = application_type_registry.get("database")
+    config = ImportExportConfig(include_permission_data=False)
+    serialized = database_type.export_serialized(database, config)
+
+    flags = {t["id"]: t["require_edit_confirmation"] for t in serialized["tables"]}
+    assert flags == {protected.id: True, unprotected.id: False}
+
+    imported_workspace = data_fixture.create_workspace(user=user)
+    id_mapping = {}
+    imported_database = database_type.import_serialized(
+        imported_workspace, serialized, config, id_mapping, None, None
+    )
+
+    imported_tables = {
+        t.id: t for t in imported_database.table_set.all().order_by("order")
+    }
+    imported_protected = imported_tables[id_mapping["database_tables"][protected.id]]
+    imported_unprotected = imported_tables[
+        id_mapping["database_tables"][unprotected.id]
+    ]
+    assert imported_protected.require_edit_confirmation is True
+    assert imported_unprotected.require_edit_confirmation is False
+
+
+@pytest.mark.django_db
+def test_import_database_without_require_edit_confirmation_defaults_to_false(
+    data_fixture,
+):
+    user = data_fixture.create_user()
+    workspace = data_fixture.create_workspace(user=user)
+    database = data_fixture.create_database_application(workspace=workspace)
+    table = data_fixture.create_database_table(database=database)
+    table.require_edit_confirmation = True
+    table.save()
+    data_fixture.create_text_field(table=table, primary=True)
+
+    database_type = application_type_registry.get("database")
+    config = ImportExportConfig(include_permission_data=False)
+    serialized = database_type.export_serialized(database, config)
+    # Exports made before protected editing existed don't contain the key.
+    for serialized_table in serialized["tables"]:
+        del serialized_table["require_edit_confirmation"]
+
+    imported_workspace = data_fixture.create_workspace(user=user)
+    imported_database = database_type.import_serialized(
+        imported_workspace, serialized, config, {}, None, None
+    )
+
+    imported_table = imported_database.table_set.get()
+    assert imported_table.require_edit_confirmation is False
+
+
+@pytest.mark.django_db
 def test_create_application_and_init_with_data(data_fixture):
     core_handler = CoreHandler()
     user = data_fixture.create_user()
