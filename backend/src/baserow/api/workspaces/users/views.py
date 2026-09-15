@@ -26,6 +26,8 @@ from baserow.api.exceptions import (
 from baserow.api.mixins import SearchableViewMixin, SortableViewMixin
 from baserow.api.schemas import get_error_schema
 from baserow.api.user.registries import member_data_registry
+from baserow.api.utils import validate_data
+from baserow.api.workspaces.teams.errors import ERROR_TEAM_DOES_NOT_EXIST
 from baserow.api.workspaces.users.errors import (
     ERROR_CANNOT_DELETE_YOURSELF_FROM_GROUP,
     ERROR_GROUP_USER_DOES_NOT_EXIST,
@@ -42,6 +44,8 @@ from baserow.core.exceptions import (
 from baserow.core.handler import CoreHandler
 from baserow.core.models import WorkspaceUser
 from baserow.core.operations import ListWorkspaceUsersWorkspaceOperationType
+from baserow.core.registries import workspace_users_add_option_registry
+from baserow.core.teams.exceptions import TeamDoesNotExist
 from baserow.core.two_factor_auth.models import TwoFactorAuthProviderModel
 from baserow.core.workspace_users import UsersNotFound, WorkspaceUsersService
 
@@ -53,6 +57,7 @@ from .serializers import (
     WorkspaceUserCandidateSerializer,
     WorkspaceUserCandidatesQuerySerializer,
     WorkspaceUserSerializer,
+    get_add_workspace_users_serializer,
 )
 
 
@@ -168,8 +173,10 @@ class WorkspaceUsersView(APIView, SearchableViewMixin, SortableViewMixin):
         tags=["Workspaces"],
         operation_id="add_workspace_users",
         description=(
-            "Adds users that already have an account to the workspace. Users that "
-            "are already members keep their permissions. Requires workspace admin."
+            "Adds users that already have an account to the workspace, optionally "
+            "straight into teams of the workspace and with a default access level. "
+            "Users that are already members keep their permissions but still join "
+            "the teams. Requires workspace admin."
         ),
         request=AddWorkspaceUsersSerializer,
         responses={
@@ -182,23 +189,37 @@ class WorkspaceUsersView(APIView, SearchableViewMixin, SortableViewMixin):
                     "ERROR_REQUEST_BODY_VALIDATION",
                 ]
             ),
-            404: get_error_schema(["ERROR_GROUP_DOES_NOT_EXIST"]),
+            404: get_error_schema(
+                ["ERROR_GROUP_DOES_NOT_EXIST", "ERROR_TEAM_DOES_NOT_EXIST"]
+            ),
         },
     )
     @transaction.atomic
-    @validate_body(AddWorkspaceUsersSerializer)
     @map_exceptions(
         {
             WorkspaceDoesNotExist: ERROR_GROUP_DOES_NOT_EXIST,
             UserNotInWorkspace: ERROR_USER_NOT_IN_GROUP,
             UserInvalidWorkspacePermissionsError: ERROR_USER_INVALID_GROUP_PERMISSIONS,
             UsersNotFound: ERROR_USERS_CANNOT_BE_ADDED,
+            TeamDoesNotExist: ERROR_TEAM_DOES_NOT_EXIST,
         }
     )
-    def post(self, request, data, workspace_id):
+    def post(self, request, workspace_id):
+        data = validate_data(
+            get_add_workspace_users_serializer(), request.data, return_validated=True
+        )
         workspace = CoreHandler().get_workspace(workspace_id)
+        options = {
+            option_type.type: data.get(option_type.type)
+            for option_type in workspace_users_add_option_registry.get_all()
+        }
         workspace_users = WorkspaceUsersService().add_users(
-            request.user, workspace, data["user_ids"], data["permissions"]
+            request.user,
+            workspace,
+            data["user_ids"],
+            data["permissions"],
+            team_ids=data["team_ids"],
+            options=options,
         )
         return Response(WorkspaceUserSerializer(workspace_users, many=True).data)
 

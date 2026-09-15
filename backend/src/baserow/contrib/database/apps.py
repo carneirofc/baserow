@@ -1036,6 +1036,15 @@ class DatabaseConfig(AppConfig):
 
         operation_type_registry.register(ManageDatabaseAccessWorkspaceOperationType())
 
+        from baserow.api.user.registries import member_data_registry
+        from baserow.core.registries import workspace_users_add_option_registry
+
+        from .access.add_options import DefaultAccessLevelAddOptionType
+        from .access.member_data_types import DefaultAccessMemberDataType
+
+        member_data_registry.register(DefaultAccessMemberDataType())
+        workspace_users_add_option_registry.register(DefaultAccessLevelAddOptionType())
+
         from baserow.core.registries import permission_manager_type_registry
 
         from .access.permission_manager import DatabaseAccessPermissionManagerType

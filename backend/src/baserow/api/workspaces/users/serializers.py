@@ -8,6 +8,7 @@ from baserow.api.mixins import UnknownFieldRaisesExceptionSerializerMixin
 from baserow.api.two_factor_auth.serializers import TwoFactorAuthSerializer
 from baserow.api.user.registries import member_data_registry
 from baserow.core.models import WorkspaceUser
+from baserow.core.registries import workspace_users_add_option_registry
 
 User = get_user_model()
 
@@ -157,6 +158,29 @@ class AddWorkspaceUsersSerializer(serializers.Serializer):
         choices=["ADMIN", "MEMBER"],
         default="MEMBER",
         help_text="The permissions the added users get in the workspace.",
+    )
+    team_ids = serializers.ListField(
+        child=serializers.IntegerField(),
+        required=False,
+        default=list,
+        max_length=100,
+        help_text="Teams of the workspace the users join.",
+    )
+
+
+def get_add_workspace_users_serializer():
+    """
+    Returns `AddWorkspaceUsersSerializer` extended with the field of every registered
+    `WorkspaceUsersAddOptionType`. It's built when used because apps register their
+    options after this module is imported.
+    """
+
+    attrs = {
+        option_type.type: option_type.get_serializer_field()
+        for option_type in workspace_users_add_option_registry.get_all()
+    }
+    return type(
+        "AddWorkspaceUsersWithOptionsSerializer", (AddWorkspaceUsersSerializer,), attrs
     )
 
 
