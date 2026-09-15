@@ -439,6 +439,11 @@ class CoreConfig(AppConfig):
         user_data_registry.register(GlobalPermissionsDataType())
         user_data_registry.register(UnreadUserNotificationsCountPermissionsDataType())
 
+        from baserow.api.user.registries import member_data_registry
+        from baserow.core.teams.member_data_types import TeamsMemberDataType
+
+        member_data_registry.register(TeamsMemberDataType())
+
         from baserow.core.auth_provider.auth_provider_types import (
             PasswordAuthProviderType,
         )

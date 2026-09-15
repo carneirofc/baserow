@@ -1,11 +1,12 @@
 """
-Adding users that already have an account to a workspace.
+Adding users that already have an account to a workspace, optionally straight into
+teams and with extra options registered by other apps.
 
 With SSO the IdP only decides who may sign in; workspace admins then pick the members of
 their workspace from the accounts that exist.
 """
 
-from typing import Iterable, List
+from typing import Any, Dict, Iterable, List, Optional
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
@@ -18,6 +19,11 @@ from baserow.core.models import (
     WorkspaceUser,
 )
 from baserow.core.operations import AddWorkspaceUsersWorkspaceOperationType
+from baserow.core.registries import workspace_users_add_option_registry
+from baserow.core.teams.exceptions import TeamDoesNotExist
+from baserow.core.teams.handler import TeamHandler
+from baserow.core.teams.models import Team
+from baserow.core.teams.operations import ManageTeamMembersWorkspaceOperationType
 
 User = get_user_model()
 
@@ -73,12 +79,17 @@ class WorkspaceUsersService:
         workspace: Workspace,
         user_ids: Iterable[int],
         permissions: str = WORKSPACE_USER_PERMISSION_MEMBER,
+        team_ids: Iterable[int] = (),
+        options: Optional[Dict[str, Any]] = None,
     ) -> List[WorkspaceUser]:
         """
-        Adds the users to the workspace. Users that are already members keep their
-        current permissions.
+        Adds the users to the workspace, then to the given teams, then applies the
+        registered add options whose value isn't `None`. Users that are already
+        members keep their current permissions, but still join the teams and get
+        the options. Run it inside a transaction so a failure adds nothing.
 
-        :raises UsersNotFound: When any of the users can't be added; nothing is added.
+        :raises UsersNotFound: When any of the users can't be added.
+        :raises TeamDoesNotExist: When a team doesn't belong to the workspace.
         """
 
         self._check(actor, workspace)
@@ -87,9 +98,44 @@ class WorkspaceUsersService:
         missing = user_ids - {user.id for user in users}
         if missing:
             raise UsersNotFound(sorted(missing))
+        teams = self._get_teams(actor, workspace, team_ids)
 
         handler = CoreHandler()
-        return [
+        workspace_users = [
             handler.add_user_to_workspace(workspace, user, permissions=permissions)
             for user in users
         ]
+
+        team_handler = TeamHandler()
+        for team in teams:
+            team_handler.add_members(team, [user.id for user in users])
+
+        options = options or {}
+        for option_type in workspace_users_add_option_registry.get_all():
+            if options.get(option_type.type) is not None:
+                option_type.apply(actor, workspace, users, options[option_type.type])
+
+        return workspace_users
+
+    def _get_teams(
+        self, actor: AbstractUser, workspace: Workspace, team_ids: Iterable[int]
+    ) -> List[Team]:
+        team_ids = set(team_ids)
+        if not team_ids:
+            return []
+
+        CoreHandler().check_permissions(
+            actor,
+            ManageTeamMembersWorkspaceOperationType.type,
+            workspace=workspace,
+            context=workspace,
+        )
+        teams = list(
+            Team.objects.filter(workspace=workspace, id__in=team_ids).order_by("id")
+        )
+        missing = team_ids - {team.id for team in teams}
+        if missing:
+            raise TeamDoesNotExist(
+                f"The teams {sorted(missing)} do not exist in the workspace."
+            )
+        return teams

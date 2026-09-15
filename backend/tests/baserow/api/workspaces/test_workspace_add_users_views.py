@@ -1,9 +1,16 @@
 from django.shortcuts import reverse
 
 import pytest
-from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
+from rest_framework.status import (
+    HTTP_200_OK,
+    HTTP_400_BAD_REQUEST,
+    HTTP_404_NOT_FOUND,
+)
 
+from baserow.contrib.database.access.models import DatabaseAccessGrant
 from baserow.core.models import WorkspaceUser
+from baserow.core.teams.handler import TeamHandler
+from baserow.core.teams.models import TeamMember
 
 
 @pytest.fixture
@@ -145,3 +152,91 @@ def test_candidates_search(api_client, data_fixture, setup):
     response = api_client.get(candidates_url(workspace, "al"), **auth)
     assert response.status_code == HTTP_400_BAD_REQUEST
     assert response.json()["error"] == "ERROR_QUERY_PARAMETER_VALIDATION"
+
+
+@pytest.mark.django_db
+def test_admin_adds_users_into_teams_with_a_default_access_level(
+    api_client, data_fixture, setup
+):
+    workspace, admin_token, member, _ = setup
+    alice = data_fixture.create_user(email="alice@example.com")
+    team = TeamHandler().create_team(workspace, "Finance")
+
+    response = api_client.post(
+        add_url(workspace),
+        {
+            "user_ids": [alice.id, member.id],
+            "team_ids": [team.id],
+            "access_level": "viewer",
+        },
+        format="json",
+        HTTP_AUTHORIZATION=f"JWT {admin_token}",
+    )
+
+    assert response.status_code == HTTP_200_OK, response.json()
+    assert set(
+        TeamMember.objects.filter(team=team).values_list("user_id", flat=True)
+    ) == {alice.id, member.id}
+    assert set(
+        DatabaseAccessGrant.objects.filter(
+            workspace=workspace, database=None, table=None, team=None
+        ).values_list("user_id", "level")
+    ) == {(alice.id, "viewer"), (member.id, "viewer")}
+
+
+@pytest.mark.django_db
+def test_add_users_with_a_team_of_another_workspace_adds_nothing(
+    api_client, data_fixture, setup
+):
+    workspace, admin_token, _, _ = setup
+    alice = data_fixture.create_user()
+    other_team = TeamHandler().create_team(data_fixture.create_workspace(), "Other")
+
+    response = api_client.post(
+        add_url(workspace),
+        {"user_ids": [alice.id], "team_ids": [other_team.id]},
+        format="json",
+        HTTP_AUTHORIZATION=f"JWT {admin_token}",
+    )
+
+    assert response.status_code == HTTP_404_NOT_FOUND
+    assert response.json()["error"] == "ERROR_TEAM_DOES_NOT_EXIST"
+    assert not WorkspaceUser.objects.filter(workspace=workspace, user=alice).exists()
+
+
+@pytest.mark.django_db
+def test_add_users_refuses_an_unknown_access_level(api_client, data_fixture, setup):
+    workspace, admin_token, _, _ = setup
+    alice = data_fixture.create_user()
+
+    response = api_client.post(
+        add_url(workspace),
+        {"user_ids": [alice.id], "access_level": "owner"},
+        format="json",
+        HTTP_AUTHORIZATION=f"JWT {admin_token}",
+    )
+
+    assert response.status_code == HTTP_400_BAD_REQUEST
+    assert response.json()["error"] == "ERROR_REQUEST_BODY_VALIDATION"
+    assert not WorkspaceUser.objects.filter(workspace=workspace, user=alice).exists()
+
+
+@pytest.mark.django_db
+def test_members_listing_includes_teams_and_default_access(
+    api_client, data_fixture, setup
+):
+    workspace, admin_token, member, _ = setup
+    team = TeamHandler().create_team(workspace, "Finance", [member.id])
+    DatabaseAccessGrant.objects.create(workspace=workspace, user=member, level="editor")
+
+    response = api_client.get(
+        add_url(workspace), HTTP_AUTHORIZATION=f"JWT {admin_token}"
+    )
+
+    assert response.status_code == HTTP_200_OK, response.json()
+    by_user = {item["user_id"]: item for item in response.json()}
+    assert by_user[member.id]["teams"] == [{"id": team.id, "name": "Finance"}]
+    assert by_user[member.id]["access_level"] == "editor"
+    admin_entry = next(item for uid, item in by_user.items() if uid != member.id)
+    assert admin_entry["teams"] == []
+    assert admin_entry["access_level"] is None

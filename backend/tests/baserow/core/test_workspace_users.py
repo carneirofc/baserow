@@ -7,6 +7,8 @@ from baserow.core.exceptions import (
     UserNotInWorkspace,
 )
 from baserow.core.models import WorkspaceUser
+from baserow.core.teams.exceptions import TeamDoesNotExist
+from baserow.core.teams.handler import TeamHandler
 from baserow.core.workspace_users import (
     CANDIDATE_SEARCH_LIMIT,
     UsersNotFound,
@@ -132,3 +134,25 @@ def test_add_users_is_all_or_nothing(data_fixture, workspace_setup):
 
     assert exc.value.user_ids == [0, inactive.id]
     assert not WorkspaceUser.objects.filter(user=alice).exists()
+
+
+@pytest.mark.django_db
+def test_add_users_joins_teams_and_skips_null_options(data_fixture, workspace_setup):
+    workspace, admin, _ = workspace_setup
+    alice = data_fixture.create_user()
+    team = TeamHandler().create_team(workspace, "Ops")
+
+    WorkspaceUsersService().add_users(
+        admin, workspace, [alice.id], team_ids=[team.id], options={"access_level": None}
+    )
+
+    assert list(team.members.values_list("user_id", flat=True)) == [alice.id]
+
+
+@pytest.mark.django_db
+def test_add_users_with_unknown_team_raises(data_fixture, workspace_setup):
+    workspace, admin, _ = workspace_setup
+    alice = data_fixture.create_user()
+
+    with pytest.raises(TeamDoesNotExist):
+        WorkspaceUsersService().add_users(admin, workspace, [alice.id], team_ids=[0])
