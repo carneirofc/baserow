@@ -29,10 +29,10 @@ describe('AddWorkspaceMembersModal', () => {
     vi.clearAllMocks()
   })
 
-  const mountModal = async (service) => {
+  const mountModal = async (service, props = {}) => {
     WorkspaceService.mockReturnValue(service)
     const wrapper = await testApp.mount(AddWorkspaceMembersModal, {
-      props: { workspace },
+      props: { workspace, ...props },
       global: { stubs: { Modal: ModalStub } },
     })
     const dispatch = vi
@@ -98,7 +98,10 @@ describe('AddWorkspaceMembersModal', () => {
     wrapper.vm.permissions = 'ADMIN'
     await wrapper.vm.add()
 
-    expect(addUsers).toHaveBeenCalledWith(3, [10], 'ADMIN')
+    expect(addUsers).toHaveBeenCalledWith(3, [10], 'ADMIN', {
+      teamIds: [],
+      accessLevel: null,
+    })
     expect(dispatch).toHaveBeenCalledWith('workspace/forceAddWorkspaceUser', {
       workspaceId: 3,
       values: workspaceUsers[0],
@@ -130,16 +133,56 @@ describe('AddWorkspaceMembersModal', () => {
     expect(wrapper.vm.saving).toBe(false)
   })
 
+  test('adds the selected users to the chosen teams with a default access level', async () => {
+    const addUsers = vi.fn().mockResolvedValue({ data: [] })
+    const teams = [
+      { id: 7, name: 'Finance' },
+      { id: 8, name: 'Ops' },
+    ]
+    const { wrapper } = await mountModal({ addUsers }, { teams })
+
+    wrapper.vm.toggle(alice)
+    wrapper.vm.toggleTeam(teams[0])
+    wrapper.vm.toggleTeam(teams[1])
+    wrapper.vm.toggleTeam(teams[0])
+    wrapper.vm.accessLevel = 'viewer'
+    await wrapper.vm.add()
+
+    expect(addUsers).toHaveBeenCalledWith(3, [10], 'MEMBER', {
+      teamIds: [8],
+      accessLevel: 'viewer',
+    })
+  })
+
+  test('sends no access level for an admin, who is never restricted', async () => {
+    const addUsers = vi.fn().mockResolvedValue({ data: [] })
+    const { wrapper } = await mountModal({ addUsers })
+
+    wrapper.vm.toggle(alice)
+    wrapper.vm.permissions = 'ADMIN'
+    wrapper.vm.accessLevel = 'viewer'
+    await wrapper.vm.add()
+
+    expect(addUsers).toHaveBeenCalledWith(3, [10], 'ADMIN', {
+      teamIds: [],
+      accessLevel: null,
+    })
+  })
+
   test('show resets the previous state', async () => {
     const { wrapper } = await mountModal({})
     wrapper.vm.search = 'alice'
     wrapper.vm.toggle(alice)
+    wrapper.vm.toggleTeam({ id: 7, name: 'Finance' })
     wrapper.vm.permissions = 'ADMIN'
+    wrapper.vm.accessLevel = 'viewer'
 
     wrapper.vm.show()
 
     expect(wrapper.vm.search).toBe('')
     expect(wrapper.vm.selected).toEqual([])
+    expect(wrapper.vm.selectedTeamIds).toEqual([])
     expect(wrapper.vm.permissions).toBe('MEMBER')
+    expect(wrapper.vm.accessLevel).toBe('inherit')
   })
 })

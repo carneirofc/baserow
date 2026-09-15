@@ -59,6 +59,24 @@
       </span>
     </p>
 
+    <FormGroup
+      v-if="teams.length > 0"
+      small-label
+      :label="$t('addWorkspaceMembersModal.teams')"
+      class="margin-bottom-2"
+    >
+      <ul class="add-members__list add-members__list--teams">
+        <li v-for="team in teams" :key="team.id" class="add-members__item">
+          <Checkbox
+            :checked="selectedTeamIds.includes(team.id)"
+            @input="toggleTeam(team)"
+          >
+            {{ team.name }}
+          </Checkbox>
+        </li>
+      </ul>
+    </FormGroup>
+
     <div class="actions">
       <FormGroup
         small-label
@@ -73,6 +91,25 @@
           <DropdownItem
             :name="$t('permission.admin')"
             value="ADMIN"
+          ></DropdownItem>
+        </Dropdown>
+      </FormGroup>
+      <FormGroup
+        v-if="canManageAccess && permissions === 'MEMBER'"
+        small-label
+        :label="$t('addWorkspaceMembersModal.access')"
+        class="add-members__permissions"
+      >
+        <Dropdown v-model="accessLevel">
+          <DropdownItem
+            :name="$t('databaseAccessModal.inherit')"
+            :value="INHERIT"
+          ></DropdownItem>
+          <DropdownItem
+            v-for="level in LEVELS"
+            :key="level"
+            :name="$t(`databaseAccessModal.levels.${level}`)"
+            :value="level"
           ></DropdownItem>
         </Dropdown>
       </FormGroup>
@@ -95,6 +132,10 @@
 import modal from '@baserow/modules/core/mixins/modal'
 import error from '@baserow/modules/core/mixins/error'
 import WorkspaceService from '@baserow/modules/core/services/workspace'
+import {
+  ACCESS_INHERIT,
+  ACCESS_LEVELS,
+} from '@baserow/modules/database/utils/access'
 
 const MIN_SEARCH_LENGTH = 3
 const SEARCH_DEBOUNCE_MS = 300
@@ -107,20 +148,38 @@ export default {
       type: Object,
       required: true,
     },
+    teams: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
   },
   emits: ['added'],
   data() {
     return {
       minSearchLength: MIN_SEARCH_LENGTH,
+      INHERIT: ACCESS_INHERIT,
+      LEVELS: ACCESS_LEVELS,
       search: '',
       searching: false,
       candidates: [],
       selected: [],
+      selectedTeamIds: [],
       permissions: 'MEMBER',
+      accessLevel: ACCESS_INHERIT,
       saving: false,
       searchTimeout: null,
       searchRequest: 0,
     }
+  },
+  computed: {
+    canManageAccess() {
+      return this.$hasPermission(
+        'workspace.manage_database_access',
+        this.workspace,
+        this.workspace.id
+      )
+    },
   },
   beforeUnmount() {
     clearTimeout(this.searchTimeout)
@@ -130,7 +189,9 @@ export default {
       this.search = ''
       this.candidates = []
       this.selected = []
+      this.selectedTeamIds = []
       this.permissions = 'MEMBER'
+      this.accessLevel = ACCESS_INHERIT
       this.hideError()
       this.getRootModal().show(...args)
     },
@@ -174,14 +235,26 @@ export default {
         this.selected = [...this.selected, candidate]
       }
     },
+    toggleTeam(team) {
+      this.selectedTeamIds = this.selectedTeamIds.includes(team.id)
+        ? this.selectedTeamIds.filter((id) => id !== team.id)
+        : [...this.selectedTeamIds, team.id]
+    },
     async add() {
       this.saving = true
       this.hideError()
       try {
+        const accessLevel =
+          this.canManageAccess &&
+          this.permissions === 'MEMBER' &&
+          this.accessLevel !== ACCESS_INHERIT
+            ? this.accessLevel
+            : null
         const { data } = await WorkspaceService(this.$client).addUsers(
           this.workspace.id,
           this.selected.map((user) => user.user_id),
-          this.permissions
+          this.permissions,
+          { teamIds: this.selectedTeamIds, accessLevel }
         )
         for (const workspaceUser of data) {
           await this.$store.dispatch('workspace/forceAddWorkspaceUser', {

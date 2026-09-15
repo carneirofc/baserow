@@ -37,10 +37,16 @@ export default (client) => {
           { params: { search } }
         )
       },
-      addUsers(workspaceId, userIds, permissions) {
+      /**
+       * @param options `teamIds` the teams the users join, `accessLevel` the
+       *   workspace default access level they get (`null` to let them inherit).
+       */
+      addUsers(workspaceId, userIds, permissions, options = {}) {
         return client.post(`/workspaces/users/workspace/${workspaceId}/`, {
           user_ids: userIds,
           permissions,
+          team_ids: options.teamIds || [],
+          access_level: options.accessLevel ?? null,
         })
       },
       updateUser(workspaceUserId, values) {

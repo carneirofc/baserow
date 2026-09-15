@@ -813,7 +813,8 @@
         "highestRoleHelpText": "The highest role this user assigned to them directly or from a team, on anything in this workspace",
         "highestRoleInstanceHelpText": "The highest role this user has in the instance",
         "teams": "Teams",
-        "2fa": "2FA"
+        "2fa": "2FA",
+        "access": "Default access"
       },
       "actions": {
         "copyEmail": "Copy email",
