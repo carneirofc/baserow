@@ -149,7 +149,12 @@ class ImportPlanner:
         finally:
             mapping_handler.cleanup()
 
-        if plan.ambiguous and not self.configuration.get("allow_ambiguous_matches"):
+        # Imports without an explicit mode predate the ambiguity check and keep
+        # pairing duplicates in order.
+        allow_ambiguous = self.configuration.get(
+            "allow_ambiguous_matches"
+        ) or not self.configuration.get("mode")
+        if plan.ambiguous and not allow_ambiguous:
             plan.ambiguous_blocked = True
             if self.raise_on_ambiguity:
                 raise ImportAmbiguousMatches(plan.ambiguous)

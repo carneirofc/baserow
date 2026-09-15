@@ -1969,7 +1969,7 @@ class RowHandler(metaclass=baserow_trace_methods(tracer)):
         user: AbstractUser,
         table: Table,
         rows_values: List[Dict[str, Any]],
-        progress: Progress,
+        progress: Optional[Progress] = None,
         model: Optional[Type[GeneratedTableModel]] = None,
         signal_params: Optional[Dict] = None,
         skip_search_update: bool = True,
@@ -1995,7 +1995,8 @@ class RowHandler(metaclass=baserow_trace_methods(tracer)):
         if signal_params is None:
             signal_params = {}
 
-        progress.increment(state=ROW_IMPORT_CREATION)
+        if progress:
+            progress.increment(state=ROW_IMPORT_CREATION)
 
         if model is None:
             model = table.get_model()

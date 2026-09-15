@@ -160,7 +160,7 @@ export class DatabaseAccessPermissionManagerType extends PermissionManagerType {
     }
 
     const { tableId, databaseId } = location
-    let level = null
+    let level
     if (tableId !== null && permissions.tables[tableId] !== undefined) {
       level = permissions.tables[tableId]
     } else if (

@@ -154,7 +154,9 @@ def test_login_refused_when_the_user_holds_no_client_role(api_client):
 @responses.activate(assert_all_requests_are_fired=False)
 @pytest.mark.django_db
 def test_user_role_signs_in_without_workspace_access(api_client, data_fixture):
-    workspace = data_fixture.create_workspace()
+    # A pre-existing user keeps the signed-in user from being the instance's
+    # first user, which is always promoted to staff.
+    workspace = data_fixture.create_workspace(user=data_fixture.create_user())
     idp = FakeOIDCProvider(email="user@example.com", client_roles=["baserow-user"])
     config = dataclasses.replace(idp.config, user_roles=["baserow-user"])
 

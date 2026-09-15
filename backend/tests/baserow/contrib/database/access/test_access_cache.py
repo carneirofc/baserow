@@ -30,6 +30,7 @@ def test_grants_exist_cache_follows_cascading_deletes(access_setup, deleted):
     s.grant("none", **subject, **scope)
     assert workspace_has_grants(s.workspace.id) is True
 
+    s.defer_constraints()
     {
         "table": s.table,
         "database": s.database,

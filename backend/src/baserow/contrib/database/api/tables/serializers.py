@@ -107,6 +107,9 @@ class TableImportConfiguration(serializers.Serializer):
                 }
             )
 
+        if not attrs.get("mode"):
+            # Imports without an explicit mode keep pairing duplicates in order.
+            attrs["allow_ambiguous_matches"] = True
         mode = attrs.get("mode") or (
             IMPORT_MODE_UPSERT if attrs.get("upsert_fields") else IMPORT_MODE_INSERT
         )

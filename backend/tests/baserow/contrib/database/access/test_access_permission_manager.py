@@ -252,6 +252,7 @@ def test_grants_follow_deleted_tables_and_teams(access_setup):
     s.grant("none", team=team)
     s.grant("editor", user=s.member, table=s.table)
 
+    s.defer_constraints()
     team.delete()
     assert decide(s.member, READ_TABLE, s.other_table, s.workspace) is None
 

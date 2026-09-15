@@ -1,3 +1,5 @@
+from django.db import connection
+
 import pytest
 
 from baserow.contrib.database.access.models import DatabaseAccessGrant
@@ -27,6 +29,17 @@ class AccessSetup:
         self.other_database_table = data_fixture.create_database_table(
             database=self.other_database
         )
+
+    def defer_constraints(self):
+        """
+        `data_fixture` makes constraint checks immediate, but Django's delete
+        collector doesn't order the deletion of rows referencing their parent via
+        a nullable foreign key, like grants do. Restore the deferred checks
+        production relies on before cascading deletes.
+        """
+
+        with connection.cursor() as cursor:
+            cursor.execute("SET CONSTRAINTS ALL DEFERRED")
 
     def add_member(self):
         user = self.data_fixture.create_user()
