@@ -122,11 +122,6 @@ export const routes = [
             file: path.resolve(__dirname, 'pages/settings/members.vue'),
           },
           {
-            name: 'settings-invites',
-            path: 'invites',
-            file: path.resolve(__dirname, 'pages/settings/invites.vue'),
-          },
-          {
             name: 'settings-teams',
             path: 'teams',
             file: path.resolve(__dirname, 'pages/settings/teams.vue'),
@@ -134,13 +129,6 @@ export const routes = [
         ],
       },
     ],
-  },
-
-  {
-    name: 'workspace-invitation',
-    path: '/workspace-invitation/:token',
-    file: path.resolve(__dirname, 'pages/workspaceInvitation.vue'),
-    meta: { preventPageViewTracking: true },
   },
 
   {

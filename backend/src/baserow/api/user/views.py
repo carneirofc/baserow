@@ -39,10 +39,6 @@ from baserow.api.sessions import (
     set_user_session_data_from_request,
 )
 from baserow.api.user.registries import user_data_registry
-from baserow.api.workspaces.invitations.errors import (
-    ERROR_GROUP_INVITATION_DOES_NOT_EXIST,
-    ERROR_GROUP_INVITATION_EMAIL_MISMATCH,
-)
 from baserow.core.action.handler import ActionHandler
 from baserow.core.action.registries import ActionScopeStr, action_type_registry
 from baserow.core.audit_log.handler import AuditLogHandler
@@ -56,11 +52,9 @@ from baserow.core.captcha.handler import CaptchaHandler
 from baserow.core.exceptions import (
     BaseURLHostnameNotAllowed,
     LockConflict,
-    WorkspaceInvitationDoesNotExist,
-    WorkspaceInvitationEmailMismatch,
 )
 from baserow.core.handler import CoreHandler
-from baserow.core.models import Settings, Template, WorkspaceInvitation
+from baserow.core.models import Settings, Template
 from baserow.core.user.actions import (
     ChangeEmailActionType,
     ChangeUserPasswordActionType,
@@ -122,7 +116,6 @@ from .serializers import (
     AccountSerializer,
     ChangeEmailSerializer,
     ChangePasswordBodyValidationSerializer,
-    DashboardSerializer,
     RegisterSerializer,
     ResetPasswordBodyValidationSerializer,
     SendChangeEmailConfirmationSerializer,
@@ -301,13 +294,11 @@ class UserView(APIView):
             400: get_error_schema(
                 [
                     "ERROR_ALREADY_EXISTS",
-                    "ERROR_GROUP_INVITATION_DOES_NOT_EXIST",
                     "ERROR_REQUEST_BODY_VALIDATION",
                     "BAD_TOKEN_SIGNATURE",
                     "ERROR_CAPTCHA_VERIFICATION_FAILED",
                 ]
             ),
-            404: get_error_schema(["ERROR_GROUP_INVITATION_DOES_NOT_EXIST"]),
         },
         auth=[],
     )
@@ -317,8 +308,6 @@ class UserView(APIView):
             UserAlreadyExist: ERROR_ALREADY_EXISTS,
             DeactivatedUserException: ERROR_DEACTIVATED_USER,
             BadSignature: BAD_TOKEN_SIGNATURE,
-            WorkspaceInvitationDoesNotExist: ERROR_GROUP_INVITATION_DOES_NOT_EXIST,
-            WorkspaceInvitationEmailMismatch: ERROR_GROUP_INVITATION_EMAIL_MISMATCH,
             DisabledSignupError: ERROR_DISABLED_SIGNUP,
             AuthProviderDisabled: ERROR_AUTH_PROVIDER_DISABLED,
             CaptchaVerificationFailed: ERROR_CAPTCHA_VERIFICATION_FAILED,
@@ -348,7 +337,6 @@ class UserView(APIView):
             email=data["email"],
             password=data["password"],
             language=data["language"],
-            workspace_invitation_token=data.get("workspace_invitation_token"),
             template=template,
         )
 
@@ -765,32 +753,6 @@ class ScheduleAccountDeletionView(APIView):
 
         action_type_registry.get(ScheduleUserDeletionActionType.type).do(request.user)
         return Response(status=204)
-
-
-class DashboardView(APIView):
-    permission_classes = (IsAuthenticated,)
-
-    @extend_schema(
-        tags=["User"],
-        operation_id="dashboard",
-        description=(
-            "Lists all the relevant user information that for example could be shown "
-            "on a dashboard. It will contain all the pending workspace invitations for "
-            "that user."
-        ),
-        responses={200: DashboardSerializer},
-    )
-    @transaction.atomic
-    def get(self, request):
-        """Lists all the data related to the user dashboard page."""
-
-        workspace_invitations = WorkspaceInvitation.objects.select_related(
-            "workspace", "invited_by"
-        ).filter(email=request.user.username)
-        dashboard_serializer = DashboardSerializer(
-            {"workspace_invitations": workspace_invitations}
-        )
-        return Response(dashboard_serializer.data)
 
 
 UNDO_REDO_EXCEPTIONS_MAP = {

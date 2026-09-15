@@ -18,7 +18,6 @@
     },
     "sidebar": {
         "createWorkspace": "Utwórz obszar roboczy",
-        "inviteOthers": "Zaproś innych",
         "logoff": "Wyloguj się",
         "errorNoWorkspace": "Nie masz żadnych obszarów roboczych.",
         "admin": "Admin",
@@ -103,8 +102,6 @@
         "password": "Hasło",
         "passwordRepeat": "Powtórz hasło"
     },
-    "invitationTitle": "Zaproszenie",
-    "invitationMessage": "{invitedBy} zaprosił Cię do obszaru roboczego {workspace}.",
     "workspaceForm": {
         "nameLabel": "Nazwa"
     },
@@ -117,12 +114,6 @@
         "showMembers": "Członkowie",
         "createApplication": "Utwórz"
     },
-    "workspaceInvitation": {
-        "title": "Zaproszenie",
-        "message": "Zostałeś zaproszony przez {by} do obszaru roboczego {workspace}.",
-        "reject": "Odrzuć",
-        "accept": "Przyjmij"
-    },
     "workspaceMemberModal": {
         "membersModalTitle": "Członkowie {group}",
         "userDescription": "{user} - dołączył {since} temu",
@@ -131,13 +122,6 @@
         "userAlreadyInWorkspaceTitle": "Użytkownik jest już w grupie.",
         "userDescriptionPendingDeletion": "{user} - oczekiwanie na usunięcie",
         "userAlreadyInWorkspaceText": "Nie jest możliwe wysłanie zaproszenia, gdy użytkownik jest już członkiem grupy."
-    },
-    "workspaceInviteForm": {
-        "invitationFormTitle": "Zaproś wysyłając e-mail",
-        "optionalMessagePlaceholder": "Opcjonalna wiadomość",
-        "errorInvalidEmail": "Podaj poprawny adres e-mail.",
-        "errorTooLongMessage": "Wiadomości są ograniczone do {amount} znaków.",
-        "additionalRoles": "Dodatkowe role"
     },
     "workspacesContext": {
         "search": "Wyszukaj grupy",
@@ -382,8 +366,6 @@
         "settingAllowResetPasswordWarning": "Pamiętaj, że możesz zablokować sobie dostęp do systemu. Dostępu nie można przywrócić, jeśli zapomnisz hasła.",
         "settingAllowNewAccountsName": "Zezwól na tworzenie nowych kont",
         "settingAllowNewAccountsDescription": "Domyślnie każdy użytkownik odwiedzający Twoją domenę w Baserow może założyć nowe konto.",
-        "settingAllowSignupsViaWorkspaceInvitationsName": "Zezwól na rejestrację przez zaproszenia do obszaru roboczego",
-        "settingAllowSignupsViaWorkspaceInvitationDescription": "Ta opcja pozwala użytkownikom zaproszonym bezpośrednio zakładać konta, nawet jeśli zakładanie nowych kont jest wyłączone.",
         "userDeletionGraceDelay": "Usuwanie użytkowników",
         "settingUserDeletionGraceDelay": "Usuń okres karencji",
         "settingUserDeletionGraceDelayDescription": "Liczba dni bez logowania, po których konto przygotowane do usunięcia zostanie usunięte na trwałe.",
@@ -513,7 +495,6 @@
                 "copyEmail": "Skopiuj adres e-mail"
             },
             "title": "{userAmount} członków w obszarze roboczym {workspaceName}",
-            "inviteMember": "Zaproś członka zespołu",
             "columns": {
                 "email": "Adres e-mail",
                 "name": "Nazwa",
@@ -524,30 +505,6 @@
                 "highestRoleInstanceHelpText": "Najwyższa rola tego użytkownika w obecnej instancji",
                 "2fa": "2FA"
             }
-        },
-        "invitesTable": {
-            "title": "Liczba zaproszeń oczekujących na potwierdzenie w obszarze {workspaceName}: {invitesAmount}",
-            "columns": {
-                "email": "Adres e-mail",
-                "message": "Wiadomość",
-                "role": "Domyślna rola"
-            },
-            "actions": {
-                "remove": "Anuluj zaproszenie",
-                "copyEmail": "Skopiuj e-mail"
-            }
-        },
-        "invitesTabTitle": "Zaproszenia",
-        "membersInviteModal": {
-            "submit": "Wyślij zaproszenie",
-            "errors": {
-                "userAlreadyInWorkspace": {
-                    "text": "Nie można wysłać zaproszenia, gdy użytkownik jest już członkiem danego obszaru roboczego.",
-                    "title": "Użytkownik jest już zarejestrowany w tym obszarze roboczym."
-                }
-            },
-            "title": "Zaproś członków do obszaru roboczego",
-            "helpIconText": "Wybrana rola będzie domyślną rolą użytkownika w tym obszarze roboczym."
         },
         "membersTabTitle": "Członkowie"
     },
@@ -563,7 +520,6 @@
         "selectedAmountLabel": "Wybrano: {count}"
     },
     "memberAssignmentModalFooter": {
-        "invite": "Zaproś: {count}",
         "selectAll": "Wybierz wszystko",
         "deselectAll": "Usuń wybór"
     },
@@ -657,18 +613,6 @@
     "clearingToast": {
         "title": "Usuwanie…",
         "content": "Twoje dane są przygotowywane"
-    },
-    "workspaceInvitationAcceptedNotification": {
-        "title": "{sender} zaakceptował Twoje zaproszenie do obszaru roboczego {workspaceName}",
-        "deletedUser": "Usunięty użytkownik"
-    },
-    "workspaceInvitationRejectedNotification": {
-        "title": "{sender} odrzucił Twoje zaproszenie do obszaru roboczego {workspaceName}",
-        "deletedUser": "Usunięty użytkownik"
-    },
-    "workspaceInvitationCreatedNotification": {
-        "title": "{sender} zaprosił Cię do obszaru {workspaceName}",
-        "deletedUser": "Usunięty użytkownik"
     },
     "versionUpgradeNotification": {
         "title": "Wersja {version} już jest dostępna! Zobacz, co nowego."

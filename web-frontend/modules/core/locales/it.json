@@ -18,7 +18,6 @@
     },
     "sidebar": {
         "createWorkspace": "Crea progetto",
-        "inviteOthers": "Invita altri",
         "logoff": "Esci",
         "errorNoWorkspace": "Nessun progetto disponibile.",
         "admin": "Admin",
@@ -81,8 +80,6 @@
         "password": "Password",
         "passwordRepeat": "Ripeti la password"
     },
-    "invitationTitle": "Invito",
-    "invitationMessage": "{invitedBy} ti ha invitato in {workspace}.",
     "workspaceForm": {
         "nameLabel": "Nome"
     },
@@ -95,12 +92,6 @@
         "showMembers": "Membri",
         "createApplication": "Crea nuovo"
     },
-    "workspaceInvitation": {
-        "title": "Invito",
-        "message": "{by} ti ha invitato in {workspace}.",
-        "reject": "Rifiuta",
-        "accept": "Accetta"
-    },
     "workspaceMemberModal": {
         "membersModalTitle": "membri di {workspace}",
         "userDescription": "{user} - membro da {since}",
@@ -109,13 +100,6 @@
         "userAlreadyInWorkspaceTitle": "Utente già nel progetto.",
         "userAlreadyInWorkspaceText": "Non è possibile inviare un invito quando l'utente è già membro del progetto.",
         "userDescriptionPendingDeletion": "{user} - eliminazione programmata"
-    },
-    "workspaceInviteForm": {
-        "invitationFormTitle": "Invita via e-mail",
-        "optionalMessagePlaceholder": "Messaggio facoltativo",
-        "errorInvalidEmail": "Inserisci un indirizzo e-mail valido.",
-        "errorTooLongMessage": "I messaggi sono limitati a {amount} caratteri.",
-        "additionalRoles": "Ruoli addizionali"
     },
     "workspacesContext": {
         "search": "Cerca progetto",
@@ -311,8 +295,6 @@
         "settingAllowResetPasswordWarning": "Fai attenzione che potrebbe diventare impossibile eseguire l'accesso al sistema se dimentichi la password una volta disabilitata l'opzione per il reset.",
         "settingAllowNewAccountsName": "Consenti la creazione di nuovi account",
         "settingAllowNewAccountsDescription": "Per impostazione predefinita, qualsiasi utente che visita il tuo dominio Baserow può registrarsi per un nuovo account.",
-        "settingAllowSignupsViaWorkspaceInvitationsName": "Consenti l'iscrizione tramite inviti di progetto",
-        "settingAllowSignupsViaWorkspaceInvitationDescription": "Anche se la creazione di nuovi account è disabilitata, questa opzione permette agli utenti invitati direttamente di creare un account.",
         "enabled": "abilitato",
         "userDeletionGraceDelay": "Eliminazione account",
         "settingUserDeletionGraceDelay": "Tempo prima dell'eliminazione definitiva",
@@ -489,10 +471,8 @@
     },
     "membersSettings": {
         "membersTabTitle": "Membri",
-        "invitesTabTitle": "Inviti",
         "membersTable": {
             "title": "{userAmount} membri di {workspaceName}",
-            "inviteMember": "Invita membro",
             "columns": {
                 "name": "Nome",
                 "email": "Email",
@@ -505,29 +485,6 @@
                 "remove": "Rimuovi dal progetto",
                 "copyEmail": "Copia email"
             }
-        },
-        "invitesTable": {
-            "title": "{invitesAmount} inviti in attesa per {workspaceName}",
-            "columns": {
-                "email": "Email",
-                "message": "Messaggio",
-                "role": "Ruolo di default"
-            },
-            "actions": {
-                "remove": "Cancella invito",
-                "copyEmail": "Copia email"
-            }
-        },
-        "membersInviteModal": {
-            "title": "Invita membro nel progetto",
-            "errors": {
-                "userAlreadyInWorkspace": {
-                    "text": "Non è possibile inviare un invito se l'utente non fa parte del progetto.",
-                    "title": "L'utente fa già parte del progetto."
-                }
-            },
-            "submit": "Manda invito",
-            "helpIconText": "Il ruolo scelto sarà il ruolo di default in questo progetto."
         }
     },
     "memberSelectionList": {
@@ -535,7 +492,6 @@
         "selectedAmountLabel": "{count} selezionati"
     },
     "memberAssignmentModalFooter": {
-        "invite": "Inviti {count}",
         "deselectAll": "Deseleziona tutto",
         "selectAll": "Seleziona tutto"
     },
@@ -641,14 +597,6 @@
     "dropdown": {
         "empty": "Nessun elemento disponibile"
     },
-    "workspaceInvitationAcceptedNotification": {
-        "title": "{sender} ha accettato il tuo invito per far parte di {workspaceName}",
-        "deletedUser": "Un utente rimosso"
-    },
-    "workspaceInvitationCreatedNotification": {
-        "title": "{sender} ti ha invitato a far parte di {workspaceName}",
-        "deletedUser": "Un utente rimosso"
-    },
     "versionUpgradeNotification": {
         "title": "{version} è qui! Clicca per vedere le novità."
     },
@@ -666,10 +614,6 @@
     },
     "richTextEditorMentionsList": {
         "notFound": "Nessun utente trovato"
-    },
-    "workspaceInvitationRejectedNotification": {
-        "title": "{sender} ha rifiutato il tuo invito per far parte di {workspaceName}",
-        "deletedUser": "Un utente rimosso"
     },
     "emailNotifications": {
         "submitButton": "Aggiorna frequenza",

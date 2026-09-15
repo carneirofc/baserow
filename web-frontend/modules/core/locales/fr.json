@@ -18,7 +18,6 @@
     },
     "sidebar": {
         "createWorkspace": "Créer un projet",
-        "inviteOthers": "Envoyer une invitation",
         "logoff": "Se déconnecter",
         "errorNoWorkspace": "Vous n'avez aucun projet.",
         "admin": "Administration",
@@ -83,8 +82,6 @@
         "password": "Mot de passe",
         "passwordRepeat": "Répétez votre mot de passe"
     },
-    "invitationTitle": "Invitation",
-    "invitationMessage": "{invitedBy} vous a invité·e à rejoindre le projet {workspace}.",
     "workspaceForm": {
         "nameLabel": "Nom"
     },
@@ -97,12 +94,6 @@
         "showMembers": "Membres",
         "createApplication": "Créer"
     },
-    "workspaceInvitation": {
-        "title": "Invitation",
-        "message": "{by} vous a invité à rejoindre le projet {workspace}.",
-        "reject": "Refuser",
-        "accept": "Accepter"
-    },
     "workspaceMemberModal": {
         "membersModalTitle": "Membres de {workspace}",
         "userDescription": "{user} - membre depuis {since}",
@@ -111,13 +102,6 @@
         "userAlreadyInWorkspaceTitle": "L'utilisateur est déjà dans le projet.",
         "userAlreadyInWorkspaceText": "Il n'est pas possible d'envoyer une invitation à un utilisateur déjà présent dans le projet.",
         "userDescriptionPendingDeletion": "{user} - en attente de suppression"
-    },
-    "workspaceInviteForm": {
-        "invitationFormTitle": "Inviter par email",
-        "optionalMessagePlaceholder": "Message optionnel",
-        "errorInvalidEmail": "Veuillez saisir une adresse email valide.",
-        "errorTooLongMessage": "Les messages sont limités à {amount} caractères.",
-        "additionalRoles": "Autres rôles"
     },
     "workspacesContext": {
         "search": "Rechercher",
@@ -325,8 +309,6 @@
         "settingAllowNewAccountsName": "Autoriser la création de compte",
         "settingAllowNewAccountsDescription": "Par défaut, tout les visiteurs peuvent créer un compte sur votre instance de Baserow.",
         "enabled": "Autoriser",
-        "settingAllowSignupsViaWorkspaceInvitationsName": "Autoriser la création de compte sur invitation",
-        "settingAllowSignupsViaWorkspaceInvitationDescription": "Cette option permet aux utilisateurs invités par d'autres de créer des comptes même si la création de compte à été désactivée de manière globale.",
         "userDeletionGraceDelay": "Suppression d'utilisateurs",
         "settingUserDeletionGraceDelay": "Délai de grâce avant suppression",
         "invalidAccountDeletionGraceDelay": "Cette valeur est obligatoire et doit être un nombre entier positif inférieur à 32000",
@@ -510,29 +492,6 @@
         "installedTitle": "Modèle installé"
     },
     "membersSettings": {
-        "invitesTable": {
-            "columns": {
-                "role": "Rôle par défaut",
-                "email": "Courriel",
-                "message": "Message"
-            },
-            "actions": {
-                "copyEmail": "Copier l’e-mail",
-                "remove": "Annuler l'invitation"
-            },
-            "title": "{invitesAmount} Invitations en attente dans {workspaceName}"
-        },
-        "membersInviteModal": {
-            "title": "Inviter des membres du projet",
-            "submit": "Envoyer une invitation",
-            "errors": {
-                "userAlreadyInWorkspace": {
-                    "title": "L’utilisateur est déjà dans le projet.",
-                    "text": "Il n’est pas possible d’envoyer une invitation lorsque l’utilisateur est déjà membre du projet."
-                }
-            },
-            "helpIconText": "Le rôle sélectionné sera le rôle par défaut des utilisateurs dans ce projet."
-        },
         "membersTable": {
             "actions": {
                 "remove": "Supprimer du projet",
@@ -548,17 +507,14 @@
                 "highestRoleInstanceHelpText": "Le rôle le plus élevé dont dispose cet utilisateur dans l'instance",
                 "2fa": "2FA"
             },
-            "title": "{userAmount} Membres dans {workspaceName}",
-            "inviteMember": "Inviter un membre"
+            "title": "{userAmount} Membres dans {workspaceName}"
         },
-        "membersTabTitle": "Membres",
-        "invitesTabTitle": "Invite"
+        "membersTabTitle": "Membres"
     },
     "crudTableSearch": {
         "search": "Recherche"
     },
     "memberAssignmentModalFooter": {
-        "invite": "Inviter {count}",
         "selectAll": "Sélectionner tout",
         "deselectAll": "Désélectionner tout"
     },
@@ -676,10 +632,6 @@
         "name": "Nom",
         "namePlaceholder": "Saisissez le nom de l'intégration..."
     },
-    "workspaceInvitationCreatedNotification": {
-        "title": "{sender} vous a invité à rejoindre {workspaceName}",
-        "deletedUser": "Un utilisateur supprimé"
-    },
     "dropdown": {
         "empty": "Aucune option disponible"
     },
@@ -689,14 +641,6 @@
     },
     "styleBoxForm": {
         "paddingError": "La valeur doit être un entier compris entre 0 et 200."
-    },
-    "workspaceInvitationAcceptedNotification": {
-        "title": "{sender} a accepté votre invitation à rejoindre {workspaceName}",
-        "deletedUser": "Un utilisateur supprimé"
-    },
-    "workspaceInvitationRejectedNotification": {
-        "title": "{sender} a rejeté votre invitation à rejoindre {workspaceName}",
-        "deletedUser": "Un utilisateur supprimé"
     },
     "emailNotifications": {
         "submitButton": "Mise à jour de la fréquence",

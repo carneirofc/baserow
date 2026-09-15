@@ -23,7 +23,7 @@ member to some databases or tables.
   permission manager and the SSO membership tracking. The removed provider keys are refused
   at startup with a message pointing to in-app management.
 * **Workspace access is managed in the app** by workspace admins (and staff):
-  * members are added directly from users who already signed in, or invited by email;
+  * members are added directly from users who already signed in;
   * **teams** (`core/teams/`) group members;
   * **access grants** (`contrib/database/access/`) give a member or team a level — `none`,
     `viewer`, `editor`, `builder` — on the workspace default, a database or a table.

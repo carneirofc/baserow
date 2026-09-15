@@ -3,7 +3,6 @@
     <Login
       :display-header="true"
       :redirect-on-success="true"
-      :invitation="invitation"
       :redirect-by-default="redirectByDefault"
       :sso-error="ssoError"
     />
@@ -12,7 +11,6 @@
 
 <script setup>
 import Login from '@baserow/modules/core/components/auth/Login'
-import WorkspaceService from '@baserow/modules/core/services/workspace'
 
 definePageMeta({
   name: 'login',
@@ -20,10 +18,9 @@ definePageMeta({
   middleware: ['settings'],
 })
 
-const { $store: store, $client } = useNuxtApp()
+const { $store: store } = useNuxtApp()
 
 const route = useRoute()
-const app = useNuxtApp()
 const i18n = useI18n()
 const config = useRuntimeConfig()
 const router = useRouter()
@@ -35,26 +32,11 @@ if (store.getters['settings/get'].show_admin_signup_page === true) {
   await navigateTo({ name: 'dashboard' })
 }
 
-// Data fetching - use token in key to avoid caching issues
-const invitationToken = route.query.workspaceInvitationToken
-const { data } = await useAsyncData(
-  `loginData-${invitationToken || 'none'}`,
-  async () => {
-    // Fetch login options (will populate Vuex store)
-    await store.dispatch('authProvider/fetchLoginOptions')
-    // Logic from workspaceInvitationToken mixin
-    let invitation = null
-    if (invitationToken) {
-      try {
-        const { data } = await WorkspaceService(
-          app.$client
-        ).fetchInvitationByToken(invitationToken)
-        invitation = data
-      } catch {}
-    }
-    return { invitation }
-  }
-)
+await useAsyncData('loginData', async () => {
+  // Fetch login options (will populate Vuex store)
+  await store.dispatch('authProvider/fetchLoginOptions')
+  return true
+})
 
 // Head
 useHead({
@@ -76,6 +58,4 @@ const redirectByDefault = computed(() => {
   // would be bounced straight back into the failing flow.
   return !(route.query.noredirect === null) && !ssoError.value
 })
-
-const invitation = computed(() => data.value?.invitation || null)
 </script>

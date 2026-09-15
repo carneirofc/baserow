@@ -43,20 +43,15 @@ from .exceptions import (
 from .operations import (
     AddWorkspaceUsersWorkspaceOperationType,
     CreateApplicationsWorkspaceOperationType,
-    CreateInvitationsWorkspaceOperationType,
     CreateWorkspaceOperationType,
-    DeleteWorkspaceInvitationOperationType,
     DeleteWorkspaceOperationType,
     DeleteWorkspaceUserOperationType,
     ExportWorkspaceOperationType,
     ListApplicationsWorkspaceOperationType,
-    ListInvitationsWorkspaceOperationType,
     ListWorkspacesOperationType,
     ListWorkspaceUsersWorkspaceOperationType,
-    ReadInvitationWorkspaceOperationType,
     ReadWorkspaceOperationType,
     UpdateSettingsOperationType,
-    UpdateWorkspaceInvitationType,
     UpdateWorkspaceOperationType,
     UpdateWorkspaceUserOperationType,
 )
@@ -355,11 +350,6 @@ class BasicPermissionManagerType(PermissionManagerType):
     supported_actor_types = [UserSubjectType.type]
 
     ADMIN_ONLY_OPERATIONS = [
-        ListInvitationsWorkspaceOperationType.type,
-        CreateInvitationsWorkspaceOperationType.type,
-        ReadInvitationWorkspaceOperationType.type,
-        UpdateWorkspaceInvitationType.type,
-        DeleteWorkspaceInvitationOperationType.type,
         ListWorkspaceUsersWorkspaceOperationType.type,
         UpdateWorkspaceOperationType.type,
         DeleteWorkspaceOperationType.type,

@@ -1,5 +1,5 @@
 """
-Adding users that already have an account to a workspace, without an invitation.
+Adding users that already have an account to a workspace.
 
 With SSO the IdP only decides who may sign in; workspace admins then pick the members of
 their workspace from the accounts that exist.

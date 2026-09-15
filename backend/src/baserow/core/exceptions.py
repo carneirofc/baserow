@@ -70,9 +70,7 @@ class WorkspaceUserDoesNotExist(Exception):
 
 class WorkspaceUserAlreadyExists(Exception):
     """
-    Raised when trying to create a workspace user that already exists. This could also
-    be raised when an invitation is created for a user that is already part of the
-    workspace.
+    Raised when trying to create a workspace user that already exists.
     """
 
 
@@ -189,18 +187,6 @@ class BaseURLHostnameNotAllowed(Exception):
     """
     Raised when the provided base url is not allowed when requesting a password
     reset email.
-    """
-
-
-class WorkspaceInvitationDoesNotExist(Exception):
-    """
-    Raised when the requested workspace invitation doesn't exist.
-    """
-
-
-class WorkspaceInvitationEmailMismatch(Exception):
-    """
-    Raised when the workspace invitation email is not the expected email address.
     """
 
 

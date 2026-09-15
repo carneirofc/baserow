@@ -39,9 +39,7 @@ def _drive_callback(api_client, idp, responses_mock):
 @responses.activate(assert_all_requests_are_fired=False)
 @pytest.mark.django_db
 def test_oidc_creates_user_even_when_signups_disabled(api_client, data_fixture):
-    data_fixture.update_settings(
-        allow_new_signups=False, allow_signups_via_workspace_invitations=False
-    )
+    data_fixture.update_settings(allow_new_signups=False)
     idp = FakeOIDCProvider(email="provisioned@example.com", full_name="Provisioned")
 
     with override_settings(BASEROW_OIDC_PROVIDERS=[idp.config]):
@@ -55,9 +53,7 @@ def test_oidc_creates_user_even_when_signups_disabled(api_client, data_fixture):
 
 @pytest.mark.django_db
 def test_password_signup_still_blocked_when_signups_disabled(data_fixture):
-    data_fixture.update_settings(
-        allow_new_signups=False, allow_signups_via_workspace_invitations=False
-    )
+    data_fixture.update_settings(allow_new_signups=False)
 
     # The password / self-service path never passes bypass_signup_toggle.
     with pytest.raises(DisabledSignupError):
@@ -72,9 +68,7 @@ def test_password_signup_still_blocked_when_signups_disabled(data_fixture):
 
 @pytest.mark.django_db
 def test_bypass_flag_provisions_user_when_signups_disabled(data_fixture):
-    data_fixture.update_settings(
-        allow_new_signups=False, allow_signups_via_workspace_invitations=False
-    )
+    data_fixture.update_settings(allow_new_signups=False)
 
     user = UserHandler().create_user(
         name="Bypassed",

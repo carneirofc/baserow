@@ -38,7 +38,6 @@ __all__ = [
     "Settings",
     "Workspace",
     "WorkspaceUser",
-    "WorkspaceInvitation",
     "Application",
     "TemplateCategory",
     "Template",
@@ -106,11 +105,6 @@ class Settings(models.Model):
         default=True,
         help_text="Indicates whether new users can create a new account when signing "
         "up.",
-    )
-    allow_signups_via_workspace_invitations = models.BooleanField(
-        default=True,
-        help_text="Indicates whether invited users can create an account when signing "
-        "up, even if allow_new_signups is disabled.",
     )
     allow_reset_password = models.BooleanField(
         default=True,
@@ -382,49 +376,6 @@ class WorkspaceUser(
     def get_last_order(cls, user):
         queryset = cls.objects.filter(user=user)
         return cls.get_highest_order_of_queryset(queryset) + 1
-
-
-class WorkspaceInvitation(
-    HierarchicalModelMixin,
-    ParentWorkspaceTrashableModelMixin,
-    CreatedAndUpdatedOnMixin,
-    models.Model,
-):
-    workspace = models.ForeignKey(
-        Workspace,
-        on_delete=models.CASCADE,
-        help_text="The workspace that the user will get access to once the invitation "
-        "is accepted.",
-    )
-    invited_by = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        help_text="The user that created the invitation.",
-    )
-    email = models.EmailField(
-        db_index=True,
-        help_text="The email address of the user that the invitation is meant for. "
-        "Only a user with that email address can accept it.",
-    )
-    permissions = models.CharField(
-        default=WORKSPACE_USER_PERMISSION_MEMBER,
-        max_length=32,
-        help_text="The permissions that the user is going to get within the workspace "
-        "after accepting the invitation.",
-    )
-    # TODO ZDM: Remove this field in a future migration (no longer used)
-    message = models.TextField(
-        default="",
-        max_length=250,
-        help_text="Deprecated legacy field retained for compatibility. This message is not exposed to invitation recipients.",
-    )
-
-    def get_parent(self):
-        return self.workspace
-
-    class Meta:
-        ordering = ("id",)
-        unique_together = [["workspace", "email"]]
 
 
 class Application(

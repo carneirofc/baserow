@@ -69,7 +69,13 @@
         </a>
       </li>
       <li
-        v-if="$hasPermission('invitation.read', workspace, workspace.id)"
+        v-if="
+          $hasPermission(
+            'workspace.list_workspace_users',
+            workspace,
+            workspace.id
+          )
+        "
         class="context__menu-item"
       >
         <a

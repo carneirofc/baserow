@@ -318,7 +318,7 @@ The permission object looks like this:
     "name": "basic",
     "permissions": {
       "admin_only_operations": [
-        "workspace.list_invitations",
+        "workspace.list_workspace_users",
         "...",
         "workspace.delete"
       ],
@@ -346,7 +346,7 @@ method will be called with the following object:
 ```json
 {
     "admin_only_operations": [
-    "workspace.list_invitations",
+    "workspace.list_workspace_users",
     "...",
     "workspace_user.delete"
     ],

@@ -17,7 +17,6 @@
     },
     "sidebar": {
         "createWorkspace": "Vytvořit pracovní prostor",
-        "inviteOthers": "Pozvat ostatní",
         "logoff": "Odhlásit",
         "errorNoWorkspace": "Nemáte žádné pracovní prostory.",
         "admin": "Administrace",
@@ -71,8 +70,6 @@
         "password": "",
         "passwordRepeat": ""
     },
-    "invitationTitle": "",
-    "invitationMessage": "",
     "workspaceForm": {
         "nameLabel": ""
     },
@@ -85,12 +82,6 @@
         "showMembers": "",
         "createApplication": ""
     },
-    "workspaceInvitation": {
-        "title": "",
-        "message": "",
-        "reject": "",
-        "accept": ""
-    },
     "workspaceMemberModal": {
         "membersModalTitle": "",
         "userDescription": "",
@@ -98,11 +89,6 @@
         "sendInvite": "",
         "userAlreadyInWorkspaceTitle": "",
         "userAlreadyInWorkspaceText": ""
-    },
-    "workspaceInviteForm": {
-        "invitationFormTitle": "",
-        "optionalMessagePlaceholder": "",
-        "errorInvalidEmail": ""
     },
     "workspacesContext": {
         "search": "",
@@ -257,8 +243,6 @@
         "settingAllowResetPasswordWarning": "",
         "settingAllowNewAccountsName": "",
         "settingAllowNewAccountsDescription": "",
-        "settingAllowSignupsViaWorkspaceInvitationsName": "",
-        "settingAllowSignupsViaWorkspaceInvitationDescription": "",
         "enabled": ""
     },
     "formSidebar": {

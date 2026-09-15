@@ -1,16 +1,5 @@
 <template>
   <div>
-    <Alert v-if="invitation !== null" type="info-primary">
-      <template #title>{{ $t('invitationTitle') }}</template>
-      <i18n-t keypath="invitationMessage" tag="span">
-        <template #invitedBy>
-          <strong>{{ invitation.invited_by }}</strong>
-        </template>
-        <template #workspace>
-          <strong>{{ invitation.workspace }}</strong>
-        </template>
-      </i18n-t>
-    </Alert>
     <Error :error="error"></Error>
     <form @submit.prevent="login">
       <FormGroup
@@ -21,16 +10,6 @@
         :error="fieldHasErrors('email')"
       >
         <FormInput
-          v-if="invitation !== null"
-          ref="email"
-          v-model="values.email"
-          type="email"
-          size="large"
-          disabled
-        ></FormInput>
-
-        <FormInput
-          v-else
           ref="email"
           v-model="values.email"
           type="email"
@@ -96,29 +75,18 @@ import { reactive } from 'vue'
 import { required, email } from '@vuelidate/validators'
 import form from '@baserow/modules/core/mixins/form'
 import error from '@baserow/modules/core/mixins/error'
-import WorkspaceService from '@baserow/modules/core/services/workspace'
 
 export default {
   name: 'PasswordLogin',
   mixins: [error],
   props: {
-    invitation: {
-      required: false,
-      validator: (prop) => typeof prop === 'object' || prop === null,
-      default: null,
-    },
     displayForgotPassword: {
       type: Boolean,
       required: false,
       default: true,
     },
   },
-  emits: [
-    'email-not-verified',
-    'success',
-    'two-factor-auth',
-    'invitation-accepted',
-  ],
+  emits: ['email-not-verified', 'success', 'two-factor-auth'],
   setup() {
     const values = reactive({
       values: {
@@ -142,11 +110,6 @@ export default {
   data() {
     return {
       loading: false,
-    }
-  },
-  beforeMount() {
-    if (this.invitation !== null) {
-      this.values.email = this.invitation.email
     }
   },
   async mounted() {
@@ -212,21 +175,8 @@ export default {
           return
         }
 
-        // If there is an invitation we can immediately accept that one after the user
-        // successfully signs in.
-        let acceptedWorkspace = null
-        if (this.invitation?.email === this.values.email) {
-          const { data: workspace } = await WorkspaceService(
-            this.$client
-          ).acceptInvitation(this.invitation.id)
-          acceptedWorkspace = workspace
-        }
         this.$i18n.setLocale(data.language)
-        if (acceptedWorkspace) {
-          this.$emit('invitation-accepted', acceptedWorkspace)
-        } else {
-          this.$emit('success')
-        }
+        this.$emit('success')
       } catch (error) {
         if (error.handler) {
           const response = error.handler.response

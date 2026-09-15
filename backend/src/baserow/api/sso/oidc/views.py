@@ -15,7 +15,6 @@ from rest_framework.views import APIView
 from baserow.api.decorators import validate_query_parameters
 from baserow.api.sso.oidc.serializers import OIDCLoginRequestSerializer
 from baserow.core.auth_provider.exceptions import DifferentAuthProvider
-from baserow.core.exceptions import WorkspaceInvitationEmailMismatch
 from baserow.core.sso.exceptions import (
     AuthFlowError,
     EmailNotVerified,
@@ -52,12 +51,6 @@ class OIDCLoginView(APIView):
                 location=OpenApiParameter.QUERY,
                 type=OpenApiTypes.STR,
                 description="The relative URL the user wanted to access.",
-            ),
-            OpenApiParameter(
-                name="workspace_invitation_token",
-                location=OpenApiParameter.QUERY,
-                type=OpenApiTypes.STR,
-                description="An optional workspace invitation token.",
             ),
         ],
         tags=["Auth"],
@@ -125,9 +118,6 @@ class OIDCCallbackView(APIView):
             AuthFlowError: SsoErrorCode.AUTH_FLOW_ERROR,
             DeactivatedUserException: SsoErrorCode.USER_DEACTIVATED,
             DifferentAuthProvider: SsoErrorCode.DIFFERENT_PROVIDER,
-            WorkspaceInvitationEmailMismatch: (
-                SsoErrorCode.GROUP_INVITATION_EMAIL_MISMATCH
-            ),
             DisabledSignupError: SsoErrorCode.SIGNUP_DISABLED,
             NoMappedRole: SsoErrorCode.NO_MAPPED_ROLE,
             EmailNotVerified: SsoErrorCode.EMAIL_NOT_VERIFIED,

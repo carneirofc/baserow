@@ -239,12 +239,8 @@ def test_workspace_user_added(
     workspace_user_1 = data_fixture.create_user_workspace(
         user=user_1, workspace=workspace
     )
-    workspace_invitation = data_fixture.create_workspace_invitation(
-        email=user_2.email, permissions="MEMBER", workspace=workspace
-    )
-
-    workspace_user_2 = CoreHandler().accept_workspace_invitation(
-        user_2, workspace_invitation
+    workspace_user_2 = CoreHandler().add_user_to_workspace(
+        workspace, user_2, permissions="MEMBER"
     )
 
     mock_broadcast_to_workspace.delay.assert_called_once()

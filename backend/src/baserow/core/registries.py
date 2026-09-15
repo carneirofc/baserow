@@ -56,7 +56,6 @@ if TYPE_CHECKING:
         Application,
         Template,
         Workspace,
-        WorkspaceInvitation,
     )
 
 
@@ -180,7 +179,6 @@ class Plugin(APIUrlsInstanceMixin, Instance):
         self,
         user: "AbstractUser",
         workspace: "Workspace" = None,
-        workspace_invitation: "WorkspaceInvitation" = None,
         template: "Template" = None,
     ):
         """
@@ -193,9 +191,6 @@ class Plugin(APIUrlsInstanceMixin, Instance):
         :type user: User
         :param workspace: The newly created workspace for the user.
         :type workspace: Workspace or None
-        :param workspace_invitation: Is provided if the user has signed up using a valid
-            workspace invitation token.
-        :type workspace_invitation: WorkspaceInvitation or None
         :param template: The template that is installed right after creating the
             account. Is `None` if the template was not created.
         :type template: Template or None

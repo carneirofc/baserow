@@ -228,8 +228,7 @@ session that is already open, but a session only lasts `session_lifetime_minutes
 
 1. Add them to the `baserow-users` group in Keycloak.
 2. They sign in once, which creates their account.
-3. A workspace admin adds them from *Workspace settings → Members → Add members*. To reach
-   someone who has not signed in yet, use *Invite member* instead.
+3. A workspace admin adds them from *Workspace settings → Members → Add members*.
 
 ### Give someone access to another workspace, or restrict it
 
@@ -315,7 +314,7 @@ toggle covers and how to set it through the API.
 | Every login redirects to `/login?error=errorAuthFlowError` after a Keycloak upgrade or client change | Check the backend log: a `state`, PKCE or `sub` mismatch means something is rewriting the callback URL or the client's PKCE method is not `S256`. |
 | Every login redirects to `/login?error=errorNoMappedRole` | The client-roles mapper is not enabled on the ID token *and* userinfo, or the user holds none of `user_roles` / `staff_roles` / `superuser_roles`. Check **Evaluate** (step 4). |
 | The user signs in but sees no workspace | Expected: a workspace admin must add them in Baserow. |
-| A workspace admin cannot find the user in *Add members* | The user has not signed in yet (no account exists), is deactivated, or the search has fewer than 3 characters. Use *Invite member* for people who have not signed in. |
+| A workspace admin cannot find the user in *Add members* | The user has not signed in yet (no account exists), is deactivated, or the search has fewer than 3 characters. Ask them to sign in once first. |
 | A configuration change had no effect | The provider JSON is read at startup. Restart the backend. |
 | The backend refuses to start after an upgrade | The provider JSON still uses retired keys: `groups_claim` / `staff_groups` / `superuser_groups` (rename), or `workspace_mappings` / `team_mappings` / `strict_membership` (remove; see [Upgrading from workspace mappings](sso-oidc.md#upgrading-from-workspace-mappings)). |
 | `errorAuthFlowError` immediately after the Keycloak redirect | The redirect URI registered on the client does not match `<BASEROW_PUBLIC_URL>/api/sso/oidc/callback/<name>/`, or the backend cannot reach the issuer. Check the backend log and step 6.2. |

@@ -1,3 +1,4 @@
+from unittest.mock import patch
 from urllib.parse import parse_qs, urlparse
 
 from django.contrib.auth import get_user_model
@@ -10,6 +11,7 @@ import responses
 
 from baserow.core.auth_provider.models import OIDCAuthProviderModel
 from baserow.core.sso.oidc.handler import SESSION_NONCE_KEY, SESSION_STATE_KEY
+from baserow.core.user.exceptions import DisabledSignupError
 from baserow.test_utils.oidc import FakeOIDCProvider
 
 EMAIL = "existing@example.com"
@@ -111,29 +113,16 @@ def test_privileged_account_is_never_auto_linked(api_client, data_fixture, flag)
 def test_link_is_rolled_back_when_sign_in_is_refused_later(api_client, data_fixture):
     user = data_fixture.create_user(email=EMAIL)
     idp = FakeOIDCProvider(email=EMAIL, link_existing_accounts=True)
-    other_user = data_fixture.create_user(email="other@example.com")
-    workspace = data_fixture.create_workspace(user=other_user)
-    invitation = data_fixture.create_workspace_invitation(
-        workspace=workspace, invited_by=other_user, email="someone-else@example.com"
-    )
 
-    with override_settings(BASEROW_OIDC_PROVIDERS=[idp.config]):
-        responses.add(responses.GET, idp.discovery_url, json=idp.discovery_document())
-        api_client.get(
-            reverse("api:sso:oidc:login", args=(idp.name,))
-            + f"?workspace_invitation_token={invitation_token(invitation)}"
-        )
-        idp.register_all(responses, nonce=api_client.session[SESSION_NONCE_KEY])
-        response = api_client.get(
-            reverse("api:sso:oidc:callback", args=(idp.name,))
-            + f"?code=the-code&state={api_client.session[SESSION_STATE_KEY]}"
-        )
+    # Refuse after the account was linked, inside the same transaction.
+    with (
+        override_settings(BASEROW_OIDC_PROVIDERS=[idp.config]),
+        patch(
+            "baserow.api.sso.oidc.views.sync_global_roles",
+            side_effect=DisabledSignupError(),
+        ),
+    ):
+        response = _drive_callback(api_client, idp, responses)
 
-    assert "errorWorkspaceInvitationEmailMismatch" in response.headers["Location"]
+    assert "errorSignupDisabled" in response.headers["Location"]
     assert not _is_linked(user, idp)
-
-
-def invitation_token(invitation):
-    from baserow.core.handler import CoreHandler
-
-    return CoreHandler().get_workspace_invitation_signer().dumps(invitation.id)

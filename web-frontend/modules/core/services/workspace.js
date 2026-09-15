@@ -28,13 +28,6 @@ export default (client) => {
       delete(id) {
         return client.delete(`/workspaces/${id}/`)
       },
-      sendInvitation(workspaceId, baseUrl, values) {
-        values.base_url = baseUrl
-        return client.post(
-          `/workspaces/invitations/workspace/${workspaceId}/`,
-          values
-        )
-      },
       fetchAllUsers(workspaceId) {
         return client.get(`/workspaces/users/workspace/${workspaceId}/`)
       },
@@ -55,24 +48,6 @@ export default (client) => {
       },
       deleteUser(workspaceUserId) {
         return client.delete(`/workspaces/users/${workspaceUserId}/`)
-      },
-      fetchAllInvitations(workspaceId) {
-        return client.get(`/workspaces/invitations/workspace/${workspaceId}/`)
-      },
-      fetchInvitationByToken(token) {
-        return client.get(`/workspaces/invitations/token/${token}/`)
-      },
-      updateInvitation(invitationId, values) {
-        return client.patch(`/workspaces/invitations/${invitationId}/`, values)
-      },
-      deleteInvitation(invitationId) {
-        return client.delete(`/workspaces/invitations/${invitationId}/`)
-      },
-      rejectInvitation(invitationId) {
-        return client.post(`/workspaces/invitations/${invitationId}/reject/`)
-      },
-      acceptInvitation(invitationId) {
-        return client.post(`/workspaces/invitations/${invitationId}/accept/`)
       },
       createInitialWorkspace(values) {
         return client.post('/workspaces/create-initial-workspace/', values)

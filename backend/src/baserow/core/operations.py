@@ -58,40 +58,15 @@ class OrderApplicationsOperationType(WorkspaceCoreOperationType):
     object_scope_name = "application"
 
 
-class CreateInvitationsWorkspaceOperationType(WorkspaceCoreOperationType):
-    type = "workspace.create_invitation"
-
-
-class ListInvitationsWorkspaceOperationType(WorkspaceCoreOperationType):
-    type = "workspace.list_invitations"
-    object_scope_name = "workspace_invitation"
-
-
 class ListWorkspaceUsersWorkspaceOperationType(WorkspaceCoreOperationType):
     type = "workspace.list_workspace_users"
     object_scope_name = "workspace_user"
 
 
 class AddWorkspaceUsersWorkspaceOperationType(WorkspaceCoreOperationType):
-    """Adds users that already have an account directly, without an invitation."""
+    """Adds users that already have an account to the workspace."""
 
     type = "workspace.add_workspace_users"
-
-
-class InvitationWorkspaceOperationType(CoreOperationType, ABC):
-    context_scope_name = "workspace_invitation"
-
-
-class ReadInvitationWorkspaceOperationType(InvitationWorkspaceOperationType):
-    type = "invitation.read"
-
-
-class UpdateWorkspaceInvitationType(InvitationWorkspaceOperationType):
-    type = "invitation.update"
-
-
-class DeleteWorkspaceInvitationOperationType(InvitationWorkspaceOperationType):
-    type = "invitation.delete"
 
 
 class WorkspaceUserOperationType(OperationType, ABC):

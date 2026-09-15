@@ -90,8 +90,7 @@ class WorkspaceUsersView(APIView, SearchableViewMixin, SortableViewMixin):
         operation_id="list_workspace_users",
         description=(
             "Lists all the users that are in a workspace if the authorized user has admin "
-            "permissions to the related workspace. To add a user to a workspace an invitation "
-            "must be sent first."
+            "permissions to the related workspace."
         ),
         responses={
             200: ListWorkspaceUsersWithMemberDataSerializer(many=True),
@@ -169,9 +168,8 @@ class WorkspaceUsersView(APIView, SearchableViewMixin, SortableViewMixin):
         tags=["Workspaces"],
         operation_id="add_workspace_users",
         description=(
-            "Adds users that already have an account to the workspace directly, "
-            "without an invitation. Users that are already members keep their "
-            "permissions. Requires workspace admin."
+            "Adds users that already have an account to the workspace. Users that "
+            "are already members keep their permissions. Requires workspace admin."
         ),
         request=AddWorkspaceUsersSerializer,
         responses={
@@ -332,7 +330,7 @@ class WorkspaceUserView(APIView):
             400: get_error_schema(
                 ["ERROR_USER_NOT_IN_GROUP", "ERROR_USER_INVALID_GROUP_PERMISSIONS"]
             ),
-            404: get_error_schema(["ERROR_GROUP_INVITATION_DOES_NOT_EXIST"]),
+            404: get_error_schema(["ERROR_GROUP_USER_DOES_NOT_EXIST"]),
         },
     )
     @transaction.atomic

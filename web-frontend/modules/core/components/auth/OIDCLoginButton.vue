@@ -36,23 +36,10 @@ export default {
       default: false,
       required: false,
     },
-    invitation: {
-      required: false,
-      validator: (prop) => typeof prop === 'object' || prop === null,
-      default: null,
-    },
   },
   computed: {
     loginUrl() {
-      const { workspaceInvitationToken } = this.$route.query
-      const parsedUrl = new URL(this.redirectUrl)
-      if (workspaceInvitationToken) {
-        parsedUrl.searchParams.append(
-          'workspace_invitation_token',
-          workspaceInvitationToken
-        )
-      }
-      return parsedUrl.toString()
+      return new URL(this.redirectUrl).toString()
     },
   },
 }

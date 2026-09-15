@@ -23,7 +23,6 @@
     },
     "sidebar": {
         "createWorkspace": "Munkaterület létrehozása",
-        "inviteOthers": "Mások meghívása",
         "members": "Tagok",
         "logoff": "Kijelentkezés",
         "errorNoWorkspace": "Nincs egy munkaterületed sem.",
@@ -111,8 +110,6 @@
         "password": "Jelszó",
         "passwordRepeat": "Jelszó ismét"
     },
-    "invitationTitle": "Meghívó",
-    "invitationMessage": "{invitedBy} meghívott, hogy csatlakozz a(z) {workspace} munkaterülethez.",
     "workspaceForm": {
         "nameLabel": "Név"
     },
@@ -123,19 +120,6 @@
     },
     "dashboardWorkspace": {
         "createApplication": "Létrehozás"
-    },
-    "workspaceInvitation": {
-        "title": "Meghívás",
-        "message": "{by} meghívott, hogy csatlakozz a(z) {workspace} munkaterülethez.",
-        "reject": "Elutasítás",
-        "accept": "Elfogadás"
-    },
-    "workspaceInviteForm": {
-        "invitationFormTitle": "Meghívás e-mail alapján",
-        "optionalMessagePlaceholder": "Opcionális üzenet",
-        "errorInvalidEmail": "Kérlek érvényes e-mail címet adj meg.",
-        "errorTooLongMessage": "Az üzenet hossza maximum {amount} karakter lehet.",
-        "additionalRoles": "További szerepek"
     },
     "workspacesContext": {
         "search": "Munkaterületek keresése",
@@ -372,8 +356,6 @@
         "settingAllowResetPasswordWarning": "Kérlek ne feledd, ki tudod tiltani magad a rendszerből. Nem tudsz új jelszót igényelni ha elfelejted.",
         "settingAllowNewAccountsName": "Új fiókok létrehozásának engedélyezése",
         "settingAllowNewAccountsDescription": "Alapértelmezetten minden felhasználó aki felkeresi a domaint/alkalmazást, tud regisztrálni.",
-        "settingAllowSignupsViaWorkspaceInvitationsName": "Meghívásos alapon történő regisztráció engedélyezése",
-        "settingAllowSignupsViaWorkspaceInvitationDescription": "Még ha le is van tiltva az új fiók létrehozása, ezzel a beállítással a meghívott felhasználók be tudnak regisztrálni.",
         "settingAllowNonStaffCreateWorkspaceOperation": "Minden regisztrált felhasználó létrehozhat munkaterületeket",
         "settingAllowNonStaffCreateWorkspaceOperationDescription": "Alapértelmezetten minden regisztrált felhasználó tud munkaterületet létrehozni. Kapcsold ezt ki ha ezt a jogot csak az adminoknak szeretnéd.",
         "settingAllowNonStaffCreateWorkspaceOperationWarning": "Az új felhasználóknak automatikusan létrejön egy munkaterület, amelyhez Admin jogosultságot kapnak.",
@@ -474,10 +456,8 @@
     },
     "membersSettings": {
         "membersTabTitle": "Tagok",
-        "invitesTabTitle": "Meghívók",
         "membersTable": {
             "title": "{userAmount} felhasználó tagja a(z) {workspaceName} munkaterületnek",
-            "inviteMember": "Tag meghívása",
             "columns": {
                 "name": "Név",
                 "email": "E-mail",
@@ -490,29 +470,6 @@
                 "copyEmail": "E-mail másolása",
                 "remove": "Eltávolítás a munkaterületből"
             }
-        },
-        "invitesTable": {
-            "title": "{invitesAmount} függőben lévő meghívás a(z) {workspaceName} munkaterületben",
-            "columns": {
-                "email": "E-mail",
-                "message": "Üzenet",
-                "role": "Alapértelmezett szerepkör"
-            },
-            "actions": {
-                "copyEmail": "E-mail másolása",
-                "remove": "Meghívó visszavonása"
-            }
-        },
-        "membersInviteModal": {
-            "title": "Munkaterület tagok meghívása",
-            "submit": "Meghívó küldése",
-            "helpIconText": "A kiválasztott szerepkör lesz a felhasználók alapértelmezett szerepköre ebben a munkaterületben.",
-            "errors": {
-                "userAlreadyInWorkspace": {
-                    "title": "A felhasználó már tagja ennek a munkaterületnek.",
-                    "text": "Nem tudsz meghívót küldeni olyan felhasználónak aki már tagja ennek a munkaterületnek."
-                }
-            }
         }
     },
     "memberSelectionList": {
@@ -520,7 +477,6 @@
         "selectedAmountLabel": "{count} kiválasztva"
     },
     "memberAssignmentModalFooter": {
-        "invite": "{count} meghívása",
         "deselectAll": "Összes kijelölés törlése",
         "selectAll": "Összes kijelölése"
     },
@@ -556,18 +512,6 @@
     },
     "richTextEditorMentionsList": {
         "notFound": "Nem található felhasználó"
-    },
-    "workspaceInvitationAcceptedNotification": {
-        "title": "{sender} elfogadta a meghívásod a(z) {workspaceName} munkaterülethez",
-        "deletedUser": "Törölt felhasználó"
-    },
-    "workspaceInvitationRejectedNotification": {
-        "title": "{sender} elutasította a meghívásod a(z) {workspaceName} munkaterülethez",
-        "deletedUser": "Törölt felhasználó"
-    },
-    "workspaceInvitationCreatedNotification": {
-        "title": "{sender} meghívott a(z) {workspaceName} munkaterülethez",
-        "deletedUser": "Törölt felhasználó"
     },
     "versionUpgradeNotification": {
         "title": "{version} már elérhető! Tekintsd meg az újdonságokat."

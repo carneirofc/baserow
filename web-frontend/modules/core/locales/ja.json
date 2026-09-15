@@ -23,7 +23,6 @@
     },
     "sidebar": {
         "createWorkspace": "グループ作成",
-        "inviteOthers": "招待する",
         "members": "メンバー",
         "logoff": "ログオフ",
         "errorNoWorkspace": "グループがありません。",
@@ -98,8 +97,6 @@
         "password": "パスワード",
         "passwordRepeat": "パスワード再入力"
     },
-    "invitationTitle": "招待",
-    "invitationMessage": "{invitedBy} から {group} への招待が届きました。",
     "workspaceForm": {
         "nameLabel": "名前"
     },
@@ -111,12 +108,6 @@
     "dashboardWorkspace": {
         "createApplication": "新規作成"
     },
-    "workspaceInvitation": {
-        "title": "招待",
-        "message": "{by} がグループ {group} へ招待しています。",
-        "reject": "拒否",
-        "accept": "承諾する"
-    },
     "workspaceMemberModal": {
         "membersModalTitle": "{group} メンバー",
         "userDescription": "{user} - {since} 前から参加",
@@ -125,12 +116,6 @@
         "userAlreadyInWorkspaceTitle": "ユーザーは既にグループに参加しています。",
         "userDescriptionPendingDeletion": "{user} - 削除処理中",
         "userAlreadyInWorkspaceText": "ユーザーは既にグループ・メンバーなので招待状を送付出来ません。"
-    },
-    "workspaceInviteForm": {
-        "invitationFormTitle": "Eメールで招待する",
-        "optionalMessagePlaceholder": "追加のメッセージ",
-        "errorInvalidEmail": "正しいEメールアドレスを入力して下さい。",
-        "errorTooLongMessage": "メッセージは {amount} 文字以内にして下さい。"
     },
     "workspacesContext": {
         "search": "グループ検索",
@@ -353,8 +338,6 @@
         "settingAllowResetPasswordWarning": "パスワードを忘れると、システムに二度とログインできなくなる可能性があります。忘れないようにして下さい。",
         "settingAllowNewAccountsName": "新規アカウント登録を許可する",
         "settingAllowNewAccountsDescription": "デフォルトでは、Baserow のサイトを訪れる誰でも新規アカウントを登録出来ます。",
-        "settingAllowSignupsViaWorkspaceInvitationsName": "グループからの招待でのアカウント登録を許可する",
-        "settingAllowSignupsViaWorkspaceInvitationDescription": "アカウントの新規登録が利用できなくても、このオプション設定を使えば、招待されたユーザーはアカウントを作成出来るようになります。",
         "settingAllowNonStaffCreateWorkspaceOperation": "新しいグループの登録を全ユーザーに許可する",
         "settingAllowNonStaffCreateWorkspaceOperationDescription": "デフォルトでは、誰でも新しいグループを作成出来ます。この機能を使えなくすると、管理者だけが新しいグループを作成出来るようになります。",
         "settingAllowNonStaffCreateWorkspaceOperationWarning": "新しいユーザーには新しいグループが割り振られ、管理者権限になります。",
@@ -454,10 +437,8 @@
     },
     "membersSettings": {
         "membersTabTitle": "メンバー",
-        "invitesTabTitle": "招待",
         "membersTable": {
             "title": "{userAmount} 人のメンバーが {groupName} にいます",
-            "inviteMember": "メンバーを招待",
             "columns": {
                 "name": "名前",
                 "email": "Eメール",
@@ -470,29 +451,6 @@
                 "copyEmail": "Eメールをコピー",
                 "remove": "グループから削除"
             }
-        },
-        "invitesTable": {
-            "title": "{invitesAmount} 人の招待が {groupName} にあります",
-            "columns": {
-                "email": "Eメール",
-                "message": "メッセージ",
-                "role": "既定のロール"
-            },
-            "actions": {
-                "copyEmail": "Eメールをコピー",
-                "remove": "招待をキャンセル"
-            }
-        },
-        "membersInviteModal": {
-            "title": "グループ・メンバーを招待",
-            "submit": "招待を送信",
-            "helpIconText": "選択されたロールが、このグループのユーザーの既定のロールになります。",
-            "errors": {
-                "userAlreadyInWorkspace": {
-                    "title": "ユーザーはすでにグループに所属しています。",
-                    "text": "ユーザーがすでにグループのメンバーなので招待を送信出来ません。"
-                }
-            }
         }
     },
     "memberSelectionList": {
@@ -500,7 +458,6 @@
         "selectedAmountLabel": "{count} 件選択"
     },
     "memberAssignmentModalFooter": {
-        "invite": "招待 {count} 件",
         "deselectAll": "全ての選択を解除する",
         "selectAll": "全てを選択する"
     },

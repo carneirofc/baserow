@@ -21,7 +21,6 @@ export default (client) => {
       password,
       language,
       authenticate = true,
-      workspaceInvitationToken = null,
       templateId = null,
       captchaToken = ''
     ) {
@@ -31,10 +30,6 @@ export default (client) => {
         password,
         authenticate,
         language,
-      }
-
-      if (workspaceInvitationToken !== null) {
-        values.workspace_invitation_token = workspaceInvitationToken
       }
 
       if (templateId !== null) {
@@ -86,9 +81,6 @@ export default (client) => {
       return client.post(`/user/verify-email/`, {
         token,
       })
-    },
-    dashboard() {
-      return client.get('/user/dashboard/')
     },
     update(values) {
       return client.patch('/user/account/', values)

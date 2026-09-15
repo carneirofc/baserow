@@ -17,7 +17,6 @@
   },
   "sidebar": {
     "createWorkspace": "Criar grupo",
-    "inviteOthers": "Convidar outros",
     "logoff": "Sair",
     "errorNoWorkspace": "Você não tem quaisquer grupos.",
     "admin": "Administrador",
@@ -78,8 +77,6 @@
     "password": "Senha",
     "passwordRepeat": "Repetir senha"
   },
-  "invitationTitle": "Convite",
-  "invitationMessage": "{invitedBy} convidou você para participar {group}.",
   "workspaceForm": {
     "nameLabel": "Nome"
   },
@@ -92,12 +89,6 @@
     "showMembers": "Membros",
     "createApplication": "Criar novo"
   },
-  "workspaceInvitation": {
-    "title": "Convite",
-    "message": "{by} convidou você para participar de {group}.",
-    "reject": "Rejeitar",
-    "accept": "Aceitar"
-  },
   "workspaceMemberModal": {
     "membersModalTitle": "{group} membros",
     "userDescription": "{user} - entrou {since} atrás",
@@ -105,11 +96,6 @@
     "sendInvite": "Enviar convite",
     "userAlreadyInWorkspaceTitle": "Usuário já existe no grupo.",
     "userAlreadyInWorkspaceText": "Não é possível enviar um convite quando o usuário já é membro do grupo."
-  },
-  "workspaceInviteForm": {
-    "invitationFormTitle": "Convidar por e-mail",
-    "optionalMessagePlaceholder": "Mensagem opcional",
-    "errorInvalidEmail": "Por favor adicione um endereço de e-mail válido."
   },
   "workspacesContext": {
     "search": "Pesquisar grupos",
@@ -279,8 +265,6 @@
     "settingAllowResetPasswordWarning": "",
     "settingAllowNewAccountsName": "Permitir criar novas contas",
     "settingAllowNewAccountsDescription": "Por padrão, qualquer usuário que visite seu domínio Baserow pode se inscrever para uma nova conta.",
-    "settingAllowSignupsViaWorkspaceInvitationsName": "Permitir inscrições por meio de convites de grupo",
-    "settingAllowSignupsViaWorkspaceInvitationDescription": "Mesmo que a criação de novas contas esteja desativada, esta opção permite que usuários convidados diretamente ainda criem uma conta.",
     "enabled": "ativar"
   },
   "formSidebar": {
@@ -451,8 +435,6 @@
       "password": "Senha",
       "passwordRepeat": "Repetir senha"
     },
-    "invitationTitle": "Convite",
-    "invitationMessage": "{invitedBy} convidou você para participar {group}.",
     "workspaceForm": {
       "nameLabel": "Nome"
     },
@@ -465,12 +447,6 @@
       "showMembers": "Membros",
       "createApplication": "Criar novo"
     },
-    "workspaceInvitation": {
-      "title": "Convite",
-      "message": "{by} convidou você para participar de {group}.",
-      "reject": "Rejeitar",
-      "accept": "Aceitar"
-    },
     "workspaceMemberModal": {
       "membersModalTitle": "{group} membros",
       "userDescription": "{user} - entrou {since} atrás",
@@ -478,11 +454,6 @@
       "sendInvite": "Enviar convite",
       "userAlreadyInWorkspaceTitle": "Usuário já existe no grupo.",
       "userAlreadyInWorkspaceText": "Não é possível enviar um convite quando o usuário já é membro do grupo."
-    },
-    "workspaceInviteForm": {
-      "invitationFormTitle": "Convidar por e-mail",
-      "optionalMessagePlaceholder": "Mensagem opcional",
-      "errorInvalidEmail": "Por favor adicione um endereço de e-mail válido."
     },
     "workspacesContext": {
       "search": "Pesquisar grupos",
@@ -665,8 +636,6 @@
       "settingAllowResetPasswordWarning": "",
       "settingAllowNewAccountsName": "Permitir criar novas contas",
       "settingAllowNewAccountsDescription": "Por padrão, qualquer usuário que visite seu domínio Baserow pode se inscrever para uma nova conta.",
-      "settingAllowSignupsViaWorkspaceInvitationsName": "Permitir inscrições por meio de convites de grupo",
-      "settingAllowSignupsViaWorkspaceInvitationDescription": "Mesmo que a criação de novas contas esteja desativada, esta opção permite que usuários convidados diretamente ainda criem uma conta.",
       "enabled": "ativar"
     },
     "formSidebar": {

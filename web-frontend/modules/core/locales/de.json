@@ -47,7 +47,6 @@
     "sidebar": {
         "createWorkspace": "Arbeitsbereich erstellen",
         "addNewWorkspace": "Neuen Arbeitsbereich hinzufügen",
-        "inviteOthers": "Andere einladen",
         "members": "Mitglieder",
         "logoff": "Abmelden",
         "errorNoWorkspace": "Sie haben keine Arbeitsbereiche.",
@@ -207,8 +206,6 @@
         "password": "Passwort",
         "passwordRepeat": "Passwort wiederholen"
     },
-    "invitationTitle": "Einladung",
-    "invitationMessage": "{invitedBy} hat Sie eingeladen, {workspace} beizutreten.",
     "workspaceForm": {
         "nameLabel": "Name"
     },
@@ -292,17 +289,6 @@
         "title": "Bestätigung der E-Mailadresse notwendig",
         "description": "Bitte überprüfen Sie Ihre Mailbox und klicken Sie auf den darin enthaltenen Bestätigungslink. Nach der Verifizierung wird Ihr Konto aktiviert.",
         "resend": "Bestätigungs-E-Mail erneut versenden"
-    },
-    "workspaceInvitation": {
-        "title": "Einladung",
-        "message": "{by} hat Sie eingeladen, dem {workspace} beizutreten.",
-        "reject": "Ablehnen",
-        "accept": "Akzeptieren"
-    },
-    "workspaceInviteForm": {
-        "invitationFormTitle": "Einladen per E-Mail",
-        "errorInvalidEmail": "Bitte geben Sie eine gültige E-Mail Adresse ein.",
-        "additionalRoles": "Zusätzliche Rollen"
     },
     "workspaceContext": {
         "renameWorkspace": "Arbeitsbereich umbenennen",
@@ -616,8 +602,6 @@
         "settingAllowResetPasswordWarning": "Bitte beachten Sie, dass sie sich selbst aus dem System aussperren könnten und der Zugang nicht mehr hergestellt werden kann, falls sie ihr Passwort vergessen.",
         "settingAllowNewAccountsName": "Erstellen neuer Konten zulassen",
         "settingAllowNewAccountsDescription": "Standardmäßig kann sich jeder Benutzer, der Ihre Baserow-Domain besucht, für ein neues Konto anmelden.",
-        "settingAllowSignupsViaWorkspaceInvitationsName": "Erlaube Registrierungen durch Arbeitsbereicheinladungen",
-        "settingAllowSignupsViaWorkspaceInvitationDescription": "Auch wenn die Erstellung von neuen Konten deaktiviert ist können Nutzer:innen durch Setzen dieser Option Nutzer:innen ein Konto erstellen.",
         "settingAllowNonStaffCreateWorkspaceOperation": "Jedem die Möglichkeit geben, neue Arbeitsbereiche zu erstellen",
         "settingAllowNonStaffCreateWorkspaceOperationDescription": "Standardmäßig kann jeder neue Arbeitsbereiche erstellen. Deaktivieren Sie diese Option, damit nur Mitglieder neue Arbeitsbereiche erstellen können.",
         "settingAllowNonStaffCreateWorkspaceOperationWarning": "Für neue Benutzer wird automatisch ein Arbeitsbereich erstellt, in der sie Administrator sind.",
@@ -733,10 +717,8 @@
     },
     "membersSettings": {
         "membersTabTitle": "Mitglieder",
-        "invitesTabTitle": "Einladungen",
         "membersTable": {
             "title": "{userAmount} Mitglieder in {workspaceName}",
-            "inviteMember": "Mitglied einladen",
             "columns": {
                 "name": "Name",
                 "email": "E-Mail",
@@ -751,28 +733,6 @@
                 "copyEmail": "E-Mail kopieren",
                 "remove": "Aus dem Arbeitsbereich entfernen"
             }
-        },
-        "invitesTable": {
-            "title": "{invitesAmount} Ausstehende Einladungen in {workspaceName}",
-            "columns": {
-                "email": "E-Mail",
-                "role": "Standardrolle"
-            },
-            "actions": {
-                "copyEmail": "E-Mail kopieren",
-                "remove": "Einladung abbrechen"
-            }
-        },
-        "membersInviteModal": {
-            "title": "Arbeitsbereichmitglieder einladen",
-            "submit": "Einladung senden",
-            "helpIconText": "Die ausgewählte Rolle wird die Standardrolle des Benutzers in diesem Arbeitsbereich.",
-            "errors": {
-                "userAlreadyInWorkspace": {
-                    "title": "Der Benutzer ist bereits Mitglied des Arbeitsbereichs.",
-                    "text": "Es ist nicht möglich, eine Einladung zu senden, wenn der Benutzer bereits Mitglied des Arbeitsbereich ist."
-                }
-            }
         }
     },
     "memberSelectionList": {
@@ -780,7 +740,6 @@
         "selectedAmountLabel": "{count} ausgewählt"
     },
     "memberAssignmentModalFooter": {
-        "invite": "{count} einladen",
         "deselectAll": "Alle abwählen",
         "selectAll": "Alle auswählen"
     },
@@ -816,18 +775,6 @@
     },
     "richTextEditorMentionsList": {
         "notFound": "Keine Benutzer gefunden"
-    },
-    "workspaceInvitationAcceptedNotification": {
-        "title": "{sender} hat Ihre Einladung angenommen, {workspaceName} beizutreten",
-        "deletedUser": "Ein gelöschter Benutzer"
-    },
-    "workspaceInvitationRejectedNotification": {
-        "title": "{sender} hat Ihre Einladung zur Teilnahme an {workspaceName} abgelehnt",
-        "deletedUser": "Ein gelöschter Benutzer"
-    },
-    "workspaceInvitationCreatedNotification": {
-        "title": "{sender} hat Sie eingeladen, {workspaceName} beizutreten",
-        "deletedUser": "Ein gelöschter Benutzer"
     },
     "versionUpgradeNotification": {
         "title": "{version} ist da! Sehen Sie sich an, was es Neues gibt."
