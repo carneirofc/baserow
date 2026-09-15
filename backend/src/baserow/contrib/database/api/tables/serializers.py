@@ -339,6 +339,13 @@ class TableUpdateSerializer(serializers.ModelSerializer):
             "require_edit_confirmation": {"required": False},
         }
 
+    def validate(self, attrs):
+        if not attrs:
+            raise ValidationError(
+                "At least one of name or require_edit_confirmation must be provided."
+            )
+        return attrs
+
 
 class OrderTablesSerializer(serializers.Serializer):
     table_ids = serializers.ListField(
