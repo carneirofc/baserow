@@ -838,7 +838,9 @@
     "noResults": "No users found. They may not have signed in yet or are already members.",
     "selected": "{count} selected:",
     "permissions": "Add as",
-    "add": "Add {count}"
+    "add": "Add {count}",
+    "teams": "Add to teams",
+    "access": "Default access"
   },
   "teamsSettings": {
     "tabTitle": "Teams",
@@ -861,13 +863,6 @@
     "title": "Confirm removal from workspace",
     "confirmation": "Are you sure you want to remove {name} from {workspaceName}? This action cannot be undone.",
     "remove": "Remove"
-  },
-  "editRoleContext": {
-    "billableRolesLink": "Billable roles documentation",
-    "additionalRoles": "Additional roles"
-  },
-  "highestPaidRoleField": {
-    "billable": "Billable"
   },
   "integrationCreateEditModal": {
     "createTitle": "New integration",
@@ -1312,5 +1307,8 @@
     "copy": "Copy key",
     "usage": "Authenticate requests with an \"Authorization: Client\" header holding this key.",
     "confirm": "I've saved it"
+  },
+  "memberAccessField": {
+    "fullAccess": "Full access"
   }
 }
