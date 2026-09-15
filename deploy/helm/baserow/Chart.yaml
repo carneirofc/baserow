@@ -17,7 +17,7 @@ keywords:
   - eks
 version: 0.4.2
 # Tracks the application version shipped by this fork's images.
-appVersion: "0.9.1"
+appVersion: "0.10.0"
 home: https://github.com/carneirofc/baserow
 sources:
   - https://github.com/carneirofc/baserow
@@ -29,12 +29,9 @@ annotations:
   artifacthub.io/changes: |
     - kind: changed
       description: >-
-        appVersion 0.9.1, replacing granular RBAC roles with in-app teams and
-        database access grants, and adding import upsert/replace modes.
-    - kind: fixed
-      description: >-
-        Imports with upsert fields but no import mode pair duplicate match
-        values in order again.
+        appVersion 0.10.0, adding protected editing for tables, a staff-only
+        extensive audit log and a staff-only admin UI to manage backups across
+        workspaces.
 
 dependencies:
   - name: postgresql

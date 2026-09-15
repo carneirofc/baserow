@@ -1,5 +1,14 @@
 # Changelog
 
+## Released 0.10.0
+
+### New features
+* [Core] Add a staff-only admin UI to manage, schedule, and restore workspace backups across all workspaces, including ones staff do not belong to.
+* [Core] Add a staff-only extensive audit log covering user actions plus sign-in, sign-out and failed sign-in events.
+* [Core] Add a hosted MkDocs Material documentation site built from docs/, published to GitHub Pages on push to develop.
+* [Database] Protected editing for tables: when enabled from the table menu, row edits are kept as unsaved changes until you click Save (or Discard), and creating, pasting, clearing, deleting, moving rows and undo/redo ask for confirmation first. Saved changes are recorded in the audit log with their before and after values.
+
+
 ## Released 0.9.1
 
 ### Bug fixes
