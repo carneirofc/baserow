@@ -212,3 +212,49 @@ export class HealthCheckAdminType extends AdminType {
     return 10000
   }
 }
+
+export class AuditLogAdminType extends AdminType {
+  static getType() {
+    return 'audit_log'
+  }
+
+  getIconClass() {
+    return 'iconoir-timer'
+  }
+
+  getName() {
+    const { $i18n: i18n } = this.app
+    return i18n.t('adminType.auditLog')
+  }
+
+  getRouteName() {
+    return 'admin-audit-log'
+  }
+
+  getOrder() {
+    return 10001
+  }
+}
+
+export class BackupsAdminType extends AdminType {
+  static getType() {
+    return 'backups'
+  }
+
+  getIconClass() {
+    return 'iconoir-cloud-upload'
+  }
+
+  getName() {
+    const { $i18n: i18n } = this.app
+    return i18n.t('adminType.backups')
+  }
+
+  getRouteName() {
+    return 'admin-backups'
+  }
+
+  getOrder() {
+    return 4
+  }
+}

@@ -8,6 +8,7 @@ from django.contrib.auth.models import AbstractUser
 from drf_spectacular.utils import extend_schema_serializer
 from opentelemetry import metrics
 from rest_framework import serializers
+from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.request import Request
 from rest_framework_simplejwt.serializers import (
     TokenObtainPairSerializer,
@@ -29,6 +30,7 @@ from baserow.api.workspaces.invitations.serializers import (
     UserWorkspaceInvitationSerializer,
 )
 from baserow.core.action.registries import action_type_registry
+from baserow.core.audit_log.handler import AuditLogHandler
 from baserow.core.auth_provider.exceptions import (
     AuthProviderDisabled,
     EmailVerificationRequired,
@@ -38,6 +40,7 @@ from baserow.core.handler import CoreHandler
 from baserow.core.models import Settings, Template, UserProfile
 from baserow.core.two_factor_auth.handler import TwoFactorAuthHandler
 from baserow.core.user.actions import SignInUserActionType
+from baserow.core.utils import get_user_remote_ip_address_from_request
 from baserow.core.user.exceptions import DeactivatedUserException
 from baserow.core.user.handler import UserHandler
 from baserow.core.user.utils import (
@@ -376,7 +379,19 @@ class TokenObtainPairWithUserSerializer(TokenObtainPairSerializer):
                 raise serializers.ValidationError({"email": "This field is required."})
             attrs[self.username_field] = email
 
-        super().validate(attrs)
+        try:
+            super().validate(attrs)
+        except AuthenticationFailed:
+            request = self.context.get("request")
+            AuditLogHandler().log_auth_event(
+                user=None,
+                event_type="sign_in_failed",
+                ip_address=get_user_remote_ip_address_from_request(request)
+                if request
+                else None,
+                user_email=attrs.get(self.username_field, ""),
+            )
+            raise
 
         twofa_provider = TwoFactorAuthHandler().get_provider(self.user)
         if twofa_provider:

@@ -155,6 +155,7 @@ class CoreConfig(AppConfig):
             ApplicationTypeEnabledPermissionManagerType,
             BasicPermissionManagerType,
             CorePermissionManagerType,
+            StaffBypassPermissionManagerType,
             StaffOnlyPermissionManagerType,
             StaffOnlySettingOperationPermissionManagerType,
             WorkspaceMemberOnlyPermissionManagerType,
@@ -175,6 +176,7 @@ class CoreConfig(AppConfig):
         )
         permission_manager_type_registry.register(CorePermissionManagerType())
         permission_manager_type_registry.register(StaffOnlyPermissionManagerType())
+        permission_manager_type_registry.register(StaffBypassPermissionManagerType())
         permission_manager_type_registry.register(BasicPermissionManagerType())
         permission_manager_type_registry.register(
             WorkspaceMemberOnlyPermissionManagerType()
@@ -518,6 +520,7 @@ class CoreConfig(AppConfig):
         if settings.CACHALOT_ENABLED:
             pre_migrate.connect(lambda *a, **kw: clear_cachalot_cache(), sender=self)
 
+        import baserow.core.audit_log.receivers  # noqa: F401
         import baserow.core.receivers  # noqa: F401
         from baserow.core.telemetry.telemetry import setup_logging
 

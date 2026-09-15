@@ -1075,7 +1075,21 @@
   "adminType": {
     "dashboard": "Dashboard",
     "users": "Users",
-    "workspaces": "Workspaces"
+    "workspaces": "Workspaces",
+    "auditLog": "Audit log",
+    "backups": "Backups"
+  },
+  "backupsAdminPanel": {
+    "workspace": "Workspace"
+  },
+  "auditLogAdminTable": {
+    "title": "Audit log",
+    "export": "Export CSV",
+    "createdOn": "Date",
+    "user": "User",
+    "workspace": "Workspace",
+    "actionType": "Action",
+    "description": "Description"
   },
   "workspacesAdminTable": {
     "allWorkspaces": "All workspaces",

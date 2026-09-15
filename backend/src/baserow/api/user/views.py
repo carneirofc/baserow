@@ -45,6 +45,7 @@ from baserow.api.workspaces.invitations.errors import (
 )
 from baserow.core.action.handler import ActionHandler
 from baserow.core.action.registries import ActionScopeStr, action_type_registry
+from baserow.core.audit_log.handler import AuditLogHandler
 from baserow.core.auth_provider.exceptions import (
     AuthProviderDisabled,
     EmailVerificationRequired,
@@ -60,6 +61,7 @@ from baserow.core.exceptions import (
 )
 from baserow.core.handler import CoreHandler
 from baserow.core.models import Settings, Template, WorkspaceInvitation
+from baserow.core.utils import get_user_remote_ip_address_from_request
 from baserow.core.user.actions import (
     ChangeEmailActionType,
     ChangeUserPasswordActionType,
@@ -266,8 +268,20 @@ class BlacklistJSONWebToken(TokenBlacklistView):
     @validate_body(TokenBlacklistSerializer)
     def post(self, request, data):
         refresh_token = data["refresh_token"]
-        expires_at = datetime_from_epoch(self.token_class(refresh_token)["exp"])
+        token = self.token_class(refresh_token)
+        expires_at = datetime_from_epoch(token["exp"])
         UserHandler().blacklist_refresh_token(refresh_token, expires_at)
+
+        # `permission_classes`/`authentication_classes` are empty on this view (a
+        # user signing out does not need to still be authenticated), so the user is
+        # resolved from the token's own claim instead of `request.user`.
+        user = get_user_model().objects.filter(id=token.get("user_id")).first()
+        AuditLogHandler().log_auth_event(
+            user=user,
+            event_type="sign_out",
+            ip_address=get_user_remote_ip_address_from_request(request),
+        )
+
         return Response(status=204)
 
 

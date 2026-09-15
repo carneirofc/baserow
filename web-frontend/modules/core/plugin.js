@@ -35,6 +35,8 @@ import {
   WorkspacesAdminType,
   HealthCheckAdminType,
   SettingsAdminType,
+  AuditLogAdminType,
+  BackupsAdminType,
 } from '@baserow/modules/core/adminTypes'
 
 import {
@@ -215,6 +217,8 @@ export default defineNuxtPlugin({
     registry.register('admin', new WorkspacesAdminType(context))
     registry.register('admin', new SettingsAdminType(context))
     registry.register('admin', new HealthCheckAdminType(context))
+    registry.register('admin', new AuditLogAdminType(context))
+    registry.register('admin', new BackupsAdminType(context))
 
     registry.register('authProvider', new PasswordAuthProviderType(context))
     registry.register(
