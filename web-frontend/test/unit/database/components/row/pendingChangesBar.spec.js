@@ -98,7 +98,10 @@ describe('PendingChangesBar', () => {
     await wrapper.vm.save()
 
     expect(notifyIf).toHaveBeenCalledWith(error, 'row')
-    expect(dispatch).not.toHaveBeenCalledWith('toast/success', expect.anything())
+    expect(dispatch).not.toHaveBeenCalledWith(
+      'toast/success',
+      expect.anything()
+    )
   })
 
   test('discards the pending changes', async () => {

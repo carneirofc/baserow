@@ -30,7 +30,13 @@ describe('pendingRowChanges store', () => {
     RowService.mockReset()
   })
 
-  const stageCell = (rowId, fieldToStage, value, oldValue, stageTable = table) =>
+  const stageCell = (
+    rowId,
+    fieldToStage,
+    value,
+    oldValue,
+    stageTable = table
+  ) =>
     store.dispatch('pendingRowChanges/stage', {
       table: stageTable,
       row: { id: rowId, [`field_${fieldToStage.id}`]: oldValue },
@@ -343,7 +349,9 @@ describe('pendingRowChanges store', () => {
   test('a failed save keeps the pending changes', async () => {
     spyOnViewTypes()
     const error = new Error('Network error')
-    RowService.mockReturnValue({ batchUpdate: vi.fn().mockRejectedValue(error) })
+    RowService.mockReturnValue({
+      batchUpdate: vi.fn().mockRejectedValue(error),
+    })
     await stageCell(5, field, 'b', 'a')
 
     await expect(
@@ -351,9 +359,9 @@ describe('pendingRowChanges store', () => {
     ).rejects.toBe(error)
 
     expect(store.getters['pendingRowChanges/isSaving']).toBe(false)
-    expect(store.getters['pendingRowChanges/isCellPending'](table.id, 5, 10)).toBe(
-      true
-    )
+    expect(
+      store.getters['pendingRowChanges/isCellPending'](table.id, 5, 10)
+    ).toBe(true)
   })
 
   test('save without pending changes does not call the backend', async () => {
@@ -366,16 +374,23 @@ describe('pendingRowChanges store', () => {
   })
 
   test('confirm falls back to the browser dialog without a mounted host', async () => {
-    const browserConfirm = vi.spyOn(window, 'confirm').mockReturnValue(true)
+    // The test environment doesn't implement `window.confirm`, so stub it.
+    const originalConfirm = window.confirm
+    const browserConfirm = vi.fn().mockReturnValue(true)
+    window.confirm = browserConfirm
 
-    const confirmed = await store.dispatch('pendingRowChanges/confirm', {
-      title: 'Delete row',
-      message: 'Sure?',
-    })
+    try {
+      const confirmed = await store.dispatch('pendingRowChanges/confirm', {
+        title: 'Delete row',
+        message: 'Sure?',
+      })
 
-    expect(confirmed).toBe(true)
-    expect(browserConfirm).toHaveBeenCalledWith('Delete row\n\nSure?')
-    expect(store.getters['pendingRowChanges/getConfirmation']).toBe(null)
+      expect(confirmed).toBe(true)
+      expect(browserConfirm).toHaveBeenCalledWith('Delete row\n\nSure?')
+      expect(store.getters['pendingRowChanges/getConfirmation']).toBe(null)
+    } finally {
+      window.confirm = originalConfirm
+    }
   })
 
   test('a new confirmation cancels the one that is still open', async () => {

@@ -214,6 +214,7 @@ def test_create_data_sync(data_fixture, api_client):
         "name": "Test 1",
         "order": 1,
         "database_id": database.id,
+        "require_edit_confirmation": False,
         "data_sync": {
             "id": data_sync.id,
             "type": "ical_calendar",
@@ -294,6 +295,7 @@ def test_create_data_sync_with_auto_add_new_properties(data_fixture, api_client)
         "name": "Test 1",
         "order": 1,
         "database_id": database.id,
+        "require_edit_confirmation": False,
         "data_sync": {
             "id": data_sync.id,
             "type": "ical_calendar",

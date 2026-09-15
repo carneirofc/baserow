@@ -60,6 +60,7 @@ def test_list_all_tables_access_to_one_specific_table(api_client, data_fixture):
             "database_id": table_1.database_id,
             "name": table_1.name,
             "order": table_1.order,
+            "require_edit_confirmation": False,
         }
     ]
     assert response_json[0]["id"] == table_1.id
