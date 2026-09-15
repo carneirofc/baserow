@@ -177,6 +177,29 @@
         <li
           v-if="
             $hasPermission(
+              'database.table.update',
+              table,
+              database.workspace.id
+            )
+          "
+          class="context__menu-item"
+        >
+          <a
+            class="context__menu-item-link"
+            :title="$t('confirmDataChange.enableTitle')"
+            @click="toggleProtectedEditing()"
+          >
+            <i class="context__menu-item-icon iconoir-shield-check"></i>
+            {{ $t('sidebarItem.protectedEditing') }}
+            <i
+              v-if="table.require_edit_confirmation"
+              class="sidebar-item__protected-check iconoir-check"
+            ></i>
+          </a>
+        </li>
+        <li
+          v-if="
+            $hasPermission(
               'database.table.duplicate',
               table,
               database.workspace.id
@@ -430,6 +453,33 @@ export default {
       }
 
       this.setLoading(database, false)
+    },
+    async toggleProtectedEditing() {
+      const enable = !this.table.require_edit_confirmation
+      this.$refs.context.hide()
+
+      if (
+        !enable &&
+        this.$store.getters['pendingRowChanges/hasPending'](this.table.id)
+      ) {
+        this.$store.dispatch('toast/info', {
+          title: this.$t('sidebarItem.protectedEditingPendingTitle'),
+          message: this.$t('sidebarItem.protectedEditingPendingMessage'),
+        })
+        return
+      }
+
+      this.setLoading(this.database, true)
+      try {
+        await this.$store.dispatch('table/update', {
+          database: this.database,
+          table: this.table,
+          values: { require_edit_confirmation: enable },
+        })
+      } catch (error) {
+        notifyIf(error, 'table')
+      }
+      this.setLoading(this.database, false)
     },
     async deleteTable() {
       this.deleteLoading = true

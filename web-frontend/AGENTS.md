@@ -27,6 +27,8 @@ Owns everything under `web-frontend/`: `modules/` (feature code), `test/`, `stor
 - The `node-base` stage deletes Ubuntu's unowned `/usr/bin/pebble` (CVE-2026-39821) for the same reason npm/yarn are dropped from `local`: unreachable code that scanners still report. Every stage here descends from `node-base`, so the single removal covers them all — see `deploy/AGENTS.md` for the repo-wide rule.
 - `components/backups/{BackupsTab,BackupSchedulesTab,RemoteBackupsTab}.vue` accept an optional `service` prop (a `(client) => {...}` factory, defaulting to `services/backup.js`) so the same tabs render both the member-facing `BackupsModal` (workspace context menu) and the staff-only `pages/admin/backups.vue` (`components/admin/backups/BackupsAdminPanel.vue`, `services/admin/backups.js` hitting `/admin/backups/...`). Extend this prop, don't fork the components, when another surface needs the same tabs against a different endpoint.
 
+- Protected editing (`table.require_edit_confirmation`, `modules/database/utils/editConfirmation.js`): on such tables a single cell or row modal edit is staged in the `pendingRowChanges` store and saved in one batch update by `PendingChangesBar`, and every other row mutation (create, paste, clear, delete, move, undo/redo) first awaits `confirmDataChange(store, table, …)`, rendered by the `ConfirmDataChangeModal` host mounted in `components/table/Table.vue`. A new row mutation entry point must honor the same helpers.
+
 ## Work Guidance
 
 - Run frontend tasks via `just frontend <recipe>` (aliases `just f …`): `check`/`lint`, `fix`/`format`, `test`, `run-dev-server`, `storybook`, `build-nuxt`.

@@ -65,6 +65,7 @@ nav:
       - Understanding Baserow Formulas: tutorials/understanding-baserow-formulas.md
       - Debugging Connection Issues: tutorials/debugging-connection-issues.md
       - Prefill forms: tutorials/prefill-forms.md
+      - Protected editing: tutorials/protected-editing.md
   - API Usage:
       - REST API: apis/rest-api.md
       - WebSocket API: apis/web-socket-api.md

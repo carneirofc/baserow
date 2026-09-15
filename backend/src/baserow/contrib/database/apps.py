@@ -71,12 +71,14 @@ class DatabaseConfig(AppConfig):
             DuplicateTableActionType,
             OrderTableActionType,
             UpdateTableActionType,
+            UpdateTableEditConfirmationActionType,
         )
 
         action_type_registry.register(CreateTableActionType())
         action_type_registry.register(DeleteTableActionType())
         action_type_registry.register(OrderTableActionType())
         action_type_registry.register(UpdateTableActionType())
+        action_type_registry.register(UpdateTableEditConfirmationActionType())
         action_type_registry.register(DuplicateTableActionType())
 
         from .rows.actions import (

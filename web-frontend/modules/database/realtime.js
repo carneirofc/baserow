@@ -239,6 +239,13 @@ export const registerRealtimeEvents = (realtime) => {
 
   realtime.registerEvent('rows_deleted', (context, data) => {
     const { app, store } = context
+    // Staged changes of deleted rows can't be saved anymore.
+    data.rows.forEach((row) =>
+      store.dispatch('pendingRowChanges/forgetRow', {
+        tableId: data.table_id,
+        rowId: row.id,
+      })
+    )
     for (const viewType of Object.values(app.$registry.getAll('view'))) {
       for (let i = 0; i < data.rows.length; i++) {
         const row = data.rows[i]

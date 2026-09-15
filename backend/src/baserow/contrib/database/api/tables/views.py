@@ -52,6 +52,7 @@ from baserow.contrib.database.table.actions import (
     DeleteTableActionType,
     OrderTableActionType,
     UpdateTableActionType,
+    UpdateTableEditConfirmationActionType,
 )
 from baserow.contrib.database.table.exceptions import (
     InitialSyncTableDataLimitExceeded,
@@ -469,11 +470,21 @@ class TableView(APIView):
     def patch(self, request, data, table_id):
         """Updates the values a table instance."""
 
-        table = action_type_registry.get_by_type(UpdateTableActionType).do(
-            request.user,
-            TableHandler().get_table(table_id),
-            name=data["name"],
-        )
+        table = TableHandler().get_table(table_id)
+
+        if "name" in data:
+            table = action_type_registry.get_by_type(UpdateTableActionType).do(
+                request.user, table, name=data["name"]
+            )
+
+        if "require_edit_confirmation" in data:
+            table = action_type_registry.get_by_type(
+                UpdateTableEditConfirmationActionType
+            ).do(
+                request.user,
+                table,
+                require_edit_confirmation=data["require_edit_confirmation"],
+            )
 
         serializer = TableSerializer(table)
         return Response(serializer.data)

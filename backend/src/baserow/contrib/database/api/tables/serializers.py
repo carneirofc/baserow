@@ -142,7 +142,14 @@ class TableSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Table
-        fields = ("id", "name", "order", "database_id", "data_sync")
+        fields = (
+            "id",
+            "name",
+            "order",
+            "database_id",
+            "require_edit_confirmation",
+            "data_sync",
+        )
         extra_kwargs = {
             "id": {"read_only": True},
             "database_id": {"read_only": True},
@@ -159,6 +166,7 @@ class TableWithoutDataSyncSerializer(TableSerializer):
             "name",
             "order",
             "database_id",
+            "require_edit_confirmation",
         )
 
 
@@ -325,7 +333,11 @@ class TableImportPreviewResponseSerializer(serializers.Serializer):
 class TableUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Table
-        fields = ("name",)
+        fields = ("name", "require_edit_confirmation")
+        extra_kwargs = {
+            "name": {"required": False},
+            "require_edit_confirmation": {"required": False},
+        }
 
 
 class OrderTablesSerializer(serializers.Serializer):

@@ -686,6 +686,63 @@ def test_update_table(api_client, data_fixture):
 
 
 @pytest.mark.django_db
+def test_update_table_require_edit_confirmation(api_client, data_fixture):
+    user, token = data_fixture.create_user_and_token()
+    table = data_fixture.create_database_table(user=user, name="Original")
+    url = reverse("api:database:tables:item", kwargs={"table_id": table.id})
+
+    response = api_client.get(url, HTTP_AUTHORIZATION=f"JWT {token}")
+    assert response.json()["require_edit_confirmation"] is False
+
+    response = api_client.patch(
+        url,
+        {"require_edit_confirmation": True},
+        format="json",
+        HTTP_AUTHORIZATION=f"JWT {token}",
+    )
+    assert response.status_code == HTTP_200_OK
+    response_json = response.json()
+    assert response_json["require_edit_confirmation"] is True
+    # Only the provided value changes.
+    assert response_json["name"] == "Original"
+
+    table.refresh_from_db()
+    assert table.require_edit_confirmation is True
+    assert table.name == "Original"
+
+    response = api_client.patch(
+        url,
+        {"name": "Renamed", "require_edit_confirmation": False},
+        format="json",
+        HTTP_AUTHORIZATION=f"JWT {token}",
+    )
+    assert response.status_code == HTTP_200_OK
+    table.refresh_from_db()
+    assert table.name == "Renamed"
+    assert table.require_edit_confirmation is False
+
+
+@pytest.mark.django_db
+def test_update_table_require_edit_confirmation_is_not_enforced_on_rows(
+    api_client, data_fixture
+):
+    user, token = data_fixture.create_user_and_token()
+    table = data_fixture.create_database_table(user=user)
+    field = data_fixture.create_text_field(table=table, primary=True)
+    table.require_edit_confirmation = True
+    table.save()
+
+    # Protected editing is a UI safeguard only: API writes still go through.
+    response = api_client.post(
+        reverse("api:database:rows:list", kwargs={"table_id": table.id}),
+        {f"field_{field.id}": "value"},
+        format="json",
+        HTTP_AUTHORIZATION=f"JWT {token}",
+    )
+    assert response.status_code == HTTP_200_OK
+
+
+@pytest.mark.django_db
 def test_order_tables(api_client, data_fixture):
     user, token = data_fixture.create_user_and_token(
         email="test@test.nl", password="password", first_name="Test1"

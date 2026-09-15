@@ -244,7 +244,14 @@
         "
       />
       <div v-if="viewLoading" class="loading-overlay"></div>
+      <PendingChangesBar
+        v-if="hasSelectedView && !tableLoading && !readOnly"
+        :table="table"
+        :fields="fields"
+        :store-prefix="storePrefix"
+      />
     </div>
+    <ConfirmDataChangeModal />
   </div>
 </template>
 
@@ -265,6 +272,8 @@ import ExternalLinkBaserowLogo from '@baserow/modules/core/components/ExternalLi
 import ViewGroupBy from '@baserow/modules/database/components/view/ViewGroupBy'
 import DefaultErrorPage from '@baserow/modules/core/components/DefaultErrorPage'
 import { waitFor } from '@baserow/modules/core/utils/queue'
+import PendingChangesBar from '@baserow/modules/database/components/row/PendingChangesBar'
+import ConfirmDataChangeModal from '@baserow/modules/database/components/row/ConfirmDataChangeModal'
 
 /**
  * This page component is the skeleton for a table. Depending on the selected view it
@@ -273,6 +282,8 @@ import { waitFor } from '@baserow/modules/core/utils/queue'
 export default {
   name: 'Table',
   components: {
+    ConfirmDataChangeModal,
+    PendingChangesBar,
     DefaultErrorPage,
     ViewGroupBy,
     ExternalLinkBaserowLogo,
