@@ -1,0 +1,4128 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://carneirofc.github.io/baserow/installation/sso-oidc/">
+      
+      
+        <link rel="prev" href="../monitoring/">
+      
+      
+        <link rel="next" href="../sso-rhbk-keycloak/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
+    
+    
+      
+        <title>SSO with OpenID Connect - Baserow (carneirofc fork) Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6f8fc17f.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#single-sign-on-with-openid-connect-oidc" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-header__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Baserow (carneirofc fork) Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              SSO with OpenID Connect
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/carneirofc/baserow" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    carneirofc/baserow
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../install-with-docker/" class="md-tabs__link">
+          
+  
+  Installation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tutorials/understanding-baserow-formulas/" class="md-tabs__link">
+          
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../apis/rest-api/" class="md-tabs__link">
+          
+  
+  API Usage
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../technical/introduction/" class="md-tabs__link">
+          
+  
+  Technical Overviews
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../development/development-environment/" class="md-tabs__link">
+          
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../plugins/introduction/" class="md-tabs__link">
+          
+  
+  Plugins
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../patterns/date-and-time/" class="md-tabs__link">
+          
+  
+  Patterns
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../runbooks/back-up-and-restore-baserow/" class="md-tabs__link">
+          
+  
+  Runbooks
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../testing/grid-view-test-plan/" class="md-tabs__link">
+          
+  
+  Testing
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../adr/001-phone-number-field-validation/" class="md-tabs__link">
+          
+  
+  Architecture Decision Records
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../other/external-resources/" class="md-tabs__link">
+          
+  
+  Other
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-nav__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Baserow (carneirofc fork) Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/carneirofc/baserow" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    carneirofc/baserow
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Installation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install-with-docker/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Docker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install-with-docker-compose/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Docker Compose
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install-on-aws/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AWS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install-using-standalone-images/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Standalone images
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install-on-digital-ocean/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Digital Ocean Apps
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install-on-railway/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Railway
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install-on-ubuntu/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Ubuntu
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../third-party-hosting-providers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Third party hosting providers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install-with-helm/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Helm
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install-on-eks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Amazon EKS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install-with-k8s/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Kubernetes (K8S)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../old-install-on-ubuntu/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DEPRECATED: Ubuntu (manual)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../supported/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Supported runtime dependencies
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../monitoring/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Monitoring
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    SSO with OpenID Connect
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    SSO with OpenID Connect
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      Contents
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#environment-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      Environment variables
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#registering-baserow-with-the-idp" class="md-nav__link">
+    <span class="md-ellipsis">
+      Registering Baserow with the IdP
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#provider-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      Provider reference
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Provider reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#identity-and-connection" class="md-nav__link">
+    <span class="md-ellipsis">
+      Identity and connection
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#claims" class="md-nav__link">
+    <span class="md-ellipsis">
+      Claims
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#profile-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      Profile mapping
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#session-and-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      Session and verification
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#refused-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      Refused keys
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#global-profiles" class="md-nav__link">
+    <span class="md-ellipsis">
+      Global profiles
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#workspace-access-in-the-app" class="md-nav__link">
+    <span class="md-ellipsis">
+      Workspace access in the app
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-access-is-decided-on-each-login" class="md-nav__link">
+    <span class="md-ellipsis">
+      How access is decided on each login
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#complete-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Complete example
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#passing-the-configuration-to-baserow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Passing the configuration to Baserow
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Passing the configuration to Baserow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#docker-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      docker run
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docker-compose" class="md-nav__link">
+    <span class="md-ellipsis">
+      Docker Compose
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#helm" class="md-nav__link">
+    <span class="md-ellipsis">
+      Helm
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuring-rhbkkeycloak" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuring RHBK/Keycloak
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#login-error-codes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Login error codes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recovering-locked-out-accounts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Recovering locked-out accounts
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#upgrading-from-workspace-mappings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Upgrading from workspace mappings
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security notes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sso-rhbk-keycloak/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SSO with RHBK/Keycloak
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/sso-saml/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SSO with SAML
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workspace-access/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Managing workspace access
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data-destinations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Data destinations, backups & datalake exports
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../instance-settings/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Turning application types off instance-wide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../branding/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Branding
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configuration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/understanding-baserow-formulas/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Understanding Baserow Formulas
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/debugging-connection-issues/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Debugging Connection Issues
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/prefill-forms/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Prefill forms
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    API Usage
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            API Usage
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../apis/rest-api/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    REST API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../apis/web-socket-api/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    WebSocket API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../apis/deprecations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deprecations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Technical Overviews
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Technical Overviews
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/introduction/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Introduction
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/database-plugin/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Database plugin
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/formula-technical-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Formula Technical Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/undo-redo-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Undo Redo Technical Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/permissions-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Permissions handling Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/collapsible-grid-group-by/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Collapsible grid group-by
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/postgresql-locks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PostgreSQL locks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/realtime-presence/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Realtime presence
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/websockets/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    WebSockets
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/workspace-search/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Workspace search
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Development
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Development
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/development-environment/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Development environment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/running-the-dev-env-locally/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Running the Dev Environment Locally
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/running-the-dev-env-with-docker/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Running the Dev Environment with Docker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/directory-structure/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Directory structure
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/tools/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tools
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/code-quality/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code quality
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/debugging/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Debugging
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/create-a-template/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Create a template
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/justfile/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Justfile reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/intellij-setup/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    IntelliJ setup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/feature-flags/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Feature flags
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/e2e-testing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    E2E Testing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/metrics-and-logs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Metrics and Logs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/running-tests/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Backend Tests
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/building-and-running-production-images/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Building and running production images
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/ci-cd/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CI/CD
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/mcp-server/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MCP server
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/read-replicas/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Read replicas
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/vscode-setup/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    VS Code setup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/zed-setup/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Zed setup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Plugins
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Plugins
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugins/introduction/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Plugin basics
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugins/boilerplate/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Plugin boilerplate (outdated)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugins/application-type/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Create application type
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugins/view-type/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Create database table view
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugins/view-filter-type/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Create database table view filter
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugins/field-type/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Create database table field
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugins/field-converter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Create a field converter
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugins/creation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Plugin creation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugins/installation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Plugin installation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Patterns
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Patterns
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../patterns/date-and-time/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Date and time
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../patterns/emails/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Emails
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../patterns/forms/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Forms
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../patterns/jobs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Jobs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../patterns/loading-animations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Loading animations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../patterns/row_history_from_action/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Row history from action
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Runbooks
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Runbooks
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/back-up-and-restore-baserow/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Back up and restore Baserow
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/migrate-from-user-tables-database/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Migrate from user tables database
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/upgrade-embedded-postgres/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Upgrade embedded Postgres
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Testing
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Testing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../testing/grid-view-test-plan/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Grid view test plan
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../testing/mcp-test-plan/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MCP test plan
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Architecture Decision Records
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            Architecture Decision Records
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adr/001-phone-number-field-validation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    001: Phone number field validation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adr/002-baserow-data-backups/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    002: Baserow data backups
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adr/004-baserow-metrics/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    004: Baserow metrics
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adr/005-in-app-database-access-grants/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    005: In-app database access grants
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Other
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            Other
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../other/external-resources/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    External resources
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      Contents
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#environment-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      Environment variables
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#registering-baserow-with-the-idp" class="md-nav__link">
+    <span class="md-ellipsis">
+      Registering Baserow with the IdP
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#provider-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      Provider reference
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Provider reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#identity-and-connection" class="md-nav__link">
+    <span class="md-ellipsis">
+      Identity and connection
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#claims" class="md-nav__link">
+    <span class="md-ellipsis">
+      Claims
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#profile-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      Profile mapping
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#session-and-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      Session and verification
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#refused-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      Refused keys
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#global-profiles" class="md-nav__link">
+    <span class="md-ellipsis">
+      Global profiles
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#workspace-access-in-the-app" class="md-nav__link">
+    <span class="md-ellipsis">
+      Workspace access in the app
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#how-access-is-decided-on-each-login" class="md-nav__link">
+    <span class="md-ellipsis">
+      How access is decided on each login
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#complete-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Complete example
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#passing-the-configuration-to-baserow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Passing the configuration to Baserow
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Passing the configuration to Baserow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#docker-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      docker run
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docker-compose" class="md-nav__link">
+    <span class="md-ellipsis">
+      Docker Compose
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#helm" class="md-nav__link">
+    <span class="md-ellipsis">
+      Helm
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuring-rhbkkeycloak" class="md-nav__link">
+    <span class="md-ellipsis">
+      Configuring RHBK/Keycloak
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#login-error-codes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Login error codes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recovering-locked-out-accounts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Recovering locked-out accounts
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#upgrading-from-workspace-mappings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Upgrading from workspace mappings
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security notes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Troubleshooting
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related" class="md-nav__link">
+    <span class="md-ellipsis">
+      Related
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/carneirofc/baserow/edit/develop/docs/installation/sso-oidc.md" title="Edit this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="single-sign-on-with-openid-connect-oidc">Single sign-on with OpenID Connect (OIDC)<a class="headerlink" href="#single-sign-on-with-openid-connect-oidc" title="Permanent link">&para;</a></h1>
+<p>Baserow signs users in through any OpenID Connect provider — Keycloak/RHBK, Authentik,
+Zitadel, Entra ID, Okta and so on — configured entirely through environment variables.
+There is no admin UI and no provider row to manage: the environment is the source of truth.</p>
+<p>The IdP decides <strong>who someone is at instance level</strong>, through roles it puts in the token:</p>
+<ul>
+<li><strong>User</strong> — may sign in and gets an account.</li>
+<li><strong>Staff</strong> — the Baserow admin area, instance-wide.</li>
+<li><strong>Superuser</strong> — staff plus superuser-only actions.</li>
+</ul>
+<p>Everything inside a workspace — who is a member, who administers it, teams, and what
+members can do with each database and table — is managed <strong>in the app</strong> by workspace
+admins. New workspaces therefore need no IdP or environment change.</p>
+<p>A user holding none of the mapped roles is refused at login, and no account is created.</p>
+<p>This page is the full reference. For a click-by-click Keycloak walkthrough with
+day-to-day operations and hardening, see
+<a href="../sso-rhbk-keycloak/">Single sign-on with RHBK/Keycloak</a>.</p>
+<h2 id="contents">Contents<a class="headerlink" href="#contents" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="#environment-variables">Environment variables</a></li>
+<li><a href="#registering-baserow-with-the-idp">Registering Baserow with the IdP</a></li>
+<li><a href="#provider-reference">Provider reference</a></li>
+<li><a href="#global-profiles">Global profiles</a></li>
+<li><a href="#workspace-access-in-the-app">Workspace access in the app</a></li>
+<li><a href="#how-access-is-decided-on-each-login">How access is decided on each login</a></li>
+<li><a href="#complete-example">Complete example</a></li>
+<li><a href="#passing-the-configuration-to-baserow">Passing the configuration to Baserow</a></li>
+<li><a href="#configuring-rhbkkeycloak">Configuring RHBK/Keycloak</a></li>
+<li><a href="#login-error-codes">Login error codes</a></li>
+<li><a href="#upgrading-from-workspace-mappings">Upgrading from workspace mappings</a></li>
+<li><a href="#security-notes">Security notes</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+</ul>
+<h2 id="environment-variables">Environment variables<a class="headerlink" href="#environment-variables" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Default</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BASEROW_OIDC_PROVIDERS</code></td>
+<td><code>[]</code></td>
+<td>JSON list of providers. See <a href="#provider-reference">Provider reference</a>.</td>
+</tr>
+<tr>
+<td><code>BASEROW_OIDC_ONLY</code></td>
+<td><code>false</code></td>
+<td>OIDC-only mode for normal users: password signup is disabled, password login is refused for non-staff accounts and the login page shows only the SSO buttons. A staff/superuser account can still use the password form through <strong>display password login</strong>, so an IdP outage cannot lock you out. Create that break-glass account <strong>before</strong> turning this on.</td>
+</tr>
+<tr>
+<td><code>BASEROW_ALLOW_MULTIPLE_SSO_PROVIDERS_FOR_SAME_ACCOUNT</code></td>
+<td>unset</td>
+<td>When set, an account created through one method (password, another provider) may also sign in through this provider. Leave unset unless you need it; see <a href="#security-notes">Security notes</a>.</td>
+</tr>
+</tbody>
+</table>
+<p><code>BASEROW_OIDC_PROVIDERS</code> is parsed and validated <strong>once, at startup</strong>:</p>
+<ul>
+<li>An invalid value stops the backend from starting with an <code>ImproperlyConfigured</code> error
+  naming the offending entry and key — it never fails later at login.</li>
+<li><strong>Every change needs a backend restart</strong> (and the Celery workers, which share the
+  settings).</li>
+<li>Issuer discovery needs the network and happens at login, and is logged.</li>
+</ul>
+<h2 id="registering-baserow-with-the-idp">Registering Baserow with the IdP<a class="headerlink" href="#registering-baserow-with-the-idp" title="Permanent link">&para;</a></h2>
+<p>Whatever the provider, register Baserow as a client with these properties:</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Client type</td>
+<td>Confidential (Baserow authenticates with a client secret)</td>
+</tr>
+<tr>
+<td>Flow</td>
+<td>Authorization code (standard flow). Implicit, password and client-credentials grants are unused.</td>
+</tr>
+<tr>
+<td>Redirect / callback URI</td>
+<td><code>&lt;BASEROW_PUBLIC_URL&gt;/api/sso/oidc/callback/&lt;name&gt;/</code> — <code>&lt;name&gt;</code> is the provider's <code>name</code>, and the trailing slash is required. Example: <code>https://baserow.example.com/api/sso/oidc/callback/rhbk/</code></td>
+</tr>
+<tr>
+<td>PKCE</td>
+<td><code>S256</code>. Baserow always sends a PKCE challenge; enforcing it on the IdP is recommended.</td>
+</tr>
+<tr>
+<td>Scopes</td>
+<td><code>openid</code>, <code>email</code>, <code>profile</code> (the default)</td>
+</tr>
+<tr>
+<td>ID token signing</td>
+<td>RSA (<code>RS256</code> and friends) — the key is looked up in the IdP's JWKS by <code>kid</code></td>
+</tr>
+</tbody>
+</table>
+<p>What Baserow needs from the IdP at runtime:</p>
+<ul>
+<li><strong>Discovery.</strong> Baserow fetches <code>&lt;issuer&gt;/.well-known/openid-configuration</code> and uses its
+  <code>issuer</code>, <code>authorization_endpoint</code>, <code>token_endpoint</code>, <code>userinfo_endpoint</code> and <code>jwks_uri</code>.
+  The backend itself makes these calls, server to server, so it must reach the IdP over the
+  network and trust its TLS certificate.</li>
+<li><strong>An ID token</strong> whose signature, <code>iss</code> (must equal the discovered issuer), <code>aud</code> (must
+  contain <code>client_id</code>), <code>exp</code>, <code>iat</code>, <code>sub</code> and <code>nonce</code> all verify.</li>
+<li><strong>A userinfo response</strong> whose <code>sub</code> equals the ID token's <code>sub</code>, and which carries the
+  email claim.</li>
+<li><strong>An email address</strong>, and — unless <code>require_verified_email</code> is <code>false</code> — an
+  <code>email_verified</code> claim that is exactly <code>true</code> (read from userinfo, falling back to the
+  ID token).</li>
+<li><strong>Roles</strong> under <code>roles_claim</code>, in the ID token, the userinfo response, or both.</li>
+</ul>
+<h2 id="provider-reference">Provider reference<a class="headerlink" href="#provider-reference" title="Permanent link">&para;</a></h2>
+<p>Each element of <code>BASEROW_OIDC_PROVIDERS</code> is an object with these keys.</p>
+<h3 id="identity-and-connection">Identity and connection<a class="headerlink" href="#identity-and-connection" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Required</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>name</code></td>
+<td>yes</td>
+<td>—</td>
+<td>Stable slug: letters, digits, <code>-</code> and <code>_</code> only, unique across providers. Appears in the callback URL and links Baserow accounts to this provider, so do not rename it once users have signed in.</td>
+</tr>
+<tr>
+<td><code>display_name</code></td>
+<td>no</td>
+<td><code>name</code></td>
+<td>Label on the login button.</td>
+</tr>
+<tr>
+<td><code>issuer</code></td>
+<td>yes</td>
+<td>—</td>
+<td>The provider's issuer URL (<code>http</code> or <code>https</code>), without <code>/.well-known/openid-configuration</code>.</td>
+</tr>
+<tr>
+<td><code>client_id</code></td>
+<td>yes</td>
+<td>—</td>
+<td>Client id registered in the IdP. Also the expected ID token audience.</td>
+</tr>
+<tr>
+<td><code>client_secret</code></td>
+<td>yes</td>
+<td>—</td>
+<td>Client secret.</td>
+</tr>
+<tr>
+<td><code>scopes</code></td>
+<td>no</td>
+<td><code>["openid", "email", "profile"]</code></td>
+<td>Requested scopes. Must include <code>openid</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="claims">Claims<a class="headerlink" href="#claims" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>email_claim</code></td>
+<td><code>email</code></td>
+<td>Claim in the userinfo response holding the email address. Accounts are matched by email.</td>
+</tr>
+<tr>
+<td><code>name_claim</code></td>
+<td><code>name</code></td>
+<td>Claim in the userinfo response holding the display name. Falls back to the email when empty.</td>
+</tr>
+<tr>
+<td><code>roles_claim</code></td>
+<td><code>resource_access.${client_id}.roles</code></td>
+<td>Claim path holding the user's roles. See below.</td>
+</tr>
+</tbody>
+</table>
+<p><code>roles_claim</code> rules:</p>
+<ul>
+<li>It is a <strong>dotted path</strong> into the claims: <code>resource_access.baserow.roles</code> reads
+  <code>{"resource_access": {"baserow": {"roles": [...]}}}</code>.</li>
+<li><code>${client_id}</code> is replaced with the provider's <code>client_id</code>, so Keycloak's default mapper
+  claim name can be pasted in verbatim.</li>
+<li>A literal dot inside a claim name is escaped as <code>\.</code> (in JSON: <code>"\\."</code>). If the dotted
+  walk does not resolve, the whole string is also tried as one flat key.</li>
+<li>The value may be a list of strings or a single string. Anything else counts as no roles.</li>
+<li>Roles are read from <strong>both</strong> the ID token and the userinfo response, and unioned.</li>
+</ul>
+<p>Common values:</p>
+<table>
+<thead>
+<tr>
+<th>IdP</th>
+<th><code>roles_claim</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Keycloak/RHBK client roles</td>
+<td><code>resource_access.${client_id}.roles</code> (default)</td>
+</tr>
+<tr>
+<td>Keycloak/RHBK realm roles</td>
+<td><code>realm_access.roles</code></td>
+</tr>
+<tr>
+<td>Keycloak group membership mapper, Authentik, Zitadel/Okta custom claim</td>
+<td><code>groups</code> (or whatever the mapper emits)</td>
+</tr>
+<tr>
+<td>Entra ID app roles</td>
+<td><code>roles</code></td>
+</tr>
+</tbody>
+</table>
+<p>The rest of this page says "client role" for whatever strings <code>roles_claim</code> yields.</p>
+<h3 id="profile-mapping">Profile mapping<a class="headerlink" href="#profile-mapping" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>user_roles</code></td>
+<td><code>[]</code></td>
+<td>Roles whose holders may sign in as regular users.</td>
+</tr>
+<tr>
+<td><code>staff_roles</code></td>
+<td><code>[]</code></td>
+<td>Roles whose holders become Baserow <strong>staff</strong> (and may sign in).</td>
+</tr>
+<tr>
+<td><code>superuser_roles</code></td>
+<td><code>[]</code></td>
+<td>Roles whose holders become Baserow <strong>superuser</strong>, which also implies staff (and may sign in).</td>
+</tr>
+</tbody>
+</table>
+<p>A user needs <strong>at least one</strong> role from any of the three lists. Staff and superuser holders
+do not also need a <code>user_roles</code> entry.</p>
+<h3 id="session-and-verification">Session and verification<a class="headerlink" href="#session-and-verification" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>require_verified_email</code></td>
+<td><code>true</code></td>
+<td>Refuse users whose <code>email_verified</code> claim is not <code>true</code> (<code>errorEmailNotVerified</code>). Set <code>false</code> only when the IdP's email addresses are authoritative, for example LDAP/AD-federated.</td>
+</tr>
+<tr>
+<td><code>link_existing_accounts</code></td>
+<td><code>false</code></td>
+<td>When <code>true</code>, an existing account created by another method (password, another provider) is linked to this provider on first sign-in instead of being refused with <code>errorDifferentProvider</code> — only when the IdP sends <code>email_verified: true</code> (even with <code>require_verified_email: false</code>), and never for staff or superuser accounts. See <a href="#recovering-locked-out-accounts">Recovering locked-out accounts</a>.</td>
+</tr>
+<tr>
+<td><code>session_lifetime_minutes</code></td>
+<td><code>480</code></td>
+<td>Lifetime of a session started through this provider. Once it ends the user signs in again, which is when profile changes apply. Positive integer, or <code>null</code> to use <code>BASEROW_REFRESH_TOKEN_LIFETIME_HOURS</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="refused-keys">Refused keys<a class="headerlink" href="#refused-keys" title="Permanent link">&para;</a></h3>
+<p>Keys from older configurations are refused at startup, because silently ignoring them would
+drop the access they used to grant:</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>groups_claim</code></td>
+<td>Rename to <code>roles_claim</code>.</td>
+</tr>
+<tr>
+<td><code>staff_groups</code></td>
+<td>Rename to <code>staff_roles</code>.</td>
+</tr>
+<tr>
+<td><code>superuser_groups</code></td>
+<td>Rename to <code>superuser_roles</code>.</td>
+</tr>
+<tr>
+<td><code>workspace_mappings</code>, <code>team_mappings</code>, <code>strict_membership</code></td>
+<td>Remove. Add members, teams and access in the app. See <a href="#upgrading-from-workspace-mappings">Upgrading from workspace mappings</a>.</td>
+</tr>
+</tbody>
+</table>
+<p><code>BASEROW_ROLES</code> and the <code>sync_roles</code> command no longer exist; the variable is ignored.</p>
+<h2 id="global-profiles">Global profiles<a class="headerlink" href="#global-profiles" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Profile</th>
+<th>Granted by</th>
+<th>What it allows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Superuser</td>
+<td><code>superuser_roles</code></td>
+<td>Everything staff can do, plus superuser-only admin actions. Always also staff.</td>
+</tr>
+<tr>
+<td>Staff</td>
+<td><code>staff_roles</code></td>
+<td>The admin area: instance settings, users, all workspaces, application-type toggles, and managing access in any workspace.</td>
+</tr>
+<tr>
+<td>User</td>
+<td><code>user_roles</code></td>
+<td>Signing in. Only the workspaces they are added to, and creating workspaces when the instance allows it.</td>
+</tr>
+</tbody>
+</table>
+<p>Staff and superuser are <strong>reconciled on every login through this provider</strong>: granted when
+the user holds a mapped role, revoked when not. Only the dimension you configure is touched —
+a provider with no <code>staff_roles</code> never changes anyone's staff flag. A local admin who never
+signs in through SSO is never modified.</p>
+<h2 id="workspace-access-in-the-app">Workspace access in the app<a class="headerlink" href="#workspace-access-in-the-app" title="Permanent link">&para;</a></h2>
+<p>Once signed in, a user has no workspace until someone adds them. All of this is done by the
+workspace's admins, or by staff — the full guide is
+<a href="../workspace-access/">Managing workspace access</a>:</p>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Where</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Add people who already signed in</td>
+<td><em>Workspace settings → Members → Add members</em> — search by name or email (at least 3 characters) and pick <code>MEMBER</code> or <code>ADMIN</code>.</td>
+</tr>
+<tr>
+<td>Invite someone who has not signed in yet</td>
+<td><em>Members → Invite member</em> (email invitation).</td>
+</tr>
+<tr>
+<td>Promote or demote a workspace admin</td>
+<td>The role column in the members list.</td>
+</tr>
+<tr>
+<td>Group members</td>
+<td><em>Workspace settings → Teams</em>.</td>
+</tr>
+<tr>
+<td>Restrict databases and tables</td>
+<td><em>Manage access</em> in the context menu of a database or table, or <em>Workspace default access</em> on the Teams page. Staff: <em>Admin → Workspaces → Manage default access</em>.</td>
+</tr>
+</tbody>
+</table>
+<p>Access levels, per member or team:</p>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Allows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No access</td>
+<td>The database or table is hidden.</td>
+</tr>
+<tr>
+<td>Viewer</td>
+<td>Read rows, fields and views; export.</td>
+</tr>
+<tr>
+<td>Editor</td>
+<td>Viewer, plus create, update and delete rows.</td>
+</tr>
+<tr>
+<td>Builder</td>
+<td>Editor, plus fields, views, filters, webhooks and the table or database itself.</td>
+</tr>
+</tbody>
+</table>
+<p>For a <code>MEMBER</code>, the most specific scope with a level decides: table, then database, then the
+workspace default. A level given to the member directly beats their teams' levels; between
+teams the highest wins. With no level anywhere the member has full member access. Workspace
+<code>ADMIN</code>s are never restricted. Changes apply immediately, without signing in again.</p>
+<h2 id="how-access-is-decided-on-each-login">How access is decided on each login<a class="headerlink" href="#how-access-is-decided-on-each-login" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Verify.</strong> <code>state</code>, PKCE verifier, ID token (signature, issuer, audience, expiry,
+   nonce) and userinfo <code>sub</code> must all check out, otherwise <code>errorAuthFlowError</code>. A missing
+   email is also <code>errorAuthFlowError</code>; an unverified one is <code>errorEmailNotVerified</code>.</li>
+<li><strong>Collect roles</strong> from <code>roles_claim</code> in the ID token and userinfo, unioned.</li>
+<li><strong>Deny by default.</strong> If the provider maps any role (<code>user_roles</code>, <code>staff_roles</code> or
+   <code>superuser_roles</code>) and the user holds none of them, the login is refused with
+   <code>errorNoMappedRole</code> — <strong>before</strong> an account is created. A provider that maps no role at
+   all is not gated: every IdP user may sign in.</li>
+<li><strong>Find or create the account</strong> by email. New accounts are provisioned automatically,
+   even when the instance has new signups disabled and even with <code>BASEROW_OIDC_ONLY</code>. An
+   existing account created by another method is refused with <code>errorDifferentProvider</code>,
+   unless the provider sets <code>link_existing_accounts</code> (verified email, non-staff accounts
+   only — the account is then linked) or
+   <code>BASEROW_ALLOW_MULTIPLE_SSO_PROVIDERS_FOR_SAME_ACCOUNT</code> is set. A deactivated
+   account is refused with <code>errorUserDeactivated</code>.</li>
+<li><strong>Reconcile staff and superuser</strong>, grant and revoke.</li>
+<li><strong>Start a session</strong> bounded by <code>session_lifetime_minutes</code>.</li>
+</ol>
+<p>Workspace memberships are never touched by a login. Removing a role in the IdP does not end
+a session that is already open; it applies when the session expires and the user signs in
+again. To cut access immediately, disable the user in the IdP <strong>and</strong> deactivate the account
+in Baserow's admin area.</p>
+<h2 id="complete-example">Complete example<a class="headerlink" href="#complete-example" title="Permanent link">&para;</a></h2>
+<p>Scenario: company staff through Keycloak, partners through a second IdP.</p>
+<table>
+<thead>
+<tr>
+<th>Provider</th>
+<th>Role in token</th>
+<th>Profile</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>rhbk</code> (Keycloak client roles)</td>
+<td><code>baserow-superusers</code></td>
+<td>superuser</td>
+</tr>
+<tr>
+<td></td>
+<td><code>baserow-staff</code></td>
+<td>staff</td>
+</tr>
+<tr>
+<td></td>
+<td><code>baserow-user</code></td>
+<td>user</td>
+</tr>
+<tr>
+<td><code>partners</code> (generic IdP, <code>groups</code> claim)</td>
+<td><code>baserow-partner</code></td>
+<td>user</td>
+</tr>
+</tbody>
+</table>
+<p><code>BASEROW_OIDC_PROVIDERS</code> — every key shown, defaults written out explicitly:</p>
+<div class="highlight"><pre><span></span><code><span class="p">[</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"rhbk"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"display_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Company SSO"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"issuer"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://keycloak.example.com/realms/main"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"client_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"baserow"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"client_secret"</span><span class="p">:</span><span class="w"> </span><span class="s2">"change-me-rhbk-secret"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"scopes"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"openid"</span><span class="p">,</span><span class="w"> </span><span class="s2">"email"</span><span class="p">,</span><span class="w"> </span><span class="s2">"profile"</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">"email_claim"</span><span class="p">:</span><span class="w"> </span><span class="s2">"email"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"name_claim"</span><span class="p">:</span><span class="w"> </span><span class="s2">"name"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"roles_claim"</span><span class="p">:</span><span class="w"> </span><span class="s2">"resource_access.${client_id}.roles"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"user_roles"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"baserow-user"</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">"staff_roles"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"baserow-staff"</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">"superuser_roles"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"baserow-superusers"</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">"require_verified_email"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"link_existing_accounts"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"session_lifetime_minutes"</span><span class="p">:</span><span class="w"> </span><span class="mi">480</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"partners"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"display_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Partner login"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"issuer"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://idp.partners.example.org/application/o/baserow/"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"client_id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"baserow-partners"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"client_secret"</span><span class="p">:</span><span class="w"> </span><span class="s2">"change-me-partner-secret"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"roles_claim"</span><span class="p">:</span><span class="w"> </span><span class="s2">"groups"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"user_roles"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"baserow-partner"</span><span class="p">],</span>
+<span class="w">    </span><span class="nt">"session_lifetime_minutes"</span><span class="p">:</span><span class="w"> </span><span class="mi">240</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div>
+<p>Notes on this configuration:</p>
+<ul>
+<li>The <code>partners</code> provider maps no staff or superuser roles, so it never makes anyone staff,
+  and it never revokes a staff flag granted through <code>rhbk</code> either.</li>
+<li>Partners land in no workspace. A workspace admin adds them where they collaborate and
+  restricts them with access levels, for example a <em>Partners</em> team with <em>No access</em> as
+  workspace default and <em>Editor</em> on the shared tables.</li>
+</ul>
+<p>Rollout order:</p>
+<ol>
+<li>Create the roles and assignments in each IdP.</li>
+<li>Set <code>BASEROW_OIDC_PROVIDERS</code> and restart.</li>
+<li>Sign in with one test user per profile, plus one with no mapped role (must be refused).</li>
+<li>Have workspace admins add the signed-in users to their workspaces.</li>
+</ol>
+<h2 id="passing-the-configuration-to-baserow">Passing the configuration to Baserow<a class="headerlink" href="#passing-the-configuration-to-baserow" title="Permanent link">&para;</a></h2>
+<p>The value is JSON, so the only difficulty is quoting. Store it compacted to one line where
+the format requires it, and keep secrets out of version control.</p>
+<h3 id="docker-run"><code>docker run</code><a class="headerlink" href="#docker-run" title="Permanent link">&para;</a></h3>
+<p><code>--env-file</code> takes each value literally up to the end of the line — no quotes, no line
+breaks:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># baserow-sso.env</span>
+<span class="nv">BASEROW_OIDC_PROVIDERS</span><span class="o">=[{</span><span class="s2">"name"</span>:<span class="s2">"rhbk"</span>,<span class="s2">"display_name"</span>:<span class="s2">"Company SSO"</span>,<span class="s2">"issuer"</span>:<span class="s2">"https://keycloak.example.com/realms/main"</span>,<span class="s2">"client_id"</span>:<span class="s2">"baserow"</span>,<span class="s2">"client_secret"</span>:<span class="s2">"change-me"</span>,<span class="s2">"user_roles"</span>:<span class="o">[</span><span class="s2">"baserow-user"</span><span class="o">]</span>,<span class="s2">"staff_roles"</span>:<span class="o">[</span><span class="s2">"baserow-staff"</span><span class="o">]}]</span>
+<span class="nv">BASEROW_OIDC_ONLY</span><span class="o">=</span><span class="nb">true</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>--name<span class="w"> </span>baserow<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">BASEROW_PUBLIC_URL</span><span class="o">=</span>https://baserow.example.com<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--env-file<span class="w"> </span>baserow-sso.env<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-v<span class="w"> </span>baserow_data:/baserow/data<span class="w"> </span>-p<span class="w"> </span><span class="m">80</span>:80<span class="w"> </span>-p<span class="w"> </span><span class="m">443</span>:443<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>ghcr.io/carneirofc/baserow/baserow:latest
+</code></pre></div>
+<p>Compact a pretty-printed file with <code>jq -c . providers.json</code>.</p>
+<h3 id="docker-compose">Docker Compose<a class="headerlink" href="#docker-compose" title="Permanent link">&para;</a></h3>
+<p>The root <a href="../../docker-compose.yaml"><code>docker-compose.yaml</code></a> passes <code>BASEROW_OIDC_PROVIDERS</code>
+and <code>BASEROW_OIDC_ONLY</code> through from <code>.env</code>. Wrap the JSON value in single quotes on one
+line:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># .env</span>
+<span class="nv">BASEROW_OIDC_PROVIDERS</span><span class="o">=</span><span class="s1">'[{"name":"rhbk","issuer":"https://keycloak.example.com/realms/main","client_id":"baserow","client_secret":"change-me","user_roles":["baserow-user"],"staff_roles":["baserow-staff"]}]'</span>
+<span class="nv">BASEROW_OIDC_ONLY</span><span class="o">=</span><span class="nb">true</span>
+</code></pre></div>
+<p>Then <code>docker compose up -d</code> to recreate the containers with the new values.</p>
+<h3 id="helm">Helm<a class="headerlink" href="#helm" title="Permanent link">&para;</a></h3>
+<p>Set the variables through <code>extraEnv</code>; a block scalar keeps the JSON readable:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">extraEnv</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">BASEROW_OIDC_ONLY</span><span class="p">:</span><span class="w"> </span><span class="s">"true"</span>
+<span class="w">  </span><span class="nt">BASEROW_OIDC_PROVIDERS</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">    </span><span class="no">[{"name": "rhbk", "display_name": "Company SSO",</span>
+<span class="w">      </span><span class="no">"issuer": "https://keycloak.example.com/realms/main",</span>
+<span class="w">      </span><span class="no">"client_id": "baserow", "client_secret": "change-me",</span>
+<span class="w">      </span><span class="no">"user_roles": ["baserow-user"],</span>
+<span class="w">      </span><span class="no">"staff_roles": ["baserow-staff"]}]</span>
+</code></pre></div>
+<blockquote>
+<p><code>extraEnv</code> is rendered into the chart's ConfigMap, which is not encrypted, and
+<code>client_secret</code> lives inside the JSON. Restrict who can read ConfigMaps in the
+namespace, keep the values file out of version control (or encrypt it, for example with
+SOPS), and rotate the secret if it leaks. The pods pick up changes on <code>helm upgrade</code>.</p>
+</blockquote>
+<h2 id="configuring-rhbkkeycloak">Configuring RHBK/Keycloak<a class="headerlink" href="#configuring-rhbkkeycloak" title="Permanent link">&para;</a></h2>
+<p>Condensed setup for Red Hat build of Keycloak and upstream Keycloak (same console paths).
+The <a href="../sso-rhbk-keycloak/">full RHBK/Keycloak guide</a> walks through each screen, and covers
+onboarding and offboarding, secret rotation, hardening, and a declarative realm import.</p>
+<p>The issuer is <code>https://&lt;keycloak-host&gt;/realms/&lt;realm&gt;</code>.</p>
+<ol>
+<li><strong>Create the client.</strong> <strong>Clients → Create client</strong>:</li>
+<li>Client type <code>OpenID Connect</code>, Client ID <code>baserow</code>.</li>
+<li><strong>Client authentication</strong> on; <strong>Standard flow</strong> on, other flows off.</li>
+<li><strong>Valid redirect URIs</strong>: <code>https://baserow.example.com/api/sso/oidc/callback/rhbk/</code>
+     (<code>rhbk</code> = provider <code>name</code>).</li>
+<li><strong>Advanced → Advanced settings → Proof Key for Code Exchange Code Challenge Method</strong>:
+     <code>S256</code>.</li>
+<li>Copy the secret from <strong>Credentials</strong>.</li>
+<li><strong>Create client roles.</strong> <strong>Clients → baserow → Roles → Create role</strong>: <code>baserow-user</code>,
+   <code>baserow-staff</code>, <code>baserow-superusers</code>. Baserow reads <strong>client</strong> roles by default, not
+   realm roles.</li>
+<li><strong>Assign roles through groups.</strong> <strong>Groups → Create group</strong> (e.g. <code>baserow-users</code>), then
+   <strong>Role mapping → Assign role → Filter by clients</strong> and pick the <code>baserow</code> roles — the
+   default filter lists only realm roles. Add users under <strong>Members</strong>.</li>
+<li><strong>Put client roles in the ID token and userinfo.</strong> Keycloak's built-in client roles
+   mapper adds them to the access token only, and Baserow reads the ID token and
+   userinfo. On <strong>Clients → baserow → Client scopes → <code>baserow-dedicated</code> → Add mapper →
+   By configuration → User Client Role</strong>:</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Name</td>
+<td><code>baserow client roles</code></td>
+</tr>
+<tr>
+<td>Client ID</td>
+<td><code>baserow</code></td>
+</tr>
+<tr>
+<td>Token Claim Name</td>
+<td><code>resource_access.${client_id}.roles</code></td>
+</tr>
+<tr>
+<td>Claim JSON Type</td>
+<td><code>String</code></td>
+</tr>
+<tr>
+<td>Multivalued</td>
+<td>On</td>
+</tr>
+<tr>
+<td>Add to ID token</td>
+<td><strong>On</strong></td>
+</tr>
+<tr>
+<td>Add to userinfo</td>
+<td><strong>On</strong></td>
+</tr>
+<tr>
+<td>Add to access token</td>
+<td>On</td>
+</tr>
+</tbody>
+</table>
+<p>If <strong>Full scope allowed</strong> is off on the client, also add the roles under its <strong>Scope</strong>
+   tab.
+5. <strong>Verify the claim.</strong> <strong>Clients → baserow → Client scopes → Evaluate</strong>, pick a user,
+   open <strong>Generated ID token</strong>, and look for:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">"resource_access"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"baserow"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"roles"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">"baserow-user"</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+<ol>
+<li><strong>Check email verification.</strong> Users need <code>email_verified: true</code>. For LDAP/AD
+   federation, enable <strong>Trust Email</strong> on the user federation provider; otherwise verify
+   users' emails or set <code>require_verified_email: false</code>.</li>
+<li><strong>Keep self-registration off</strong> in <strong>Realm settings → Login</strong>, since Baserow links
+   accounts by email.</li>
+<li><strong>Configure Baserow</strong> with the <code>rhbk</code> provider from the
+   <a href="#complete-example">complete example</a> (the default <code>roles_claim</code> already matches step 4)
+   and restart.</li>
+<li><strong>Test</strong> with one user per group and one user in no group — the latter must land on
+   <code>/login?error=errorNoMappedRole</code> and no account may appear in the admin area.</li>
+</ol>
+<p>To map <strong>realm roles</strong> instead, set <code>"roles_claim": "realm_access.roles"</code> and enable
+<strong>Add to ID token</strong> / <strong>Add to userinfo</strong> on the realm roles mapper. To map Keycloak
+<strong>groups</strong> directly, add a <strong>Group Membership</strong> mapper with Token Claim Name <code>groups</code>,
+<strong>Full group path</strong> off, ID token and userinfo on, and set <code>"roles_claim": "groups"</code>.</p>
+<h2 id="login-error-codes">Login error codes<a class="headerlink" href="#login-error-codes" title="Permanent link">&para;</a></h2>
+<p>A failed login redirects to <code>/login?error=&lt;code&gt;</code>, and the backend log has details.</p>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>errorNoMappedRole</code></td>
+<td>The provider maps roles and the user holds none of them — or the roles never reached Baserow.</td>
+<td>Check the token contents (for Keycloak: <strong>Evaluate</strong>, step 5 above); check <code>roles_claim</code>; assign the user a mapped role.</td>
+</tr>
+<tr>
+<td><code>errorEmailNotVerified</code></td>
+<td><code>require_verified_email</code> is on and <code>email_verified</code> is not <code>true</code>.</td>
+<td>Verify the email in the IdP, trust federated emails, or set <code>require_verified_email: false</code>.</td>
+</tr>
+<tr>
+<td><code>errorAuthFlowError</code></td>
+<td>Discovery or JWKS unreachable; token signature/issuer/audience/nonce check failed; userinfo <code>sub</code> mismatch; no email returned; <code>state</code>/PKCE mismatch; the IdP returned no code.</td>
+<td>Read the backend log. Check network and TLS trust to the issuer, the exact <code>issuer</code> string, <code>client_id</code>, the redirect URI, and the client's PKCE method.</td>
+</tr>
+<tr>
+<td><code>errorProviderDoesNotExist</code></td>
+<td>The callback or login URL names a provider not in <code>BASEROW_OIDC_PROVIDERS</code>.</td>
+<td>Match the redirect URI's <code>&lt;name&gt;</code> to the provider <code>name</code>; restart after config changes.</td>
+</tr>
+<tr>
+<td><code>errorDifferentProvider</code></td>
+<td>An account with this email exists under a different sign-in method.</td>
+<td>Expected protection. Link the account with the <code>link_oidc_account</code> command, or set <code>link_existing_accounts</code> on the provider. See <a href="#recovering-locked-out-accounts">Recovering locked-out accounts</a>.</td>
+</tr>
+<tr>
+<td><code>errorUserDeactivated</code></td>
+<td>The Baserow account is deactivated.</td>
+<td>Reactivate it in the admin area.</td>
+</tr>
+<tr>
+<td><code>errorWorkspaceInvitationEmailMismatch</code></td>
+<td>The user followed a workspace invitation addressed to another email.</td>
+<td>Sign in with the invited address, or send a new invitation.</td>
+</tr>
+<tr>
+<td><code>errorSignupDisabled</code></td>
+<td>The signup layer refused to create the account. SSO provisioning normally bypasses the signup setting, so this indicates an unusual flow.</td>
+<td>Check the backend log.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="recovering-locked-out-accounts">Recovering locked-out accounts<a class="headerlink" href="#recovering-locked-out-accounts" title="Permanent link">&para;</a></h2>
+<p><code>errorDifferentProvider</code> means the account exists but is not linked to this provider:
+it was created with a password or another provider, or the provider's <code>name</code> changed
+(each <code>name</code> has its own links, so a rename locks every user out). Link it with the
+<code>link_oidc_account</code> management command — no restart needed:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Docker Compose (all-in-one image: docker exec baserow ./baserow.sh backend-cmd manage ...)</span>
+docker<span class="w"> </span>compose<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>backend<span class="w"> </span>/baserow/backend/docker/docker-entrypoint.sh<span class="w"> </span>manage<span class="w"> </span>link_oidc_account<span class="w"> </span>list<span class="w"> </span>alice@example.com
+docker<span class="w"> </span>compose<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>backend<span class="w"> </span>/baserow/backend/docker/docker-entrypoint.sh<span class="w"> </span>manage<span class="w"> </span>link_oidc_account<span class="w"> </span>link<span class="w"> </span>keycloak<span class="w"> </span>--email<span class="w"> </span>alice@example.com
+<span class="c1"># after renaming a provider from "old-name" to "keycloak"</span>
+docker<span class="w"> </span>compose<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>backend<span class="w"> </span>/baserow/backend/docker/docker-entrypoint.sh<span class="w"> </span>manage<span class="w"> </span>link_oidc_account<span class="w"> </span>link<span class="w"> </span>keycloak<span class="w"> </span>--from-provider<span class="w"> </span>old-name
+docker<span class="w"> </span>compose<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>backend<span class="w"> </span>/baserow/backend/docker/docker-entrypoint.sh<span class="w"> </span>manage<span class="w"> </span>link_oidc_account<span class="w"> </span>unlink<span class="w"> </span>keycloak<span class="w"> </span>--email<span class="w"> </span>alice@example.com
+</code></pre></div>
+<p><code>link</code> requires the provider to be in <code>BASEROW_OIDC_PROVIDERS</code> and works for staff
+accounts too. To link many regular accounts without operator action, set
+<code>link_existing_accounts: true</code> on the provider instead.</p>
+<h2 id="upgrading-from-workspace-mappings">Upgrading from workspace mappings<a class="headerlink" href="#upgrading-from-workspace-mappings" title="Permanent link">&para;</a></h2>
+<p>Earlier versions let the IdP place users in workspaces (<code>workspace_mappings</code>,
+<code>strict_membership</code>) and restrict them with <code>BASEROW_ROLES</code>. On upgrade:</p>
+<ol>
+<li><strong>Before upgrading</strong>, note which roles restricted which members: those restrictions are
+   dropped and affected members become unrestricted members.</li>
+<li>Remove <code>workspace_mappings</code>, <code>team_mappings</code> and <code>strict_membership</code> from each provider
+   (the backend refuses to start otherwise) and add a <code>user_roles</code> entry listing the roles
+   that used to grant a membership, so those users keep signing in. Remove <code>BASEROW_ROLES</code>.</li>
+<li>Existing memberships stay as they are. Restrict members again with teams and access
+   levels, and add new people from <em>Members → Add members</em>.</li>
+</ol>
+<h2 id="security-notes">Security notes<a class="headerlink" href="#security-notes" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Accounts are linked by email.</strong> Anyone who can obtain a verified token for an address
+  can sign in as the Baserow account with that address. Keep IdP self-registration off,
+  keep <code>require_verified_email</code> on unless the IdP's addresses are authoritative, and leave
+  <code>BASEROW_ALLOW_MULTIPLE_SSO_PROVIDERS_FOR_SAME_ACCOUNT</code> unset.</li>
+<li><strong><code>link_existing_accounts</code> trusts the IdP with existing accounts.</strong> Enable it only on an
+  IdP whose verified emails are authoritative. Staff and superuser accounts are never
+  linked automatically; link them with <code>link_oidc_account</code>.</li>
+<li><strong>Deny by default only applies when something is mapped.</strong> A provider with no
+  <code>user_roles</code>, <code>staff_roles</code> or <code>superuser_roles</code> lets every user of that IdP create an
+  account.</li>
+<li><strong>Workspace admins can look up accounts.</strong> <em>Add members</em> searches every active account by
+  name or email (at least 3 characters, at most 20 results). Choose workspace admins
+  accordingly.</li>
+<li><strong>Workspace <code>ADMIN</code>s are unrestricted.</strong> They can add members, change permissions and
+  manage access; give most people <code>MEMBER</code> with access levels instead.</li>
+<li><strong>Keep a break-glass admin.</strong> A local staff account that signs in with a password is
+  never touched by SSO reconciliation, and still works under <code>BASEROW_OIDC_ONLY</code>.</li>
+<li><strong>Set the instance's email verification to "no verification"</strong> (admin settings).
+  SSO-provisioned accounts start unverified, and <code>recommended</code>/<code>enforced</code> would email users
+  about an address the IdP already vouches for.</li>
+<li><strong>Protect the secret.</strong> <code>client_secret</code> sits inside <code>BASEROW_OIDC_PROVIDERS</code>; treat the
+  whole variable as a secret wherever it is stored.</li>
+</ul>
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Backend will not start</strong> — read the <code>ImproperlyConfigured</code> message; it names the
+   provider index and key (for example
+   <code>BASEROW_OIDC_PROVIDERS[0]: 'workspace_mappings' is no longer supported.</code>).
+   Validate syntax with <code>jq . &lt;&lt;&lt; "$BASEROW_OIDC_PROVIDERS"</code>.</li>
+<li><strong>Config change ignored</strong> — restart the backend and workers.</li>
+<li><strong>Issuer reachable?</strong> From inside the backend container:</li>
+</ol>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-fsS<span class="w"> </span><span class="s2">"https://keycloak.example.com/realms/main/.well-known/openid-configuration"</span>
+</code></pre></div>
+<p>A failure here is DNS, network or TLS trust, not Baserow configuration.
+4. <strong>Roles in the token?</strong> Inspect the ID token and userinfo in the IdP (Keycloak:
+   <strong>Evaluate</strong>) and confirm the path matches <code>roles_claim</code>.
+5. <strong>Signed in but no workspace</strong> — expected: a workspace admin must add the user in the
+   app. Users only appear in <em>Add members</em> after their first sign-in.
+6. <strong>A member sees too much or too little</strong> — check <em>Manage access</em> on the table, its
+   database and the workspace default, for the member and each of their teams.</p>
+<h2 id="related">Related<a class="headerlink" href="#related" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../sso-rhbk-keycloak/">Single sign-on with RHBK/Keycloak</a> — detailed Keycloak guide.</li>
+<li><a href="../workspace-access/">Managing workspace access</a> — members, teams and access levels.</li>
+<li><a href="../configuration/">Configuration</a> — every environment variable.</li>
+<li><a href="../instance-settings/">Turning application types off instance-wide</a>.</li>
+<li><a href="../install-with-helm/">Installing with Helm</a>.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.instant", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.88dd0f4e.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,4370 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://carneirofc.github.io/baserow/installation/install-on-aws/">
+      
+      
+        <link rel="prev" href="../install-with-docker-compose/">
+      
+      
+        <link rel="next" href="../install-using-standalone-images/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
+    
+    
+      
+        <title>AWS - Baserow (carneirofc fork) Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6f8fc17f.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#install-on-aws" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-header__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Baserow (carneirofc fork) Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              AWS
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/carneirofc/baserow" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    carneirofc/baserow
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../install-with-docker/" class="md-tabs__link">
+          
+  
+  Installation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tutorials/understanding-baserow-formulas/" class="md-tabs__link">
+          
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../apis/rest-api/" class="md-tabs__link">
+          
+  
+  API Usage
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../technical/introduction/" class="md-tabs__link">
+          
+  
+  Technical Overviews
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../development/development-environment/" class="md-tabs__link">
+          
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../plugins/introduction/" class="md-tabs__link">
+          
+  
+  Plugins
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../patterns/date-and-time/" class="md-tabs__link">
+          
+  
+  Patterns
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../runbooks/back-up-and-restore-baserow/" class="md-tabs__link">
+          
+  
+  Runbooks
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../testing/grid-view-test-plan/" class="md-tabs__link">
+          
+  
+  Testing
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../adr/001-phone-number-field-validation/" class="md-tabs__link">
+          
+  
+  Architecture Decision Records
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../other/external-resources/" class="md-tabs__link">
+          
+  
+  Other
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-nav__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Baserow (carneirofc fork) Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/carneirofc/baserow" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    carneirofc/baserow
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Installation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install-with-docker/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Docker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install-with-docker-compose/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Docker Compose
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    AWS
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    AWS
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview-of-deployment-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview of deployment options
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites-for-deploying-baserow-to-aws" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prerequisites for deploying Baserow to AWS
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#option-1-deploying-the-all-in-one-image-to-fargateecs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option 1) Deploying the all-in-one image to Fargate/ECS
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Option 1) Deploying the all-in-one image to Fargate/ECS">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-choose-this-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why choose this method
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Why choose this method">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pros" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pros
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cons" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cons
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#installation-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation steps
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation steps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-provision-an-s3-bucket-for-user-file-uploads" class="md-nav__link">
+    <span class="md-ellipsis">
+      1) Provision an S3 bucket for user file uploads
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-provisioning-a-postgres-using-rds" class="md-nav__link">
+    <span class="md-ellipsis">
+      2) Provisioning a Postgres using RDS
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-provisioning-a-redis-using-elasticache" class="md-nav__link">
+    <span class="md-ellipsis">
+      3) Provisioning a Redis using Elasticache
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-setting-up-an-alb-and-target-group" class="md-nav__link">
+    <span class="md-ellipsis">
+      4) Setting up an ALB and target group
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-launching-baserow-on-ecsfargate" class="md-nav__link">
+    <span class="md-ellipsis">
+      5) Launching Baserow on ECS/Fargate
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-example-task-definition" class="md-nav__link">
+    <span class="md-ellipsis">
+      6) Example task definition
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-extra-scaling-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      7) Extra Scaling Options
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-deployment-complete" class="md-nav__link">
+    <span class="md-ellipsis">
+      8) Deployment complete
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#option-2-deploying-baserow-as-separate-services-to-fargateecs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option 2) Deploying Baserow as separate services to Fargate/ECS
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Option 2) Deploying Baserow as separate services to Fargate/ECS">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-choose-this-method_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why choose this method
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Why choose this method">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pros_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pros
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cons_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cons
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#installation-steps_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation steps
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation steps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#4-configuring-an-alb-and-target-groups" class="md-nav__link">
+    <span class="md-ellipsis">
+      4) Configuring an ALB and Target groups
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-deploying-baserows-individual-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      5) Deploying Baserow's individual services
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-the-backend-wsgi-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      6) The backend WSGI service
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-the-backend-asgi-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      7) The backend ASGI service
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-the-backend-celery-worker-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      8) The backend celery worker service
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#9-the-backend-celery-export-worker-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      9) The backend celery export worker service
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#10-the-backend-celery-beat-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      10) The backend celery beat service
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#11-the-web-frontend-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      11) The web-frontend service
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-create-the-ecs-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      13) Create the ECS services
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-scaling-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      12) Scaling Options
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-deployment-complete" class="md-nav__link">
+    <span class="md-ellipsis">
+      13) Deployment complete
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#upgrading-baserow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Upgrading Baserow
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#faq" class="md-nav__link">
+    <span class="md-ellipsis">
+      FAQ
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FAQ">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixing-the-crossslot-keys-in-request-dont-hash-to-the-same-slot-error" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fixing the CROSSSLOT Keys in request don't hash to the same slot error
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#my-elb-health-checks-are-failing" class="md-nav__link">
+    <span class="md-ellipsis">
+      My ELB Health checks are failing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#i-get-cors-errors-when-downloading-a-file-from-a-baserow-file-field" class="md-nav__link">
+    <span class="md-ellipsis">
+      I get CORS errors when downloading a file from a Baserow file field
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#i-get-secure-redis-scheme-specified-rediss-with-no-ssl-options-defaulting-to-insecure-ssl-behavior-warnings" class="md-nav__link">
+    <span class="md-ellipsis">
+      I get Secure Redis scheme specified (rediss) with no ssl options, defaulting to insecure SSL behavior warnings
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install-using-standalone-images/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Standalone images
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install-on-digital-ocean/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Digital Ocean Apps
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install-on-railway/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Railway
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install-on-ubuntu/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Ubuntu
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../third-party-hosting-providers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Third party hosting providers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install-with-helm/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Helm
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install-on-eks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Amazon EKS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install-with-k8s/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Kubernetes (K8S)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../old-install-on-ubuntu/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DEPRECATED: Ubuntu (manual)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../supported/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Supported runtime dependencies
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../monitoring/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Monitoring
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sso-oidc/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SSO with OpenID Connect
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sso-rhbk-keycloak/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SSO with RHBK/Keycloak
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/sso-saml/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SSO with SAML
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workspace-access/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Managing workspace access
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data-destinations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Data destinations, backups & datalake exports
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../instance-settings/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Turning application types off instance-wide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../branding/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Branding
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configuration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/understanding-baserow-formulas/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Understanding Baserow Formulas
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/debugging-connection-issues/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Debugging Connection Issues
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/prefill-forms/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Prefill forms
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    API Usage
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            API Usage
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../apis/rest-api/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    REST API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../apis/web-socket-api/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    WebSocket API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../apis/deprecations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deprecations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Technical Overviews
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Technical Overviews
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/introduction/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Introduction
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/database-plugin/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Database plugin
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/formula-technical-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Formula Technical Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/undo-redo-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Undo Redo Technical Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/permissions-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Permissions handling Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/collapsible-grid-group-by/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Collapsible grid group-by
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/postgresql-locks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PostgreSQL locks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/realtime-presence/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Realtime presence
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/websockets/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    WebSockets
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/workspace-search/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Workspace search
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Development
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Development
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/development-environment/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Development environment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/running-the-dev-env-locally/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Running the Dev Environment Locally
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/running-the-dev-env-with-docker/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Running the Dev Environment with Docker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/directory-structure/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Directory structure
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/tools/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tools
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/code-quality/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code quality
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/debugging/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Debugging
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/create-a-template/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Create a template
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/justfile/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Justfile reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/intellij-setup/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    IntelliJ setup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/feature-flags/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Feature flags
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/e2e-testing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    E2E Testing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/metrics-and-logs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Metrics and Logs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/running-tests/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Backend Tests
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/building-and-running-production-images/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Building and running production images
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/ci-cd/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CI/CD
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/mcp-server/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MCP server
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/read-replicas/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Read replicas
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/vscode-setup/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    VS Code setup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/zed-setup/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Zed setup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Plugins
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Plugins
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugins/introduction/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Plugin basics
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugins/boilerplate/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Plugin boilerplate (outdated)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugins/application-type/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Create application type
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugins/view-type/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Create database table view
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugins/view-filter-type/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Create database table view filter
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugins/field-type/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Create database table field
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugins/field-converter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Create a field converter
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugins/creation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Plugin creation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugins/installation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Plugin installation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Patterns
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Patterns
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../patterns/date-and-time/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Date and time
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../patterns/emails/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Emails
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../patterns/forms/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Forms
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../patterns/jobs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Jobs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../patterns/loading-animations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Loading animations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../patterns/row_history_from_action/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Row history from action
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Runbooks
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Runbooks
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/back-up-and-restore-baserow/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Back up and restore Baserow
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/migrate-from-user-tables-database/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Migrate from user tables database
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/upgrade-embedded-postgres/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Upgrade embedded Postgres
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Testing
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Testing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../testing/grid-view-test-plan/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Grid view test plan
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../testing/mcp-test-plan/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MCP test plan
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Architecture Decision Records
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            Architecture Decision Records
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adr/001-phone-number-field-validation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    001: Phone number field validation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adr/002-baserow-data-backups/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    002: Baserow data backups
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adr/004-baserow-metrics/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    004: Baserow metrics
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adr/005-in-app-database-access-grants/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    005: In-app database access grants
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Other
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            Other
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../other/external-resources/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    External resources
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview-of-deployment-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview of deployment options
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites-for-deploying-baserow-to-aws" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prerequisites for deploying Baserow to AWS
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#option-1-deploying-the-all-in-one-image-to-fargateecs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option 1) Deploying the all-in-one image to Fargate/ECS
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Option 1) Deploying the all-in-one image to Fargate/ECS">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-choose-this-method" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why choose this method
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Why choose this method">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pros" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pros
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cons" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cons
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#installation-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation steps
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation steps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-provision-an-s3-bucket-for-user-file-uploads" class="md-nav__link">
+    <span class="md-ellipsis">
+      1) Provision an S3 bucket for user file uploads
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-provisioning-a-postgres-using-rds" class="md-nav__link">
+    <span class="md-ellipsis">
+      2) Provisioning a Postgres using RDS
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-provisioning-a-redis-using-elasticache" class="md-nav__link">
+    <span class="md-ellipsis">
+      3) Provisioning a Redis using Elasticache
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-setting-up-an-alb-and-target-group" class="md-nav__link">
+    <span class="md-ellipsis">
+      4) Setting up an ALB and target group
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-launching-baserow-on-ecsfargate" class="md-nav__link">
+    <span class="md-ellipsis">
+      5) Launching Baserow on ECS/Fargate
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-example-task-definition" class="md-nav__link">
+    <span class="md-ellipsis">
+      6) Example task definition
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-extra-scaling-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      7) Extra Scaling Options
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-deployment-complete" class="md-nav__link">
+    <span class="md-ellipsis">
+      8) Deployment complete
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#option-2-deploying-baserow-as-separate-services-to-fargateecs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option 2) Deploying Baserow as separate services to Fargate/ECS
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Option 2) Deploying Baserow as separate services to Fargate/ECS">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-choose-this-method_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Why choose this method
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Why choose this method">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pros_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pros
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cons_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Cons
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#installation-steps_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation steps
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation steps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#4-configuring-an-alb-and-target-groups" class="md-nav__link">
+    <span class="md-ellipsis">
+      4) Configuring an ALB and Target groups
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-deploying-baserows-individual-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      5) Deploying Baserow's individual services
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-the-backend-wsgi-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      6) The backend WSGI service
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-the-backend-asgi-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      7) The backend ASGI service
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-the-backend-celery-worker-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      8) The backend celery worker service
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#9-the-backend-celery-export-worker-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      9) The backend celery export worker service
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#10-the-backend-celery-beat-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      10) The backend celery beat service
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#11-the-web-frontend-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      11) The web-frontend service
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-create-the-ecs-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      13) Create the ECS services
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-scaling-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      12) Scaling Options
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-deployment-complete" class="md-nav__link">
+    <span class="md-ellipsis">
+      13) Deployment complete
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#upgrading-baserow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Upgrading Baserow
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#faq" class="md-nav__link">
+    <span class="md-ellipsis">
+      FAQ
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FAQ">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixing-the-crossslot-keys-in-request-dont-hash-to-the-same-slot-error" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fixing the CROSSSLOT Keys in request don't hash to the same slot error
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#my-elb-health-checks-are-failing" class="md-nav__link">
+    <span class="md-ellipsis">
+      My ELB Health checks are failing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#i-get-cors-errors-when-downloading-a-file-from-a-baserow-file-field" class="md-nav__link">
+    <span class="md-ellipsis">
+      I get CORS errors when downloading a file from a Baserow file field
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#i-get-secure-redis-scheme-specified-rediss-with-no-ssl-options-defaulting-to-insecure-ssl-behavior-warnings" class="md-nav__link">
+    <span class="md-ellipsis">
+      I get Secure Redis scheme specified (rediss) with no ssl options, defaulting to insecure SSL behavior warnings
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/carneirofc/baserow/edit/develop/docs/installation/install-on-aws.md" title="Edit this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="install-on-aws">Install on AWS<a class="headerlink" href="#install-on-aws" title="Permanent link">&para;</a></h1>
+<p>This guide will walk you through picking the best way to deploy Baserow to AWS, what
+pre-requisites you will need to set up and also provide specific installation
+instructions. This guide is for those who already have experience and
+knowledge of deploying applications to AWS.</p>
+<h2 id="overview-of-deployment-options">Overview of deployment options<a class="headerlink" href="#overview-of-deployment-options" title="Permanent link">&para;</a></h2>
+<p>Baserow can be deployed to AWS in the following ways:</p>
+<ol>
+<li>Deploying the <a href="../install-with-docker/">all-in-one image</a> to Fargate/ECS for a
+   horizontally scalable but easy to
+   set up deployment. <strong>See below for a detailed guide.</strong></li>
+<li>Using
+   this <a href="https://github.com/carneirofc/baserow/blob/develop/docker-compose.yml">docker-compose</a>
+   file or our <a href="../install-with-k8s/">sample K8S configuration</a> as a starting point to
+   configure ECS/Fargate tasks for more advanced, production ready, one service per
+   container model. <strong>See below for a detailed guide</strong></li>
+<li>Customizing our <a href="../install-with-k8s/">sample K8S configuration</a> and using that with
+   EKS.</li>
+<li>Installing and using docker/docker-compose on an EC2 instance with
+   our <a href="../install-with-docker/">all-in-one</a> or
+   our <a href="../install-with-docker-compose/">one container per service</a> docker images.</li>
+</ol>
+<p>All of these deployment methods will store Baserow's data and state in RDS and S3 making
+switching between them (for example migrating to using EKS later on)
+straightforward.</p>
+<h2 id="prerequisites-for-deploying-baserow-to-aws">Prerequisites for deploying Baserow to AWS<a class="headerlink" href="#prerequisites-for-deploying-baserow-to-aws" title="Permanent link">&para;</a></h2>
+<p>We will go through these in more detail later in the guide but to give you a quick
+overview this is what any AWS deployment of Baserow will need:</p>
+<ul>
+<li>An AWS IAM account with sufficient privileges to create AWS resources* A Postgres
+  database (RDS)</li>
+<li>A S3 bucket for storing user uploaded files and user triggered exports
+  of tables.</li>
+<li>An AWS IAM account with privileges to upload to the S3 bucket.<ul>
+<li>Specifically their AWS Access Key ID and Secret Access Key will be needed to
+  configure Baserow to upload into the bucket.</li>
+<li>A VPC</li>
+<li>A non-clustered Redis
+  server (Elasticache with TLS on and cluster mode off)
+*<ul>
+<li>A SMTP email server for
+  Baserow to send emails with.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="option-1-deploying-the-all-in-one-image-to-fargateecs">Option 1) Deploying the all-in-one image to Fargate/ECS<a class="headerlink" href="#option-1-deploying-the-all-in-one-image-to-fargateecs" title="Permanent link">&para;</a></h2>
+<p>The <code>ghcr.io/carneirofc/baserow/baserow:0.6.0</code> image runs all of Baserow’s various services inside the
+container for ease of use.</p>
+<p>This image is designed for single server deployments or simple deployments to
+horizontally scalable container deployment platforms such as AWS Fargate or Google Cloud
+Run.</p>
+<h3 id="why-choose-this-method">Why choose this method<a class="headerlink" href="#why-choose-this-method" title="Permanent link">&para;</a></h3>
+<h4 id="pros">Pros<a class="headerlink" href="#pros" title="Permanent link">&para;</a></h4>
+<ul>
+<li>Can be easily horizontally scaled with enough control for most production setups by
+  just increasing the container count.</li>
+<li>Simpler to use and setup compared to the one container per-service model below
+  because:<ul>
+<li>You don't need to worry about configuring and linking together the different
+  services that make up a Baserow deployment.</li>
+<li>Configuring load balancers is easier as you can just directly route through all
+  requests to any horizontally scaled container running <code>ghcr.io/carneirofc/baserow/baserow:0.6.0</code>.</li>
+</ul>
+</li>
+</ul>
+<h4 id="cons">Cons<a class="headerlink" href="#cons" title="Permanent link">&para;</a></h4>
+<ul>
+<li>Doesn't follow the traditional one container per task/service model.</li>
+<li>Potentially higher resource usage overall as each of the all-in-one containers will
+  come with its internal services, so you have less granular control over scaling
+  specific services.<ul>
+<li>For example if you deploy 10 <code>ghcr.io/carneirofc/baserow/baserow:0.6.0</code> containers horizontally you
+  by default end up with:<ul>
+<li>10 web-frontend services</li>
+<li>10 backend services</li>
+<li>10 backend fast async task workers</li>
+<li>10 backend slow async task workers</li>
+</ul>
+</li>
+<li>You can use environment variables to configure this somewhat.</li>
+</ul>
+</li>
+<li>Harder to isolate failures specific to certain services as the logs per container will
+  include multiple services.<ul>
+<li>However, Baserow fully
+  supports <a href="../monitoring/">Open Telemetry</a> which lets you hook Baserow up to many
+  cloud application monitoring solutions like Honeycomb, Datadog, NewRelic or a
+  Grafana/Loki/Tempo/Prometheus stack.</li>
+</ul>
+</li>
+</ul>
+<h3 id="installation-steps">Installation steps<a class="headerlink" href="#installation-steps" title="Permanent link">&para;</a></h3>
+<p>We will be skipping over configuring VPCs, security groups, IAM users, secrets manager
+etc and ELB specifics to keep this guide more generally applicable.</p>
+<h4 id="1-provision-an-s3-bucket-for-user-file-uploads">1) Provision an S3 bucket for user file uploads<a class="headerlink" href="#1-provision-an-s3-bucket-for-user-file-uploads" title="Permanent link">&para;</a></h4>
+<p>First Baserow needs an S3 bucket. Baserow will use this bucket to store files uploaded
+by users into tables and view/table exports for users to then download.</p>
+<p>Baserow will then generate pre-signed S3 URLs for the user to view and download files
+from this bucket. As a result, these pre-signed URLs need to be accessible from the
+user's browser and so depending on your setup most likely the bucket to allow public
+GET/ACLs.</p>
+<p>We recommend setting up a separate IAM user who Baserow will be configured with
+credentials for, so it can upload into and delete from the bucket. Here is an example S3
+policy for this
+user to grant the minimal required operations:</p>
+<div class="highlight"><pre><span></span><code><span class="na">policy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="dl">EOF</span>
+<span class="err">{</span>
+<span class="err">    "Version": "2012-10-17",</span>
+<span class="err">    "Statement": [{</span>
+<span class="err">        "Effect": "Allow",</span>
+<span class="err">        "Action": [</span>
+<span class="err">                "s3:PutObject",</span>
+<span class="err">                "s3:GetObjectAcl",</span>
+<span class="err">                "s3:GetObject",</span>
+<span class="err">                "s3:DeleteObject",</span>
+<span class="err">                "s3:PutObjectAcl"</span>
+<span class="err">            ],</span>
+<span class="err">             "Principal": {</span>
+<span class="err">                "AWS": "arn:aws:iam::xyz:user/YOUR_USER"</span>
+<span class="err">             },</span>
+<span class="err">        "Resource": [</span>
+<span class="err">            "arn:aws:s3:::YOUR_BUCKET_NAME/*",</span>
+<span class="err">            "arn:aws:s3:::YOUR_BUCKET_NAME"</span>
+<span class="err">        ]</span>
+<span class="err">    }]</span>
+<span class="err">}</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="s2">"Version"</span><span class="o">:</span><span class="w"> </span><span class="s2">"2012-10-17"</span><span class="p">,</span>
+<span class="w">    </span><span class="s2">"Statement"</span><span class="o">:</span><span class="w"> </span><span class="p">[{</span>
+<span class="w">        </span><span class="s2">"Effect"</span><span class="o">:</span><span class="w"> </span><span class="s2">"Allow"</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">"Action"</span><span class="o">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                </span><span class="s2">"s3:PutObject"</span><span class="p">,</span>
+<span class="w">                </span><span class="s2">"s3:GetObjectAcl"</span><span class="p">,</span>
+<span class="w">                </span><span class="s2">"s3:GetObject"</span><span class="p">,</span>
+<span class="w">                </span><span class="s2">"s3:DeleteObject"</span><span class="p">,</span>
+<span class="w">                </span><span class="s2">"s3:PutObjectAcl"</span>
+<span class="w">            </span><span class="p">],</span>
+<span class="w">             </span><span class="s2">"Principal"</span><span class="o">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="s2">"AWS"</span><span class="o">:</span><span class="w"> </span><span class="s2">"arn:aws:iam::xyz:user/YOUR_USER"</span>
+<span class="w">             </span><span class="p">},</span>
+<span class="w">        </span><span class="s2">"Resource"</span><span class="o">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="s2">"arn:aws:s3:::YOUR_BUCKET_NAME/*"</span><span class="p">,</span>
+<span class="w">            </span><span class="s2">"arn:aws:s3:::YOUR_BUCKET_NAME"</span>
+<span class="w">        </span><span class="p">]</span>
+<span class="w">    </span><span class="p">}]</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>This bucket will also in the current version of Baserow need CORS rules set for the
+in-tool file download button to work correctly. An example rule is provided below:</p>
+<div class="highlight"><pre><span></span><code>cors_rule {
+allowed_headers = ["*"]
+allowed_methods = ["GET", "HEAD", "OPTIONS"]
+allowed_origins = ["REPLACE_WITH_YOUR_BASEROW_PUBLIC_URL"]
+expose_headers  = ["ETag", "Content-Length", "Content-Type"]
+max_age_seconds = 3000
+}
+</code></pre></div>
+<p>Finally, these are the following public access settings we used to ensure the users
+browser can GET and download the S3 files:</p>
+<div class="highlight"><pre><span></span><code> block_public_acls       = false
+ block_public_policy     = true
+ ignore_public_acls      = true
+ restrict_public_buckets = true
+</code></pre></div>
+<h4 id="2-provisioning-a-postgres-using-rds">2) Provisioning a Postgres using RDS<a class="headerlink" href="#2-provisioning-a-postgres-using-rds" title="Permanent link">&para;</a></h4>
+<p>Baserow stores all of its non-file data in a PostgreSQL database. In AWS we recommend
+using an RDS Postgres cluster. You will later need to configure Baserow to be able to
+access this cluster.</p>
+<p>Baserow uses PostgreSQL heavily so scaling the RDS cluster up will be needed for larger
+deployments.</p>
+<blockquote>
+<p>You should not put an RDS Proxy in front of the RDS instance. This is because the
+proxy causes a transaction to end after a definition language (DDL) statement
+completes. Baserow is therefore incompatible because it makes schema changes, and if
+anything goes wrong the after a schema migration, the transaction isn't rolled back,
+and results in data inconsistencies. More information:
+https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.howitworks.html#rds-proxy-transactions</p>
+</blockquote>
+<h4 id="3-provisioning-a-redis-using-elasticache">3) Provisioning a Redis using Elasticache<a class="headerlink" href="#3-provisioning-a-redis-using-elasticache" title="Permanent link">&para;</a></h4>
+<p>Baserow uses Redis as a cache, for real-time collaboration over WebSockets and async
+background task processing.</p>
+<p>We recommend setting up an Elasticache Redis in non-cluster mode with TLS enabled and in
+AUTH mode where you can specify an AUTH token password for Baserow to later connect to
+the Redis server.</p>
+<p>Generally, the Redis server is not the bottleneck in Baserow deployments as they scale.</p>
+<h4 id="4-setting-up-an-alb-and-target-group">4) Setting up an ALB and target group<a class="headerlink" href="#4-setting-up-an-alb-and-target-group" title="Permanent link">&para;</a></h4>
+<p>Now create a target group on port 80 and ALB ready to route traffic to the Baserow
+containers.</p>
+<p>When setting up the health check for the ALB the <code>ghcr.io/carneirofc/baserow/baserow:0.6.0</code> container
+,which you'll be deploying next, choose port <code>80</code> and health check
+URL <code>/api/_health/</code>. We recommend a long grace period of 900 seconds to account for
+first-time migrations being run on the first container's startup.</p>
+<h4 id="5-launching-baserow-on-ecsfargate">5) Launching Baserow on ECS/Fargate<a class="headerlink" href="#5-launching-baserow-on-ecsfargate" title="Permanent link">&para;</a></h4>
+<p>Now we are ready to spin up our <code>ghcr.io/carneirofc/baserow/baserow:0.6.0</code> containers. See below for a
+full task definition and environment variables. We recommend launching the containers
+with 2vCPUs and 4 GB of RAM each to start with. In short, you will want to:</p>
+<ol>
+<li>Select the <code>ghcr.io/carneirofc/baserow/baserow:0.6.0</code> image.</li>
+<li>Add a port mapping of <code>80</code> on TCP as this is where this images HTTP server is
+   listening by default.</li>
+<li>Mark the container as essential.</li>
+<li>Set the following env variables:</li>
+</ol>
+<blockquote>
+<p>A full list of all environment variables available can be
+found <a href="../configuration/">here</a>.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Env variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DISABLE_VOLUME_CHECK=true</code></td>
+<td><em>Must be set to true</em>. Needed to disable the check designed to help non-technical users who are not configuring an external Postgres and S3. Because we are configuring external services we do not need any volume mounted into the container.</td>
+</tr>
+<tr>
+<td><code>BASEROW_PUBLIC_URL</code></td>
+<td>The public URL or IP that will be used to access baserow in your user's browser. Always should start with http:// https:// even if accessing via an IP address.</td>
+</tr>
+<tr>
+<td><code>DATABASE_HOST</code></td>
+<td>The hostname of the Postgres database Baserow will use to store its data in.</td>
+</tr>
+<tr>
+<td><code>DATABASE_USER</code></td>
+<td>The username of the database user Baserow will use to connect to the database at <code>DATABASE_HOST</code>.</td>
+</tr>
+<tr>
+<td><code>DATABASE_PORT</code></td>
+<td>The port Baserow will use when trying to connect to the Postgres database at <code>DATABASE_HOST</code>.</td>
+</tr>
+<tr>
+<td><code>DATABASE_NAME</code></td>
+<td>The database name Baserow will use to store data.</td>
+</tr>
+<tr>
+<td><code>DATABASE_PASSWORD</code></td>
+<td>The password of <code>DATABASE_USER</code> on the Postgres server at <code>DATABASE_HOST</code>. Alternatively, you can provide <code>DATABASE_PASSWORD_FILE</code> and set it to the file path of a secret injected into the container's file system.</td>
+</tr>
+<tr>
+<td><code>REDIS_URL</code></td>
+<td>A standard Redis connection string in the format of: <code>redis://[redisuser]:[password]@[redishost]:[redisport]/0?ssl_cert_reqs=required</code>.</td>
+</tr>
+<tr>
+<td><code>AWS_STORAGE_BUCKET_NAME</code></td>
+<td>Your AWS storage bucket name.</td>
+</tr>
+<tr>
+<td><code>AWS_ACCESS_KEY_ID</code></td>
+<td>The access key for your S3 IAM AWS account. When set to anything other than empty will switch Baserow to use a S3 compatible bucket for storing user file uploads.</td>
+</tr>
+<tr>
+<td><code>AWS_SECRET_ACCESS_KEY</code></td>
+<td>The access secret key for your S3 IAM AWS account. <code>AWS_SECRET_ACCESS_KEY_FILE</code> can similarly be provided instead.</td>
+</tr>
+<tr>
+<td><code>DOWNLOAD_FILE_VIA_XHR</code></td>
+<td>Must be set to <code>1</code> to work with AWS S3 currently to force download links to download files via XHR query to bypass <code>Content-Disposition: inline</code>. If your files are stored under another origin, you also must add CORS headers to your S3 bucket.</td>
+</tr>
+<tr>
+<td><code>BASEROW_EXTRA_ALLOWED_HOSTS</code></td>
+<td>An optional comma-separated list of hostnames which will be added to Baserow’s Django backend ALLOWED_HOSTS setting. Add your ALB IP address here so the health checks it sends are allowed through, or alternatively configure the less secure value <code>*</code> to get things running and restrict hosts later once everything is working.</td>
+</tr>
+<tr>
+<td><code>BASEROW_JWT_SIGNING_KEY</code></td>
+<td><strong>Must be set so all the containers share the same signing key.</strong> The signing key is used to sign the content of generated tokens. For HMAC signing, this should be a random string with at least as many bits of data as is required by the signing protocol. See <a href="https://django-rest-framework-simplejwt.readthedocs.io/en/latest/settings.html#signing-key">here</a> for more details. <code>BASEROW_JWT_SIGNING_KEY_FILE</code> is also supported.</td>
+</tr>
+<tr>
+<td><code>SECRET_KEY</code></td>
+<td><strong>Must be set so all the containers share the same secret key.</strong> The Secret key used by Django for cryptographic signing such as generating secure password reset links and managing sessions. See <a href="https://docs.djangoproject.com/en/3.2/ref/settings/#std:setting-SECRET_KEY">here</a> for more details. <code>SECRET_KEY_FILE</code> is also supported.</td>
+</tr>
+<tr>
+<td><code>EMAIL_SMTP_*</code></td>
+<td>There are a number of SMTP related environment variables documented in our environment variable guide <a href="../configuration/">here</a> which will also need to be set so Baserow can send invitation and password reset emails.</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li>Select the desired launch type (we used Fargate).</li>
+<li>Set the OS family as Linux.</li>
+<li>Next create the ECS service using your ALB, target group and this task definition.</li>
+<li>Ensure the Ingress security group for the ECS containers should allow the ports for:<ol>
+<li>The HTTP port (80 unless you've set up different port mappings)</li>
+<li>The Redis port</li>
+<li>The Postgres port</li>
+</ol>
+</li>
+</ol>
+<h4 id="6-example-task-definition">6) Example task definition<a class="headerlink" href="#6-example-task-definition" title="Permanent link">&para;</a></h4>
+<p>Here is a full example task definition using ECS and Fargate.</p>
+<p><code>container_definitions    = &lt;&lt;DEFINITION
+  [
+    {
+      "name": "baserow_task",
+      "image": "ghcr.io/carneirofc/baserow/baserow:0.6.0", 
+      "logConfiguration": {                     #logs are not mandatory
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-region" : "YOUR_REGION_NAME",
+                    "awslogs-group" : "/ecs/baserow_log",
+                    "awslogs-stream-prefix" : "baserow",
+                    "awslogs-create-group": "true"
+      }
+    },
+      "environment": [
+      {
+        "name": "DISABLE_VOLUME_CHECK",
+        "value": "yes"
+      },
+      {
+        "name": "BASEROW_PUBLIC_URL",
+        "value": "&lt;YOUR_PUBLIC_URL&gt;"
+      },
+       {
+        "name": "DATABASE_HOST",
+        "value": "&lt;YOUR_POSTGRES_DB_HOST&gt;"
+      },
+      {
+        "name": "DATABASE_USER",
+        "value": "postgres"
+      },
+      {
+        "name": "DATABASE_PORT",
+        "value": "&lt;PORT_NUMBER&gt;"
+      },
+      {
+        "name": "DATABASE_NAME",
+        "value": "&lt;YOUR_POSTGRES_DB_NAME&gt;"
+      },
+      {
+        "name": "DATABASE_PASSWORD",
+        "value": "&lt;YOUR_POSTGRES_DB_PASSWORD&gt;"
+      },
+      {
+        "name": "REDIS_URL",
+        "value": "rediss://default:password@YOUR_REDIS_PRIMARY_ENDPOINT:6379/0?ssl_cert_reqs=required"
+      },
+      {
+        "name": "AWS_STORAGE_BUCKET_NAME",
+        "value": "&lt;YOUR_BUCKET_NAME&gt;"
+      },
+      {
+        "name": "AWS_ACCESS_KEY_ID",
+        "value": "&lt;YOUR_AWS_ACCESS_KEY_ID&gt;"
+      },
+      {
+        "name": "AWS_SECRET_ACCESS_KEY",
+        "value": "&lt;YOUR_AWS_SECRET_ACCESS_KEY&gt;"
+      },
+       {
+        "name": "DOWNLOAD_FILE_VIA_XHR",
+        "value": "1"
+      },
+      {
+        "name": "BASEROW_EXTRA_ALLOWED_HOSTS",
+        "value": "&lt;YOUR_ALLOWED_HOSTS&gt;"
+      },
+      {
+        "name": "BASEROW_JWT_SIGNING_KEY",
+        "value": "&lt;YOUR_SIGNING_KEY&gt;"
+      },
+      {
+        "name": "SECRET_KEY",
+        "value": "&lt;YOUR_SECRET_KEY&gt;"
+      }
+      ],
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 80,
+          "hostPort": 80 
+        }
+      ],
+      "memory": 8192,
+      "cpu": 4096
+    }
+  ]
+  DEFINITION
+  requires_compatibilities = ["FARGATE"] 
+  network_mode             = "awsvpc"    
+  memory                   = 8192         
+  cpu                      = 4096</code></p>
+<h4 id="7-extra-scaling-options">7) Extra Scaling Options<a class="headerlink" href="#7-extra-scaling-options" title="Permanent link">&para;</a></h4>
+<p>Other than launching more <code>baserow/baserow</code> tasks and scaling up the RDS postgres
+server, the <code>baserow/baserow</code> image has the following scaling environment variables
+which can help reduce the resource usage per container or allocate more resources to
+certain services inside the container.</p>
+<ol>
+<li><code>BASEROW_AMOUNT_OF_GUNICORN_WORKERS</code> controls the number of REST API workers (
+   the things that do most of the API work) per container. Defaults to 3. Each extra
+   worker generally takes up around 100-200 MB of RAM.</li>
+<li><code>BASEROW_AMOUNT_OF_WORKERS</code> controls the number of background task celery runners,
+   these run real-time collaboration tasks, cleanup jobs, and other slow tasks like big
+   file exports/imports. If you are scaling many of these containers you probably only
+   need one of these background workers per container as they will all pool together and
+   collect background tasks submitted from any other container via Redis.</li>
+<li>You can make the image launch fewer internal processes and hence reduce memory usage
+   by setting <code>BASEROW_RUN_MINIMAL=yes</code> AND <code>BASEROW_AMOUNT_OF_WORKERS=1</code>.<ol>
+<li>This will cause this image to only launch a single celery task process which
+   handles both the fast and slow queues.</li>
+<li>The consequence of this is that there is only one process handling tasks per
+   container and so a slow task such as a snapshot of a large Baserow database might
+   delay a fast queue task like sending a real-time row updated signal to all users
+   looking at a table.</li>
+<li>However, if you have enough other containers, the overall pool of async task
+   workers will be more than enough to deal with a mix of slow and fast tasks.</li>
+</ol>
+</li>
+</ol>
+<h4 id="8-deployment-complete">8) Deployment complete<a class="headerlink" href="#8-deployment-complete" title="Permanent link">&para;</a></h4>
+<p>You should now have a fully running Baserow cluster. The first user to sign-up becomes
+the first "staff" instance-wide admin user. This user can then configure Baserow's
+in-tool settings, promote other users to being staff etc.</p>
+<h2 id="option-2-deploying-baserow-as-separate-services-to-fargateecs">Option 2) Deploying Baserow as separate services to Fargate/ECS<a class="headerlink" href="#option-2-deploying-baserow-as-separate-services-to-fargateecs" title="Permanent link">&para;</a></h2>
+<p>The <code>ghcr.io/carneirofc/baserow/backend:0.6.0</code> and <code>ghcr.io/carneirofc/baserow/web-frontend:0.6.0</code> images allow you to run
+Baserow's various services as separate containers.</p>
+<p>These images are used by the Official Helm chart, our various docker-compose.yml
+example setups and are best for production environments where you want full control and
+flexibility managing Baserow.</p>
+<h3 id="why-choose-this-method_1">Why choose this method<a class="headerlink" href="#why-choose-this-method_1" title="Permanent link">&para;</a></h3>
+<h4 id="pros_1">Pros<a class="headerlink" href="#pros_1" title="Permanent link">&para;</a></h4>
+<ul>
+<li>Each service can be scaled individually giving you fine-grained control.</li>
+<li>Follows the more traditional one server per container model.</li>
+<li>Logging and debugging per service issues is easier.</li>
+<li>The containers are individually simpler have less moving parts.</li>
+</ul>
+<h4 id="cons_1">Cons<a class="headerlink" href="#cons_1" title="Permanent link">&para;</a></h4>
+<ul>
+<li>More complex to set up and maintain as a whole.</li>
+<li>More involved ALB and networking configuration is required to ensure the correct
+  requests get sent to the correct service.</li>
+</ul>
+<h3 id="installation-steps_1">Installation steps<a class="headerlink" href="#installation-steps_1" title="Permanent link">&para;</a></h3>
+<p>Follow steps 1, 2 and 3 from the Option 1 guide above as we need the exact same S3
+bucket, RDS and Redis setup first.</p>
+<h4 id="4-configuring-an-alb-and-target-groups">4) Configuring an ALB and Target groups<a class="headerlink" href="#4-configuring-an-alb-and-target-groups" title="Permanent link">&para;</a></h4>
+<p>First you will need to make 3 separate target groups with a target type of
+IP:</p>
+<ol>
+<li><code>backend-asgi</code> on port <code>8000</code>/<code>HTTP</code> with a health check using URL <code>/api/_health/</code>
+   for
+   our websocket service.</li>
+<li><code>backend-wsgi</code> on port <code>8000</code>/<code>HTTP</code> with a health check using URL <code>/api/_health/</code>
+   for
+   our backend API service.</li>
+<li><code>web-frontend</code> on port <code>3000</code>/<code>HTTP</code> with a health check using URL <code>/_health/</code> for
+   our frontend service.</li>
+</ol>
+<p><em>The trailing slash on the health check endpoints is required!</em></p>
+<p>Now make the ALB with a HTTP port 80 listener routing to the <code>web-frontend</code> group.
+Then once it is made go to this listener and configure it with three different rules
+routing to each of the separate groups.</p>
+<ol>
+<li>The default rule to catch all other requests which forwards to the <code>web-frontend</code>
+   group.</li>
+<li>A path condition of <code>/ws/*</code> which forwards to the <code>backend-asgi</code> group.</li>
+<li>A path condition of <code>/api/*</code> which forwards to the <code>backend-wsgi</code> group.</li>
+</ol>
+<p>Later on the Baserow <code>web-frontend</code> service will need to be able to communicate with
+the <code>backend-wsgi</code> service through a load balancer. You can use this same load balancer
+to both balance external requests and these inter service requests if you want, however
+make sure you've appropriately setup the security groups to allow communication between
+the ECS tasks and ALB.</p>
+<h4 id="5-deploying-baserows-individual-services">5) Deploying Baserow's individual services<a class="headerlink" href="#5-deploying-baserows-individual-services" title="Permanent link">&para;</a></h4>
+<p>Let's now deploy each of Baserow's individual services to Fargate/ECS. Make a
+new cluster for Baserow and then proceed to make the following task definitions.</p>
+<blockquote>
+<p>If you are familiar with K8S then <a href="../install-with-k8s/">this sample config</a> gives an
+overview of the services.</p>
+<p>Alternatively <a href="https://github.com/carneirofc/baserow/blob/develop/docker-compose.yml">this docker-compose</a>
+can also be used as reference</p>
+</blockquote>
+<h4 id="6-the-backend-wsgi-service">6) The backend WSGI service<a class="headerlink" href="#6-the-backend-wsgi-service" title="Permanent link">&para;</a></h4>
+<p>This service is our HTTP REST API service. When creating the task definition you should:</p>
+<ol>
+<li>In the task defintion use the <code>ghcr.io/carneirofc/baserow/backend:0.6.0</code> image</li>
+<li>Under docker configuration set <code>gunicorn-wsgi,--timeout,60</code> as the Command.</li>
+</ol>
+<blockquote>
+<p>We recommend setting the timeout of each HTTP API request to 60 seconds in the
+command above as the default of 30 seconds can be too short for very large
+Baserow tables.</p>
+</blockquote>
+<ol>
+<li>We recommend 2vCPUs and 4 GB of RAM per container to start with.</li>
+<li>Map the container port <code>8000</code>/<code>TCP</code> with <code>HTTP</code> App protocol.</li>
+<li>Mark the container as essential.</li>
+<li>Set the following environment variables and keep note of these as you'll need to set
+   the same variables again later on the other task definitions. Using an environment
+   file to share these is also a good idea.</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Env variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BASEROW_PUBLIC_URL</code></td>
+<td>The public URL or IP that will be used to access baserow in your user's browser. Always should start with http:// https:// even if accessing via an IP address.</td>
+</tr>
+<tr>
+<td><code>DATABASE_HOST</code></td>
+<td>The hostname of the Postgres database Baserow will use to store its data in.</td>
+</tr>
+<tr>
+<td><code>DATABASE_USER</code></td>
+<td>The username of the database user Baserow will use to connect to the database at <code>DATABASE_HOST</code>.</td>
+</tr>
+<tr>
+<td><code>DATABASE_PORT</code></td>
+<td>The port Baserow will use when trying to connect to the Postgres database at <code>DATABASE_HOST</code>.</td>
+</tr>
+<tr>
+<td><code>DATABASE_NAME</code></td>
+<td>The database name Baserow will use to store data.</td>
+</tr>
+<tr>
+<td><code>DATABASE_PASSWORD</code></td>
+<td>The password of <code>DATABASE_USER</code> on the Postgres server at <code>DATABASE_HOST</code>. Alternatively, you can provide <code>DATABASE_PASSWORD_FILE</code> and set it to the file path of a secret injected into the container's file system.</td>
+</tr>
+<tr>
+<td><code>REDIS_URL</code></td>
+<td>A standard Redis connection string in the format of: <code>redis://[redisuser]:[password]@[redishost]:[redisport]/0?ssl_cert_reqs=required</code>.</td>
+</tr>
+<tr>
+<td><code>AWS_STORAGE_BUCKET_NAME</code></td>
+<td>Your AWS storage bucket name.</td>
+</tr>
+<tr>
+<td><code>AWS_ACCESS_KEY_ID</code></td>
+<td>The access key for your S3 IAM AWS account. When set to anything other than empty will switch Baserow to use a S3 compatible bucket for storing user file uploads.</td>
+</tr>
+<tr>
+<td><code>AWS_SECRET_ACCESS_KEY</code></td>
+<td>The access secret key for your S3 IAM AWS account. <code>AWS_SECRET_ACCESS_KEY_FILE</code> can similarly be provided instead.</td>
+</tr>
+<tr>
+<td><code>BASEROW_EXTRA_ALLOWED_HOSTS</code></td>
+<td>An optional comma-separated list of hostnames which will be added to Baserow’s Django backend ALLOWED_HOSTS setting. Add your ALB IP address here so the health checks it sends are allowed through, or alternatively configure the less secure value <code>*</code> to get things running and restrict hosts later once everything is working.</td>
+</tr>
+<tr>
+<td><code>BASEROW_JWT_SIGNING_KEY</code></td>
+<td><strong>Must be set so all the containers share the same signing key.</strong> The signing key is used to sign the content of generated tokens. For HMAC signing, this should be a random string with at least as many bits of data as is required by the signing protocol. See <a href="https://django-rest-framework-simplejwt.readthedocs.io/en/latest/settings.html#signing-key">here</a> for more details. <code>BASEROW_JWT_SIGNING_KEY_FILE</code> is also supported.</td>
+</tr>
+<tr>
+<td><code>SECRET_KEY</code></td>
+<td><strong>Must be set so all the containers share the same secret key.</strong> The Secret key used by Django for cryptographic signing such as generating secure password reset links and managing sessions. See <a href="https://docs.djangoproject.com/en/3.2/ref/settings/#std:setting-SECRET_KEY">here</a> for more details. <code>SECRET_KEY_FILE</code> is also supported.</td>
+</tr>
+<tr>
+<td><code>EMAIL_SMTP_*</code></td>
+<td>There are a number of SMTP related environment variables documented in our environment variable guide <a href="../configuration/">here</a> which will also need to be set so Baserow can send invitation and password reset emails.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="7-the-backend-asgi-service">7) The backend ASGI service<a class="headerlink" href="#7-the-backend-asgi-service" title="Permanent link">&para;</a></h4>
+<blockquote>
+<p>It is possible to just use the ASGI service and not make a separate ASGI and WSGI
+service and then route all HTTP and Websocket requests to the single ASGI service.
+However, the ASGI service has degraded performance handling normal HTTP requests
+compared to the service in WSGI mode above. Also being able to scale them separately
+is
+nice as often only a few ASGI services are needed to handle the websocket load.</p>
+</blockquote>
+<p>This service is our Websocket API service and when configuring the task definition you
+should:</p>
+<ol>
+<li>Use the <code>ghcr.io/carneirofc/baserow/backend:0.6.0</code></li>
+<li>Under docker configuration set <code>gunicorn</code> as the Command.</li>
+<li>We recommend 2vCPUs and 4 GB of RAM per container to start with.</li>
+<li>Map the container port <code>8000</code>/<code>TCP</code></li>
+<li>Mark the container as essential.</li>
+<li>Set the same environment variables as you did with the backend-wsgi service above.</li>
+</ol>
+<h4 id="8-the-backend-celery-worker-service">8) The backend celery worker service<a class="headerlink" href="#8-the-backend-celery-worker-service" title="Permanent link">&para;</a></h4>
+<p>This service is our asynchronous high priority task worker queue used for realtime
+collaboration and sending emails.</p>
+<ol>
+<li>Use the <code>ghcr.io/carneirofc/baserow/backend:0.6.0</code> image with <code>celery-worker</code> as the image command.</li>
+<li>Under docker configuration set <code>celery-worker</code> as the Command.</li>
+<li>No port mappings needed.</li>
+<li>We recommend 2vCPUs and 4 GB of RAM per container to start with.</li>
+<li>Mark the container as essential.</li>
+<li>Set same environment variables as you did with the backend-wsgi service above.</li>
+</ol>
+<h4 id="9-the-backend-celery-export-worker-service">9) The backend celery export worker service<a class="headerlink" href="#9-the-backend-celery-export-worker-service" title="Permanent link">&para;</a></h4>
+<p>This service is our asynchronous slow/low priority task worker queue for batch
+processes and running potentially slow operations for users like table exports and
+imports etc.</p>
+<ol>
+<li>Use the <code>ghcr.io/carneirofc/baserow/backend:0.6.0</code> image.</li>
+<li>Under docker configuration set <code>celery-exportworker</code> as the Command.</li>
+<li>No port mappings needed.</li>
+<li>We recommend 2vCPUs and 4 GB of RAM per container to start with.</li>
+<li>Mark the container as essential.</li>
+<li>Set same environment variables as you did with the backend-wsgi service above.</li>
+</ol>
+<h4 id="10-the-backend-celery-beat-service">10) The backend celery beat service<a class="headerlink" href="#10-the-backend-celery-beat-service" title="Permanent link">&para;</a></h4>
+<p>This service is our CRON task scheduler that can have multiple replicas deployed.</p>
+<ol>
+<li>Use the <code>ghcr.io/carneirofc/baserow/backend:0.6.0</code> image.</li>
+<li>Under docker configuration set <code>celery-beat</code> as the Command.</li>
+<li>No port mapping needed.</li>
+<li>We recommend 1vCPUs and 3 GB of RAM per container to start with.<ol>
+<li>Only one of these
+   containers will be scheduling tasks globally at any time.</li>
+<li>Any duplicate containers running will hot standbys to take over
+   scheduling if/when the first one fails and
+   releases the scheduling Redis lock.</li>
+</ol>
+</li>
+<li>Mark the container as essential.</li>
+<li>Set same environment variables as you did with the backend-wsgi service above.</li>
+</ol>
+<h4 id="11-the-web-frontend-service">11) The web-frontend service<a class="headerlink" href="#11-the-web-frontend-service" title="Permanent link">&para;</a></h4>
+<p>Finally, this service is used for server side rendering and serving the frontend of
+Baserow.</p>
+<ol>
+<li>Use the <code>ghcr.io/carneirofc/baserow/web-frontend:0.6.0</code> image with no arguments needed.</li>
+<li>Map the container port <code>3000</code></li>
+<li>We recommend 2vCPUs and 4 GB of RAM per container to start with.</li>
+<li>Mark the container as essential.</li>
+<li>
+<p>Set the following <em>different from the backend services</em> environment variables</p>
+</li>
+<li>
+<p><code>BASEROW_PUBLIC_URL</code>:
+  The public URL or IP that will be used to access baserow in your user's browser.
+  Always should start with http:// https:// even if accessing via an IP address.</p>
+</li>
+<li><code>PRIVATE_BACKEND_URL</code>: The web-frontend containers need to be able to send HTTP
+  requests to the <code>backend-wsgi</code> containers running the rest API.<ul>
+<li>We recommend setting this to your ALB's address and it must start with http:// or
+  https://.</li>
+<li>Ensure the security groups are set up correctly to allow these internal HTTP
+  requests.</li>
+<li>If you've not set <code>BASEROW_EXTRA_ALLOWED_HOSTS=*</code> on the <code>backend-wsgi</code>
+  and <code>backend-asgi</code> containers make sure to add the value you've set for this env
+  var to <code>BASEROW_EXTRA_ALLOWED_HOSTS</code> for those services otherwise they will not
+  allow connections from the web-frontend.</li>
+</ul>
+</li>
+<li><code>DOWNLOAD_FILE_VIA_XHR</code>: Must be set to <code>1</code> to work with AWS S3 currently to force
+  download links to download files via XHR query to bypass <code>Content-Disposition: inline</code>
+  . If your files are stored under another origin, you also must add CORS headers to
+  your S3 bucket.</li>
+</ol>
+<h4 id="13-create-the-ecs-services">13) Create the ECS services<a class="headerlink" href="#13-create-the-ecs-services" title="Permanent link">&para;</a></h4>
+<p>Now make sure to go back and create the ECS services for the<br />
+task definitions you just made. Remember to set 900 second grace
+periods in the health check when connecting things up.</p>
+<blockquote>
+<p>Alternatively you can make a
+single ECS service for all of Baserow's tasks, however you will then need to use
+the API/CLI to connect multiple target groups to this single ECS service as this is
+not possible via the AWS UI currently. You might also need to ensure that
+<code>backend-asgi</code> and <code>backend-wsgi</code> are exposed on different ports for the target groups
+to route properly to each individually. Set the <code>BASEROW_BACKEND_PORT</code> env var
+on both of these services to different values to get them binding to different ports
+inside the container.</p>
+</blockquote>
+<ol>
+<li><code>backend-wsgi</code> service connected to the <code>backend-wsgi</code> target group</li>
+<li><code>backend-asgi</code> service connected to the <code>backend-asgi</code> target group</li>
+<li><code>web-frontend</code> service connected to the <code>web-frontend</code> target group</li>
+<li><code>celery-worker</code> service</li>
+<li><code>celery-exportworker</code> service</li>
+<li><code>celery-beat</code> service</li>
+</ol>
+<h4 id="12-scaling-options">12) Scaling Options<a class="headerlink" href="#12-scaling-options" title="Permanent link">&para;</a></h4>
+<p>Most of the time scaling up your <code>backend-wsgi</code> tasks and RDS postgres will be your
+first port of call for handling more requests. If your realtime collaboration is slowing
+down you can scale up the <code>backend-asgi</code> and <code>celery-worker</code> services. Finally, if you
+are having to wait a long time for jobs to start (they will have progress bars in the
+Baserow UI stuck at 0%) then you can add more <code>celery-exportworker</code> services.</p>
+<p>There are also the following env vars that can change the number of worker processes
+launched inside each container to vertically scale each one:</p>
+<ol>
+<li><code>BASEROW_AMOUNT_OF_GUNICORN_WORKERS</code> controls the number of REST API workers (
+   the things that do most of the API work) per <code>gunicorn-wsgi</code> or <code>gunicorn</code> container.
+   Defaults to 3. Each extra worker generally takes up around 100-200 MB of RAM.</li>
+<li><code>BASEROW_AMOUNT_OF_WORKERS</code> controls the number of background task celery runners,
+   in the <code>celery-worker</code> and <code>celery-exportworker</code> containers.</li>
+</ol>
+<h4 id="13-deployment-complete">13) Deployment complete<a class="headerlink" href="#13-deployment-complete" title="Permanent link">&para;</a></h4>
+<p>You should now have a fully running Baserow cluster. This deployment method is more
+complex to get working so if you need any help please post in
+the <a href="https://github.com/carneirofc/baserow/issues">issue tracker</a>.</p>
+<p>The first user to sign-up becomes the first "staff" instance-wide admin user. This user
+can then configure Baserow's in-tool settings, promote other users to being staff etc.</p>
+<h2 id="upgrading-baserow">Upgrading Baserow<a class="headerlink" href="#upgrading-baserow" title="Permanent link">&para;</a></h2>
+<p>Upgrading an ECS/Fargate deployment of Baserow can be done by.</p>
+<ol>
+<li>Back up/snapshot your RDS Postgres database</li>
+<li>Stop all existing containers running the old version first to prevent
+   users from getting errors whilst accessing old containers during the upgrade.</li>
+<li>Update your task definitions to have the new image.</li>
+<li>The first new <code>baserow/baserow</code> or <code>baserow/backend-wsgi/asgi</code> container to startup
+   will
+   automatically apply any required database migrations and upgrades.</li>
+<li>Once these are complete, all the new Baserow containers will start accepting requests
+   and your upgrade is complete.</li>
+</ol>
+<h2 id="faq">FAQ<a class="headerlink" href="#faq" title="Permanent link">&para;</a></h2>
+<h3 id="fixing-the-crossslot-keys-in-request-dont-hash-to-the-same-slot-error">Fixing the <code>CROSSSLOT Keys in request don't hash to the same slot</code> error<a class="headerlink" href="#fixing-the-crossslot-keys-in-request-dont-hash-to-the-same-slot-error" title="Permanent link">&para;</a></h3>
+<p>If you see this error in your logs it means you have launched Baserow with a Redis which
+is in cluster mode. Baserow uses libraries that do not support Redis in cluster mode, so
+you will need to provision a new Redis in the non-cluster mode for things to work.
+Non-cluster mode Redis can still be scaled and multi-zone, additionally Baserow does not
+generally end up with Redis as the bottleneck for requests.</p>
+<h3 id="my-elb-health-checks-are-failing">My ELB Health checks are failing<a class="headerlink" href="#my-elb-health-checks-are-failing" title="Permanent link">&para;</a></h3>
+<p>The first-time migration after a first time deploy or upgrade might take some time so
+you might want to try increasing the grace period.</p>
+<p>Secondly, Make sure the ELB can connect to the container. Please note that the container
+has its internal health check script which will be also calling the health check
+endpoint. So the presence of logs showing health check 200 responses doesn't mean your
+ELB is the one triggering those.</p>
+<h3 id="i-get-cors-errors-when-downloading-a-file-from-a-baserow-file-field">I get <code>CORS errors</code> when downloading a file from a Baserow file field<a class="headerlink" href="#i-get-cors-errors-when-downloading-a-file-from-a-baserow-file-field" title="Permanent link">&para;</a></h3>
+<p>Your CORS was not set up properly on the S3 bucket. Please see the example CORS config
+above or contact us for support.</p>
+<h3 id="i-get-secure-redis-scheme-specified-rediss-with-no-ssl-options-defaulting-to-insecure-ssl-behavior-warnings">I get <code>Secure Redis scheme specified (rediss) with no ssl options, defaulting to insecure SSL behavior</code> warnings<a class="headerlink" href="#i-get-secure-redis-scheme-specified-rediss-with-no-ssl-options-defaulting-to-insecure-ssl-behavior-warnings" title="Permanent link">&para;</a></h3>
+<p>Make sure you have added <code>?ssl_cert_reqs=required</code> onto the end of your <code>REDIS_URL</code> env
+var.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.instant", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.88dd0f4e.min.js"></script>
+      
+    
+  </body>
+</html>

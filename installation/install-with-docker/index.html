@@ -1,0 +1,4002 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://carneirofc.github.io/baserow/installation/install-with-docker/">
+      
+      
+        <link rel="prev" href="../..">
+      
+      
+        <link rel="next" href="../install-with-docker-compose/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
+    
+    
+      
+        <title>Docker - Baserow (carneirofc fork) Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6f8fc17f.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#install-with-docker" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-header__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Baserow (carneirofc fork) Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Docker
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/carneirofc/baserow" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    carneirofc/baserow
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  Installation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tutorials/understanding-baserow-formulas/" class="md-tabs__link">
+          
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../apis/rest-api/" class="md-tabs__link">
+          
+  
+  API Usage
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../technical/introduction/" class="md-tabs__link">
+          
+  
+  Technical Overviews
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../development/development-environment/" class="md-tabs__link">
+          
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../plugins/introduction/" class="md-tabs__link">
+          
+  
+  Plugins
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../patterns/date-and-time/" class="md-tabs__link">
+          
+  
+  Patterns
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../runbooks/back-up-and-restore-baserow/" class="md-tabs__link">
+          
+  
+  Runbooks
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../testing/grid-view-test-plan/" class="md-tabs__link">
+          
+  
+  Testing
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../adr/001-phone-number-field-validation/" class="md-tabs__link">
+          
+  
+  Architecture Decision Records
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../other/external-resources/" class="md-tabs__link">
+          
+  
+  Other
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-nav__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Baserow (carneirofc fork) Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/carneirofc/baserow" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    carneirofc/baserow
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Installation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Docker
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Docker
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quick Start
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#image-feature-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Image Feature Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#upgrading-from-a-previous-version" class="md-nav__link">
+    <span class="md-ellipsis">
+      Upgrading from a previous version
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#upgrading-postgresql-database-from-a-previous-version" class="md-nav__link">
+    <span class="md-ellipsis">
+      Upgrading PostgreSQL database from a previous version
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example Commands
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Example Commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#using-a-domain-with-automatic-https" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using a Domain with automatic https
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#behind-a-reverse-proxy-already-handling-ssl" class="md-nav__link">
+    <span class="md-ellipsis">
+      Behind a reverse proxy already handling ssl
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#on-a-nonstandard-http-port" class="md-nav__link">
+    <span class="md-ellipsis">
+      On a nonstandard HTTP port
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-an-external-postgressql-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      With an external PostgresSQL server
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-an-external-redis-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      With an external Redis server
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-an-external-email-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      With an external email server
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-a-postgresql-server-running-on-the-same-host-as-the-baserow-docker-container" class="md-nav__link">
+    <span class="md-ellipsis">
+      With a Postgresql server running on the same host as the Baserow docker container
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#supply-secrets-using-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      Supply secrets using files
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#start-just-the-embedded-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      Start just the embedded database
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#application-builder-domains" class="md-nav__link">
+    <span class="md-ellipsis">
+      Application builder domains
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Application builder domains">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#run-a-one-off-command-on-the-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      Run a one off command on the database
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stateless-deployment-for-horizontal-scaling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Stateless Deployment for Horizontal Scaling
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Stateless Deployment for Horizontal Scaling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prerequisites
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recommended-environment-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      Recommended Environment Variables
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scaling-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scaling Options
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#backing-up-and-restoring-baserow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Backing up and Restoring Baserow
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Backing up and Restoring Baserow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#backup-all-of-baserow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Backup all of Baserow
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#restore-all-of-baserow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Restore all of Baserow
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backup-only-baserows-postgres-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      Backup only Baserow's Postgres database
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#restore-only-baserows-postgres-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      Restore only Baserow's Postgres Database
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-healthchecks-on-baserow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Running healthchecks on Baserow
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-baserow-or-django-management-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Running Baserow or Django management commands
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#customizing-baserow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Customizing Baserow
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Customizing Baserow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mounting-in-a-config-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mounting in a config file
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#building-your-own-image-from-baserow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Building your own image from Baserow
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install-with-docker-compose/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Docker Compose
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install-on-aws/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AWS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install-using-standalone-images/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Standalone images
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install-on-digital-ocean/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Digital Ocean Apps
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install-on-railway/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Railway
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install-on-ubuntu/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Ubuntu
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../third-party-hosting-providers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Third party hosting providers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install-with-helm/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Helm
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install-on-eks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Amazon EKS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install-with-k8s/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Kubernetes (K8S)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../old-install-on-ubuntu/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DEPRECATED: Ubuntu (manual)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../supported/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Supported runtime dependencies
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../monitoring/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Monitoring
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sso-oidc/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SSO with OpenID Connect
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sso-rhbk-keycloak/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SSO with RHBK/Keycloak
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/sso-saml/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SSO with SAML
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workspace-access/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Managing workspace access
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data-destinations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Data destinations, backups & datalake exports
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../instance-settings/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Turning application types off instance-wide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../branding/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Branding
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configuration
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/understanding-baserow-formulas/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Understanding Baserow Formulas
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/debugging-connection-issues/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Debugging Connection Issues
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/prefill-forms/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Prefill forms
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    API Usage
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            API Usage
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../apis/rest-api/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    REST API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../apis/web-socket-api/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    WebSocket API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../apis/deprecations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deprecations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Technical Overviews
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Technical Overviews
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/introduction/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Introduction
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/database-plugin/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Database plugin
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/formula-technical-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Formula Technical Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/undo-redo-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Undo Redo Technical Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/permissions-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Permissions handling Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/collapsible-grid-group-by/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Collapsible grid group-by
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/postgresql-locks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PostgreSQL locks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/realtime-presence/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Realtime presence
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/websockets/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    WebSockets
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/workspace-search/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Workspace search
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Development
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Development
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/development-environment/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Development environment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/running-the-dev-env-locally/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Running the Dev Environment Locally
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/running-the-dev-env-with-docker/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Running the Dev Environment with Docker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/directory-structure/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Directory structure
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/tools/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tools
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/code-quality/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code quality
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/debugging/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Debugging
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/create-a-template/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Create a template
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/justfile/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Justfile reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/intellij-setup/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    IntelliJ setup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/feature-flags/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Feature flags
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/e2e-testing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    E2E Testing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/metrics-and-logs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Metrics and Logs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/running-tests/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Backend Tests
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/building-and-running-production-images/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Building and running production images
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/ci-cd/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CI/CD
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/mcp-server/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MCP server
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/read-replicas/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Read replicas
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/vscode-setup/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    VS Code setup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/zed-setup/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Zed setup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Plugins
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Plugins
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugins/introduction/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Plugin basics
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugins/boilerplate/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Plugin boilerplate (outdated)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugins/application-type/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Create application type
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugins/view-type/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Create database table view
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugins/view-filter-type/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Create database table view filter
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugins/field-type/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Create database table field
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugins/field-converter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Create a field converter
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugins/creation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Plugin creation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugins/installation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Plugin installation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Patterns
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Patterns
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../patterns/date-and-time/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Date and time
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../patterns/emails/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Emails
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../patterns/forms/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Forms
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../patterns/jobs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Jobs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../patterns/loading-animations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Loading animations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../patterns/row_history_from_action/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Row history from action
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Runbooks
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Runbooks
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/back-up-and-restore-baserow/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Back up and restore Baserow
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/migrate-from-user-tables-database/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Migrate from user tables database
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/upgrade-embedded-postgres/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Upgrade embedded Postgres
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Testing
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Testing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../testing/grid-view-test-plan/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Grid view test plan
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../testing/mcp-test-plan/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MCP test plan
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Architecture Decision Records
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            Architecture Decision Records
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adr/001-phone-number-field-validation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    001: Phone number field validation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adr/002-baserow-data-backups/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    002: Baserow data backups
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adr/004-baserow-metrics/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    004: Baserow metrics
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adr/005-in-app-database-access-grants/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    005: In-app database access grants
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Other
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            Other
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../other/external-resources/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    External resources
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      Quick Start
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#image-feature-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Image Feature Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#upgrading-from-a-previous-version" class="md-nav__link">
+    <span class="md-ellipsis">
+      Upgrading from a previous version
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#upgrading-postgresql-database-from-a-previous-version" class="md-nav__link">
+    <span class="md-ellipsis">
+      Upgrading PostgreSQL database from a previous version
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example Commands
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Example Commands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#using-a-domain-with-automatic-https" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using a Domain with automatic https
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#behind-a-reverse-proxy-already-handling-ssl" class="md-nav__link">
+    <span class="md-ellipsis">
+      Behind a reverse proxy already handling ssl
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#on-a-nonstandard-http-port" class="md-nav__link">
+    <span class="md-ellipsis">
+      On a nonstandard HTTP port
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-an-external-postgressql-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      With an external PostgresSQL server
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-an-external-redis-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      With an external Redis server
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-an-external-email-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      With an external email server
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-a-postgresql-server-running-on-the-same-host-as-the-baserow-docker-container" class="md-nav__link">
+    <span class="md-ellipsis">
+      With a Postgresql server running on the same host as the Baserow docker container
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#supply-secrets-using-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      Supply secrets using files
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#start-just-the-embedded-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      Start just the embedded database
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#application-builder-domains" class="md-nav__link">
+    <span class="md-ellipsis">
+      Application builder domains
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Application builder domains">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#run-a-one-off-command-on-the-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      Run a one off command on the database
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stateless-deployment-for-horizontal-scaling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Stateless Deployment for Horizontal Scaling
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Stateless Deployment for Horizontal Scaling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      Prerequisites
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recommended-environment-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      Recommended Environment Variables
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scaling-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      Scaling Options
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#backing-up-and-restoring-baserow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Backing up and Restoring Baserow
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Backing up and Restoring Baserow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#backup-all-of-baserow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Backup all of Baserow
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#restore-all-of-baserow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Restore all of Baserow
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backup-only-baserows-postgres-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      Backup only Baserow's Postgres database
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#restore-only-baserows-postgres-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      Restore only Baserow's Postgres Database
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-healthchecks-on-baserow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Running healthchecks on Baserow
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-baserow-or-django-management-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Running Baserow or Django management commands
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#customizing-baserow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Customizing Baserow
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Customizing Baserow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mounting-in-a-config-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mounting in a config file
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#building-your-own-image-from-baserow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Building your own image from Baserow
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/carneirofc/baserow/edit/develop/docs/installation/install-with-docker.md" title="Edit this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="install-with-docker">Install with Docker<a class="headerlink" href="#install-with-docker" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p>Any questions, problems or suggestions with this guide? Ask a question in our
+<a href="https://github.com/carneirofc/baserow/issues">issue tracker</a> or contribute the change yourself at
+https://github.com/carneirofc/baserow/tree/develop/docs .</p>
+<p>Docker version 19.03 is the minimum required to use Baserow. It is strongly
+advised however that you install the latest version of Docker available.
+Please check that your docker is up-to date by running <code>docker -v</code>.</p>
+</blockquote>
+<p>This guide assumes you already have Docker installed and have permissions to run Docker
+containers. See the <a href="../install-on-ubuntu/">Install on Ubuntu</a> for an installation from
+scratch.</p>
+<h2 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
+<p>Run the command below to start a Baserow server running locally listening on port <code>80</code>.
+You will only be able to connect to Baserow from the machine running the server via
+<code>http://localhost</code>.</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--name<span class="w"> </span>baserow<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">BASEROW_PUBLIC_URL</span><span class="o">=</span>http://localhost<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-v<span class="w"> </span>baserow_data:/baserow/data<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-p<span class="w"> </span><span class="m">80</span>:80<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-p<span class="w"> </span><span class="m">443</span>:443<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--restart<span class="w"> </span>unless-stopped<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>ghcr.io/carneirofc/baserow/baserow:0.6.0
+</code></pre></div>
+<ul>
+<li>Change <code>BASEROW_PUBLIC_URL</code> to <code>https://YOUR_DOMAIN</code> or <code>http://YOUR_IP</code> to enable
+  external access. Ensure that this address matches the one you enter in your browser's
+  URL bar. Any different address will be considered a published application.</li>
+<li>Add <code>-e BASEROW_CADDY_ADDRESSES=:443</code> to enable
+  <a href="https://caddyserver.com/docs/automatic-https">automatic Caddy HTTPS</a>.</li>
+<li>Optionally add <code>-e DATABASE_URL=postgresql://user:pwd@host:port/db</code> to use an external
+  Postgresql.</li>
+<li>Optionally add <code>-e REDIS_URL=redis://user:pwd@host:port</code> to use an external Redis.</li>
+</ul>
+<blockquote>
+<p>There is a security flaw with docker and the ufw firewall.
+By default docker when exposing ports on 0.0.0.0 will bypass any ufw firewall rules
+and expose the above container publicly from your machine on its network. If this
+is not intended then run with the following ports instead:
+<code>-p 127.0.0.1:80:80 -p 127.0.0.1:443:443</code> which makes your Baserow only accessible
+from the machine it is running on.
+Please see https://github.com/chaifeng/ufw-docker for more information and how to
+setup ufw to work securely with docker.</p>
+</blockquote>
+<h2 id="image-feature-overview">Image Feature Overview<a class="headerlink" href="#image-feature-overview" title="Permanent link">&para;</a></h2>
+<p>The <code>ghcr.io/carneirofc/baserow/baserow:0.6.0</code> image by default runs all of Baserow's various services in
+a single container for maximum ease of use.</p>
+<blockquote>
+<p>This image is designed for simple single server deployments or simple container
+deployment services such as Google Cloud Run.</p>
+<p>If you are instead looking for images which are better suited for horizontal
+scaling (e.g. when using <a href="../install-with-k8s/">K8S</a>) then please instead use our
+<a href="../install-with-docker-compose/">baserow/backend and baserow/web-frontend</a> images
+instead which deploy each Baserow service in its own container independently.</p>
+</blockquote>
+<p>A quick summary of its features are:</p>
+<ul>
+<li>Runs a Postgres database and Redis server by default internally and stores all data in
+  the <code>/baserow/data</code> folder inside the container.</li>
+<li>Set <code>DATABASE_URL</code> or the <code>DATABASE_...</code> variables to disable the internal postgres
+  and instead connect to an external Postgres. This is highly recommended for any
+  production deployments of this image, so you can easily connect to the Postgres
+  database from any other services or processes you might have.</li>
+<li>Set <code>REDIS_URL</code> or the <code>REDIS_...</code> variables to disable the internal redis and instead
+  connect to an external Postgres.</li>
+<li>Runs all services behind a pre-configured Caddy reverse proxy. Set
+  <code>BASEROW_CADDY_ADDRESSES</code> to <code>https://YOUR_DOMAIN.com</code> and it will
+  <a href="https://caddyserver.com/docs/automatic-https#overview">automatically enable https</a>
+  for
+  you and store the keys and certs in <code>/baserow/data/caddy</code>.</li>
+<li>Provides a CLI for execing admin commands against a running Baserow container or
+  running one off commands against just a Baserow data volume.</li>
+</ul>
+<h2 id="upgrading-from-a-previous-version">Upgrading from a previous version<a class="headerlink" href="#upgrading-from-a-previous-version" title="Permanent link">&para;</a></h2>
+<ol>
+<li>It is recommended that you backup your data before upgrading, see the Backup sections
+   below for more details on how to do this.</li>
+<li>Stop your existing Baserow container:</li>
+</ol>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>stop<span class="w"> </span>baserow
+</code></pre></div>
+<ol>
+<li>Bump the image version in the <code>docker run</code> command you usually use to run your
+   Baserow and start up a brand-new container:</li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="c1"># We haven't yet deleted the old Baserow container so you need to start this new one</span>
+<span class="c1"># with a different name to prevent an error like:</span>
+<span class="c1"># `response from daemon: Conflict. The container name "/baserow" is already in use by</span>
+<span class="c1"># container`</span>
+
+docker<span class="w"> </span>run<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--name<span class="w"> </span>baserow_version_REPLACE_WITH_NEW_VERSION<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="c1"># YOUR STANDARD ARGS HERE</span>
+<span class="w">  </span>ghcr.io/carneirofc/baserow/baserow:0.6.0
+</code></pre></div>
+<ol>
+<li>Baserow will automatically upgrade itself on startup, follow the logs to monitor it:</li>
+</ol>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>logs<span class="w"> </span>-f<span class="w"> </span>baserow_version_REPLACE_WITH_NEW_VERSION
+</code></pre></div>
+<ol>
+<li>Once you see the following log line your Baserow upgraded and is now available again:</li>
+</ol>
+<div class="highlight"><pre><span></span><code>[BASEROW-WATCHER][2022-05-10 08:44:46] Baserow is now available at ...
+</code></pre></div>
+<ol>
+<li>Make sure your Baserow has been successfully upgraded by visiting it and checking
+   everything is working as expected and your data is still present.</li>
+<li>If everything works you can now remove the old Baserow container.</li>
+</ol>
+<blockquote>
+<p>WARNING: If you have not been using a volume to persist the <code>/baserow/data</code> folder
+inside the container this will delete all of your Baserow data stored in this
+container permanently.</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>rm<span class="w"> </span>baserow
+</code></pre></div>
+<h2 id="upgrading-postgresql-database-from-a-previous-version">Upgrading PostgreSQL database from a previous version<a class="headerlink" href="#upgrading-postgresql-database-from-a-previous-version" title="Permanent link">&para;</a></h2>
+<p>The all-in-one image now embeds <strong>PostgreSQL 18</strong>, up from 15 in earlier releases. A PostgreSQL data directory can only be read by the major version that created it, so if you use the embedded database (an embedded one is when you do <em>not</em> provide <code>POSTGRESQL_*</code> environment variables when launching Baserow, as opposed to an external one, where you provide connection details to your external PostgreSQL instance), the container will refuse to start against a version 15 data directory and print:</p>
+<div class="highlight"><pre><span></span><code>Your PostgreSQL data directory was initialized with version 15, but this image is running version 18.
+</code></pre></div>
+<p>Follow the <a href="../../runbooks/upgrade-embedded-postgres/">embedded PostgreSQL upgrade runbook</a> to dump your data with your previous image and restore it into a fresh volume. Your old volume is left untouched, so you can roll back at any point.</p>
+<p>If you use an <strong>external</strong> PostgreSQL server, none of this applies — upgrade that server on your own schedule. Baserow supports PostgreSQL &gt;= 14.</p>
+<h2 id="example-commands">Example Commands<a class="headerlink" href="#example-commands" title="Permanent link">&para;</a></h2>
+<p>See <a href="../configuration/">Configuring Baserow</a> for more detailed information on all the
+other environment variables you can configure.</p>
+<h3 id="using-a-domain-with-automatic-https">Using a Domain with automatic https<a class="headerlink" href="#using-a-domain-with-automatic-https" title="Permanent link">&para;</a></h3>
+<p>If you have a domain name and have correctly configured DNS then you can run the
+following command to make Baserow available at the domain with
+<a href="https://caddyserver.com/docs/automatic-https#overview">automatic https</a> provided by
+Caddy.</p>
+<blockquote>
+<p>Append <code>,http://localhost</code> to BASEROW_CADDY_ADDRESSES if you still want to be able to
+access your server from the machine it is running on using http://localhost. See
+<a href="https://caddyserver.com/docs/caddyfile/concepts#addresses">Caddy's Address Docs</a>
+for all supported values for BASEROW_CADDY_ADDRESSES.</p>
+</blockquote>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--name<span class="w"> </span>baserow<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">BASEROW_PUBLIC_URL</span><span class="o">=</span>https://www.REPLACE_WITH_YOUR_DOMAIN.com<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">BASEROW_CADDY_ADDRESSES</span><span class="o">=</span>:443<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-v<span class="w"> </span>baserow_data:/baserow/data<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-p<span class="w"> </span><span class="m">80</span>:80<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-p<span class="w"> </span><span class="m">443</span>:443<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--restart<span class="w"> </span>unless-stopped<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>ghcr.io/carneirofc/baserow/baserow:0.6.0
+</code></pre></div>
+<h3 id="behind-a-reverse-proxy-already-handling-ssl">Behind a reverse proxy already handling ssl<a class="headerlink" href="#behind-a-reverse-proxy-already-handling-ssl" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--name<span class="w"> </span>baserow<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">BASEROW_PUBLIC_URL</span><span class="o">=</span>https://www.yourdomain.com<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-v<span class="w"> </span>baserow_data:/baserow/data<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-p<span class="w"> </span><span class="m">80</span>:80<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--restart<span class="w"> </span>unless-stopped<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>ghcr.io/carneirofc/baserow/baserow:0.6.0
+</code></pre></div>
+<h3 id="on-a-nonstandard-http-port">On a nonstandard HTTP port<a class="headerlink" href="#on-a-nonstandard-http-port" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--name<span class="w"> </span>baserow<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">BASEROW_PUBLIC_URL</span><span class="o">=</span>https://www.yourdomain.com:3001<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-v<span class="w"> </span>baserow_data:/baserow/data<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-p<span class="w"> </span><span class="m">3001</span>:80<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--restart<span class="w"> </span>unless-stopped<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>ghcr.io/carneirofc/baserow/baserow:0.6.0
+</code></pre></div>
+<h3 id="with-an-external-postgressql-server">With an external PostgresSQL server<a class="headerlink" href="#with-an-external-postgressql-server" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--name<span class="w"> </span>baserow<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">BASEROW_PUBLIC_URL</span><span class="o">=</span>https://www.yourdomain.com<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">DATABASE_HOST</span><span class="o">=</span>TODO<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">DATABASE_NAME</span><span class="o">=</span>TODO<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">DATABASE_USER</span><span class="o">=</span>TODO<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">DATABASE_PASSWORD</span><span class="o">=</span>TODO<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">DATABASE_PORT</span><span class="o">=</span>TODO<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-v<span class="w"> </span>baserow_data:/baserow/data<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-p<span class="w"> </span><span class="m">80</span>:80<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-p<span class="w"> </span><span class="m">443</span>:443<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--restart<span class="w"> </span>unless-stopped<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>ghcr.io/carneirofc/baserow/baserow:0.6.0
+</code></pre></div>
+<h3 id="with-an-external-redis-server">With an external Redis server<a class="headerlink" href="#with-an-external-redis-server" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--name<span class="w"> </span>baserow<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">BASEROW_PUBLIC_URL</span><span class="o">=</span>https://www.yourdomain.com<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">REDIS_HOST</span><span class="o">=</span>TODO<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">REDIS_USER</span><span class="o">=</span>TODO<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">REDIS_PASSWORD</span><span class="o">=</span>TODO<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">REDIS_PORT</span><span class="o">=</span>TODO<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">REDIS_PROTOCOL</span><span class="o">=</span>TODO<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">REDIS_SSL_CERT_REQS</span><span class="o">=</span>TODO<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">REDIS_SSL_CA_CERTS</span><span class="o">=</span>TODO<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-v<span class="w"> </span>baserow_data:/baserow/data<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-p<span class="w"> </span><span class="m">80</span>:80<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-p<span class="w"> </span><span class="m">443</span>:443<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--restart<span class="w"> </span>unless-stopped<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>ghcr.io/carneirofc/baserow/baserow:0.6.0
+</code></pre></div>
+<h3 id="with-an-external-email-server">With an external email server<a class="headerlink" href="#with-an-external-email-server" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--name<span class="w"> </span>baserow<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">BASEROW_PUBLIC_URL</span><span class="o">=</span>https://www.yourdomain.com<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">EMAIL_SMTP</span><span class="o">=</span>True<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">EMAIL_SMTP_HOST</span><span class="o">=</span>TODO<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">EMAIL_SMTP_PORT</span><span class="o">=</span>TODO<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">EMAIL_SMTP_USER</span><span class="o">=</span>TODO<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">EMAIL_SMTP_PASSWORD</span><span class="o">=</span>TODO<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">EMAIL_SMTP_USE_TLS</span><span class="o">=</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-v<span class="w"> </span>baserow_data:/baserow/data<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-p<span class="w"> </span><span class="m">80</span>:80<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-p<span class="w"> </span><span class="m">443</span>:443<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--restart<span class="w"> </span>unless-stopped<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>ghcr.io/carneirofc/baserow/baserow:0.6.0
+</code></pre></div>
+<h3 id="with-a-postgresql-server-running-on-the-same-host-as-the-baserow-docker-container">With a Postgresql server running on the same host as the Baserow docker container<a class="headerlink" href="#with-a-postgresql-server-running-on-the-same-host-as-the-baserow-docker-container" title="Permanent link">&para;</a></h3>
+<p>This is assuming you are using the postgresql server bundled by ubuntu. If not then you
+will have to find the correct locations for the config files for your OS.</p>
+<ol>
+<li>Find out what version of postgresql is installed by running
+   <code>sudo ls /etc/postgresql/</code></li>
+<li>Open <code>/etc/postgresql/YOUR_PSQL_VERSION/main/postgresql.conf</code> for editing as root</li>
+<li>Find the commented out <code># listen_addresses</code> line.</li>
+<li>Change it to be:
+   <code>listen_addresses = '*'          # what IP address(es) to listen on;</code></li>
+<li>Open <code>/etc/postgresql/YOUR_PSQL_VERSION/main/pg_hba.conf</code> for editing as root</li>
+<li>Add the following line to the end which will allow docker containers to connect.
+   <code>host    all             all             172.17.0.0/16           md5</code></li>
+<li>Restart postgres to load in the config changes.
+   <code>sudo systemctl restart postgresql</code></li>
+<li>Check the logs do not have errors by running
+   <code>sudo less /var/log/postgresql/postgresql-YOUR_PSQL_VERSION-main.log</code></li>
+<li>Run Baserow like so:</li>
+</ol>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--name<span class="w"> </span>baserow<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--add-host<span class="w"> </span>host.docker.internal:host-gateway<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">BASEROW_PUBLIC_URL</span><span class="o">=</span>http://localhost<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">DATABASE_HOST</span><span class="o">=</span>host.docker.internal<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">DATABASE_PORT</span><span class="o">=</span><span class="m">5432</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">DATABASE_NAME</span><span class="o">=</span>YOUR_DATABASE_NAME<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">DATABASE_USER</span><span class="o">=</span>YOUR_DATABASE_USERNAME<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">DATABASE_PASSWORD</span><span class="o">=</span>REPLACE_WITH_YOUR_DATABASE_PASSWORD<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--restart<span class="w"> </span>unless-stopped<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-v<span class="w"> </span>baserow_data:/baserow/data<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-p<span class="w"> </span><span class="m">80</span>:80<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-p<span class="w"> </span><span class="m">443</span>:443<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>ghcr.io/carneirofc/baserow/baserow:0.6.0
+</code></pre></div>
+<h3 id="supply-secrets-using-files">Supply secrets using files<a class="headerlink" href="#supply-secrets-using-files" title="Permanent link">&para;</a></h3>
+<p>The <code>DATABASE_PASSWORD</code>, <code>SECRET_KEY</code> and <code>REDIS_PASSWORD</code> environment variables can
+instead be loaded using a file by using the <code>*_FILE</code> variants:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="s2">"your_redis_password"</span><span class="w"> </span>&gt;<span class="w"> </span>.your_redis_password
+<span class="nb">echo</span><span class="w"> </span><span class="s2">"your_secret_key"</span><span class="w"> </span>&gt;<span class="w"> </span>.your_secret_key
+<span class="nb">echo</span><span class="w"> </span><span class="s2">"your_pg_password"</span><span class="w"> </span>&gt;<span class="w"> </span>.your_pg_password
+docker<span class="w"> </span>run<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--name<span class="w"> </span>baserow<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">BASEROW_PUBLIC_URL</span><span class="o">=</span>http://localhost<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">REDIS_PASSWORD_FILE</span><span class="o">=</span>/baserow/.your_redis_password<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">SECRET_KEY_FILE</span><span class="o">=</span>/baserow/.your_secret_key<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">DATABASE_PASSWORD_FILE</span><span class="o">=</span>/baserow/.your_pg_password<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">EMAIL_SMTP_PASSWORD_FILE</span><span class="o">=</span>/baserow/.your_smtp_password<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--restart<span class="w"> </span>unless-stopped<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-v<span class="w"> </span><span class="nv">$PWD</span>/.your_redis_password:/baserow/.your_redis_password<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-v<span class="w"> </span><span class="nv">$PWD</span>/.your_secret_key:/baserow/.your_secret_key<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-v<span class="w"> </span><span class="nv">$PWD</span>/.your_pg_password:/baserow/.your_pg_password<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-v<span class="w"> </span>baserow_data:/baserow/data<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-p<span class="w"> </span><span class="m">80</span>:80<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-p<span class="w"> </span><span class="m">443</span>:443<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>ghcr.io/carneirofc/baserow/baserow:0.6.0
+</code></pre></div>
+<h3 id="start-just-the-embedded-database">Start just the embedded database<a class="headerlink" href="#start-just-the-embedded-database" title="Permanent link">&para;</a></h3>
+<p>If you want to directly access the embedded Postgresql database then you can run:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>-it<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--rm<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--name<span class="w"> </span>baserow<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-p<span class="w"> </span><span class="m">5432</span>:5432<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-v<span class="w"> </span>baserow_data:/baserow/data<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>ghcr.io/carneirofc/baserow/baserow:0.6.0<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>start-only-db
+<span class="c1"># Now get the password from</span>
+docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>baserow<span class="w"> </span>cat<span class="w"> </span>/baserow/data/.pgpass
+<span class="c1"># Finally connect on your host machine to the Baserow postgres database at port 5432</span>
+<span class="c1"># the password above with the username `baserow`.</span>
+</code></pre></div>
+<h2 id="application-builder-domains">Application builder domains<a class="headerlink" href="#application-builder-domains" title="Permanent link">&para;</a></h2>
+<p>The build in Caddy server is configured to automatically handle additional application
+builder domains. Depending on the environment variables, it will also automatically
+fetch SSL certificates for those domains. Note that the <code>BASEROW_CADDY_ADDRESSES</code>
+environment variable must be <code>:80</code> or <code>:443</code> to allow multiple domains. If you have set
+a URL there, it won't work.</p>
+<p>By default, it will accept requests of any domain over the http protocol, which is
+perfect if you have a proxy in front of Baserow. If <code>BASEROW_CADDY_ADDRESSES</code> starts
+with <code>https</code> protocol or is <code>:443</code>, then it will redirect http requests to https, and
+will handle the SSL certificate part automatically. This is recommended when the
+container is directly exposed to the internet.</p>
+<h3 id="run-a-one-off-command-on-the-database">Run a one off command on the database<a class="headerlink" href="#run-a-one-off-command-on-the-database" title="Permanent link">&para;</a></h3>
+<p>If you want to run a one off backend command against your Baserow data volume without
+starting Baserow normally you can do so with the <code>backend-cmd-with-db</code> argument like so:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>-it<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--rm<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--name<span class="w"> </span>baserow<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-v<span class="w"> </span>baserow_data:/baserow/data<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>ghcr.io/carneirofc/baserow/baserow:0.6.0<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>backend-cmd-with-db<span class="w"> </span>manage<span class="w"> </span>dbshell
+</code></pre></div>
+<h2 id="stateless-deployment-for-horizontal-scaling">Stateless Deployment for Horizontal Scaling<a class="headerlink" href="#stateless-deployment-for-horizontal-scaling" title="Permanent link">&para;</a></h2>
+<p>This image can also be configured to deploy Baserow in a horizontally scalable way.
+We recommend you first consider using our <code>baserow/backend</code> and <code>baserow/web-frontend</code>
+single service per container images
+on <a href="../install-with-k8s/">K8S</a>.
+However, if you just want to easily horizontally scale Baserow on something like
+AWS ECS or Google Cloud Run then the <code>baserow/baserow</code> can be used.</p>
+<h3 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h3>
+<p>To deploy this image in a horizontally scalable way you need to ensure all state is
+stored externally and not inside containers or volumes. To do this you will need a:</p>
+<ol>
+<li><a href="../supported/">A PostgreSQL Database</a></li>
+<li><a href="../supported/">A Redis</a></li>
+<li>One of the following services to upload and download user files from:<ol>
+<li>AWS S3 or compatable service</li>
+<li>Google Cloud Storage</li>
+<li>Azure Cloud Storage bucket</li>
+<li>Some sort of a shared volume that can be mounted into every single container</li>
+</ol>
+</li>
+</ol>
+<h3 id="recommended-environment-variables">Recommended Environment Variables<a class="headerlink" href="#recommended-environment-variables" title="Permanent link">&para;</a></h3>
+<p>With this image we recommend you set the following environment variables to scale it
+horizontally.</p>
+<blockquote>
+<p>See our <a href="../configuration/">Configuration Docs</a> for
+more details on the following environment variables.</p>
+</blockquote>
+<ol>
+<li>All relevant <code>DATABASE_*</code> env vars need to be set to point Baserow at an external
+   postgres</li>
+<li>All relevant <code>REDIS_*</code> env vars need to be set to point Baserow at an external redis</li>
+<li><code>DISABLE_VOLUME_CHECK=yes</code> needs to be set as this image has a
+   check for less technical users that <code>/baserow/data</code> is mounted to an external
+   volume on startup. Instead, you want your containers to be stateless and so this
+   check needs to be disabled.</li>
+<li><code>AWS_*/GC_*/AZURE_*</code> env vars need to be set connecting Baserow to an external
+   file storage service.<ol>
+<li><strong>Important</strong> The URLs of files uploaded to these buckets needs to be accessible
+   directly from browser of your Baserow users.</li>
+</ol>
+</li>
+<li>Ensure the containers always have CPU time allocated as they have periodic
+   background tasks triggered by an internal CRON service.</li>
+</ol>
+<h3 id="scaling-options">Scaling Options<a class="headerlink" href="#scaling-options" title="Permanent link">&para;</a></h3>
+<p>This image has the following "horizontal scaling" environment variables:</p>
+<ol>
+<li><code>BASEROW_AMOUNT_OF_GUNICORN_WORKERS</code> this controls the number of REST API
+   workers (the things that do most of the API work) per container.</li>
+<li><code>BASEROW_AMOUNT_OF_WORKERS</code> controls the number of background task celery
+   runners, these run realtime collaboration tasks, cleanup jobs and other slow tasks
+   like big file exports/imports.<ol>
+<li>If you are scaling many of these containers you probably only need one or two
+   of these background workers per container as they will all pool together and
+   collect background tasks submitted from any other container via Redis.</li>
+</ol>
+</li>
+<li>You can make the image launch fewer internal processes and hence reduce memory usage
+   by setting <code>BASEROW_RUN_MINIMAL=yes</code> AND <code>BASEROW_AMOUNT_OF_WORKERS=1</code>.<ol>
+<li>This will cause this image to only launch a single celery task
+   process which handles both the fast and slow queues. The consequence of this is
+   that there is only one process handling tasks per container and so a slow task
+   such as a snapshot of a large Baserow database might delay a fast queue task
+   like sending a realtime row updated signal to all users looking at a table.</li>
+</ol>
+</li>
+</ol>
+<h2 id="backing-up-and-restoring-baserow">Backing up and Restoring Baserow<a class="headerlink" href="#backing-up-and-restoring-baserow" title="Permanent link">&para;</a></h2>
+<p>Baserow stores all of its persistent data in the <code>/baserow/data</code> directory by default.
+We strongly recommend you mount a docker volume into this location to persist Baserows
+data so you do not lose it if you accidentally delete your Baserow container.</p>
+<blockquote>
+<p>The backup and restore operations discussed below are best done on a Baserow server
+which is not being used.</p>
+</blockquote>
+<h3 id="backup-all-of-baserow">Backup all of Baserow<a class="headerlink" href="#backup-all-of-baserow" title="Permanent link">&para;</a></h3>
+<p>Note, that this only works if you're not using an external PostgreSQL server. This will backup:</p>
+<ol>
+<li>Baserows postgres database (This will be a raw copy of the PGDATA dir and hence not
+   easily portable, see the section below on how to backup just the postgres db in a
+   more portable way.)</li>
+<li>The Caddy config and data, this will include any runtime config changes you might
+   have made to the caddy server and any SSL certificates/keys automatically setup by
+   Caddy.</li>
+<li>The Redis servers state. This is not strictly needed.</li>
+<li>This will backup user-uploaded files as well, but only if you've not configured external file storage.</li>
+</ol>
+<p>Otherwise if you remove the Baserow container you will lose all of your data.</p>
+<p>The command below assumes you have been running Baserow with the
+<code>-v baserow_data:/baserow/data</code> volume. Please change this argument accordingly if you
+have mounted the /baserow/data folder differently.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Ensure Baserow is stopped first before taking a backup.</span>
+docker<span class="w"> </span>stop<span class="w"> </span>baserow
+docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-v<span class="w"> </span>baserow_data:/baserow/data<span class="w"> </span>-v<span class="w"> </span><span class="nv">$PWD</span>:/backup<span class="w"> </span>ubuntu<span class="w"> </span>tar<span class="w"> </span>cvf<span class="w"> </span>/backup/backup.tar<span class="w"> </span>/baserow/data
+</code></pre></div>
+<h3 id="restore-all-of-baserow">Restore all of Baserow<a class="headerlink" href="#restore-all-of-baserow" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Ensure Baserow is stopped first before taking a backup.</span>
+docker<span class="w"> </span>stop<span class="w"> </span>baserow
+docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-v<span class="w"> </span>baserow_data:/baserow/data<span class="w"> </span>-v<span class="w"> </span><span class="nv">$PWD</span>:/backup<span class="w"> </span>ubuntu<span class="w"> </span>tar<span class="w"> </span>cvf<span class="w"> </span>/backup/backup.tar<span class="w"> </span>/baserow/data
+docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-v<span class="w"> </span>new_baserow_data_volume:/results<span class="w"> </span>-v<span class="w"> </span><span class="nv">$PWD</span>:/backup<span class="w"> </span>ubuntu<span class="w"> </span>bash<span class="w"> </span>-c<span class="w"> </span><span class="s2">"mkdir -p /results/ &amp;&amp; cd /results &amp;&amp; tar xvf /backup/backup.tar --strip 2"</span>
+<span class="c1"># Now launch Baserow using the new data volume with your normal run command:</span>
+docker<span class="w"> </span>run<span class="w"> </span>-v<span class="w"> </span>new_baserow_data_volume:/baserow/data<span class="w"> </span>.....
+</code></pre></div>
+<h3 id="backup-only-baserows-postgres-database">Backup only Baserow's Postgres database<a class="headerlink" href="#backup-only-baserows-postgres-database" title="Permanent link">&para;</a></h3>
+<p>Please ensure you only back-up a Baserow database which is not actively being used by a
+running Baserow instance or any other process which is making changes to the database.</p>
+<p>Baserow stores all of its own data in Postgres. To backup just this database you can run
+the command below.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># First read the help message for this command</span>
+docker<span class="w"> </span>run<span class="w"> </span>-it<span class="w"> </span>--rm<span class="w"> </span>-v<span class="w"> </span>baserow_data:/baserow/data<span class="w"> </span>ghcr.io/carneirofc/baserow/baserow:0.6.0<span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>backend-cmd-with-db<span class="w"> </span>backup<span class="w"> </span>--help
+
+<span class="c1"># Stop Baserow instance</span>
+docker<span class="w"> </span>stop<span class="w"> </span>baserow
+
+<span class="c1"># The command below backs up Baserow to the backups folder in the baserow_data volume:</span>
+docker<span class="w"> </span>run<span class="w"> </span>-it<span class="w"> </span>--rm<span class="w"> </span>-v<span class="w"> </span>baserow_data:/baserow/data<span class="w"> </span>ghcr.io/carneirofc/baserow/baserow:0.6.0<span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>backend-cmd-with-db<span class="w"> </span>backup<span class="w"> </span>-f<span class="w"> </span>/baserow/data/backups/backup.tar.gz
+
+<span class="c1"># Or backup to a file on your host instead run something like:</span>
+docker<span class="w"> </span>run<span class="w"> </span>-it<span class="w"> </span>--rm<span class="w"> </span>-v<span class="w"> </span>baserow_data:/baserow/data<span class="w"> </span>-v<span class="w"> </span><span class="nv">$PWD</span>:/baserow/host<span class="w"> </span><span class="se">\</span>
+<span class="w">   </span>ghcr.io/carneirofc/baserow/baserow:0.6.0<span class="w"> </span>backend-cmd-with-db<span class="w"> </span>backup<span class="w"> </span>-f<span class="w"> </span>/baserow/host/backup.tar.gz
+</code></pre></div>
+<h3 id="restore-only-baserows-postgres-database">Restore only Baserow's Postgres Database<a class="headerlink" href="#restore-only-baserows-postgres-database" title="Permanent link">&para;</a></h3>
+<p>When restoring Baserow you must ensure you are restoring into a brand new Baserow data
+volume.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Stop Baserow instance</span>
+docker<span class="w"> </span>stop<span class="w"> </span>baserow
+
+<span class="c1"># Restore Baserow backup from a new volume containing the backup:</span>
+docker<span class="w"> </span>run<span class="w"> </span>-it<span class="w"> </span>--rm<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-v<span class="w"> </span>old_baserow_data_volume_containing_the_backup_tar_gz:/baserow/old_data<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-v<span class="w"> </span>new_baserow_data_volume_to_restore_into:/baserow/data<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>ghcr.io/carneirofc/baserow/baserow:0.6.0<span class="w"> </span>backend-cmd-with-db<span class="w"> </span>restore<span class="w"> </span>-f<span class="w"> </span>/baserow/old_data/backup.tar.gz
+
+<span class="c1"># Or to restore from a file on your host instead run something like:</span>
+docker<span class="w"> </span>run<span class="w"> </span>-it<span class="w"> </span>--rm<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-v<span class="w"> </span>baserow_data:/baserow/data<span class="w"> </span>-v<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="k">$(</span><span class="nb">pwd</span><span class="k">)</span>:/baserow/host<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>ghcr.io/carneirofc/baserow/baserow:0.6.0<span class="w"> </span>backend-cmd-with-db<span class="w"> </span>restore<span class="w"> </span>-f<span class="w"> </span>/baserow/host/backup.tar.gz
+</code></pre></div>
+<h2 id="running-healthchecks-on-baserow">Running healthchecks on Baserow<a class="headerlink" href="#running-healthchecks-on-baserow" title="Permanent link">&para;</a></h2>
+<p>The Dockerfile already defines a HEALTHCHECK command which will be used by software that
+supports it. However if you wish to trigger a healthcheck yourself on a running Baserow
+container then you can run:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>baserow<span class="w"> </span>./baserow.sh<span class="w"> </span>backend-cmd<span class="w"> </span>backend-healthcheck
+<span class="c1"># Run the below to see all available healthchecks</span>
+docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>baserow<span class="w"> </span>./baserow.sh<span class="w"> </span>backend-cmd<span class="w"> </span><span class="nb">help</span>
+</code></pre></div>
+<h2 id="running-baserow-or-django-management-commands">Running Baserow or Django management commands<a class="headerlink" href="#running-baserow-or-django-management-commands" title="Permanent link">&para;</a></h2>
+<p>You can run management commands on an existing Baserow container called baserow by
+running the following to see the available commands:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>baserow<span class="w"> </span>./baserow.sh<span class="w"> </span>backend-cmd<span class="w"> </span>manage
+<span class="c1"># For example you could migrate the database of a running Baserow using:</span>
+docker<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>baserow<span class="w"> </span>./baserow.sh<span class="w"> </span>backend-cmd<span class="w"> </span>manage<span class="w"> </span>migrate
+</code></pre></div>
+<h2 id="customizing-baserow">Customizing Baserow<a class="headerlink" href="#customizing-baserow" title="Permanent link">&para;</a></h2>
+<h3 id="mounting-in-a-config-file">Mounting in a config file<a class="headerlink" href="#mounting-in-a-config-file" title="Permanent link">&para;</a></h3>
+<p>Baserow will automatically source any <code>.sh</code> files found in <code>/baserow/supervisor/env/</code> or
+<code>/baserow/data/env/</code> on startup. Use this to create a single config file to configure
+your Baserow like so:</p>
+<div class="highlight"><pre><span></span><code>custom_baserow_conf.sh<span class="w"> </span><span class="s">&lt;&lt; EOF</span>
+<span class="s">export BASEROW_PUBLIC_URL=todo</span>
+<span class="s">export BASEROW_CADDY_ADDRESSES=todo</span>
+
+<span class="s"># You can perform any Bash logic required in here to setup Baserow conditionally.</span>
+<span class="s">EOF</span>
+
+docker<span class="w"> </span>run<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--name<span class="w"> </span>baserow<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-e<span class="w"> </span><span class="nv">BASEROW_PUBLIC_URL</span><span class="o">=</span>http://localhost<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-v<span class="w"> </span><span class="nv">$PWD</span>/custom_baserow_conf.sh<span class="w"> </span>/baserow/supervisor/custom_baserow_conf.sh<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-v<span class="w"> </span>baserow_data:/baserow/data<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-p<span class="w"> </span><span class="m">80</span>:80<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-p<span class="w"> </span><span class="m">443</span>:443<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--restart<span class="w"> </span>unless-stopped<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>ghcr.io/carneirofc/baserow/baserow:0.6.0
+</code></pre></div>
+<p>Or you can just store it directly in the volume at <code>baserow_data/env</code> meaning it will be
+loaded whenever you mount in this data volume.</p>
+<h3 id="building-your-own-image-from-baserow">Building your own image from Baserow<a class="headerlink" href="#building-your-own-image-from-baserow" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">FROM</span><span class="w"> </span><span class="s">ghcr.io/carneirofc/baserow/baserow:0.6.0</span>
+
+<span class="c"># Any .sh files found in /baserow/supervisor/env/ will be sourced and loaded at startup</span>
+<span class="c"># useful for storing your own environment variable overrides.</span>
+<span class="k">COPY</span><span class="w"> </span>custom_env.sh<span class="w"> </span>/baserow/supervisor/env/custom_env.sh
+
+<span class="c"># Set the DATA_DIR environment variable to change where Baserow stores its persistent</span>
+<span class="c"># data. At startup Baserow will attempt to chown and setup this folder correctly.</span>
+<span class="k">ENV</span><span class="w"> </span><span class="nv">DATA_DIR</span><span class="o">=</span>/baserow/data
+
+<span class="c"># This image bakes in its own default user with UID/GID of 9999:9999 by default. To</span>
+<span class="c"># Set this to change the user Baserow will run its Caddy, backend, Celery and</span>
+<span class="c"># web-frontend services as. However be warned, the default entrypoint needs to be run</span>
+<span class="c"># as root so using USER may break things.</span>
+<span class="k">ENV</span><span class="w"> </span><span class="nv">DOCKER_USER</span><span class="o">=</span>baserow_docker_user
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.instant", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.88dd0f4e.min.js"></script>
+      
+    
+  </body>
+</html>

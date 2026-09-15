@@ -1,0 +1,4680 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://carneirofc.github.io/baserow/installation/configuration/">
+      
+      
+        <link rel="prev" href="../branding/">
+      
+      
+        <link rel="next" href="../../tutorials/understanding-baserow-formulas/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
+    
+    
+      
+        <title>Configuration - Baserow (carneirofc fork) Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6f8fc17f.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#configuring-baserow" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-header__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Baserow (carneirofc fork) Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Configuration
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/carneirofc/baserow" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    carneirofc/baserow
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../install-with-docker/" class="md-tabs__link">
+          
+  
+  Installation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tutorials/understanding-baserow-formulas/" class="md-tabs__link">
+          
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../apis/rest-api/" class="md-tabs__link">
+          
+  
+  API Usage
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../technical/introduction/" class="md-tabs__link">
+          
+  
+  Technical Overviews
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../development/development-environment/" class="md-tabs__link">
+          
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../plugins/introduction/" class="md-tabs__link">
+          
+  
+  Plugins
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../patterns/date-and-time/" class="md-tabs__link">
+          
+  
+  Patterns
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../runbooks/back-up-and-restore-baserow/" class="md-tabs__link">
+          
+  
+  Runbooks
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../testing/grid-view-test-plan/" class="md-tabs__link">
+          
+  
+  Testing
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../adr/001-phone-number-field-validation/" class="md-tabs__link">
+          
+  
+  Architecture Decision Records
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../other/external-resources/" class="md-tabs__link">
+          
+  
+  Other
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-nav__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Baserow (carneirofc fork) Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/carneirofc/baserow" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    carneirofc/baserow
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Installation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install-with-docker/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Docker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install-with-docker-compose/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Docker Compose
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install-on-aws/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    AWS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install-using-standalone-images/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Standalone images
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install-on-digital-ocean/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Digital Ocean Apps
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install-on-railway/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Railway
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install-on-ubuntu/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Ubuntu
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../third-party-hosting-providers/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Third party hosting providers
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install-with-helm/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Helm
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install-on-eks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Amazon EKS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../install-with-k8s/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Kubernetes (K8S)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../old-install-on-ubuntu/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DEPRECATED: Ubuntu (manual)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../supported/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Supported runtime dependencies
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../monitoring/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Monitoring
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sso-oidc/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SSO with OpenID Connect
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sso-rhbk-keycloak/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SSO with RHBK/Keycloak
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/sso-saml/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SSO with SAML
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workspace-access/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Managing workspace access
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data-destinations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Data destinations, backups & datalake exports
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../instance-settings/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Turning application types off instance-wide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../branding/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Branding
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Configuration
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Configuration
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#environment-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      Environment Variables
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Environment Variables">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#access-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Access Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backend-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Backend Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rate-limiting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Rate Limiting
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backend-database-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Backend Database Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#redis-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Redis Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#celery-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Celery Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#webhook-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Webhook Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backend-misc-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Backend Misc Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backup-and-contents-api-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Backup and contents API configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-sync-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data sync configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automation-workflow-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Automation workflow configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backend-application-builder-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Backend Application Builder Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-file-upload-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      User file upload Configuration
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="User file upload Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#filesystem-default" class="md-nav__link">
+    <span class="md-ellipsis">
+      Filesystem Default
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serving-user-files-when-stored-on-the-file-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      Serving User Files when stored on the file system
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#file-service-alternatives" class="md-nav__link">
+    <span class="md-ellipsis">
+      File Service alternatives
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cors-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      CORS Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-file-variables-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      User File Variables Table
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#email-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Email Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#web-frontend-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Web-frontend Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sso-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      SSO Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#captcha-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Captcha Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#baserowbaserow-image-only-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      baserow/baserow Image only Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plugin-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Plugin Configuration
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#instance-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Instance settings
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Tutorials
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorials
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/understanding-baserow-formulas/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Understanding Baserow Formulas
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/debugging-connection-issues/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Debugging Connection Issues
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/prefill-forms/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Prefill forms
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    API Usage
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            API Usage
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../apis/rest-api/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    REST API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../apis/web-socket-api/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    WebSocket API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../apis/deprecations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deprecations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Technical Overviews
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Technical Overviews
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/introduction/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Introduction
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/database-plugin/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Database plugin
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/formula-technical-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Formula Technical Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/undo-redo-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Undo Redo Technical Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/permissions-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Permissions handling Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/collapsible-grid-group-by/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Collapsible grid group-by
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/postgresql-locks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PostgreSQL locks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/realtime-presence/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Realtime presence
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/websockets/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    WebSockets
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technical/workspace-search/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Workspace search
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Development
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Development
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/development-environment/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Development environment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/running-the-dev-env-locally/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Running the Dev Environment Locally
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/running-the-dev-env-with-docker/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Running the Dev Environment with Docker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/directory-structure/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Directory structure
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/tools/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tools
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/code-quality/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code quality
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/debugging/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Debugging
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/create-a-template/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Create a template
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/justfile/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Justfile reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/intellij-setup/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    IntelliJ setup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/feature-flags/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Feature flags
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/e2e-testing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    E2E Testing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/metrics-and-logs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Metrics and Logs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/running-tests/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Backend Tests
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/building-and-running-production-images/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Building and running production images
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/ci-cd/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CI/CD
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/mcp-server/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MCP server
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/read-replicas/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Read replicas
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/vscode-setup/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    VS Code setup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/zed-setup/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Zed setup
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Plugins
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Plugins
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugins/introduction/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Plugin basics
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugins/boilerplate/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Plugin boilerplate (outdated)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugins/application-type/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Create application type
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugins/view-type/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Create database table view
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugins/view-filter-type/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Create database table view filter
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugins/field-type/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Create database table field
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugins/field-converter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Create a field converter
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugins/creation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Plugin creation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../plugins/installation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Plugin installation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Patterns
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Patterns
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../patterns/date-and-time/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Date and time
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../patterns/emails/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Emails
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../patterns/forms/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Forms
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../patterns/jobs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Jobs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../patterns/loading-animations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Loading animations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../patterns/row_history_from_action/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Row history from action
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Runbooks
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            Runbooks
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/back-up-and-restore-baserow/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Back up and restore Baserow
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/migrate-from-user-tables-database/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Migrate from user tables database
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/upgrade-embedded-postgres/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Upgrade embedded Postgres
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Testing
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            Testing
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../testing/grid-view-test-plan/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Grid view test plan
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../testing/mcp-test-plan/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    MCP test plan
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Architecture Decision Records
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            Architecture Decision Records
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adr/001-phone-number-field-validation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    001: Phone number field validation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adr/002-baserow-data-backups/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    002: Baserow data backups
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adr/004-baserow-metrics/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    004: Baserow metrics
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adr/005-in-app-database-access-grants/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    005: In-app database access grants
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Other
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            Other
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../other/external-resources/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    External resources
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#environment-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      Environment Variables
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Environment Variables">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#access-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Access Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backend-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Backend Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rate-limiting" class="md-nav__link">
+    <span class="md-ellipsis">
+      Rate Limiting
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backend-database-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Backend Database Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#redis-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Redis Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#celery-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Celery Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#webhook-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Webhook Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backend-misc-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Backend Misc Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backup-and-contents-api-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Backup and contents API configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-sync-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data sync configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automation-workflow-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Automation workflow configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backend-application-builder-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Backend Application Builder Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-file-upload-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      User file upload Configuration
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="User file upload Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#filesystem-default" class="md-nav__link">
+    <span class="md-ellipsis">
+      Filesystem Default
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serving-user-files-when-stored-on-the-file-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      Serving User Files when stored on the file system
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#file-service-alternatives" class="md-nav__link">
+    <span class="md-ellipsis">
+      File Service alternatives
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cors-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      CORS Issues
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-file-variables-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      User File Variables Table
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#email-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Email Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#web-frontend-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Web-frontend Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sso-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      SSO Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#captcha-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Captcha Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#baserowbaserow-image-only-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      baserow/baserow Image only Configuration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plugin-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Plugin Configuration
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#instance-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Instance settings
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/carneirofc/baserow/edit/develop/docs/installation/configuration.md" title="Edit this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="configuring-baserow">Configuring Baserow<a class="headerlink" href="#configuring-baserow" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p>Any questions, problems or suggestions with this guide? Ask a question in our
+<a href="https://github.com/carneirofc/baserow/issues">issue tracker</a> or contribute the change yourself at
+https://github.com/carneirofc/baserow/tree/develop/docs .</p>
+</blockquote>
+<p>The table below shows all available environment variables supported by Baserow.
+Some environment variables have different defaults, are not supported, are optional etc
+depending on how you installed Baserow. See the specific installation guides for how
+to set these environment variables.</p>
+<p>Not everything is configured this way. A handful of settings live in the database instead
+and are changed at runtime from the admin area — see
+<a href="#instance-settings">Instance settings</a> at the bottom of this page.</p>
+<h2 id="environment-variables">Environment Variables<a class="headerlink" href="#environment-variables" title="Permanent link">&para;</a></h2>
+<p>The installation methods referred to in the variable descriptions are:</p>
+<ul>
+<li><a href="../install-using-standalone-images/">The Standalone service images</a></li>
+<li><a href="../install-with-docker/">The baserow/baserow "all in one" image</a></li>
+<li><a href="../install-with-docker-compose/">The Docker compose install</a></li>
+</ul>
+<blockquote>
+<p>Variables marked with <em>Internal</em> should only be changed if you know what you are
+doing.</p>
+</blockquote>
+<h3 id="access-configuration">Access Configuration<a class="headerlink" href="#access-configuration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BASEROW_PUBLIC_URL</td>
+<td>The public URL or IP that will be used to access the Baserow tool. Always should start with http:// https:// even if accessing via an IP address. If you are accessing Baserow over a non-standard (80) http port then make sure you append :YOUR_PORT to this variable.<br><br>Setting this will override PUBLIC_BACKEND_URL and PUBLIC_WEB_FRONTEND_URL with BASEROW_PUBLIC_URL’s value.<br>Set to empty to disable default of http://localhost in the compose to instead set PUBLIC_X_URLs. Note that other URL will be treated as a published application builder domains.</td>
+<td>http://localhost</td>
+</tr>
+<tr>
+<td>BASEROW_EXTRA_PUBLIC_URLS</td>
+<td>An optional comma-separated list of additional public URLs where Baserow tool will be accessible. These URLs will have the same behavior as BASEROW_PUBLIC_URL (not treated as published applications). The difference is that <code>BASEROW\_PUBLIC\_URL</code> is used in email communication. This is useful when running Baserow behind multiple domain names or when using different URLs for different network access (e.g., both public and private). Example: <code>http://app.example.com,https://baserow.company.local</code>.</td>
+<td></td>
+</tr>
+<tr>
+<td>BASEROW_CADDY_ADDRESSES</td>
+<td><strong>Not supported by standalone images.</strong> A comma separated list of supported Caddy addresses( <a href="https://caddyserver.com/docs/caddyfile/concepts#addresses">https://caddyserver.com/docs/caddyfile/concepts#addresses</a>). If a https:// url is provided the Caddy reverse proxy will attempt to <a href="https://caddyserver.com/docs/automatic-https">automatically setup HTTPS</a> with lets encrypt for you. If you wish your Baserow to still be accessible on localhost and you set this value away from the default of :80 ensure you append “,<a href="http://localhost/">http://localhost</a>”</td>
+<td>:80</td>
+</tr>
+<tr>
+<td>PUBLIC_BACKEND_URL</td>
+<td>Please use BASEROW_PUBLIC_URL unless you are using the standalone baserow/backend or baserow/web-frontend images. The publicly accessible URL of the backend. Should include the port if non-standard. Ensure BASEROW_PUBLIC_URL is set to an empty value to use this variable in the compose setup.</td>
+<td>$BASEROW_PUBLIC_URL, http://localhost:8000/ in the standalone images.</td>
+</tr>
+<tr>
+<td>PUBLIC_WEB_FRONTEND_URL</td>
+<td>Please use BASEROW_PUBLIC_URL unless you are using the standalone baserow/backend or baserow/web-frontend images. The publicly accessible URL of the web-frontend. Should include the port if non-standard. Ensure BASEROW_PUBLIC_URL is set to an empty value to use this variable in the compose setup.</td>
+<td>$BASEROW_PUBLIC_URL, http://localhost:3000/ in the standalone images.</td>
+</tr>
+<tr>
+<td>BASEROW_EMBEDDED_SHARE_URL</td>
+<td>Optional URL for public sharing and email links that can be used if Baserow is used inside an iframe on a different URL.</td>
+<td>$PUBLIC_WEB_FRONTEND_URL</td>
+</tr>
+<tr>
+<td>WEB_FRONTEND_PORT</td>
+<td>The HTTP port that is being used to access Baserow using. Only used by the docker-compose files.</td>
+<td>Only used by the docker-compose.yml files, defaults to 80 but prior to 1.9 defaulted to 3000.</td>
+</tr>
+<tr>
+<td>BASEROW_EXTRA_ALLOWED_HOSTS</td>
+<td>An optional comma separated list of hostnames which will be added to the Baserow's Django backend <a href="https://docs.djangoproject.com/en/4.0/ref/settings/#allowed-hosts">ALLOWED_HOSTS</a> setting. In most situations you will not need to set this as the hostnames from BASEROW_PUBLIC_URL or PUBLIC_BACKEND_URL will be added to the ALLOWED_HOSTS automatically. This is only needed if you need to allow additional different hosts to be able to access your Baserow.</td>
+<td></td>
+</tr>
+<tr>
+<td>PRIVATE_BACKEND_URL</td>
+<td><strong>Only change this with standalone images.</strong> This is the URL used when the web-frontend server directly queries the backend itself when doing server side rendering. As such not only the browser, but also<br>the web-frontend server should be able to make HTTP requests to the backend. The web-frontend nuxt server might not have access to the `PUBLIC_BACKEND_URL` or there could be a more direct route, (e.g. from container to container instead of via the internet). For example if the web-frontend and backend were containers on the same docker network this could be set to http://backend:8000.</td>
+<td></td>
+</tr>
+<tr>
+<td>BASEROW_CADDY_GLOBAL_CONF</td>
+<td><strong>Not supported by standalone images.</strong> Will be substituted into the Caddyfiles global config section. Set to “debug” to enable Caddies debug logging.</td>
+<td></td>
+</tr>
+<tr>
+<td>BASEROW_MAX_IMPORT_FILE_SIZE_MB</td>
+<td>The maximum file size in mb you can import to create a new table. Default 512Mb.</td>
+<td>512</td>
+</tr>
+</tbody>
+</table>
+<h3 id="backend-configuration">Backend Configuration<a class="headerlink" href="#backend-configuration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SECRET_KEY</td>
+<td>The Secret key used by Django for cryptographic signing such as generating secure password reset links and managing sessions. See <a href="https://docs.djangoproject.com/en/3.2/ref/settings/#std:setting-SECRET_KEY">https://docs.djangoproject.com/en/3.2/ref/settings/#std:setting-SECRET_KEY</a> for more details</td>
+<td>Required to be set by you in the docker-compose and standalone installs. Automatically generated by the baserow/baserow image if not provided and stored in /baserow/data/.secret.</td>
+</tr>
+<tr>
+<td>SECRET_KEY_FILE</td>
+<td><strong>Only supported by the <code>baserow/baserow</code> image</strong> If set Baserow will attempt to read the above SECRET_KEY from this file location instead.</td>
+<td></td>
+</tr>
+<tr>
+<td>BASEROW_JWT_SIGNING_KEY</td>
+<td>The signing key that is used to sign the content of generated tokens. For HMAC signing, this should be a random string with at least as many bits of data as is required by the signing protocol. See <a href="https://django-rest-framework-simplejwt.readthedocs.io/en/latest/settings.html#signing-key">https://django-rest-framework-simplejwt.readthedocs.io/en/latest/settings.html#signing-key</a> for more details</td>
+<td>Recommended to be set by you in the docker-compose and standalone installs (default to the SECRET_KEY). Automatically generated by the baserow/baserow image if not provided and stored in /baserow/data/.jwt_signing_key.</td>
+</tr>
+<tr>
+<td>BASEROW_ACCESS_TOKEN_LIFETIME_MINUTES</td>
+<td>The number of minutes which specifies how long access tokens are valid. This will be converted in a timedelta value and added to the current UTC time during token generation to obtain the token’s default “exp” claim value.</td>
+<td>10 minutes.</td>
+</tr>
+<tr>
+<td>BASEROW_REFRESH_TOKEN_LIFETIME_HOURS</td>
+<td>The number of hours which specifies how long refresh tokens are valid. This will be converted in a timedelta value and added to the current UTC time during token generation to obtain the token’s default “exp” claim value.</td>
+<td>168 hours (7 days).</td>
+</tr>
+<tr>
+<td>BASEROW_CACHE_TTL_SECONDS</td>
+<td>How long (in seconds) to cache lookups of authenticated users, database tokens, instance-wide settings, and active licenses in Redis, to speed up requests and reduce database load. Set to 0 to disable these caches entirely.</td>
+<td>0 (disabled)</td>
+</tr>
+<tr>
+<td>BASEROW_BACKEND_LOG_LEVEL</td>
+<td>The default log level used by the backend, supports ERROR, WARNING, INFO, DEBUG, TRACE</td>
+<td>INFO</td>
+</tr>
+<tr>
+<td>BASEROW_BACKEND_DATABASE_LOG_LEVEL</td>
+<td>The default log level used for database related logs in the backend. Supports the same values as the normal log level. If you also enable BASEROW_BACKEND_DEBUG and set this to DEBUG you will be able to see all SQL queries in the backend logs.</td>
+<td>ERROR</td>
+</tr>
+<tr>
+<td>BASEROW_DJANGO_REQUEST_LOG_LEVEL</td>
+<td>The log level for the <code>django.request</code> logger. Default is ERROR to suppress noisy 429 responses under heavy throttling. Supports ERROR, WARNING, INFO, DEBUG.</td>
+<td>ERROR</td>
+</tr>
+<tr>
+<td>BASEROW_BACKEND_DEBUG</td>
+<td>If set to “on” then will enable the non production safe debug mode for the Baserow django backend. Only use this if you're using Baserow in development mode. Note that this causes any installed licenses to deactivate and prevent you from adding a new license.</td>
+<td>off</td>
+</tr>
+<tr>
+<td>BASEROW_AMOUNT_OF_GUNICORN_WORKERS</td>
+<td>The number of concurrent worker processes used by the Baserow backend gunicorn server to process incoming requests</td>
+<td></td>
+</tr>
+<tr>
+<td>BASEROW_AIRTABLE_IMPORT_SOFT_TIME_LIMIT</td>
+<td>The maximum amount of seconds an Airtable migration import job can run.</td>
+<td>1800 seconds - 30 minutes</td>
+</tr>
+<tr>
+<td>INITIAL_TABLE_DATA_LIMIT</td>
+<td>The amount of rows that can be imported when creating a table. Defaults to empty which means unlimited rows.</td>
+<td></td>
+</tr>
+<tr>
+<td>BASEROW_ROW_PAGE_SIZE_LIMIT</td>
+<td>The maximum number of rows that can be requested at once.</td>
+<td>200</td>
+</tr>
+<tr>
+<td>BASEROW_MAX_FIELD_TEXT_LENGTH</td>
+<td>The maximum number of characters accepted when writing a text based field value (single line text, long text, URL, and AI fields with a text output) via the API or web frontend. Existing longer values remain readable.</td>
+<td>1000000</td>
+</tr>
+<tr>
+<td>BASEROW_FORMULA_RANGE_MAX_ITEMS</td>
+<td>The maximum number of items the <code>range</code> runtime formula function can generate. Prevents a small formula from producing an unbounded array.</td>
+<td>10000</td>
+</tr>
+<tr>
+<td>BASEROW_INTEGRATION_LOCAL_BASEROW_BATCH_OPERATION_SIZE_LIMIT</td>
+<td>Controls how many rows can be created, updated, or deleted at once using Local Baserow batch workflow actions.</td>
+<td>1000</td>
+</tr>
+<tr>
+<td>BASEROW_FILE_UPLOAD_SIZE_LIMIT_MB</td>
+<td>The max file size in MB allowed to be uploaded by users into a Baserow File Field.</td>
+<td>1048576 (1 TB or 1024*1024)</td>
+</tr>
+<tr>
+<td>BASEROW_FILE_UPLOAD_ACTIVE_CONTENT_POLICY</td>
+<td>Controls how uploads with active-content extensions (<code>.html</code>, <code>.htm</code>, <code>.xhtml</code>, <code>.xml</code>, <code>.svg</code>, <code>.svgz</code>) or MIME types (<code>text/html</code>, <code>text/xml</code>, <code>application/xml</code>, <code>application/xhtml+xml</code>, <code>image/svg+xml</code>) are handled. Set to <code>download</code> to allow them but store them as <code>application/octet-stream</code> without image previews. Set to <code>block</code> to reject them.</td>
+<td>download</td>
+</tr>
+<tr>
+<td>BATCH_ROWS_SIZE_LIMIT</td>
+<td>Controls how many rows can be created, deleted or updated at once using the batch endpoints.</td>
+<td>200</td>
+</tr>
+<tr>
+<td>BATCH_ROWS_SIZE_LIMIT</td>
+<td>Controls how many rows can be created, deleted or updated at once using the batch endpoints.</td>
+<td>200</td>
+</tr>
+<tr>
+<td>FIELD_RULE_ROWS_LIMIT</td>
+<td>Used in field rule operations to distinguish between small tables, where per-row results can be emitted, or big tables, where a full table update should be emitted.</td>
+<td>200 (if not provided, <code>BATCH_ROWS_SIZE_LIMIT</code> value will be used)</td>
+</tr>
+<tr>
+<td>BASEROW_MAX_SNAPSHOTS_PER_GROUP</td>
+<td>Controls how many application snapshots can be created per group.</td>
+<td>-1 (unlimited)</td>
+</tr>
+<tr>
+<td>BASEROW_SNAPSHOT_EXPIRATION_TIME_DAYS</td>
+<td>Controls when snapshots expire, set in number of days. Expired snapshots will be automatically deleted.</td>
+<td>360</td>
+</tr>
+<tr>
+<td>BASEROW_CELERY_SEARCH_UPDATE_HARD_TIME_LIMIT</td>
+<td>How long the Postgres full-text search Celery tasks can run for being killed.</td>
+<td>1800</td>
+</tr>
+<tr>
+<td>BASEROW_USE_PG_FULLTEXT_SEARCH</td>
+<td>By default, Baserow will use Postgres full-text as its search backend. If the product is installed on a system with limited disk space, and less accurate results / degraded search performance is acceptable, then switch this setting off by setting it to false.</td>
+<td>true</td>
+</tr>
+<tr>
+<td>BASEROW_PG_FULLTEXT_SEARCH_UPDATE_DATA_THROTTLE_SECONDS</td>
+<td>The delay before triggering the task that updates full-text search data. A higher value reduces how often the task runs when many changes occur but delays how soon newly modified values become searchable. Only one update task will run per table. The value is in seconds</td>
+<td>2 (seconds)</td>
+</tr>
+<tr>
+<td>BASEROW_ASGI_HTTP_MAX_CONCURRENCY</td>
+<td>Specifies a limit for concurrent requests handled by a single gunicorn worker. The default is: no limit.</td>
+<td></td>
+</tr>
+<tr>
+<td>BASEROW_IMPORT_EXPORT_RESOURCE_REMOVAL_AFTER_DAYS</td>
+<td>Specifies the number of days after which an import/export resource will be automatically deleted.</td>
+<td>5 (days)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="rate-limiting">Rate Limiting<a class="headerlink" href="#rate-limiting" title="Permanent link">&para;</a></h3>
+<p>Baserow can throttle the number of concurrent requests a single user (or, optionally, a single anonymous IP) is allowed to have in flight at the same time. When enabled, excess requests are rejected immediately with a <code>429 Too Many Requests</code> response — they do not wait for a slot to free up. Repeat offenders can additionally be added to a short-lived blacklist that is consulted by a lightweight middleware before authentication runs, so that further requests are rejected with zero DB / DRF overhead.</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BASEROW_MAX_CONCURRENT_USER_REQUESTS</td>
+<td>Limits the number of concurrent requests per authenticated user. When set to a value greater than 0, enables the concurrent-request throttle. Set to -1 or leave unset to disable throttling. Can be overridden on a per-user basis by setting the <code>concurrency_limit</code> field on the user's profile, which takes precedence over this value when greater than 0.</td>
+<td>-1 (disabled)</td>
+</tr>
+<tr>
+<td>BASEROW_CONCURRENT_USER_REQUESTS_THROTTLE_TIMEOUT</td>
+<td>How long (in seconds) an in-flight request stays counted toward the concurrent-request throttle before it is treated as stale and evicted automatically.</td>
+<td>180</td>
+</tr>
+<tr>
+<td>BASEROW_THROTTLE_BLACKLIST_TTL_SECONDS</td>
+<td>Cooldown (in seconds) applied to denied requests. When greater than 0, a denied request blacklists the token (or IP, if enabled) for that many seconds; subsequent requests are rejected by the throttle-blacklist middleware with zero DB/DRF overhead, matching DRF's standard <code>Throttled</code> response shape (with <code>Retry-After</code>). When set to 0 or a negative value (default), no blacklist is kept and no <code>Retry-After</code> is emitted. Only takes effect when <code>BASEROW_MAX_CONCURRENT_USER_REQUESTS</code> is enabled.</td>
+<td>-1 (disabled)</td>
+</tr>
+<tr>
+<td>BASEROW_THROTTLE_IP_ENABLED</td>
+<td>When "true", anonymous requests are included in the concurrent-request throttle using the client IP as the key. Without this flag, anonymous requests bypass the throttle entirely. Independent of the blacklist: when the blacklist is also enabled (<code>BASEROW_THROTTLE_BLACKLIST_TTL_SECONDS</code> &gt; 0) the IP-blacklist middleware will additionally reject repeat-offender IPs before they reach the rest of the stack. Only takes effect when <code>BASEROW_MAX_CONCURRENT_USER_REQUESTS</code> is enabled.</td>
+<td>false</td>
+</tr>
+</tbody>
+</table>
+<h3 id="backend-database-configuration">Backend Database Configuration<a class="headerlink" href="#backend-database-configuration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DATABASE_HOST</td>
+<td>The hostname of the postgres database Baserow will use to store its data in.</td>
+<td>Defaults to db in the standalone and compose installs. If not provided in the `baserow/baserow` install then the embedded Postgres will be setup and used.</td>
+</tr>
+<tr>
+<td>DATABASE_USER</td>
+<td>The username of the database user Baserow will use to connect to the database at DATABASE_HOST</td>
+<td>baserow</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>DATABASE_PORT</td>
+<td>The port Baserow will use when trying to connect to the postgres database at DATABASE_HOST</td>
+<td>5432</td>
+</tr>
+<tr>
+<td>DATABASE_NAME</td>
+<td>The database name Baserow will use to store data in.</td>
+<td>baserow</td>
+</tr>
+<tr>
+<td>DATABASE_PASSWORD</td>
+<td>The password of DATABASE_USER on the postgres server at DATABASE_HOST</td>
+<td>Required to be set by you in the docker-compose and standalone installs. Automatically generated by the baserow/baserow image if not provided and stored in /baserow/data/.pgpass.</td>
+</tr>
+<tr>
+<td>DATABASE_PASSWORD_FILE</td>
+<td><strong>Only supported by the <code>baserow/baserow</code> image</strong> If set Baserow will attempt to read the above DATABASE_PASSWORD from this file location instead.</td>
+<td></td>
+</tr>
+<tr>
+<td>DATABASE_OPTIONS</td>
+<td>Optional extra options as a JSON formatted string to use when connecting to the database, see <a href="https://docs.djangoproject.com/en/3.2/ref/settings/#std-setting-OPTIONS">this documentation</a> for more details.</td>
+<td></td>
+</tr>
+<tr>
+<td>DATABASE_URL</td>
+<td>Alternatively to setting the individual DATABASE_ parameters above instead you can provide one standard postgres connection string in the format of: postgresql://[user[:password]@][netloc][:port][/dbname][?param1=value1&amp;…]. Please note this will completely override all other DATABASE_* settings and ignore them.</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>DATABASE_READ_{n}_HOST</td>
+<td>Optionally provide database information of read-only replicas. Format is the same as the normal database configuration. Replace {n} with 1, 2, 3, etc for every read-only replica that is available.</td>
+<td>5432</td>
+</tr>
+<tr>
+<td>DATABASE_READ_{n}_USER</td>
+<td></td>
+<td>5432</td>
+</tr>
+<tr>
+<td>DATABASE_READ_{n}_PORT</td>
+<td></td>
+<td>5432</td>
+</tr>
+<tr>
+<td>DATABASE_READ_{n}_NAME</td>
+<td></td>
+<td>baserow</td>
+</tr>
+<tr>
+<td>DATABASE_READ_{n}_PASSWORD</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>DATABASE_READ_{n}_OPTIONS</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>DATABASE_READ_{n}_URL</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>MIGRATE_ON_STARTUP</td>
+<td>If set to “true” when the Baserow backend service starts up it will automatically apply database migrations. Set to any other value to disable. If you disable this then you must remember to manually apply the database migrations when upgrading Baserow to a new version.</td>
+<td>true</td>
+</tr>
+<tr>
+<td>BASEROW_TRIGGER_SYNC_TEMPLATES_AFTER_MIGRATION</td>
+<td>If set to “true” when after a migration Baserow will automatically sync all builtin Baserow templates in the background. If you are using a postgres database which is constrained to fewer than 10000 rows then we recommend you disable this as the Baserow templates will go over that row limit. To disable this set to any other value than “true”</td>
+<td>true</td>
+</tr>
+<tr>
+<td>BASEROW_SYNC_TEMPLATES_TIME_LIMIT</td>
+<td>The number of seconds before the background sync templates job will timeout if not yet completed.</td>
+<td>1800</td>
+</tr>
+<tr>
+<td>SYNC_TEMPLATES_ON_STARTUP</td>
+<td><strong>Deprecated please use BASEROW_TRIGGER_SYNC_TEMPLATES_AFTER_MIGRATION</strong> If provided has the same effect of BASEROW_TRIGGER_SYNC_TEMPLATES_AFTER_MIGRATION for backwards compatibility reasons. If BASEROW_TRIGGER_SYNC_TEMPLATES_AFTER_MIGRATION is set it will override this value.</td>
+<td>true</td>
+</tr>
+<tr>
+<td>DONT_UPDATE_FORMULAS_AFTER_MIGRATION</td>
+<td>Baserow’s formulas have an internal version number. When upgrading Baserow if the formula language has also changed then after the database migration has run Baserow will also automatically recalculate all formulas if they have a different version. Set this to any non empty value to disable this automatic update if you would prefer to run the update_formulas management command manually yourself. Formulas might break if you forget to do so after an upgrade of Baserow until and so it is recommended to leave this empty.</td>
+<td></td>
+</tr>
+<tr>
+<td>POSTGRES_STARTUP_CHECK_ATTEMPTS</td>
+<td>When Baserow's Backend service starts up it first checks to see if the postgres database is available. It checks 5 times by default, after which if it still has not connected it will crash.</td>
+<td>5</td>
+</tr>
+<tr>
+<td>BASEROW_PREVENT_POSTGRESQL_DATA_SYNC_CONNECTION_TO_DATABASE</td>
+<td>If true, then it's impossible to connect to the Baserow PostgreSQL database using the PostgreSQL data sync.</td>
+<td>true</td>
+</tr>
+<tr>
+<td>BASEROW_POSTGRESQL_DATA_SYNC_BLACKLIST</td>
+<td>Optionally provide a comma separated list of hostnames that the Baserow PostgreSQL data sync can't connect to. (e.g. "localhost,baserow.io")</td>
+<td></td>
+</tr>
+<tr>
+<td>BASEROW_CONN_MAX_AGE</td>
+<td>How long (in seconds) a database connection may be reused. Set to 0 to close connections after each request. With WSGI, values &gt; 0 can improve performance. With ASGI, use caution as persistent connections can multiply across async coroutines. Applied to all configured databases (primary and read replicas).</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<h3 id="redis-configuration">Redis Configuration<a class="headerlink" href="#redis-configuration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>REDIS_HOST</td>
+<td>The hostname of the redis database Baserow will use for caching and real time collaboration.</td>
+<td>Defaults to redis in the standalone and compose installs. If not provided in the `baserow/baserow` install then the embedded Redis will be setup and used.</td>
+</tr>
+<tr>
+<td>REDIS_PORT</td>
+<td>The port Baserow will use when trying to connect to the redis database at REDIS_HOST</td>
+<td>6379</td>
+</tr>
+<tr>
+<td>REDIS_USER</td>
+<td>The username of the redis user Baserow will use to connect to the redis at REDIS_HOST</td>
+<td></td>
+</tr>
+<tr>
+<td>REDIS_PASSWORD</td>
+<td>The password of REDIS_USER on the redis server at REDIS_HOST</td>
+<td>Required to be set by you in the docker-compose and standalone installs. Automatically generated by the baserow/baserow image if not provided and stored in /baserow/data/.redispass.</td>
+</tr>
+<tr>
+<td>REDIS_PASSWORD_FILE</td>
+<td><strong>Only supported by the <code>baserow/baserow</code> image</strong> If set Baserow will attempt to read the above REDIS_PASSWORD from this file location instead.</td>
+<td></td>
+</tr>
+<tr>
+<td>REDIS_PROTOCOL</td>
+<td>The redis protocol used when connecting to the redis at REDIS_HOST Can either be ‘redis’ or ‘rediss’.</td>
+<td>redis</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>REDIS_URL</td>
+<td>Alternatively to setting the individual REDIS_ parameters above instead you can provide one standard redis connection string in the format of: redis://:[password]@[redishost]:[redisport]</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="celery-configuration">Celery Configuration<a class="headerlink" href="#celery-configuration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BASEROW_CELERY_BEAT_STARTUP_DELAY</td>
+<td>The number of seconds the celery beat worker sleeps before starting up.</td>
+<td>15</td>
+</tr>
+<tr>
+<td>BASEROW_CELERY_BEAT_DEBUG_LEVEL</td>
+<td>The logging level for the celery beat service.</td>
+<td>INFO</td>
+</tr>
+<tr>
+<td>BASEROW_AMOUNT_OF_WORKERS</td>
+<td>The number of concurrent celery worker processes used to process asynchronous tasks. If not set will default to the number of available cores. Each celery process uses memory, to reduce Baserow's memory footprint consider setting and reducing this variable.</td>
+<td>1 for the All-in-one, Heroku and Cloudron images. Defaults to empty and hence the number of available cores in the standalone images.</td>
+</tr>
+<tr>
+<td>BASEROW_RUN_MINIMAL</td>
+<td>When BASEROW_AMOUNT_OF_WORKERS is 1 and this is set to a non empty value Baserow will not run the export-worker but instead run both the celery export and normal tasks on the normal celery worker. Set this to lower the memory usage of Baserow in expense of performance.</td>
+<td></td>
+</tr>
+<tr>
+<td>BASEROW_MAX_HEALTHY_CELERY_QUEUE_SIZE</td>
+<td>Used as maximum values in the <code>/api/_health/celery-queue/?queue=celery&amp;queue=export</code> endpoint. If the number of tasks in the queue exceeds this value, then the health check fails.</td>
+<td>10</td>
+</tr>
+</tbody>
+</table>
+<h3 id="webhook-configuration">Webhook Configuration<a class="headerlink" href="#webhook-configuration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BASEROW_WEBHOOKS_ALLOW_PRIVATE_ADDRESS</td>
+<td>If set to any non empty value allows webhooks to access all addresses. Enabling this flag is a security risk as it will allow users to send webhook requests to internal addresses on your network. Instead consider using the three variables below first to allow access to only some internal network hostnames or IPs.</td>
+<td></td>
+</tr>
+<tr>
+<td>BASEROW_WEBHOOKS_URL_REGEX_BLACKLIST</td>
+<td><strong>Disabled if BASEROW_WEBHOOKS_ALLOW_PRIVATE_ADDRESS is set.</strong> List of comma seperated regexes used to validate user configured webhook URLs, will show the user an error if any regexes match their webhook URL and prevent it from running. Applied before and so supersedes BASEROW_WEBHOOKS_IP_WHITELIST and BASEROW_WEBHOOKS_IP_BLACKLIST. Do not include any schema like <code>http://</code>, <code>https://</code> as regexes will only be run against the hostname/IP of the user configured URL. For example set this to <code>^(?!(www\.)?allowedhost\.com).*</code> to block all hostnames and IPs other than <code>allowedhost.com</code> or <code>www.allowedhost.com</code>.</td>
+<td></td>
+</tr>
+<tr>
+<td>BASEROW_WEBHOOKS_IP_WHITELIST</td>
+<td><strong>Disabled if BASEROW_WEBHOOKS_ALLOW_PRIVATE_ADDRESS is set.</strong> List of comma seperated IP addresses or ranges that webhooks will be <strong>allowed</strong> to use after the webhook URL has been resolved to an IP using DNS. Only checked if the URL passes the BASEROW_WEBHOOKS_URL_REGEX_BLACKLIST. Takes precedence over BASEROW_WEBHOOKS_IP_BLACKLIST meaning that a whitelisted IP will always be let through regardless of the ranges in BASEROW_WEBHOOKS_IP_BLACKLIST. So use BASEROW_WEBHOOKS_IP_WHITELIST to punch holes the ranges in BASEROW_WEBHOOKS_IP_BLACKLIST, and not the other way around. Accepts a string in the format: "127.0.0.1/32,192.168.1.1/32"</td>
+<td></td>
+</tr>
+<tr>
+<td>BASEROW_WEBHOOKS_IP_BLACKLIST</td>
+<td><strong>Disabled if BASEROW_WEBHOOKS_ALLOW_PRIVATE_ADDRESS is set.</strong> List of comma seperated IP addresses or ranges that webhooks will be <strong>denied</strong> from using after the URL has been resolved to an IP using DNS. Only checked if the URL passes the BASEROW_WEBHOOKS_URL_REGEX_BLACKLIST. BASEROW_WEBHOOKS_IP_WHITELIST supersedes any ranges specified in this variable. Accepts a string in the format: "127.0.0.1/32,192.168.1.1/32"</td>
+<td></td>
+</tr>
+<tr>
+<td>BASEROW_WEBHOOKS_URL_CHECK_TIMEOUT_SECS</td>
+<td><strong>Disabled if BASEROW_WEBHOOKS_ALLOW_PRIVATE_ADDRESS is set.</strong> How long to wait before timing out and returning an error when checking if an url can be accessed for a webhook.</td>
+<td>10 seconds</td>
+</tr>
+<tr>
+<td>BASEROW_WEBHOOKS_MAX_CONSECUTIVE_TRIGGER_FAILURES</td>
+<td>The number of consecutive trigger failures that can occur before a webhook is disabled.</td>
+<td>8</td>
+</tr>
+<tr>
+<td>BASEROW_WEBHOOKS_MAX_RETRIES_PER_CALL</td>
+<td>The max number of retries per webhook call.</td>
+<td>8</td>
+</tr>
+<tr>
+<td>BASEROW_WEBHOOKS_MAX_PER_TABLE</td>
+<td>The max number of webhooks per Baserow table.</td>
+<td>20</td>
+</tr>
+<tr>
+<td>BASEROW_WEBHOOKS_MAX_CALL_LOG_ENTRIES</td>
+<td>The maximum number of call log entries stored per webhook.</td>
+<td>10</td>
+</tr>
+<tr>
+<td>BASEROW_WEBHOOKS_REQUEST_TIMEOUT_SECONDS</td>
+<td>How long to wait on making the webhook request before timing out.</td>
+<td>5</td>
+</tr>
+<tr>
+<td>BASEROW_MAX_WEBHOOK_CALLS_IN_QUEUE_PER_WEBHOOK</td>
+<td>Maximum number of calls that can be in the webhook's queue. Can be useful to limit when massive numbers of webhooks are triggered due an automation loop. If not set or set to <code>0</code>, then there is no limit.</td>
+<td>0</td>
+</tr>
+<tr>
+<td>BASEROW_WEBHOOKS_BATCH_LIMIT</td>
+<td>This limit applies to all webhook_event_types that split large payloads into multiple batches. Each batch is a separate request with the same event_id and an incremental batch_id. This parameter sets the maximum number of batches per event. Set to 0 for unlimited batches.</td>
+<td>5</td>
+</tr>
+<tr>
+<td>BASEROW_WEBHOOK_ROWS_ENTER_VIEW_BATCH_SIZE</td>
+<td>Defines the number of rows that can be sent in a single webhook call of type <code>view.rows_entered</code>. This is used to prevent the webhook call from being too large and potentially causing issues while serializing the data or sending it over the network to the webhook endpoint.</td>
+<td>200</td>
+</tr>
+</tbody>
+</table>
+<h3 id="backend-misc-configuration">Backend Misc Configuration<a class="headerlink" href="#backend-misc-configuration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BASEROW_ENABLE_SECURE_PROXY_SSL_HEADER</td>
+<td>Set to any non-empty value to ensure Baserow generates https:// next links provided by paginated API endpoints. Baserow will still work correctly if not enabled, this is purely for giving the correct https url for clients of the API. If you have setup Baserow to use Caddy's auto HTTPS or you have put Baserow behind<br>a reverse proxy which:<br><em> Handles HTTPS<br></em> Strips the X-Forwarded-Proto header from all incoming requests.<br>* Sets the X-Forwarded-Proto header and sends it to Baserow.<br>Then you can safely set BASEROW_ENABLE_SECURE_PROXY_SSL_HEADER=yes to ensure Baserow<br>generates https links for pagination correctly.<br></td>
+<td></td>
+</tr>
+<tr>
+<td>ADDITIONAL_APPS</td>
+<td>A comma separated list of additional django applications to add to the INSTALLED_APPS django setting</td>
+<td></td>
+</tr>
+<tr>
+<td>HOURS_UNTIL_TRASH_PERMANENTLY_DELETED</td>
+<td>Items from the trash will be permanently deleted after this number of hours.</td>
+<td></td>
+</tr>
+<tr>
+<td>DISABLE_ANONYMOUS_PUBLIC_VIEW_WS_CONNECTIONS</td>
+<td>When sharing views publicly a websocket connection is opened to provide realtime updates to viewers of the public link. To disable this set any non empty value. When disabled publicly shared links will need to be refreshed to see any updates to the view.</td>
+<td></td>
+</tr>
+<tr>
+<td>BASEROW_PRESENCE_VISIBLE_USERS</td>
+<td>Controls realtime user presence in the grid header. The value sets how many user badges are shown before an overflow counter appears; set to 0 to disable presence entirely (no data is tracked or broadcast). Should be set on both the backend and web-frontend services.</td>
+<td>3</td>
+</tr>
+<tr>
+<td>BASEROW_WAIT_INSTEAD_OF_409_CONFLICT_ERROR</td>
+<td>When updating or creating various resources in Baserow if another concurrent operation is ongoing (like a snapshot, duplication, import etc) which would be affected by your modification a 409 HTTP error will be returned. If you instead would prefer Baserow to not return a 409 and just block waiting until the operation finishes and then to perform the requested operation set this flag to any non-empty value.</td>
+<td></td>
+</tr>
+<tr>
+<td>BASEROW_JOB_CLEANUP_INTERVAL_MINUTES</td>
+<td>How often the job cleanup task will run.</td>
+<td>5</td>
+</tr>
+<tr>
+<td>BASEROW_JOB_EXPIRATION_TIME_LIMIT</td>
+<td>How long before a Baserow job will be kept before being cleaned up.</td>
+<td>30 * 24 * 60 (24 days)</td>
+</tr>
+<tr>
+<td>BASEROW_JOB_SOFT_TIME_LIMIT</td>
+<td>The number of seconds a Baserow job can run before being terminated.</td>
+<td>1800</td>
+</tr>
+<tr>
+<td>BASEROW_MAX_FILE_IMPORT_ERROR_COUNT</td>
+<td>The max number of per row errors than can occur in a file import before an overall failure is declared</td>
+<td>30</td>
+</tr>
+<tr>
+<td>MINUTES_UNTIL_ACTION_CLEANED_UP</td>
+<td>How long before actions are cleaned up, actions are used to let you undo/redo so this is effectively the max length of time you can undo/redo can action.</td>
+<td>120</td>
+</tr>
+<tr>
+<td>BASEROW_DISABLE_MODEL_CACHE</td>
+<td>When set to any non empty value the model cache used to speed up Baserow will be disabled. Useful to enable when debugging Baserow errors if they are possibly caused by the model cache itself.</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>DJANGO_SETTINGS_MODULE</td>
+<td><strong>INTERNAL</strong> The settings python module to load when starting up the Backend django server. You shouldn’t need to set this yourself unless you are customizing the settings manually.</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>BASEROW_BACKEND_BIND_ADDRESS</td>
+<td><strong>INTERNAL</strong> The address that Baserow’s backend service will bind to.</td>
+<td></td>
+</tr>
+<tr>
+<td>BASEROW_BACKEND_PORT</td>
+<td><strong>INTERNAL</strong> Controls which port the Baserow backend service binds to.</td>
+<td></td>
+</tr>
+<tr>
+<td>BASEROW_WEBFRONTEND_BIND_ADDRESS</td>
+<td><strong>INTERNAL</strong> The address that Baserow’s web-frontend service will bind to.</td>
+<td></td>
+</tr>
+<tr>
+<td>BASEROW_INITIAL_CREATE_SYNC_TABLE_DATA_LIMIT</td>
+<td>The maximum number of rows you can import in a synchronous way</td>
+<td>5000</td>
+</tr>
+<tr>
+<td>BASEROW_MAX_ROW_REPORT_ERROR_COUNT</td>
+<td>The maximum row error count tolerated before a file import fails. Before this max error count the import will continue and the non failing rows will be imported and after it, no rows are imported at all.</td>
+<td>30</td>
+</tr>
+<tr>
+<td>BASEROW_ROW_HISTORY_CLEANUP_INTERVAL_MINUTES</td>
+<td>Sets the interval for periodic clean up check of the row edit history in minutes.</td>
+<td>30</td>
+</tr>
+<tr>
+<td>BASEROW_ROW_HISTORY_RETENTION_DAYS</td>
+<td>The number of days that the row edit history will be kept.</td>
+<td>180</td>
+</tr>
+<tr>
+<td>BASEROW_ICAL_VIEW_MAX_EVENTS</td>
+<td>The maximum number of events returned from ical feed endpoint. Empty value means no limit.</td>
+<td></td>
+</tr>
+<tr>
+<td>BASEROW_DEADLOCK_INITIAL_BACKOFF</td>
+<td>The initial backoff time for database deadlock retries.</td>
+<td>2</td>
+</tr>
+<tr>
+<td>BASEROW_DEADLOCK_MAX_RETRIES</td>
+<td>The maximum number of database deadlock retries.</td>
+<td>1</td>
+</tr>
+<tr>
+<td>BASEROW_REALTIME_REPLAY_MAX_EVENTS</td>
+<td>Maximum number of missed events replayed to a reconnecting WebSocket client. When the count exceeds this limit, the client is asked to refresh instead of receiving individual events. Set to <code>0</code> to disable event recording and replay entirely.</td>
+<td>0</td>
+</tr>
+<tr>
+<td>BASEROW_DEPENDANT_ROWS_REALTIME_UPDATE_LIMIT</td>
+<td>Per table, the maximum number of rows changed by a dependency cascade (formulas, lookups, link row display values in other tables) that are broadcast as exact realtime row updates. Above the limit, subscribers of the affected table receive a whole-table refresh event instead. Set to <code>0</code> to disable realtime events for dependant rows entirely. Higher values increase the background serialization work and websocket traffic per edit.</td>
+<td>200</td>
+</tr>
+<tr>
+<td>BASEROW_PERIODIC_FIELD_UPDATE_BATCH_COUNT</td>
+<td>The number of parallel tasks the periodic field update (e.g. <code>now()</code> formulas) is split into each cycle. Raise it to spread the work across more workers when a single task can't refresh every workspace before the next cycle starts. If cycles are still being skipped, also give each cycle more time with <code>BASEROW_PERIODIC_FIELD_UPDATE_CRONTAB</code>.</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<h3 id="backup-and-contents-api-configuration">Backup and contents API configuration<a class="headerlink" href="#backup-and-contents-api-configuration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BASEROW_BACKUP_SCHEDULE_TICK_CRONTAB</td>
+<td>How often the periodic task checks for backup schedules that became due, as a crontab expression. Every minute by default so a schedule fires close to the moment its own cron expression asks for. Raise it to reduce scheduler wake-ups.</td>
+<td><code>* * * * *</code></td>
+</tr>
+<tr>
+<td>BASEROW_CONTENTS_API_MAX_ROWS</td>
+<td>The maximum number of rows the <code>/api/contents/</code> endpoints return in a single synchronous response. Larger requests are refused with <code>ERROR_CONTENTS_TOO_LARGE</code> and should use <code>/api/backups/</code> instead. Set to <code>0</code> to disable the limit.</td>
+<td>100000</td>
+</tr>
+<tr>
+<td>BASEROW_DATA_DESTINATIONS</td>
+<td>A JSON list declaring the external storage that backups and datalake table exports are written to. Credentials live only here, never in the database; schedules and the API reference a destination by <code>name</code> (a url-safe slug). Every entry has <code>name</code>, <code>type</code> (<code>s3</code>, <code>azure</code> or <code>filesystem</code>) and optionally <code>prefix</code> (the key prefix everything is written under), <code>purposes</code> (a subset of <code>["backup", "datalake"]</code>, both by default) and <code>allow_trust_public_key</code> (default <code>false</code>; lets a staff member trust the signing key of a backup made by another instance when restoring from this destination). <code>s3</code> requires <code>bucket</code> and accepts <code>region</code>, <code>endpoint_url</code> (for MinIO, Ceph and other S3-compatible stores), <code>addressing_style</code>, <code>signature_version</code>, <code>use_ssl</code>, <code>verify</code>, <code>access_key_id</code>, <code>secret_access_key</code> and <code>session_token</code>; without static keys the standard AWS credential chain (IRSA, instance profile) is used. <code>azure</code> requires <code>container</code> and one of <code>account_key</code>, <code>connection_string</code> or <code>sas_token</code>, plus <code>account_name</code> unless a connection string is given; <code>endpoint_suffix</code> and <code>custom_domain</code> are optional. <code>filesystem</code> requires an absolute <code>root</code>, typically a mounted volume. Any secret can be given as <code>&lt;key&gt;_file</code> instead, a path whose content is read at startup (Docker/Kubernetes secret mounts). Unknown keys and malformed entries fail fast at startup. Example: <code>[{"name": "lake", "type": "s3", "bucket": "baserow-lake", "endpoint_url": "http://minio:9000", "access_key_id_file": "/run/secrets/s3_key", "secret_access_key_file": "/run/secrets/s3_secret"}]</code>.</td>
+<td><code>[]</code></td>
+</tr>
+<tr>
+<td>BASEROW_TABLE_EXPORT_SCHEDULE_TICK_CRONTAB</td>
+<td>How often the periodic task checks for datalake table export schedules that became due, as a crontab expression.</td>
+<td><code>* * * * *</code></td>
+</tr>
+<tr>
+<td>BASEROW_DATA_EXPORT_CHUNK_SIZE</td>
+<td>How many rows a datalake table export reads at once. Each chunk becomes a Parquet row group, so this bounds the memory an export uses.</td>
+<td>5000</td>
+</tr>
+<tr>
+<td>BASEROW_DATA_EXPORT_MAX_ROWS_PER_FILE</td>
+<td>The maximum number of rows in one Parquet part file of a table export; larger exports are split over several parts.</td>
+<td>1000000</td>
+</tr>
+<tr>
+<td>BASEROW_DATA_EXPORT_WATERMARK_OVERLAP_SECONDS</td>
+<td>How far an incremental table export reaches back before the previous export, to catch rows that were committed with an older modification time while that export ran. Rows in the overlap are exported twice, the lake keeps the one with the highest <code>updated_on</code>.</td>
+<td>300</td>
+</tr>
+<tr>
+<td>BASEROW_DATA_EXPORT_TMP_DIR</td>
+<td>The directory Parquet part files are written to before they are uploaded to the destination. Point it at a volume large enough for the biggest table. Empty uses the system temporary directory.</td>
+<td></td>
+</tr>
+<tr>
+<td>BASEROW_DATA_EXPORT_SOFT_TIME_LIMIT</td>
+<td>The time in seconds an export of all tables of one schedule may take before the worker stops it.</td>
+<td>21600</td>
+</tr>
+</tbody>
+</table>
+<h3 id="data-sync-configuration">Data sync configuration<a class="headerlink" href="#data-sync-configuration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BASEROW_TWO_WAY_SYNC_MAX_CONSECUTIVE_FAILURES</td>
+<td>Indicates the maximum number of consecutive two-way data sync updates before deactivating the two-way sync.</td>
+<td>8</td>
+</tr>
+<tr>
+<td>BASEROW_TWO_WAY_SYNC_MAX_RETRIES</td>
+<td>Indicates the maximum of or two-way data sync create, update, or delete row retries before considering it a failure.</td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+<h3 id="automation-workflow-configuration">Automation workflow configuration<a class="headerlink" href="#automation-workflow-configuration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BASEROW_AUTOMATION_HISTORY_PAGE_SIZE_LIMIT</td>
+<td>The maximum number of automation history entries returned per page.</td>
+<td>100</td>
+</tr>
+<tr>
+<td>BASEROW_AUTOMATION_WORKFLOW_RATE_LIMIT_MAX_RUNS</td>
+<td>The maximum number of workflow runs that can be started within the rate limit window before new runs are blocked.</td>
+<td>10</td>
+</tr>
+<tr>
+<td>BASEROW_AUTOMATION_WORKFLOW_RATE_LIMITS</td>
+<td>A comma-separated list of integer pairs formatted as <code>max_runs,window_seconds</code>. For example, <code>10,5,20,60</code> means 10 executions per 5 seconds and 20 executions per 60 seconds.</td>
+<td>"10,5,30,300,100,3600"</td>
+</tr>
+<tr>
+<td>BASEROW_AUTOMATION_WORKFLOW_RATE_LIMIT_CACHE_EXPIRY_SECONDS</td>
+<td>The number of seconds the workflow rate limit counters are retained in cache.</td>
+<td>5</td>
+</tr>
+<tr>
+<td>BASEROW_AUTOMATION_WORKFLOW_HISTORY_RATE_LIMIT_CACHE_EXPIRY_SECONDS</td>
+<td>The number of seconds the workflow history rate limit counters are retained in cache. If unset, it uses the workflow rate limit cache expiry.</td>
+<td>5</td>
+</tr>
+<tr>
+<td>BASEROW_AUTOMATION_WORKFLOW_ERROR_LIMITS</td>
+<td>A comma-separated list of integer pairs formatted as <code>max_errors,window_seconds</code>. For example, <code>5,30,10,300</code> means more than 5 errors in 30 seconds or more than 10 errors in 300 seconds disables the workflow.</td>
+<td>'20,300'</td>
+</tr>
+<tr>
+<td>BASEROW_AUTOMATION_WORKFLOW_MAX_CONSECUTIVE_ERRORS</td>
+<td>The maximum number of consecutive workflow errors allowed before the workflow is disabled.</td>
+<td>5</td>
+</tr>
+<tr>
+<td>BASEROW_AUTOMATION_WORKFLOW_TIMEOUT_HOURS</td>
+<td>The number of hours after which a running workflow is considered timed out.</td>
+<td>24</td>
+</tr>
+<tr>
+<td>BASEROW_AUTOMATION_WORKFLOW_HISTORY_MAX_DAYS</td>
+<td>The number of days automation workflow history entries are retained.</td>
+<td>30</td>
+</tr>
+<tr>
+<td>BASEROW_AUTOMATION_WORKFLOW_HISTORY_MAX_ENTRIES</td>
+<td>The maximum number of workflow history entries retained per workflow.</td>
+<td>50</td>
+</tr>
+</tbody>
+</table>
+<h3 id="backend-application-builder-configuration">Backend Application Builder Configuration<a class="headerlink" href="#backend-application-builder-configuration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BASEROW_BUILDER_DOMAINS</td>
+<td>A comma separated list of domain names that can be used as the domains to create sub domains in the application builder.</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="user-file-upload-configuration">User file upload Configuration<a class="headerlink" href="#user-file-upload-configuration" title="Permanent link">&para;</a></h3>
+<p>Baserow needs somewhere to store the following types of files:
+* Files uploaded by users in Baserow Table's using the File Field type
+* User triggered exports of tables and views</p>
+<h4 id="filesystem-default">Filesystem Default<a class="headerlink" href="#filesystem-default" title="Permanent link">&para;</a></h4>
+<p>By default, Baserow will store these files on the file system at the location set by
+the MEDIA_ROOT environment variable, which is <code>/baserow/media</code> in our <code>baserow/backend</code>
+image or <code>$DATA_DIR/media</code> for the <code>baserow/baserow</code> all-in-one image.</p>
+<blockquote>
+<p>Warning: If Baserow is storing user files on the file system and MEDIA_ROOT is not part
+of a persistent volume, then all uploaded user files will be lost if
+you remove the container. Our default docker commands and docker compose
+files ensure this location will be mounted to a persistent docker volume for you if
+you are using them.
+</p>
+</blockquote>
+<h4 id="serving-user-files-when-stored-on-the-file-system">Serving User Files when stored on the file system<a class="headerlink" href="#serving-user-files-when-stored-on-the-file-system" title="Permanent link">&para;</a></h4>
+<p>Any uploaded files need to be served back to the user when they visit Baserow in the
+browser. Our <code>baserow/baserow</code> image and some of our <code>docker-compose.yml</code> templates
+come with a <a href="https://caddy.io">Caddy</a> reverse proxy which is configured to serve
+back any user uploaded files which are stored in the data/media volume.</p>
+<p>If you do not wish to use our default Caddy proxy, place your own reverse proxy in front
+of the backend and web-frontend services and have it serve user files from the media
+volume. On OpenShift/Kubernetes the <a href="../../deploy/helm/README.md">Helm chart</a> does this
+via path-based Routes and S3 object storage instead.</p>
+<h4 id="file-service-alternatives">File Service alternatives<a class="headerlink" href="#file-service-alternatives" title="Permanent link">&para;</a></h4>
+<p>You can alternatively configure Baserow to store files by uploading them to an external service.
+This is highly recommended if you wish to horizontally scale Baserow or deploy it in
+a distributed manner.</p>
+<p>We support the following types of file storage service. Follow each link to documentation showing
+all available UPPER_CASE settings that you can set as environment variables to set up the
+desired provider.</p>
+<ul>
+<li><a href="https://django-storages.readthedocs.io/en/1.13.2/backends/amazon-S3.html#settings">AWS S3, or any S3 compatible service such as Backblaze or Digital Ocean spaces</a></li>
+<li>When using AWS S3 we recommend you set the <code>DOWNLOAD_FILE_VIA_XHR=1</code> environment variable.</li>
+<li><a href="https://django-storages.readthedocs.io/en/1.13.2/backends/gcloud.html#settings">Google Cloud Storage</a></li>
+<li><a href="https://django-storages.readthedocs.io/en/1.13.2/backends/azure.html#settings">Azure Cloud Storage</a></li>
+</ul>
+<p>Our default docker compose files do not by default include all available user file environment
+variables to reduce their size. When using these docker compose files make sure that any
+<code>AWS_</code>, <code>GS_</code> or <code>AZURE_</code> env vars you wish to use have been added to the
+<code>x-backend-variables</code> section.</p>
+<h4 id="cors-issues">CORS Issues<a class="headerlink" href="#cors-issues" title="Permanent link">&para;</a></h4>
+<p>When using a 3rd party file storage service which is serving files from another
+domain than your Baserow, you need to make sure CORS is configured correctly.</p>
+<h4 id="user-file-variables-table">User File Variables Table<a class="headerlink" href="#user-file-variables-table" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MEDIA_URL</td>
+<td>The URL at which user uploaded media files will be made available. Set this to a different origin, for example <code>https://media.baserow.example.com/media/</code>, to serve user uploads from an isolated media domain.</td>
+<td>$PUBLIC_BACKEND_URL/media/</td>
+</tr>
+<tr>
+<td>MEDIA_ROOT</td>
+<td><strong>INTERNAL</strong> The folder in which the backend will store user uploaded files</td>
+<td>/baserow/media or $DATA_DIR/media for the <code>baserow/baserow</code> all-in-one image</td>
+</tr>
+<tr>
+<td><strong><br></strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>AWS_ACCESS_KEY_ID</td>
+<td>The access key for your AWS account. When set to anything other than empty will switch Baserow to use a S3 compatible bucket for storing user file uploads.</td>
+<td></td>
+</tr>
+<tr>
+<td>AWS_SECRET_ACCESS_KEY</td>
+<td>The access secret key for your AWS account.</td>
+<td></td>
+</tr>
+<tr>
+<td>AWS_SECRET_ACCESS_KEY_FILE_PATH</td>
+<td><strong>Optional</strong> The path to a file containing access secret key for your AWS account.</td>
+<td></td>
+</tr>
+<tr>
+<td>AWS_STORAGE_BUCKET_NAME</td>
+<td>Your Amazon Web Services storage bucket name.</td>
+<td></td>
+</tr>
+<tr>
+<td>AWS_S3_REGION_NAME</td>
+<td><strong>Optional</strong> Name of the AWS S3 region to use (eg. eu-west-1)</td>
+<td></td>
+</tr>
+<tr>
+<td>AWS_S3_ENDPOINT_URL</td>
+<td><strong>Optional</strong> Custom S3 URL to use when connecting to S3, including scheme.</td>
+<td></td>
+</tr>
+<tr>
+<td>AWS_S3_CUSTOM_DOMAIN</td>
+<td><strong>Optional</strong> Your custom domain where the files can be downloaded from.</td>
+<td></td>
+</tr>
+<tr>
+<td>AWS_*</td>
+<td><strong>Optional</strong> All other AWS_ prefixed settings mentioned <a href="https://django-storages.readthedocs.io/en/1.13.2/backends/amazon-S3.html#settings">here</a> are also supported.</td>
+<td></td>
+</tr>
+<tr>
+<td><strong><br></strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>GC_*</td>
+<td>All GC_ prefixed settings mentioned <a href="https://django-storages.readthedocs.io/en/1.13.2/backends/gcloud.html#settings">here</a> are also supported.</td>
+<td></td>
+</tr>
+<tr>
+<td>GS_CREDENTIALS_FILE_PATH</td>
+<td><strong>Optional</strong> The path to a Google service account file for credentials.</td>
+<td></td>
+</tr>
+<tr>
+<td><strong><br></strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>AZURE_*</td>
+<td>All AZURE_ prefixed settings mentioned <a href="https://django-storages.readthedocs.io/en/1.13.2/backends/azure.html#settings">here</a> are also supported.</td>
+<td></td>
+</tr>
+<tr>
+<td>AZURE_ACCOUNT_KEY_FILE_PATH</td>
+<td><strong>Optional</strong> The path to a file containing your Azure account key.</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="email-configuration">Email Configuration<a class="headerlink" href="#email-configuration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FROM_EMAIL</td>
+<td>The email address Baserow will send emails from.</td>
+<td></td>
+</tr>
+<tr>
+<td>EMAIL_SMTP</td>
+<td>If set to any non empty value then Baserow will start sending emails using the configuration options below. If not set then Baserow will not send emails and just log them to the Celery worker logs instead.</td>
+<td></td>
+</tr>
+<tr>
+<td>EMAIL_SMTP_USE_TLS</td>
+<td>If set to any non empty value then Baserow will attempt to send emails using TLS.Whether to use a TLS (secure) connection when talking to the SMTP server. This is used for explicit TLS connections, generally on port 587. If you are experiencing hanging connections, see the implicit TLS setting EMAIL_SMTP_USE_SSL.</td>
+<td></td>
+</tr>
+<tr>
+<td>EMAIL_SMTP_USE_SSL</td>
+<td>If set to any non empty value then an implicit TLS (secure) connection will be used when talking to the SMTP server. In most email documentation this type of TLS connection is referred to as SSL. It is generally used on port 465. If you are experiencing problems, see the explicit TLS setting EMAIL_SMTP_USE_TLS. Note that EMAIL_SMTP_USE_TLS/EMAIL_SMTP_USE_SSL are mutually exclusive, so only set one of those settings to True.</td>
+<td></td>
+</tr>
+<tr>
+<td>EMAIL_SMTP_HOST</td>
+<td>The host of the external SMTP server that Baserow should use to send emails.</td>
+<td></td>
+</tr>
+<tr>
+<td>EMAIL_SMTP_PORT</td>
+<td>The port used to connect to $EMAIL_SMTP_HOST on.</td>
+<td></td>
+</tr>
+<tr>
+<td>EMAIL_SMTP_USER</td>
+<td>The username to authenticate with $EMAIL_SMTP_HOST when sending emails.</td>
+<td></td>
+</tr>
+<tr>
+<td>EMAIL_SMTP_PASSWORD</td>
+<td>The password to authenticate with $EMAIL_SMTP_HOST when sending emails.</td>
+<td></td>
+</tr>
+<tr>
+<td>EMAIL_SMTP_SSL_CERTFILE_PATH</td>
+<td>If EMAIL_SMTP_USE_SSL or EMAIL_SMTP_USE_TLS is set, you can optionally specify the path to a PEM-formatted certificate chain file to use for the SSL connection. If using docker then you will need to mount in this file into all the Baserow backend containers.</td>
+<td></td>
+</tr>
+<tr>
+<td>EMAIL_SMTP_SSL_KEYFILE_PATH</td>
+<td>EMAIL_SMTP_USE_SSL or EMAIL_SMTP_USE_TLS is set, you can optionally specify the path to a PEM-formatted private key file to use for the SSL connection. If using docker then you will need to mount in this file into all the Baserow backend containers. Note that setting EMAIL_SMTP_SSL_CERTFILE_PATH and EMAIL_SMTP_SSL_KEYFILE_PATH doesn’t result in any certificate checking. They’re passed to the underlying SSL connection. Please refer to the documentation of Python’s ssl.wrap_socket() function for details on how the certificate chain file and private key file are handled.</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="web-frontend-configuration">Web-frontend Configuration<a class="headerlink" href="#web-frontend-configuration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DOWNLOAD_FILE_VIA_XHR</td>
+<td>Set to `1` to force download links to download files via XHR query to bypass `Content-Disposition: inline` that can't be overridden in another way. If your files are stored under another origin, you also must add CORS headers to your server.</td>
+<td>0</td>
+</tr>
+<tr>
+<td>BASEROW_DISABLE_PUBLIC_URL_CHECK</td>
+<td>When opening the Baserow login page a check is run to ensure the PUBLIC_BACKEND_URL/BASEROW_PUBLIC_URL variables are set correctly and your browser can correctly connect to the backend. If misconfigured an error is shown. If you wish to disable this check and warning set this to any non empty value.</td>
+<td></td>
+</tr>
+<tr>
+<td>ADDITIONAL_MODULES</td>
+<td><strong>Internal</strong> A list of file paths to Nuxt module.js files to load as additional Nuxt modules into Baserow on startup.</td>
+<td></td>
+</tr>
+<tr>
+<td>BASEROW_DISABLE_GOOGLE_DOCS_FILE_PREVIEW</td>
+<td>Set to `true` or `1` to disable Google docs file preview.</td>
+<td></td>
+</tr>
+<tr>
+<td>BASEROW_MAX_SNAPSHOTS_PER_GROUP</td>
+<td>Controls how many application snapshots can be created per workspace.</td>
+<td>50</td>
+</tr>
+<tr>
+<td>BASEROW_USE_PG_FULLTEXT_SEARCH</td>
+<td>By default, Baserow will use Postgres full-text as its search backend. If the product is installed on a system with limited disk space, and less accurate results / degraded search performance is acceptable, then switch this setting off by setting it to false.</td>
+<td>true</td>
+</tr>
+<tr>
+<td>BASEROW_UNIQUE_ROW_VALUES_SIZE_LIMIT</td>
+<td>Sets the limit for the automatic detection of multiselect options when converting a text field to a multiselect field. Increase the value to detect more options automatically, but consider performance implications.</td>
+<td>100</td>
+</tr>
+<tr>
+<td>BASEROW_BUILDER_DOMAINS</td>
+<td>A comma separated list of domain names that can be used as the domains to create sub domains in the application builder.</td>
+<td></td>
+</tr>
+<tr>
+<td>BASEROW_FRONTEND_SAME_SITE_COOKIE</td>
+<td>String value indicating what the sameSite value of the created cookies should be.</td>
+<td>lax</td>
+</tr>
+<tr>
+<td>BASEROW_FRONTEND_COOKIE_PREFIX</td>
+<td>Optional prefix added to frontend cookie names. Set a unique value per same-host instance, for example when running multiple local instances on different ports, because browser cookies are not isolated by port.</td>
+<td></td>
+</tr>
+<tr>
+<td>BASEROW_DISABLE_SUPPORT</td>
+<td>Set to any value to disable the support features in Baserow.</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="sso-configuration">SSO Configuration<a class="headerlink" href="#sso-configuration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BASEROW_ALLOW_MULTIPLE_SSO_PROVIDERS_FOR_SAME_ACCOUNT</td>
+<td>By default Baserow will show a "please use the provider that you originally signed up with" error if you attempt to login to an email which has been already registered in your Baserow server with a different SSO provider/authentication method. This is to increase the security of your Baserow server. However, if you wish to allow a user who for example signed up initially using email and password to now login using a new SSO provider, and are comfortable with the increased risk of allowing this, then set this environment variable to any non empty value to disable this check. When turned on this environment variable will allow a Baserow account to be logged into by any available authentication method and not just the first one that particular user signed up with. If you later turn off this environment variable by removing it, users who have previously logged into their account with multiple different providers will be able to continue to use all of those providers to login, however any new users will be forced to use the first provider they signed up with.</td>
+<td></td>
+</tr>
+<tr>
+<td>BASEROW_OIDC_ONLY</td>
+<td>When set to a truthy value, makes the instance OIDC-only for normal users: self-service (password) signup is disabled, password login is refused for non-staff accounts, and the login page hides the password form and signup, showing only OIDC buttons. A staff/superuser break-glass admin can still log in with a password by clicking "display password login" on the login page — a documented escape hatch in case the IdP is unavailable.</td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td>BASEROW_OIDC_PROVIDERS</td>
+<td>A JSON list declaring the OpenID Connect providers users can sign in with. Each provider is an object with <code>name</code> (a stable url-safe slug used in the callback URL and shown per provider), <code>issuer</code> (the provider base URL, from which <code>/.well-known/openid-configuration</code> is discovered), <code>client_id</code> and <code>client_secret</code>. Optional keys: <code>display_name</code> (button label, defaults to <code>name</code>), <code>scopes</code> (defaults to <code>["openid", "email", "profile"]</code>, must include <code>openid</code>), <code>email_claim</code> (defaults to <code>email</code>) and <code>name_claim</code> (defaults to <code>name</code>). <strong>Access is derived from the IdP's client roles.</strong> <code>roles_claim</code> is the (dotted) claim path holding them and defaults to Keycloak's own <code>resource_access.${client_id}.roles</code>, with <code>${client_id}</code> substituted for this provider's client id; a literal dot in a claim name is escaped as <code>\.</code>. Roles are read from the ID token and the userinfo response, so the client-roles mapper must be enabled on both — see <a href="../sso-rhbk-keycloak/">the RHBK/Keycloak guide</a>. Global-role mapping: <code>staff_roles</code> (client roles whose holders are granted global staff) and <code>superuser_roles</code> (granted global superuser). These are reconciled on every login — granted when the user holds a mapped role, revoked when not; a local admin that never logs in via OIDC is unaffected. <code>user_roles</code> lists the client roles whose holders may sign in as regular users. Workspace members, workspace admins, teams and database/table access are managed in the app, never by the IdP. <strong>Deny by default:</strong> when a provider maps any client role (<code>user_roles</code>, <code>staff_roles</code> or <code>superuser_roles</code>), a user holding none of them is refused at login (<code>errorNoMappedRole</code>) and no account is provisioned. A provider that maps no role at all is not gated and stays a plain sign-in provider. <code>session_lifetime_minutes</code> (default <code>480</code>) bounds a session started through the provider: the user must sign in again once it ends, which is when role changes are applied; <code>null</code> falls back to <code>BASEROW_REFRESH_TOKEN_LIFETIME_HOURS</code>. <code>require_verified_email</code> (default <code>true</code>) refuses users whose <code>email_verified</code> claim is not <code>true</code> (<code>errorEmailNotVerified</code>), since accounts are linked by email. The login always uses PKCE (S256) and verifies the returned <code>state</code> and that the userinfo <code>sub</code> matches the ID token. An invalid configuration fails fast at startup, including the retired <code>groups_claim</code> / <code>staff_groups</code> / <code>superuser_groups</code> keys and the removed <code>workspace_mappings</code> / <code>team_mappings</code> / <code>strict_membership</code> keys. Configure the callback/redirect URL in your IdP as <code>&lt;BASEROW_PUBLIC_URL&gt;/api/sso/oidc/callback/&lt;name&gt;/</code>. Example: <code>[{"name": "rhbk", "display_name": "Keycloak", "issuer": "https://keycloak.example.com/realms/main", "client_id": "baserow", "client_secret": "the-secret", "user_roles": ["baserow-user"], "staff_roles": ["baserow-admins"]}]</code>. Full reference and a complete example: <a href="../sso-oidc/">Single sign-on with OpenID Connect</a>.</td>
+<td><code>[]</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="captcha-configuration">Captcha Configuration<a class="headerlink" href="#captcha-configuration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BASEROW_ENABLE_CAPTCHA</td>
+<td>Set to <code>all</code> to enable captcha verification on all supported pages (currently only signup). You can also provide a comma-separated list of specific contexts like <code>signup,invitations</code> to enable captcha only in those places. Leave empty to disable captcha entirely.</td>
+<td></td>
+</tr>
+<tr>
+<td>BASEROW_CAPTCHA_PROVIDER</td>
+<td>The captcha provider to use. Currently only <code>cloudflare_turnstile</code> is supported.</td>
+<td>cloudflare_turnstile</td>
+</tr>
+<tr>
+<td>BASEROW_CLOUDFLARE_TURNSTILE_SITE_KEY</td>
+<td>The Cloudflare Turnstile site key (public). Obtain this from the Cloudflare dashboard under Turnstile widget management.</td>
+<td></td>
+</tr>
+<tr>
+<td>BASEROW_CLOUDFLARE_TURNSTILE_SECRET_KEY</td>
+<td>The Cloudflare Turnstile secret key (private). Obtain this from the Cloudflare dashboard under Turnstile widget management. This key is used for server-side token validation and must be kept secret.</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="baserowbaserow-image-only-configuration"><code>baserow/baserow</code> Image only Configuration<a class="headerlink" href="#baserowbaserow-image-only-configuration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NO_COLOR</td>
+<td>Set this to any non empty value to disable colored logging in the all-in-one baserow image.</td>
+<td></td>
+</tr>
+<tr>
+<td>DATA_DIR</td>
+<td>For the all-in-one image only, this controls where Baserow will store all data that needs to be persisted. Inside this folder Baserow will store<br>- Its postgres database<br>- Redis database<br>- Any autogenerated secrets like the django SECRET_KEY, the postgresql database user password and the redis user password<br>- Caddy will store its state + any certificates and keys it uses during auto https</td>
+<td></td>
+</tr>
+<tr>
+<td>DISABLE_VOLUME_CHECK</td>
+<td>For the all-in-one image only setting this to any non empty value will disable the check it runs on startup that the “/baserow/data/” directory is mounted to a volume.</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="plugin-configuration">Plugin Configuration<a class="headerlink" href="#plugin-configuration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BASEROW_PLUGIN_GIT_REPOS</td>
+<td>A comma separated list of plugin git repos to install on startup.</td>
+<td></td>
+</tr>
+<tr>
+<td>BASEROW_PLUGIN_URLS</td>
+<td>A comma separated list of plugin urls to install on startup.</td>
+<td></td>
+</tr>
+<tr>
+<td>BASEROW_DISABLE_PLUGIN_INSTALL_ON_STARTUP</td>
+<td>When set to any non-empty values no automatic startup check and/or install of plugins will be run. Disables the above two env variables.</td>
+<td></td>
+</tr>
+<tr>
+<td>BASEROW_PLUGIN_DIR</td>
+<td><strong>INTERNAL</strong> Sets the folder where the Baserow plugin scripts look for plugins.</td>
+<td>In the all-in-one image <code>/baserow/data/plugins</code>, otherwise <code>/baserow/plugins</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="instance-settings">Instance settings<a class="headerlink" href="#instance-settings" title="Permanent link">&para;</a></h2>
+<p>A few settings are stored in the database rather than in the environment, and are changed
+at runtime from <strong>Admin → Settings</strong> (<code>/admin/settings</code>) by an account with global staff
+permissions. They need no restart and are shared by every backend and worker process.</p>
+<p>Among them are four per-application-type switches — <code>enable_database</code>, <code>enable_builder</code>,
+<code>enable_dashboard</code> and <code>enable_automation</code> — which turn a kind of application off for the
+whole instance. See <a href="../instance-settings/">Turning application types off instance-wide</a>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.top", "navigation.instant", "search.suggest", "search.highlight", "content.code.copy", "content.action.edit"], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.88dd0f4e.min.js"></script>
+      
+    
+  </body>
+</html>
