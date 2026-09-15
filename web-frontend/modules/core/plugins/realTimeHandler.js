@@ -653,25 +653,6 @@ export class RealTimeHandler {
       }
     })
 
-    // invitations
-    this.registerEvent(
-      'workspace_invitation_updated_or_created',
-      ({ store }, data) => {
-        store.dispatch(
-          'auth/forceUpdateOrCreateWorkspaceInvitation',
-          data.invitation
-        )
-      }
-    )
-
-    this.registerEvent('workspace_invitation_accepted', ({ store }, data) => {
-      store.dispatch('auth/forceAcceptWorkspaceInvitation', data.invitation)
-    })
-
-    this.registerEvent('workspace_invitation_rejected', ({ store }, data) => {
-      store.dispatch('auth/forceRejectWorkspaceInvitation', data.invitation)
-    })
-
     // notifications
     this.registerEvent('notifications_created', ({ store }, data) => {
       store.dispatch('notification/forceCreateInBulk', {

@@ -1683,7 +1683,7 @@
                   placeholder="Find member..."
                 ></FormInput>
                 <Button href="#" size="large" class="margin-left-2">
-                  Invite member
+                  Add members
                 </Button>
               </div>
             </div>

@@ -501,7 +501,6 @@ SPECTACULAR_SETTINGS = {
         {"name": "User"},
         {"name": "User files"},
         {"name": "Workspaces"},
-        {"name": "Workspace invitations"},
         {"name": "Templates"},
         {"name": "Trash"},
         {"name": "Applications"},
@@ -1567,7 +1566,6 @@ else:
         "core_trashentry",
         "core_workspace",
         "core_workspaceuser",
-        "core_workspaceuserinvitation",
         "core_authprovidermodel",
         "core_passwordauthprovidermodel",
         "database_database",
@@ -1629,8 +1627,8 @@ BASEROW_DEADLOCK_INITIAL_BACKOFF = max(
     0.1,
 )
 
-# Set to "all" to enable captcha everywhere, or comma-separated contexts like
-# "signup,invitations" to enable only in specific places.
+# Set to "all" to enable captcha everywhere, or a comma-separated list of contexts
+# (currently only "signup") to enable only in specific places.
 BASEROW_ENABLE_CAPTCHA = os.getenv("BASEROW_ENABLE_CAPTCHA", "")
 BASEROW_CAPTCHA_PROVIDER = os.getenv("BASEROW_CAPTCHA_PROVIDER", "cloudflare_turnstile")
 BASEROW_CLOUDFLARE_TURNSTILE_SITE_KEY = os.getenv(

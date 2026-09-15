@@ -26,9 +26,6 @@ from baserow.api.user.validators import (
     name_validation,
     password_validation,
 )
-from baserow.api.workspaces.invitations.serializers import (
-    UserWorkspaceInvitationSerializer,
-)
 from baserow.core.action.registries import action_type_registry
 from baserow.core.audit_log.handler import AuditLogHandler
 from baserow.core.auth_provider.exceptions import (
@@ -165,18 +162,12 @@ class RegisterSerializer(serializers.Serializer):
         help_text="Indicates whether an authentication JWT should be generated and "
         "be included in the response.",
     )
-    workspace_invitation_token = serializers.CharField(
-        required=False,
-        help_text="If provided and valid, the user accepts the workspace invitation and "
-        "will have access to the workspace after signing up.",
-    )
     template_id = serializers.PrimaryKeyRelatedField(
         required=False,
         default=None,
         queryset=Template.objects.all(),
         help_text="The id of the template that must be installed after creating the "
-        "account. This only works if the `workspace_invitation_token` param is not "
-        "provided.",
+        "account.",
     )
     captcha_token = serializers.CharField(
         required=False,
@@ -483,7 +474,3 @@ class TokenBlacklistSerializer(serializers.Serializer):
     refresh_token = serializers.CharField(
         required=True, help_text="The fresh token that must be blacklisted."
     )
-
-
-class DashboardSerializer(serializers.Serializer):
-    workspace_invitations = UserWorkspaceInvitationSerializer(many=True)

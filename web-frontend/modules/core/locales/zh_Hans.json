@@ -21,7 +21,6 @@
     },
     "sidebar": {
         "createWorkspace": "创建群组",
-        "inviteOthers": "邀请他人",
         "logoff": "注销",
         "errorNoWorkspace": "你没有任何群组。",
         "admin": "管理员",
@@ -96,8 +95,6 @@
         "password": "密码",
         "passwordRepeat": "重复密码"
     },
-    "invitationTitle": "邀请",
-    "invitationMessage": "{invitedBy} 邀请您加入 {group}。",
     "workspaceForm": {
         "nameLabel": "名称"
     },
@@ -110,12 +107,6 @@
         "showMembers": "成员",
         "createApplication": "新建"
     },
-    "workspaceInvitation": {
-        "title": "邀请函",
-        "message": "{by} 邀请您加入 {group}。",
-        "reject": "拒绝",
-        "accept": "接受"
-    },
     "workspaceMemberModal": {
         "membersModalTitle": "{group}成员",
         "userDescription": "{user} - {since} 前加入",
@@ -124,12 +115,6 @@
         "userAlreadyInWorkspaceTitle": "用户已经在群组中。",
         "userDescriptionPendingDeletion": "{user} - 待删除",
         "userAlreadyInWorkspaceText": "当用户已经是群组成员时，无法发送邀请。"
-    },
-    "workspaceInviteForm": {
-        "invitationFormTitle": "通过电子邮件邀请",
-        "optionalMessagePlaceholder": "可选消息",
-        "errorInvalidEmail": "请输入有效的电子邮件地址。",
-        "errorTooLongMessage": "消息限制为 {amount} 个字符."
     },
     "workspacesContext": {
         "search": "搜索群组",
@@ -343,8 +328,6 @@
         "settingAllowResetPasswordWarning": "请注意，如果您忘记密码，您可能会将自己锁定在系统之外，并且无法恢复访问。",
         "settingAllowNewAccountsName": "允许创建新账户",
         "settingAllowNewAccountsDescription": "默认情况下，任何访问您的 Baserow 域的用户都可以注册一个新帐户。",
-        "settingAllowSignupsViaWorkspaceInvitationsName": "允许通过群组邀请注册",
-        "settingAllowSignupsViaWorkspaceInvitationDescription": "即使禁用创建新帐户，此选项仍允许直接邀请的用户创建帐户。",
         "userDeletionGraceDelay": "用户删除",
         "settingUserDeletionGraceDelay": "宽限延迟",
         "settingUserDeletionGraceDelayDescription": "这是未登录的天数，在此之后计划删除的帐户将被永久删除。",
@@ -438,17 +421,6 @@
         "hoursAgo": "0 小时前 | 1 小时前 | {n} 小时前"
     },
     "membersSettings": {
-        "membersInviteModal": {
-            "title": "邀请组成员",
-            "submit": "发送邀请",
-            "errors": {
-                "userAlreadyInWorkspace": {
-                    "title": "用户已在组中存在.",
-                    "text": "当用户已成为组中成员时，无法发送邀请."
-                }
-            },
-            "helpIconText": "所选角色将是此组中的用户的默认角色."
-        },
         "membersTabTitle": "成员",
         "membersTable": {
             "columns": {
@@ -461,22 +433,8 @@
                 "remove": "从组中移除",
                 "copyEmail": "复制电子邮件"
             },
-            "title": "{userAmount} 成员在 {groupName}",
-            "inviteMember": "邀请为成员"
-        },
-        "invitesTable": {
-            "columns": {
-                "role": "默认角色",
-                "email": "电子邮件",
-                "message": "消息"
-            },
-            "actions": {
-                "copyEmail": "复制电子邮件",
-                "remove": "取消邀请"
-            },
-            "title": "{invitesAmount} 待定邀请在 {groupName}"
-        },
-        "invitesTabTitle": "邀请"
+            "title": "{userAmount} 成员在 {groupName}"
+        }
     },
     "UserSessionExpiredNotification": {
         "content": "由于您的认证令牌过期导致被强制注销. 请重新登录",
@@ -504,7 +462,6 @@
         "selectedAmountLabel": "{count} 选择"
     },
     "memberAssignmentModalFooter": {
-        "invite": "邀请{count}",
         "deselectAll": "全部取消",
         "selectAll": "全选"
     },

@@ -191,7 +191,6 @@ class CoreConfig(AppConfig):
         from .object_scopes import (
             ApplicationObjectScopeType,
             CoreObjectScopeType,
-            WorkspaceInvitationObjectScopeType,
             WorkspaceObjectScopeType,
             WorkspaceUserObjectScopeType,
         )
@@ -200,7 +199,6 @@ class CoreConfig(AppConfig):
         object_scope_type_registry.register(CoreObjectScopeType())
         object_scope_type_registry.register(ApplicationObjectScopeType())
         object_scope_type_registry.register(WorkspaceObjectScopeType())
-        object_scope_type_registry.register(WorkspaceInvitationObjectScopeType())
         object_scope_type_registry.register(SnapshotObjectScopeType())
         object_scope_type_registry.register(WorkspaceUserObjectScopeType())
 
@@ -221,27 +219,22 @@ class CoreConfig(AppConfig):
         from .operations import (
             AddWorkspaceUsersWorkspaceOperationType,
             CreateApplicationsWorkspaceOperationType,
-            CreateInvitationsWorkspaceOperationType,
             CreateWorkspaceOperationType,
             DeleteApplicationOperationType,
-            DeleteWorkspaceInvitationOperationType,
             DeleteWorkspaceOperationType,
             DeleteWorkspaceUserOperationType,
             DuplicateApplicationOperationType,
             ExportWorkspaceOperationType,
             ListApplicationsWorkspaceOperationType,
-            ListInvitationsWorkspaceOperationType,
             ListWorkspacesOperationType,
             ListWorkspaceUsersWorkspaceOperationType,
             OrderApplicationsOperationType,
             ReadApplicationOperationType,
-            ReadInvitationWorkspaceOperationType,
             ReadWorkspaceOperationType,
             RestoreApplicationOperationType,
             RestoreWorkspaceOperationType,
             UpdateApplicationOperationType,
             UpdateSettingsOperationType,
-            UpdateWorkspaceInvitationType,
             UpdateWorkspaceOperationType,
             UpdateWorkspaceUserOperationType,
         )
@@ -263,14 +256,9 @@ class CoreConfig(AppConfig):
         operation_type_registry.register(MarkNotificationAsReadOperationType())
         operation_type_registry.register(CreateApplicationsWorkspaceOperationType())
         operation_type_registry.register(CreateWorkspaceOperationType())
-        operation_type_registry.register(CreateInvitationsWorkspaceOperationType())
-        operation_type_registry.register(DeleteWorkspaceInvitationOperationType())
         operation_type_registry.register(DeleteWorkspaceOperationType())
         operation_type_registry.register(ListApplicationsWorkspaceOperationType())
-        operation_type_registry.register(ListInvitationsWorkspaceOperationType())
-        operation_type_registry.register(ReadInvitationWorkspaceOperationType())
         operation_type_registry.register(ListWorkspacesOperationType())
-        operation_type_registry.register(UpdateWorkspaceInvitationType())
         operation_type_registry.register(ReadWorkspaceOperationType())
 
         operation_type_registry.register(AddWorkspaceUsersWorkspaceOperationType())
@@ -305,14 +293,11 @@ class CoreConfig(AppConfig):
         operation_type_registry.register(ReadApplicationOperationType())
 
         from baserow.core.actions import (
-            AcceptWorkspaceInvitationActionType,
             CreateApplicationActionType,
             CreateInitialWorkspaceActionType,
             CreateWorkspaceActionType,
-            CreateWorkspaceInvitationActionType,
             DeleteApplicationActionType,
             DeleteWorkspaceActionType,
-            DeleteWorkspaceInvitationActionType,
             DuplicateApplicationActionType,
             ExportApplicationsActionType,
             ImportApplicationsActionType,
@@ -320,10 +305,8 @@ class CoreConfig(AppConfig):
             LeaveWorkspaceActionType,
             OrderApplicationsActionType,
             OrderWorkspacesActionType,
-            RejectWorkspaceInvitationActionType,
             UpdateApplicationActionType,
             UpdateWorkspaceActionType,
-            UpdateWorkspaceInvitationActionType,
         )
 
         action_type_registry.register(CreateWorkspaceActionType())
@@ -336,11 +319,6 @@ class CoreConfig(AppConfig):
         action_type_registry.register(OrderApplicationsActionType())
         action_type_registry.register(DuplicateApplicationActionType())
         action_type_registry.register(InstallTemplateActionType())
-        action_type_registry.register(CreateWorkspaceInvitationActionType())
-        action_type_registry.register(DeleteWorkspaceInvitationActionType())
-        action_type_registry.register(AcceptWorkspaceInvitationActionType())
-        action_type_registry.register(RejectWorkspaceInvitationActionType())
-        action_type_registry.register(UpdateWorkspaceInvitationActionType())
         action_type_registry.register(LeaveWorkspaceActionType())
         action_type_registry.register(CreateInitialWorkspaceActionType())
         action_type_registry.register(ExportApplicationsActionType())
@@ -493,21 +471,9 @@ class CoreConfig(AppConfig):
         import baserow.core.notifications.tasks  # noqa: F401
         from baserow.core.notification_types import (
             BaserowVersionUpgradeNotificationType,
-            WorkspaceInvitationAcceptedNotificationType,
-            WorkspaceInvitationCreatedNotificationType,
-            WorkspaceInvitationRejectedNotificationType,
         )
         from baserow.core.notifications.registries import notification_type_registry
 
-        notification_type_registry.register(
-            WorkspaceInvitationAcceptedNotificationType()
-        )
-        notification_type_registry.register(
-            WorkspaceInvitationCreatedNotificationType()
-        )
-        notification_type_registry.register(
-            WorkspaceInvitationRejectedNotificationType()
-        )
         notification_type_registry.register(BaserowVersionUpgradeNotificationType())
 
         self._setup_health_checks()

@@ -585,11 +585,6 @@ def test_get_permissions(data_fixture):
             "name": "basic",
             "permissions": {
                 "admin_only_operations": [
-                    "workspace.list_invitations",
-                    "workspace.create_invitation",
-                    "invitation.read",
-                    "invitation.update",
-                    "invitation.delete",
                     "workspace.list_workspace_users",
                     "workspace.update",
                     "workspace.delete",
@@ -723,11 +718,6 @@ def test_get_permissions(data_fixture):
             "name": "basic",
             "permissions": {
                 "admin_only_operations": [
-                    "workspace.list_invitations",
-                    "workspace.create_invitation",
-                    "invitation.read",
-                    "invitation.update",
-                    "invitation.delete",
                     "workspace.list_workspace_users",
                     "workspace.update",
                     "workspace.delete",
@@ -861,11 +851,6 @@ def test_get_permissions(data_fixture):
             "name": "basic",
             "permissions": {
                 "admin_only_operations": [
-                    "workspace.list_invitations",
-                    "workspace.create_invitation",
-                    "invitation.read",
-                    "invitation.update",
-                    "invitation.delete",
                     "workspace.list_workspace_users",
                     "workspace.update",
                     "workspace.delete",

@@ -24,7 +24,7 @@ way to password accounts.
 
 | Action | Workspace `ADMIN` | Workspace `MEMBER` | Instance staff |
 | --- | --- | --- | --- |
-| Add existing users, invite, remove members, change `ADMIN`/`MEMBER` | Yes | No | Only in workspaces they belong to as `ADMIN` |
+| Add existing users, remove members, change `ADMIN`/`MEMBER` | Yes | No | Only in workspaces they belong to as `ADMIN` |
 | Create, rename and delete teams, manage team members | Yes | No | Only in workspaces they belong to as `ADMIN` |
 | Set access levels on the workspace default, databases and tables | Yes | No | Any workspace, from **Admin → Workspaces** or the API |
 | Be restricted by access levels | Never | Yes | Only as a `MEMBER` |
@@ -42,8 +42,8 @@ manage the workspace and give everyone else `MEMBER` plus access levels.
   Deactivated accounts, accounts pending deletion and existing members are never listed, and
   at most 20 matches are shown. Adding someone who is already a member leaves their
   permissions unchanged.
-* **Invite member** — sends an email invitation, for people who do not have an account yet.
-  The invitation is accepted when they sign in with that address.
+There are no email invitations: a person needs an account (with SSO: signs in once) before
+they can be added.
 
 To change `MEMBER`/`ADMIN` later, use the role column of the members list. Removing a member
 also removes them from the workspace's teams.
@@ -146,7 +146,7 @@ Error codes: `ERROR_TEAM_DOES_NOT_EXIST`, `ERROR_TEAM_NAME_NOT_UNIQUE`,
 
 | Symptom | Cause |
 | --- | --- |
-| A person is missing from **Add members** | They have no account yet (with SSO: never signed in), are deactivated or pending deletion, are already a member, or fewer than three characters were typed. Invite them instead. |
+| A person is missing from **Add members** | They have no account yet (with SSO: never signed in), are deactivated or pending deletion, are already a member, or fewer than three characters were typed. Ask them to sign in once first. |
 | A member still sees a table set to **No access** | They are a workspace `ADMIN`, or a more specific level applies — check the table, not only the database, for the member and each of their teams. |
 | A member sees nothing after a change | A **No access** workspace default with no level on any table they need. Give the team a level on the database or table. |
 | A member can read but not edit | The effective level is **Viewer**; set **Editor** on the same or a more specific scope. |

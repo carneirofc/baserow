@@ -23,7 +23,6 @@
     },
     "sidebar": {
         "createWorkspace": "Створити робочий простір",
-        "inviteOthers": "Запросити інших",
         "members": "Учасники",
         "logoff": "Вийти",
         "errorNoWorkspace": "У вас немає робочих просторів.",
@@ -108,8 +107,6 @@
         "password": "Пароль",
         "passwordRepeat": "Повторіть пароль"
     },
-    "invitationTitle": "Запрошення",
-    "invitationMessage": "{invitedBy} запросив(ла) вас приєднатися до {workspace}.",
     "workspaceForm": {
         "nameLabel": "Ім’я"
     },
@@ -121,12 +118,6 @@
     "dashboardWorkspace": {
         "createApplication": "Створити новий"
     },
-    "workspaceInvitation": {
-        "title": "Запрошення",
-        "message": "{by} запросив(ла) вас приєднатися до {workspace}.",
-        "reject": "Відхилити",
-        "accept": "Прийняти"
-    },
     "workspaceMemberModal": {
         "membersModalTitle": "",
         "userDescription": "",
@@ -135,13 +126,6 @@
         "userAlreadyInWorkspaceTitle": "",
         "userDescriptionPendingDeletion": "",
         "userAlreadyInWorkspaceText": ""
-    },
-    "workspaceInviteForm": {
-        "invitationFormTitle": "Запросити електронною поштою",
-        "optionalMessagePlaceholder": "Необов’язкове повідомлення",
-        "errorInvalidEmail": "Будь ласка, введіть дійсну адресу електронної пошти.",
-        "errorTooLongMessage": "Повідомлення обмежені {amount} символами.",
-        "additionalRoles": "Додаткові ролі"
     },
     "workspacesContext": {
         "search": "",
@@ -395,8 +379,6 @@
         "settingAllowResetPasswordWarning": "Зверніть увагу, що ви можете втратити доступ до системи, і його неможливо буде відновити, якщо ви забудете пароль.",
         "settingAllowNewAccountsName": "Дозволити створення нових облікових записів",
         "settingAllowNewAccountsDescription": "За замовчуванням будь-який користувач, який відвідує ваш домен Baserow, може зареєструвати новий обліковий запис.",
-        "settingAllowSignupsViaWorkspaceInvitationsName": "Дозволити реєстрацію через запрошення до робочого простору",
-        "settingAllowSignupsViaWorkspaceInvitationDescription": "Навіть якщо створення нових облікових записів вимкнено, ця опція дозволяє безпосередньо запрошеним користувачам усе ж створити обліковий запис.",
         "settingAllowNonStaffCreateWorkspaceOperation": "Дозволити всім створювати нові робочі простори",
         "settingAllowNonStaffCreateWorkspaceOperationDescription": "За замовчуванням усі можуть створювати нові робочі простори. Вимкніть це, щоб дозволити створювати нові робочі простори лише персоналу.",
         "settingAllowNonStaffCreateWorkspaceOperationWarning": "Для нових користувачів автоматично створюватиметься робочий простір, у якому вони будуть адміністраторами.",
@@ -515,10 +497,8 @@
     },
     "membersSettings": {
         "membersTabTitle": "Учасники",
-        "invitesTabTitle": "Запрошення",
         "membersTable": {
             "title": "{userAmount} учасників у {workspaceName}",
-            "inviteMember": "Запросити учасника",
             "columns": {
                 "name": "Назва",
                 "email": "Електронна пошта",
@@ -533,29 +513,6 @@
                 "copyEmail": "Скопіювати електронну пошту",
                 "remove": "Видалити з робочого простору"
             }
-        },
-        "invitesTable": {
-            "title": "{invitesAmount} запрошень очікують у {workspaceName}",
-            "columns": {
-                "email": "Електронна пошта",
-                "message": "Повідомлення",
-                "role": "Роль за замовчуванням"
-            },
-            "actions": {
-                "copyEmail": "Скопіювати електронну пошту",
-                "remove": "Скасувати запрошення"
-            }
-        },
-        "membersInviteModal": {
-            "title": "Запросити учасників робочого простору",
-            "submit": "Надіслати запрошення",
-            "helpIconText": "Вибрана роль буде роллю користувача за замовчуванням у цьому робочому просторі.",
-            "errors": {
-                "userAlreadyInWorkspace": {
-                    "title": "Користувач уже є в цьому робочому просторі.",
-                    "text": "Неможливо надіслати запрошення, якщо користувач уже є учасником робочого простору."
-                }
-            }
         }
     },
     "memberSelectionList": {
@@ -563,7 +520,6 @@
         "selectedAmountLabel": "{count} вибрано"
     },
     "memberAssignmentModalFooter": {
-        "invite": "Запросити {count}",
         "deselectAll": "Зняти вибір з усіх",
         "selectAll": "Вибрати все"
     },
@@ -917,18 +873,6 @@
     },
     "richTextEditorMentionsList": {
         "notFound": "Користувачів не знайдено"
-    },
-    "workspaceInvitationAcceptedNotification": {
-        "title": "{sender} прийняв ваше запрошення приєднатися до {workspaceName}",
-        "deletedUser": "Видалений користувач"
-    },
-    "workspaceInvitationRejectedNotification": {
-        "title": "{sender} відхилив ваше запрошення приєднатися до {workspaceName}",
-        "deletedUser": "Видалений користувач"
-    },
-    "workspaceInvitationCreatedNotification": {
-        "title": "{sender} запросив вас приєднатися до {workspaceName}",
-        "deletedUser": "Видалений користувач"
     },
     "versionUpgradeNotification": {
         "title": "{version} вже тут! Дізнайтеся, що нового."

@@ -245,10 +245,6 @@ class OIDCHandler:
                 email=email,
                 name=name,
                 language=request_data.get("language") or None,
-                workspace_invitation_token=request_data.get(
-                    "workspace_invitation_token"
-                )
-                or None,
                 email_verified=email_verified,
             ),
             request_data.get("original", ""),

@@ -23,7 +23,6 @@
     },
     "sidebar": {
         "createWorkspace": "",
-        "inviteOthers": "",
         "members": "",
         "logoff": "",
         "errorNoWorkspace": "",
@@ -98,8 +97,6 @@
         "password": "",
         "passwordRepeat": ""
     },
-    "invitationTitle": "",
-    "invitationMessage": "",
     "workspaceForm": {
         "nameLabel": ""
     },
@@ -111,12 +108,6 @@
     "dashboardWorkspace": {
         "createApplication": ""
     },
-    "workspaceInvitation": {
-        "title": "",
-        "message": "",
-        "reject": "",
-        "accept": ""
-    },
     "workspaceMemberModal": {
         "membersModalTitle": "",
         "userDescription": "",
@@ -125,12 +116,6 @@
         "userAlreadyInWorkspaceTitle": "",
         "userDescriptionPendingDeletion": "",
         "userAlreadyInWorkspaceText": ""
-    },
-    "workspaceInviteForm": {
-        "invitationFormTitle": "",
-        "optionalMessagePlaceholder": "",
-        "errorInvalidEmail": "",
-        "errorTooLongMessage": ""
     },
     "workspacesContext": {
         "search": "",
@@ -353,8 +338,6 @@
         "settingAllowResetPasswordWarning": "",
         "settingAllowNewAccountsName": "",
         "settingAllowNewAccountsDescription": "",
-        "settingAllowSignupsViaWorkspaceInvitationsName": "",
-        "settingAllowSignupsViaWorkspaceInvitationDescription": "",
         "settingAllowNonStaffCreateWorkspaceOperation": "",
         "settingAllowNonStaffCreateWorkspaceOperationDescription": "",
         "settingAllowNonStaffCreateWorkspaceOperationWarning": "",
@@ -451,10 +434,8 @@
     },
     "membersSettings": {
         "membersTabTitle": "",
-        "invitesTabTitle": "",
         "membersTable": {
             "title": "",
-            "inviteMember": "",
             "columns": {
                 "name": "",
                 "email": "",
@@ -465,29 +446,6 @@
                 "copyEmail": "",
                 "remove": ""
             }
-        },
-        "invitesTable": {
-            "title": "",
-            "columns": {
-                "email": "",
-                "message": "",
-                "role": ""
-            },
-            "actions": {
-                "copyEmail": "",
-                "remove": ""
-            }
-        },
-        "membersInviteModal": {
-            "title": "",
-            "submit": "",
-            "helpIconText": "",
-            "errors": {
-                "userAlreadyInWorkspace": {
-                    "title": "",
-                    "text": ""
-                }
-            }
         }
     },
     "memberSelectionList": {
@@ -495,7 +453,6 @@
         "selectedAmountLabel": ""
     },
     "memberAssignmentModalFooter": {
-        "invite": "",
         "deselectAll": "",
         "selectAll": ""
     },

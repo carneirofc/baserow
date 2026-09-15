@@ -180,7 +180,7 @@ workspace's admins, or by staff — the full guide is
 | Task | Where |
 | --- | --- |
 | Add people who already signed in | *Workspace settings → Members → Add members* — search by name or email (at least 3 characters) and pick `MEMBER` or `ADMIN`. |
-| Invite someone who has not signed in yet | *Members → Invite member* (email invitation). |
+| Add someone who has not signed in yet | Ask them to sign in once, then add them. |
 | Promote or demote a workspace admin | The role column in the members list. |
 | Group members | *Workspace settings → Teams*. |
 | Restrict databases and tables | *Manage access* in the context menu of a database or table, or *Workspace default access* on the Teams page. Staff: *Admin → Workspaces → Manage default access*. |
@@ -419,7 +419,6 @@ A failed login redirects to `/login?error=<code>`, and the backend log has detai
 | `errorProviderDoesNotExist` | The callback or login URL names a provider not in `BASEROW_OIDC_PROVIDERS`. | Match the redirect URI's `<name>` to the provider `name`; restart after config changes. |
 | `errorDifferentProvider` | An account with this email exists under a different sign-in method. | Expected protection. Link the account with the `link_oidc_account` command, or set `link_existing_accounts` on the provider. See [Recovering locked-out accounts](#recovering-locked-out-accounts). |
 | `errorUserDeactivated` | The Baserow account is deactivated. | Reactivate it in the admin area. |
-| `errorWorkspaceInvitationEmailMismatch` | The user followed a workspace invitation addressed to another email. | Sign in with the invited address, or send a new invitation. |
 | `errorSignupDisabled` | The signup layer refused to create the account. SSO provisioning normally bypasses the signup setting, so this indicates an unusual flow. | Check the backend log. |
 
 ## Recovering locked-out accounts

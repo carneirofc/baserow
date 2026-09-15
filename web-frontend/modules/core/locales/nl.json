@@ -18,7 +18,6 @@
     },
     "sidebar": {
         "createWorkspace": "Werkruimte aanmaken",
-        "inviteOthers": "Nodig anderen uit",
         "logoff": "Afmelden",
         "errorNoWorkspace": "Je hebt geen werkruimtes.",
         "admin": "Beheerder",
@@ -83,8 +82,6 @@
         "password": "Wachtwoord",
         "passwordRepeat": "Herhaal wachtwoord"
     },
-    "invitationTitle": "Uitnodiging",
-    "invitationMessage": "{invitedBy} heeft je uitgenodigd om lid te worden van {workspace}.",
     "workspaceForm": {
         "nameLabel": "Naam"
     },
@@ -97,12 +94,6 @@
         "showMembers": "Leden",
         "createApplication": "Nieuwe aanmaken"
     },
-    "workspaceInvitation": {
-        "title": "Uitnodiging",
-        "message": "{by} heeft je uitgenodigd om lid te worden van {workspace}.",
-        "reject": "Weigeren",
-        "accept": "Accepteren"
-    },
     "workspaceMemberModal": {
         "membersModalTitle": "Leden van {workspace}",
         "userDescription": "{user} - lid geworden {since} geleden",
@@ -111,13 +102,6 @@
         "userAlreadyInWorkspaceTitle": "Gebruiker zit al in de werkruimte.",
         "userAlreadyInWorkspaceText": "Het is niet mogelijk een uitnodiging te versturen als de gebruiker al lid is van de werkruimte.",
         "userDescriptionPendingDeletion": "{user} - in afwachting van verwijdering"
-    },
-    "workspaceInviteForm": {
-        "invitationFormTitle": "Uitnodigen per e-mail",
-        "optionalMessagePlaceholder": "Optioneel bericht",
-        "errorInvalidEmail": "Voer een geldig e-mail adres in.",
-        "errorTooLongMessage": "Berichten zijn beperkt tot {amount} tekens.",
-        "additionalRoles": "Extra rollen"
     },
     "workspacesContext": {
         "search": "Zoek werkruimtes",
@@ -325,8 +309,6 @@
         "settingAllowNewAccountsName": "Toestaan aanmaken van nieuwe accounts",
         "settingAllowNewAccountsDescription": "Standaard kan elke gebruiker die je Baserow-domein bezoekt zich aanmelden voor een nieuw account.",
         "enabled": "ingeschakeld",
-        "settingAllowSignupsViaWorkspaceInvitationsName": "Aanmeldingen via werkruimte uitnodigingen toestaan",
-        "settingAllowSignupsViaWorkspaceInvitationDescription": "Zelfs als het aanmaken van nieuwe accounts is uitgeschakeld, kunnen direct uitgenodigde gebruikers met deze optie toch een account aanmaken.",
         "userDeletionGraceDelay": "Gebruiker verwijderen",
         "settingUserDeletionGraceDelay": "Respijtperiode",
         "settingUserDeletionGraceDelayDescription": "Dit is het aantal dagen zonder login waarna een voor verwijdering geplande account permanent wordt verwijderd.",
@@ -525,34 +507,9 @@
                 "copyEmail": "E-mail kopiëren",
                 "remove": "Verwijderen uit werkruimte"
             },
-            "title": "{userAmount} Leden in {groupName}",
-            "inviteMember": "Lid uitnodigen"
+            "title": "{userAmount} Leden in {groupName}"
         },
-        "membersTabTitle": "Leden",
-        "invitesTable": {
-            "columns": {
-                "email": "E-mail",
-                "message": "Bericht",
-                "role": "Role"
-            },
-            "title": "{invitesAmount} Uitnodigingen in behandeling in {groupName}",
-            "actions": {
-                "copyEmail": "E-mail kopiëren",
-                "remove": "Uitnodiging annuleren"
-            }
-        },
-        "membersInviteModal": {
-            "errors": {
-                "userAlreadyInWorkspace": {
-                    "title": "Gebruiker zit al in de werkruimtes.",
-                    "text": "Het is niet mogelijk een uitnodiging te sturen wanneer de gebruiker al lid is van de werkruimtes."
-                }
-            },
-            "submit": "Stuur uitnodiging",
-            "title": "Werkruimte leden uitnodigen",
-            "helpIconText": "De geselecteerde rol wordt de standaard rol van de gebruiker in deze werkruimte."
-        },
-        "invitesTabTitle": "Uitnodigingen"
+        "membersTabTitle": "Leden"
     },
     "crudTableSearch": {
         "search": "Zoeken"
@@ -571,7 +528,6 @@
         "selectedAmountLabel": "{count} geselecteerd"
     },
     "memberAssignmentModalFooter": {
-        "invite": "Uitnodigen {count}",
         "deselectAll": "Deselecteer alles",
         "selectAll": "Selecteer alles"
     },
@@ -674,23 +630,11 @@
     "restoreToast": {
         "restore": "Herstel verwijderd {type}"
     },
-    "workspaceInvitationRejectedNotification": {
-        "title": "{sender} heeft uw uitnodiging om lid te worden van {workspaceName} afgewezen",
-        "deletedUser": "Een verwijderde gebruiker"
-    },
-    "workspaceInvitationCreatedNotification": {
-        "title": "{sender} heeft je uitgenodigd om lid te worden van {workspaceName}",
-        "deletedUser": "Een verwijderde gebruiker"
-    },
     "dropdown": {
         "empty": "Geen items beschikbaar"
     },
     "styleBoxForm": {
         "paddingError": "De waarde moet een geheel getal zijn tussen 0 en 200."
-    },
-    "workspaceInvitationAcceptedNotification": {
-        "title": "{sender} heeft uw uitnodiging om lid te worden van {workspaceName} geaccepteerd",
-        "deletedUser": "Een verwijderde gebruiker"
     },
     "richTextEditorMentionsList": {
         "notFound": "Geen gebruikers gevonden"

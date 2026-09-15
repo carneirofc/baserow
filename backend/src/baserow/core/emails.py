@@ -4,7 +4,6 @@ from typing import List
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.db import transaction
-from django.template.defaultfilters import truncatechars
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.utils.translation import gettext as _
@@ -14,16 +13,6 @@ from loguru import logger
 from baserow.core.notifications.models import Notification
 from baserow.core.notifications.registries import notification_type_registry
 from baserow.core.registries import email_context_registry
-
-
-def prevent_autolink(value):
-    """
-    Inserts a zero-width space after every dot so that email clients don't turn
-    domain-like tokens in user-controlled content into clickable links. The value
-    still looks exactly the same to the recipient.
-    """
-
-    return value.replace(".", ".\u200b")
 
 
 class BaseEmailMessage(EmailMultiAlternatives):
@@ -110,39 +99,6 @@ class EmailPendingVerificationEmail(BaseEmailMessage):
     def get_context(self):
         context = super().get_context()
         context.update(confirm_url=self.confirm_url)
-        return context
-
-
-class WorkspaceInvitationEmail(BaseEmailMessage):
-    template_name = "baserow/core/workspace_invitation.html"
-
-    def __init__(self, invitation, public_accept_url, *args, **kwargs):
-        self.public_accept_url = public_accept_url
-        self.invitation = invitation
-        super().__init__(*args, **kwargs)
-
-    def get_subject(self):
-        # The subject must never contain user-controlled content like the inviter
-        # name or the workspace name because that can be abused to send phishing
-        # emails to anyone via workspace invitations.
-        return _("You've been invited to collaborate on Baserow")
-
-    def get_context(self):
-        context = super().get_context()
-        context.update(
-            invitation=self.invitation,
-            public_accept_url=self.public_accept_url,
-            # The names and email address are user-controlled content. Truncate
-            # pre-existing long names and prevent email clients from linkifying
-            # domain-like tokens so that invitations can't be abused for phishing.
-            invited_by_name=prevent_autolink(
-                truncatechars(self.invitation.invited_by.first_name, 60)
-            ),
-            invited_by_email=prevent_autolink(self.invitation.invited_by.email),
-            workspace_name=prevent_autolink(
-                truncatechars(self.invitation.workspace.name, 60)
-            ),
-        )
         return context
 
 

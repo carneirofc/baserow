@@ -145,33 +145,6 @@
             >
           </div>
         </div>
-        <div v-if="!settings.allow_new_signups" class="admin-settings__item">
-          <div class="admin-settings__label">
-            <div class="admin-settings__name">
-              {{
-                $t('settings.settingAllowSignupsViaWorkspaceInvitationsName')
-              }}
-            </div>
-            <div class="admin-settings__description">
-              {{
-                $t(
-                  'settings.settingAllowSignupsViaWorkspaceInvitationDescription'
-                )
-              }}
-            </div>
-          </div>
-          <div class="admin-settings__control">
-            <SwitchInput
-              :value="settings.allow_signups_via_workspace_invitations"
-              @input="
-                updateSettings({
-                  allow_signups_via_workspace_invitations: $event,
-                })
-              "
-              >{{ $t('settings.enabled') }}</SwitchInput
-            >
-          </div>
-        </div>
         <div class="admin-settings__item">
           <div class="admin-settings__label">
             <div class="admin-settings__name">

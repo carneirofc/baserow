@@ -20,13 +20,6 @@ class OIDCLoginRequestSerializer(serializers.Serializer):
             "An ISO 639 language code (with optional variant) selected by the user."
         ),
     )
-    workspace_invitation_token = serializers.CharField(
-        required=False,
-        help_text=(
-            "If provided and valid, the user accepts the workspace invitation and "
-            "will have access to the workspace after login or signing up."
-        ),
-    )
 
     def validate_original(self, value):
         """Only relative URLs are allowed."""

@@ -51,15 +51,9 @@ import {
 
 import {
   MembersWorkspaceSettingsPageType,
-  InvitesWorkspaceSettingsPageType,
   TeamsWorkspaceSettingsPageType,
 } from '@baserow/modules/core/workspaceSettingsPageTypes'
-import {
-  WorkspaceInvitationCreatedNotificationType,
-  WorkspaceInvitationAcceptedNotificationType,
-  WorkspaceInvitationRejectedNotificationType,
-  BaserowVersionUpgradeNotificationType,
-} from '@baserow/modules/core/notificationTypes'
+import { BaserowVersionUpgradeNotificationType } from '@baserow/modules/core/notificationTypes'
 import { MoreOnboardingType } from '@baserow/modules/core/onboardingTypes'
 import { SidebarGuidedTourType } from '@baserow/modules/core/guidedTourTypes'
 import { TOTPAuthType } from '@baserow/modules/core/twoFactorAuthTypes'
@@ -243,10 +237,6 @@ export default defineNuxtPlugin({
     )
     registry.register(
       'workspaceSettingsPage',
-      new InvitesWorkspaceSettingsPageType(context)
-    )
-    registry.register(
-      'workspaceSettingsPage',
       new TeamsWorkspaceSettingsPageType(context)
     )
 
@@ -371,18 +361,6 @@ export default defineNuxtPlugin({
     registry.register('roles', new AdminRoleType(context))
     registry.register('roles', new MemberRoleType(context))
 
-    registry.register(
-      'notification',
-      new WorkspaceInvitationCreatedNotificationType(context)
-    )
-    registry.register(
-      'notification',
-      new WorkspaceInvitationAcceptedNotificationType(context)
-    )
-    registry.register(
-      'notification',
-      new WorkspaceInvitationRejectedNotificationType(context)
-    )
     registry.register(
       'notification',
       new BaserowVersionUpgradeNotificationType(context)
