@@ -1,0 +1,4 @@
+interface:
+  display_name: "Repo Compare"
+  short_description: "Summarize what changed between two refs of a GitHub repo"
+  default_prompt: "Use $repo-compare to summarize the changes between these two refs."

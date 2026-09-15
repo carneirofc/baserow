@@ -1,0 +1,4 @@
+interface:
+  display_name: "CI Watch"
+  short_description: "Monitor an in-progress GitHub Actions run and report the outcome"
+  default_prompt: "Use $ci-watch to watch this CI run until it finishes and report the result."

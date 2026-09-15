@@ -1,0 +1,4 @@
+interface:
+  display_name: "CI Failure Report"
+  short_description: "Diagnose failing GitHub Actions runs with excerpts and local repro"
+  default_prompt: "Use $ci-failure-report to diagnose why this CI run failed."
