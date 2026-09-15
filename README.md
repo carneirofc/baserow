@@ -219,7 +219,8 @@ covered by the generic [Docker](docs/installation/install-with-docker.md) guide.
 
 ## Documentation
 
-Documentation lives [in the repository](./docs/index.md). Upstream's hosted docs at
+Browse the hosted docs at https://carneirofc.github.io/baserow/, or the source
+[in the repository](./docs/index.md). Upstream's hosted docs at
 https://baserow.io/docs/index also cover the premium and enterprise features that this
 fork does not ship.
 
