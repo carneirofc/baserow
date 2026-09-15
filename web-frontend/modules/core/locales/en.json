@@ -818,7 +818,9 @@
       "actions": {
         "copyEmail": "Copy email",
         "remove": "Remove from workspace"
-      }
+      },
+      "noTeams": "No teams",
+      "noTeamsYet": "This workspace has no teams yet. Create one on the Teams tab."
     }
   },
   "memberSelectionList": {
