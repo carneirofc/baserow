@@ -25,9 +25,7 @@ def test_cleanup_old_actions_never_touches_audit_log_entries(data_fixture):
     old_timestamp = datetime.now(tz=timezone.utc) - timedelta(minutes=10)
     Action.objects.filter(id=old_action.id).update(updated_on=old_timestamp)
 
-    entry = AuditLogHandler().log_action(
-        user, SignInUserActionType, {}, "DO", None
-    )
+    entry = AuditLogHandler().log_action(user, SignInUserActionType, {}, "DO", None)
 
     ActionHandler.clean_up_old_undoable_actions()
 

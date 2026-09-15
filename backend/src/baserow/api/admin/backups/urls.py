@@ -2,9 +2,9 @@ from django.urls import re_path
 
 from .views import (
     BackupAdminView,
-    BackupSchedulesAdminView,
-    BackupScheduleAdminView,
     BackupsAdminView,
+    BackupScheduleAdminView,
+    BackupSchedulesAdminView,
     RemoteBackupsAdminView,
     RestoreBackupAdminView,
     RestoreRemoteBackupAdminView,

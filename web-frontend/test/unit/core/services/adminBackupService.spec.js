@@ -33,7 +33,9 @@ describe('admin backup service', () => {
       .reply(200, { results: [{ resource_id: 10 }] })
 
     const service = AdminBackupService(client)
-    const { data: job } = await service.startBackup(1, { only_structure: false })
+    const { data: job } = await service.startBackup(1, {
+      only_structure: false,
+    })
     const { data: list } = await service.listBackups(1)
 
     expect(job.id).toBe(10)
@@ -42,7 +44,10 @@ describe('admin backup service', () => {
 
   test('manages backup schedules against the admin endpoint', async () => {
     mock
-      .onPost('/admin/backups/schedules/workspace/1/', { name: 'Nightly', cron: '0 3 * * *' })
+      .onPost('/admin/backups/schedules/workspace/1/', {
+        name: 'Nightly',
+        cron: '0 3 * * *',
+      })
       .reply(200, { id: 3, name: 'Nightly' })
     mock.onPost('/admin/backups/schedules/3/run/').reply(202, { id: 13 })
     mock.onDelete('/admin/backups/schedules/3/').reply(204)

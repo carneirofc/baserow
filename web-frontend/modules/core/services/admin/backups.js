@@ -32,7 +32,10 @@ export default (client) => {
       if (applicationIds && applicationIds.length > 0) {
         data.application_ids = applicationIds
       }
-      return client.post(`/admin/backups/workspace/${workspaceId}/restore/`, data)
+      return client.post(
+        `/admin/backups/workspace/${workspaceId}/restore/`,
+        data
+      )
     },
     listSchedules(workspaceId) {
       return client.get(`/admin/backups/schedules/workspace/${workspaceId}/`)

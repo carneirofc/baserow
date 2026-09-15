@@ -61,7 +61,6 @@ from baserow.core.exceptions import (
 )
 from baserow.core.handler import CoreHandler
 from baserow.core.models import Settings, Template, WorkspaceInvitation
-from baserow.core.utils import get_user_remote_ip_address_from_request
 from baserow.core.user.actions import (
     ChangeEmailActionType,
     ChangeUserPasswordActionType,

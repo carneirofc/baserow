@@ -40,13 +40,13 @@ from baserow.core.handler import CoreHandler
 from baserow.core.models import Settings, Template, UserProfile
 from baserow.core.two_factor_auth.handler import TwoFactorAuthHandler
 from baserow.core.user.actions import SignInUserActionType
-from baserow.core.utils import get_user_remote_ip_address_from_request
 from baserow.core.user.exceptions import DeactivatedUserException
 from baserow.core.user.handler import UserHandler
 from baserow.core.user.utils import (
     generate_session_tokens_for_user,
     normalize_email_address,
 )
+from baserow.core.utils import get_user_remote_ip_address_from_request
 
 User = get_user_model()
 

@@ -81,9 +81,7 @@ def test_staff_can_backup_a_workspace_they_are_not_in(
 
     with django_capture_on_commit_callbacks(execute=True):
         response = api_client.post(
-            reverse(
-                "api:admin:backups:start", kwargs={"workspace_id": workspace.id}
-            ),
+            reverse("api:admin:backups:start", kwargs={"workspace_id": workspace.id}),
             {},
             format="json",
             HTTP_AUTHORIZATION=f"JWT {staff_token}",
