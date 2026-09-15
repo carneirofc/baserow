@@ -43,9 +43,14 @@ class AuditLogHandler:
             # written.
             description = str(action_params)
 
+        # `AuditLogEntry.user` is a real FK: an `AnonymousUser` (e.g. a public form
+        # submission) isn't a `User` instance and can't be assigned to it, so only
+        # attribute the entry to actual authenticated users.
+        attributed_user = user if user is not None and user.is_authenticated else None
+
         return AuditLogEntry.objects.create(
-            user=user,
-            user_email=getattr(user, "email", "") or "",
+            user=attributed_user,
+            user_email=getattr(attributed_user, "email", "") or "",
             workspace=workspace,
             ip_address=ip_address,
             action_type=action_type.type,
