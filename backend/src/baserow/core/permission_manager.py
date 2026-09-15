@@ -33,13 +33,22 @@ from .exceptions import (
     UserInvalidWorkspacePermissionsError,
     UserNotInWorkspace,
 )
+from .backups.operations import (
+    CreateBackupScheduleOperationType,
+    DeleteBackupScheduleOperationType,
+    ListBackupSchedulesOperationType,
+    ReadBackupScheduleOperationType,
+    UpdateBackupScheduleOperationType,
+)
 from .operations import (
     AddWorkspaceUsersWorkspaceOperationType,
+    CreateApplicationsWorkspaceOperationType,
     CreateInvitationsWorkspaceOperationType,
     CreateWorkspaceOperationType,
     DeleteWorkspaceInvitationOperationType,
     DeleteWorkspaceOperationType,
     DeleteWorkspaceUserOperationType,
+    ExportWorkspaceOperationType,
     ListApplicationsWorkspaceOperationType,
     ListInvitationsWorkspaceOperationType,
     ListWorkspacesOperationType,
@@ -112,6 +121,45 @@ class StaffOnlyPermissionManagerType(PermissionManagerType):
             "staff_only_operations": self.STAFF_ONLY_OPERATIONS,
             "is_staff": actor.is_staff,
         }
+
+
+class StaffBypassPermissionManagerType(PermissionManagerType):
+    """
+    Grants staff an extra allowance on top of whatever the other permission
+    managers decide, for a short list of operations a staff member should be able
+    to perform on any workspace regardless of membership (e.g. managing backups
+    from the admin area). Unlike `StaffOnlyPermissionManagerType`, this manager
+    never denies: for a non-staff actor, or for an operation not in the list, it
+    leaves the check undetermined so the normal `member`-based managers still
+    decide it. This must run before the `member` permission manager in
+    `settings.PERMISSION_MANAGERS`.
+    """
+
+    type = "staff_bypass"
+    supported_actor_types = [UserSubjectType.type]
+
+    # Reused, workspace-membership-scoped operations that a staff member must also
+    # be able to perform on workspaces they are not a member of, so the admin
+    # backups UI can manage backups/restores across every workspace. Regular,
+    # non-staff use of these same operations by workspace members is untouched.
+    STAFF_BYPASS_OPERATIONS = [
+        ExportWorkspaceOperationType.type,
+        CreateApplicationsWorkspaceOperationType.type,
+        ListBackupSchedulesOperationType.type,
+        CreateBackupScheduleOperationType.type,
+        ReadBackupScheduleOperationType.type,
+        UpdateBackupScheduleOperationType.type,
+        DeleteBackupScheduleOperationType.type,
+    ]
+
+    def check_multiple_permissions(self, checks, workspace=None, include_trash=False):
+        result = {}
+        for check in checks:
+            if check.operation_name in self.STAFF_BYPASS_OPERATIONS and getattr(
+                check.actor, "is_staff", False
+            ):
+                result[check] = True
+        return result
 
 
 class AllowIfTemplatePermissionManagerType(PermissionManagerType):

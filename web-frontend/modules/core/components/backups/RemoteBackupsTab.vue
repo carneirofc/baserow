@@ -111,6 +111,11 @@ export default {
       type: Array,
       required: true,
     },
+    service: {
+      type: Function,
+      required: false,
+      default: null,
+    },
   },
   data() {
     return {
@@ -124,6 +129,9 @@ export default {
     }
   },
   computed: {
+    resolvedService() {
+      return (this.service || BackupService)(this.$client)
+    },
     busy() {
       return this.starting || this.jobIsRunning
     },
@@ -159,7 +167,7 @@ export default {
       this.loading = true
       this.hideError()
       try {
-        const { data } = await BackupService(this.$client).listRemoteBackups(
+        const { data } = await this.resolvedService.listRemoteBackups(
           this.destination,
           this.workspace.id
         )
@@ -180,7 +188,7 @@ export default {
         if (this.isStaff && this.trustPublicKey) {
           values.trust_public_key = true
         }
-        const { data } = await BackupService(this.$client).restoreRemoteBackup(
+        const { data } = await this.resolvedService.restoreRemoteBackup(
           this.destination,
           this.workspace.id,
           values

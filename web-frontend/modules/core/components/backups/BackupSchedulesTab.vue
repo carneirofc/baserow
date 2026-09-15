@@ -104,6 +104,11 @@ export default {
       type: Array,
       required: true,
     },
+    service: {
+      type: Function,
+      required: false,
+      default: null,
+    },
   },
   data() {
     return {
@@ -115,6 +120,11 @@ export default {
       schedules: [],
     }
   },
+  computed: {
+    resolvedService() {
+      return (this.service || BackupService)(this.$client)
+    },
+  },
   mounted() {
     this.load()
   },
@@ -125,7 +135,7 @@ export default {
     async load() {
       this.loading = true
       try {
-        const { data } = await BackupService(this.$client).listSchedules(
+        const { data } = await this.resolvedService.listSchedules(
           this.workspace.id
         )
         this.schedules = data
@@ -143,7 +153,7 @@ export default {
     async save(values) {
       this.saving = true
       this.hideError()
-      const service = BackupService(this.$client)
+      const service = this.resolvedService
       try {
         if (this.editingSchedule) {
           await service.updateSchedule(this.editingSchedule.id, values)
@@ -162,7 +172,7 @@ export default {
       this.runningId = schedule.id
       this.hideError()
       try {
-        const { data: job } = await BackupService(this.$client).runSchedule(
+        const { data: job } = await this.resolvedService.runSchedule(
           schedule.id
         )
         await this.$store.dispatch('job/create', job)
@@ -179,7 +189,7 @@ export default {
     async remove(schedule) {
       this.hideError()
       try {
-        await BackupService(this.$client).deleteSchedule(schedule.id)
+        await this.resolvedService.deleteSchedule(schedule.id)
         this.schedules = this.schedules.filter(
           (item) => item.id !== schedule.id
         )

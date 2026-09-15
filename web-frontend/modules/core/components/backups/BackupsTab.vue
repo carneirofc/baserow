@@ -119,6 +119,11 @@ export default {
       type: Array,
       required: true,
     },
+    service: {
+      type: Function,
+      required: false,
+      default: null,
+    },
   },
   data() {
     return {
@@ -131,6 +136,9 @@ export default {
     }
   },
   computed: {
+    resolvedService() {
+      return (this.service || BackupService)(this.$client)
+    },
     busy() {
       return this.starting || this.jobIsRunning
     },
@@ -145,7 +153,7 @@ export default {
     async load() {
       this.loading = true
       try {
-        const { data } = await BackupService(this.$client).listBackups(
+        const { data } = await this.resolvedService.listBackups(
           this.workspace.id
         )
         this.backups = data.results || []
@@ -174,12 +182,12 @@ export default {
         values.destination = this.destination
       }
       return this.run('backup', () =>
-        BackupService(this.$client).startBackup(this.workspace.id, values)
+        this.resolvedService.startBackup(this.workspace.id, values)
       )
     },
     restore(backup) {
       return this.run('restore', () =>
-        BackupService(this.$client).restoreBackup(
+        this.resolvedService.restoreBackup(
           this.workspace.id,
           backup.resource_id
         )
@@ -188,7 +196,7 @@ export default {
     async remove(backup) {
       this.hideError()
       try {
-        await BackupService(this.$client).deleteBackup(
+        await this.resolvedService.deleteBackup(
           this.workspace.id,
           backup.resource_id
         )

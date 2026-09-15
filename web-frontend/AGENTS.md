@@ -25,6 +25,7 @@ Owns everything under `web-frontend/`: `modules/` (feature code), `test/`, `stor
 - Keep this file free of nested lists: the root `.editorconfig` (4-space Markdown indent) is absent from the CI image, so prettier formats nested list indentation differently locally and in CI.
 - `branding.json` values are validated server-side (token names, CSS color values, font, locale keys) so they cannot inject CSS; keep that validation when adding settings.
 - The `node-base` stage deletes Ubuntu's unowned `/usr/bin/pebble` (CVE-2026-39821) for the same reason npm/yarn are dropped from `local`: unreachable code that scanners still report. Every stage here descends from `node-base`, so the single removal covers them all — see `deploy/AGENTS.md` for the repo-wide rule.
+- `components/backups/{BackupsTab,BackupSchedulesTab,RemoteBackupsTab}.vue` accept an optional `service` prop (a `(client) => {...}` factory, defaulting to `services/backup.js`) so the same tabs render both the member-facing `BackupsModal` (workspace context menu) and the staff-only `pages/admin/backups.vue` (`components/admin/backups/BackupsAdminPanel.vue`, `services/admin/backups.js` hitting `/admin/backups/...`). Extend this prop, don't fork the components, when another surface needs the same tabs against a different endpoint.
 
 ## Work Guidance
 
