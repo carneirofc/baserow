@@ -59,6 +59,24 @@ describe('WorkspaceService members', () => {
     expect(client.post).toHaveBeenCalledWith('/workspaces/users/workspace/3/', {
       user_ids: [4, 5],
       permissions: 'ADMIN',
+      team_ids: [],
+      access_level: null,
+    })
+  })
+
+  test('adds users into teams with a default access level', () => {
+    const client = fakeClient()
+
+    WorkspaceService(client).addUsers(3, [4], 'MEMBER', {
+      teamIds: [7],
+      accessLevel: 'viewer',
+    })
+
+    expect(client.post).toHaveBeenCalledWith('/workspaces/users/workspace/3/', {
+      user_ids: [4],
+      permissions: 'MEMBER',
+      team_ids: [7],
+      access_level: 'viewer',
     })
   })
 })
