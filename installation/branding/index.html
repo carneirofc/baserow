@@ -3079,6 +3079,8 @@
 <li>any color of the design palette</li>
 <li>the UI font</li>
 <li>the logo, favicons and built-in icons</li>
+<li>where the logo and the in-app help links point</li>
+<li>whether the attribution footer is shown at all</li>
 <li>translated texts</li>
 <li>additional CSS</li>
 </ul>
@@ -3090,7 +3092,7 @@ defaults are used.</p>
 defaults to <code>/baserow/branding</code>. In the all-in-one image the default is
 <code>$DATA_DIR/branding</code>, i.e. <code>/baserow/data/branding</code> on the data volume.</p>
 <div class="highlight"><pre><span></span><code>branding/
-├── branding.json     app name, colors, font, translations
+├── branding.json     app name, colors, font, translations, links
 ├── theme.css         extra CSS, loaded after the built-in styles
 ├── img/              logo and favicon overrides
 │   ├── logo.svg          main logo (176×29)
@@ -3115,6 +3117,10 @@ webp, gif, ico, woff, woff2, ttf and otf.</p>
 <span class="w">    </span><span class="nt">"palette-neutral-1200"</span><span class="p">:</span><span class="w"> </span><span class="s2">"#1f2933"</span>
 <span class="w">  </span><span class="p">},</span>
 <span class="w">  </span><span class="nt">"fontFamily"</span><span class="p">:</span><span class="w"> </span><span class="s2">"'Brand Sans', sans-serif"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"siteUrl"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://acme.example"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"docsUrl"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://docs.acme.example"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"siteTitle"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Acme Data"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"showAttribution"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">"messages"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">"en"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"some"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"translation"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">"key"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Replacement text"</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
 <span class="w">  </span><span class="p">}</span>
@@ -3140,8 +3146,24 @@ webp, gif, ico, woff, woff2, ttf and otf.</p>
   the web-frontend logs.
 - <strong><code>fontFamily</code></strong>: a CSS <code>font-family</code> value for the whole UI. Load custom
   fonts with <code>@font-face</code> in <code>theme.css</code>.
+- <strong><code>siteUrl</code></strong>: where the attribution logo links to — the sidebar footer, the
+  header of a publicly shared view, and the "Powered by" block on public form
+  views.
+- <strong><code>docsUrl</code></strong>: where the in-app documentation and help links point: the
+  dashboard resource cards, the automation docs button, the email tester, the
+  role and element-visibility help links.</p>
+<p>Both must be <code>http(s)</code> URLs or root-relative paths (<code>/docs</code>). Anything else,
+  <code>javascript:</code> above all, is ignored with a warning: these values go straight
+  into a link.
+- <strong><code>siteTitle</code></strong>: the <code>title</code> and <code>alt</code> text on the attribution logo. Falls
+  back to <code>appName</code>, then to <code>Baserow</code>. Max 160 characters.
+- <strong><code>showAttribution</code></strong>: set to <code>false</code> to remove the attribution entirely —
+  the sidebar footer logo, the shared-view header logo, the public form
+  "Powered by" block and the dashboard "star on GitHub / share" alert all stop
+  rendering.
 - <strong><code>messages</code></strong>: translation overrides per locale, using the same keys as
-  <code>web-frontend/**/locales/&lt;locale&gt;.json</code>.</p>
+  <code>web-frontend/**/locales/&lt;locale&gt;.json</code>. The "Powered by" label is
+  <code>formViewPoweredBy.poweredBy</code> in the database module.</p>
 <h3 id="themecss">theme.css<a class="headerlink" href="#themecss" title="Permanent link">&para;</a></h3>
 <p>Plain CSS that is loaded after the built-in styles and the generated color
 variables, so it can override anything. Reference your own assets from
@@ -3177,6 +3199,22 @@ variables, so it can override anything. Reference your own assets from
 <td><code>BASEROW_BRANDING_COLORS</code></td>
 <td>JSON object merged over <code>colors</code>, e.g. <code>{"color-primary-500":"#0f766e"}</code>.</td>
 </tr>
+<tr>
+<td><code>BASEROW_BRANDING_SITE_URL</code></td>
+<td>Overrides <code>siteUrl</code>.</td>
+</tr>
+<tr>
+<td><code>BASEROW_BRANDING_DOCS_URL</code></td>
+<td>Overrides <code>docsUrl</code>.</td>
+</tr>
+<tr>
+<td><code>BASEROW_BRANDING_SITE_TITLE</code></td>
+<td>Overrides <code>siteTitle</code>.</td>
+</tr>
+<tr>
+<td><code>BASEROW_BRANDING_SHOW_ATTRIBUTION</code></td>
+<td>Overrides <code>showAttribution</code>; <code>true</code>/<code>false</code>.</td>
+</tr>
 </tbody>
 </table>
 <h2 id="applying-changes">Applying changes<a class="headerlink" href="#applying-changes" title="Permanent link">&para;</a></h2>
@@ -3202,6 +3240,10 @@ or mount a directory there.</p>
 <span class="w">  </span><span class="nt">colors</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">color-primary-500</span><span class="p">:</span><span class="w"> </span><span class="s">"#0f766e"</span>
 <span class="w">  </span><span class="nt">fontFamily</span><span class="p">:</span><span class="w"> </span><span class="s">""</span>
+<span class="w">  </span><span class="nt">siteUrl</span><span class="p">:</span><span class="w"> </span><span class="s">"https://acme.example"</span>
+<span class="w">  </span><span class="nt">docsUrl</span><span class="p">:</span><span class="w"> </span><span class="s">"https://docs.acme.example"</span>
+<span class="w">  </span><span class="nt">siteTitle</span><span class="p">:</span><span class="w"> </span><span class="s">"Acme</span><span class="nv"> </span><span class="s">Data"</span>
+<span class="w">  </span><span class="nt">showAttribution</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class="w">  </span><span class="nt">messages</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
 <span class="w">  </span><span class="nt">themeCss</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
 <span class="w">    </span><span class="no">.logo img { height: 24px; }</span>
@@ -3217,6 +3259,8 @@ PersistentVolumeClaim holding a complete branding directory and set
 <ul>
 <li>Plugins that register their own logo component
   (<code>getLogoComponent()</code>) still take precedence over <code>img/logo.svg</code>.</li>
+<li>A form view's own "show logo" setting still applies: <code>showAttribution</code> only
+  ever hides the block further, it never forces it back on.</li>
 <li>Icons from the Iconoir icon font (<code>iconoir-*</code> classes) are font glyphs and
   cannot be swapped file by file; restyle or hide them with <code>theme.css</code>.</li>
 <li>Application Builder sites keep their per-application theme settings.</li>
