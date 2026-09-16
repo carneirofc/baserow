@@ -8,13 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://carneirofc.github.io/baserow/plugins/view-filter-type/">
+        <link rel="canonical" href="https://carneirofc.github.io/baserow/tutorials/api-clients/">
       
       
-        <link rel="prev" href="../view-type/">
+        <link rel="prev" href="../protected-editing/">
       
       
-        <link rel="next" href="../field-type/">
+        <link rel="next" href="../../apis/rest-api/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -22,7 +22,7 @@
     
     
       
-        <title>Create database table view filter - Baserow (carneirofc fork) Docs</title>
+        <title>API clients - Baserow (carneirofc fork) Docs</title>
       
     
     
@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#view-filter-type" class="md-skip">
+        <a href="#api-clients" class="md-skip">
           Skip to content
         </a>
       
@@ -108,7 +108,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Create database table view filter
+              API clients
             
           </span>
         </div>
@@ -250,11 +250,13 @@
         
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../../tutorials/understanding-baserow-formulas/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../understanding-baserow-formulas/" class="md-tabs__link">
           
   
   Tutorials
@@ -322,13 +324,11 @@
         
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../introduction/" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../plugins/introduction/" class="md-tabs__link">
           
   
   Plugins
@@ -1005,23 +1005,28 @@
       
   
   
+    
   
   
+  
     
     
     
-      
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
             
   
   <span class="md-ellipsis">
@@ -1032,7 +1037,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             Tutorials
@@ -1046,7 +1051,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/understanding-baserow-formulas/" class="md-nav__link">
+      <a href="../understanding-baserow-formulas/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1067,7 +1072,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/debugging-connection-issues/" class="md-nav__link">
+      <a href="../debugging-connection-issues/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1088,7 +1093,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/prefill-forms/" class="md-nav__link">
+      <a href="../prefill-forms/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1109,7 +1114,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/protected-editing/" class="md-nav__link">
+      <a href="../protected-editing/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1127,10 +1132,30 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../tutorials/api-clients/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    API clients
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -1139,6 +1164,62 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#creating-a-client" class="md-nav__link">
+    <span class="md-ellipsis">
+      Creating a client
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#issuing-a-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      Issuing a key
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#revoking-and-deactivating" class="md-nav__link">
+    <span class="md-ellipsis">
+      Revoking and deactivating
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#auditing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Auditing
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1983,28 +2064,23 @@
       
   
   
-    
   
   
-  
     
     
     
       
-        
-        
-      
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
         
           
-          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -2015,7 +2091,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             Plugins
@@ -2029,7 +2105,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../introduction/" class="md-nav__link">
+      <a href="../../plugins/introduction/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2050,7 +2126,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../boilerplate/" class="md-nav__link">
+      <a href="../../plugins/boilerplate/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2071,7 +2147,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../application-type/" class="md-nav__link">
+      <a href="../../plugins/application-type/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2092,7 +2168,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../view-type/" class="md-nav__link">
+      <a href="../../plugins/view-type/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2110,30 +2186,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    Create database table view filter
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../plugins/view-filter-type/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2142,59 +2198,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#backend" class="md-nav__link">
-    <span class="md-ellipsis">
-      Backend
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Backend">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#api-request" class="md-nav__link">
-    <span class="md-ellipsis">
-      API request
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#web-frontend" class="md-nav__link">
-    <span class="md-ellipsis">
-      Web frontend
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -2207,7 +2210,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../field-type/" class="md-nav__link">
+      <a href="../../plugins/field-type/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2228,7 +2231,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../field-converter/" class="md-nav__link">
+      <a href="../../plugins/field-converter/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2249,7 +2252,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../creation/" class="md-nav__link">
+      <a href="../../plugins/creation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2270,7 +2273,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../installation/" class="md-nav__link">
+      <a href="../../plugins/installation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2879,33 +2882,36 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#backend" class="md-nav__link">
+  <a href="#creating-a-client" class="md-nav__link">
     <span class="md-ellipsis">
-      Backend
+      Creating a client
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Backend">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#api-request" class="md-nav__link">
-    <span class="md-ellipsis">
-      API request
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#web-frontend" class="md-nav__link">
+  <a href="#issuing-a-key" class="md-nav__link">
     <span class="md-ellipsis">
-      Web frontend
+      Issuing a key
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#revoking-and-deactivating" class="md-nav__link">
+    <span class="md-ellipsis">
+      Revoking and deactivating
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#auditing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Auditing
     </span>
   </a>
   
@@ -2926,7 +2932,7 @@
                   
 
   
-    <a href="https://github.com/carneirofc/baserow/edit/develop/docs/plugins/view-filter-type.md" title="Edit this page" class="md-content__button md-icon">
+    <a href="https://github.com/carneirofc/baserow/edit/develop/docs/tutorials/api-clients.md" title="Edit this page" class="md-content__button md-icon">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
     </a>
@@ -2934,156 +2940,76 @@
   
 
 
-<h1 id="view-filter-type">View filter type<a class="headerlink" href="#view-filter-type" title="Permanent link">&para;</a></h1>
-<p>A view filter can be created by a user to filter the rows of a view. Only the rows that
-apply to the filters are going to be displayed. There can be many types of filters like
-equals, contains, lower than, is empty, etc. These filter types can easily be added when
-creating a plugin.</p>
-<h2 id="backend">Backend<a class="headerlink" href="#backend" title="Permanent link">&para;</a></h2>
-<p>We are going to create a really simple <code>equals</code> filter. This filter already exists, but
-because of its simplicity we are going to use it as an example. In your filter class you
-can define compatible field types. It will only be possible to create a filter in
-combination with those field types. The <code>get_filter</code> method should return a
-Django <code>models.Q</code> object which will automatically be added to the correct queryset.
-Because the field name is provided we can easily do a <code>Q(**{field_name: value})</code>
-comparison with the provided value.</p>
-<p>plugins/my_baserow_plugin/backend/src/my_baserow_plugin/view_filters.py
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">django.db.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Q</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">baserow.contrib.database.views.registries</span><span class="w"> </span><span class="kn">import</span> <span class="n">ViewFilterType</span>
-
-
-<span class="k">class</span><span class="w"> </span><span class="nc">EqualToViewFilterType</span><span class="p">(</span><span class="n">ViewFilterType</span><span class="p">):</span>
-    <span class="nb">type</span> <span class="o">=</span> <span class="s1">'equal_to'</span>
-    <span class="n">compatible_field_types</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'text'</span><span class="p">]</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">get_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field_name</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">model_field</span><span class="p">,</span> <span class="n">field</span><span class="p">):</span>
-        <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-
-        <span class="c1"># If an empty value has been provided we do not want to filter at all.</span>
-        <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="s1">''</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">Q</span><span class="p">()</span>
-
-        <span class="c1"># Check if the model_field accepts the value.</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="n">model_field</span><span class="o">.</span><span class="n">get_prep_value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">Q</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">field_name</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span>
-        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="k">pass</span>
-
-        <span class="k">return</span> <span class="n">Q</span><span class="p">()</span>
-</code></pre></div></p>
-<p>Finally, we need to register the view filter in the registry.</p>
-<p>plugins/my_baserow_plugin/backend/src/my_baserow_plugin/config.py
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">django.apps</span><span class="w"> </span><span class="kn">import</span> <span class="n">AppConfig</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">baserow.core.registries</span><span class="w"> </span><span class="kn">import</span> <span class="n">plugin_registry</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">baserow.contrib.database.views.registries</span><span class="w"> </span><span class="kn">import</span> <span class="n">view_filter_type_registry</span>
-
-
-<span class="k">class</span><span class="w"> </span><span class="nc">PluginNameConfig</span><span class="p">(</span><span class="n">AppConfig</span><span class="p">):</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="s1">'my_baserow_plugin'</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">ready</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">.plugins</span><span class="w"> </span><span class="kn">import</span> <span class="n">PluginNamePlugin</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">.view_filters</span><span class="w"> </span><span class="kn">import</span> <span class="n">EqualToViewFilterType</span>
-
-        <span class="n">plugin_registry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">PluginNamePlugin</span><span class="p">())</span>
-        <span class="n">view_filter_type_registry</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">EqualToViewFilterType</span><span class="p">())</span>
-</code></pre></div></p>
-<h3 id="api-request">API request<a class="headerlink" href="#api-request" title="Permanent link">&para;</a></h3>
-<p>After creating the filter type you can create a filter by making the following API
-request. Note that you must already have a grid view that contains some fields.</p>
-<p><div class="highlight"><pre><span></span><code>POST /api/database/views/{view_id}/filters/
-Host: api.baserow.io
-Content-Type: application/json
-
-{
-  "field": {field_id},
-  "type": "equal_to",
-  "value": "Example"
-}
+<h1 id="api-clients">API clients<a class="headerlink" href="#api-clients" title="Permanent link">&para;</a></h1>
+<p>An API client is a credential for a non-human integration — a backup runner, a sync
+job, a monitoring script. It acts on your behalf in one workspace, narrowed down to
+the scopes you grant it.</p>
+<p>A scope never widens what an integration can do. The client always acts as the user
+who created it, so the regular permission checks still apply; the scopes only narrow
+that user's access down to the endpoints the integration actually needs.</p>
+<h2 id="creating-a-client">Creating a client<a class="headerlink" href="#creating-a-client" title="Permanent link">&para;</a></h2>
+<p>Open the workspace's menu in the sidebar (the three dots next to the workspace name)
+and click <strong>API clients</strong>, then <strong>Create client</strong>. Give it a name and tick the scopes
+it needs:</p>
+<table>
+<thead>
+<tr>
+<th>Scope</th>
+<th>What it allows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>backup.read</code></td>
+<td>List backups and obtain their download URL.</td>
+</tr>
+<tr>
+<td><code>backup.write</code></td>
+<td>Start new backups and delete existing ones.</td>
+</tr>
+<tr>
+<td><code>backup.restore</code></td>
+<td>Restore a backup into a workspace.</td>
+</tr>
+<tr>
+<td><code>contents.read</code></td>
+<td>Read the full contents of a workspace or application.</td>
+</tr>
+<tr>
+<td><code>schedule.read</code></td>
+<td>List backup schedules.</td>
+</tr>
+<tr>
+<td><code>schedule.write</code></td>
+<td>Create, update, delete and manually trigger schedules.</td>
+</tr>
+</tbody>
+</table>
+<p>You only see the clients you created yourself. A new client has no keys yet, so it
+cannot authenticate until you issue one.</p>
+<h2 id="issuing-a-key">Issuing a key<a class="headerlink" href="#issuing-a-key" title="Permanent link">&para;</a></h2>
+<p>Expand the client and click <strong>Issue key</strong>. A name is optional and only helps you tell
+your keys apart. Leave <strong>Expires on</strong> empty for a key that never expires.</p>
+<p>The full key is shown once, immediately after it is issued. Only a hash of it is
+stored, so it cannot be shown again — copy it before closing the dialog. If you lose
+it, revoke the key and issue a new one.</p>
+<p>Authenticate requests with the key in an <code>Authorization</code> header:</p>
+<div class="highlight"><pre><span></span><code>Authorization: Client &lt;the key you copied&gt;
 </code></pre></div>
-or
-<div class="highlight"><pre><span></span><code>curl -X POST -H 'Content-Type: application/json' -i https://api.baserow.io/api/database/views/{view_id}/filters/ --data '{
-  "field": {field_id},
-  "type": "equal_to",
-  "value": "Example"
-}'
-</code></pre></div></p>
-<p>Now that the filter has been created you can refresh your grid view by calling the
-<code>list_database_table_grid_view_rows endpoint</code>. It will now only contain the rows that
-apply to the filter.</p>
-<p><div class="highlight"><pre><span></span><code>GET /api/database/views/grid/{view_id}/
-Host: api.baserow.io
-Content-Type: application/json
-</code></pre></div>
-or
-<div class="highlight"><pre><span></span><code>curl -X GET -H 'Content-Type: application/json' -i https://api.baserow.io/api/database/views/grid/{view_id}/'
-</code></pre></div></p>
-<h2 id="web-frontend">Web frontend<a class="headerlink" href="#web-frontend" title="Permanent link">&para;</a></h2>
-<p>This filter also needs to be added to the web frontend, otherwise it does not know the
-filter exists. You can add the filter by creating a new <code>ViewFilterType</code> class and
-register it with the <code>viewFilter</code> registry. the <code>getName</code> method should return a string
-that is visible to the user when choosing the filter. The <code>getInputComponent</code> method
-handles the user input of the value. By default no input is shown. The
-<code>getCompatibleFieldTypes</code> should return a list of field type names that are compatible
-with the filter. The last method is named <code>matches</code> and we use this to check if a value
-is compatible applies to the filter in real time.</p>
-<p>It is unfortunate that we need to have the same code in two places, but because the
-filtering needs to happen at the backend and frontend for real time comparison we do
-need this. More specifically the frontend uses the filtering code to check if after a
-row is edited if it still matches the views current filters. If it doesn't then a
-warning will be displayed to the user that if they save their edit, the row will be
-filtered out of view.</p>
-<p>plugins/my_baserow_plugin/web-frontend/viewTypes.js
-<div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">ViewFilterType</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'@baserow/modules/database/viewFilters'</span>
-<span class="k">import</span><span class="w"> </span><span class="nx">ViewFilterTypeText</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'@baserow/modules/database/components/view/ViewFilterTypeText'</span>
-
-<span class="k">export</span><span class="w"> </span><span class="kd">class</span><span class="w"> </span><span class="nx">EqualViewFilterType</span><span class="w"> </span><span class="k">extends</span><span class="w"> </span><span class="nx">ViewFilterType</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="nx">getType</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="s1">'equal_to'</span>
-<span class="w">  </span><span class="p">}</span>
-
-<span class="w">  </span><span class="nx">getName</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="s1">'is 2'</span>
-<span class="w">  </span><span class="p">}</span>
-
-<span class="w">  </span><span class="nx">getInputComponent</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="c1">// The component that handles the value input, in this case we use the existing</span>
-<span class="w">    </span><span class="c1">// text input, but it is also possible to create a custom component. It should</span>
-<span class="w">    </span><span class="c1">// follow v-model principle.</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">ViewFilterTypeText</span>
-<span class="w">  </span><span class="p">}</span>
-
-<span class="w">  </span><span class="nx">getCompatibleFieldTypes</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">[</span><span class="s1">'text'</span><span class="p">]</span>
-<span class="w">  </span><span class="p">}</span>
-
-<span class="w">  </span><span class="nx">matches</span><span class="p">(</span><span class="nx">rowValue</span><span class="p">,</span><span class="w"> </span><span class="nx">filterValue</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="nx">rowValue</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="kc">null</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nx">rowValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">''</span>
-<span class="w">    </span><span class="p">}</span>
-
-<span class="w">    </span><span class="nx">rowValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">rowValue</span><span class="p">.</span><span class="nx">toString</span><span class="p">().</span><span class="nx">toLowerCase</span><span class="p">().</span><span class="nx">trim</span><span class="p">()</span>
-<span class="w">    </span><span class="nx">filterValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">filterValue</span><span class="p">.</span><span class="nx">toString</span><span class="p">().</span><span class="nx">toLowerCase</span><span class="p">().</span><span class="nx">trim</span><span class="p">()</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nx">filterValue</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="s1">''</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nx">rowValue</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="nx">filterValue</span>
-<span class="w">  </span><span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div></p>
-<p>plugins/my_baserow_plugin/web-frontend/plugin.js
-<div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">PluginNamePlugin</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'@my-baserow-plugin/plugins'</span>
-<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">EqualViewFilterType</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'@my-baserow-plugin/viewFilters'</span>
-
-<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="p">(</span><span class="nx">context</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">app</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">context</span>
-<span class="w">  </span><span class="nx">app</span><span class="p">.</span><span class="nx">$registry</span><span class="p">.</span><span class="nx">register</span><span class="p">(</span><span class="s1">'plugin'</span><span class="p">,</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">PluginNamePlugin</span><span class="p">(</span><span class="nx">context</span><span class="p">))</span>
-<span class="w">  </span><span class="nx">app</span><span class="p">.</span><span class="nx">$registry</span><span class="p">.</span><span class="nx">register</span><span class="p">(</span><span class="s1">'viewFilter'</span><span class="p">,</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">EqualViewFilterType</span><span class="p">(</span><span class="nx">context</span><span class="p">))</span>
-<span class="p">}</span>
-</code></pre></div></p>
-<p>Once you have added this code, a new filter to a view and have selected a
-text field you should be able to select the <code>is 2</code> filter. It should also be possible to
-provide a text value to compare the field value with.</p>
+<h2 id="revoking-and-deactivating">Revoking and deactivating<a class="headerlink" href="#revoking-and-deactivating" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Revoke</strong> a single key to stop it working immediately. The record is kept and shown
+  as revoked, so the revocation stays visible.</li>
+<li><strong>Deactivate</strong> the client to stop <em>every</em> key of that client working at once,
+  without deleting anything. Reactivating brings them all back.</li>
+<li><strong>Delete</strong> the client to remove it and all of its keys permanently.</li>
+</ul>
+<p>The key list shows when each key was last used, which is the quickest way to tell
+whether a key is still in service before you revoke it.</p>
+<h2 id="auditing">Auditing<a class="headerlink" href="#auditing" title="Permanent link">&para;</a></h2>
+<p>Creating, updating and deleting clients and keys goes through the regular actions, so
+it is recorded in the staff audit log (<strong>Admin → Audit log</strong>), as is everything the
+client subsequently does.</p>
 
 
 
