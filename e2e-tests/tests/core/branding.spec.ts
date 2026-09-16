@@ -12,7 +12,13 @@ test("Branding config is served with defaults @fast", async ({ request }) => {
   const response = await request.get(frontend("/_branding/config.json"));
   expect(response.status()).toBe(200);
   const body = await response.json();
-  expect(body).toMatchObject({ hasTheme: false });
+  expect(body).toMatchObject({
+    hasTheme: false,
+    siteUrl: "https://github.com/carneirofc/baserow",
+    docsUrl: "https://github.com/carneirofc/baserow",
+    siteTitle: "Baserow",
+    showAttribution: true,
+  });
   expect(body.version).toEqual(expect.any(String));
 });
 

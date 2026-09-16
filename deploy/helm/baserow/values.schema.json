@@ -191,6 +191,10 @@
         },
         "fontFamily": { "type": "string" },
         "messages": { "type": "object" },
+        "siteUrl": { "type": "string" },
+        "docsUrl": { "type": "string" },
+        "siteTitle": { "type": "string" },
+        "showAttribution": { "type": "boolean" },
         "themeCss": { "type": "string" },
         "files": {
           "type": "object",

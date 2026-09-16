@@ -77,7 +77,7 @@
             <h4>{{ $t('dashboard.resources') }}</h4>
             <div class="dashboard__resources-wrapper">
               <a
-                href="https://github.com/carneirofc/baserow"
+                :href="$branding.docsUrl"
                 target="_new"
                 class="dashboard__resource dashboard__resource--large"
               >
@@ -102,7 +102,7 @@
                 :key="index"
               ></component>
               <a
-                href="https://github.com/carneirofc/baserow"
+                :href="$branding.docsUrl"
                 target="_new"
                 class="dashboard__resource"
               >

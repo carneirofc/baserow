@@ -8,7 +8,25 @@ import { loadBranding } from './config.js'
  * SSR by the branding plugin and shipped to the client in the payload.
  */
 export default defineEventHandler(async (event) => {
-  const { appName, messages, version, hasTheme } = await loadBranding()
+  const {
+    appName,
+    messages,
+    version,
+    hasTheme,
+    siteUrl,
+    docsUrl,
+    siteTitle,
+    showAttribution,
+  } = await loadBranding()
   setResponseHeaders(event, { 'Cache-Control': 'no-cache' })
-  return { appName, messages, version, hasTheme }
+  return {
+    appName,
+    messages,
+    version,
+    hasTheme,
+    siteUrl,
+    docsUrl,
+    siteTitle,
+    showAttribution,
+  }
 })

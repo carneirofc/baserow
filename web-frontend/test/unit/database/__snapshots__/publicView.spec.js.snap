@@ -48,15 +48,15 @@ exports[`Public View Page Tests > Can see a publicly shared grid view 1`] = `
               class="header__filter-logo"
               href="https://github.com/carneirofc/baserow"
               target="_blank"
-              title="Baserow - open source no-code database tool and Airtable alternative"
+              title="Baserow"
             >
               <div
-                alt="Baserow - open source no-code database tool and Airtable alternative"
+                alt="Baserow"
                 class="logo"
                 height="14"
               >
                 <img
-                  alt="Baserow - open source no-code database tool and Airtable alternative"
+                  alt="Baserow"
                   class=""
                   height="14"
                   src="/_branding/assets/img/logo.svg"

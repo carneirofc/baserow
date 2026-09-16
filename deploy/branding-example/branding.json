@@ -14,6 +14,10 @@
     "palette-blue-1000": "#0f3d3a",
     "palette-blue-1100": "#042f2e"
   },
+  "siteUrl": "https://acme.example",
+  "docsUrl": "https://docs.acme.example",
+  "siteTitle": "Acme Data",
+  "showAttribution": true,
   "messages": {
     "en": {}
   }

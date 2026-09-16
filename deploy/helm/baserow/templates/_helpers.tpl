@@ -317,5 +317,6 @@ files); see templates/configmap-branding.yaml.
 */}}
 {{- define "baserow.branding.inline" -}}
 {{- $b := .Values.branding -}}
-{{- if or $b.appName $b.colors $b.fontFamily $b.messages $b.themeCss $b.files -}}true{{- end -}}
+{{- /* showAttribution defaults to true, so only switching it off is a change. */ -}}
+{{- if or $b.appName $b.colors $b.fontFamily $b.messages $b.themeCss $b.files $b.siteUrl $b.docsUrl $b.siteTitle (not $b.showAttribution) -}}true{{- end -}}
 {{- end -}}

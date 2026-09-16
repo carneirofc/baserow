@@ -299,6 +299,15 @@ branding:
   fontFamily: ""
   # Translation overrides per locale, e.g. {en: {"some.key": "Text"}}.
   messages: {}
+  # Where the attribution logo links to (sidebar footer, public form views).
+  siteUrl: ""
+  # Where the in-app documentation and help links point.
+  docsUrl: ""
+  # title/alt text on the attribution logo; defaults to appName.
+  siteTitle: ""
+  # Set to false to drop the attribution logo, the public form "Powered by"
+  # block and the dashboard promo alert entirely.
+  showAttribution: true
   # Extra CSS appended after the built-in styles.
   themeCss: ""
   # Image, icon and font overrides as base64, keyed by their path inside the

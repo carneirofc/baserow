@@ -6,6 +6,8 @@ Operators can change the web-frontend's look without rebuilding the image:
 - any color of the design palette
 - the UI font
 - the logo, favicons and built-in icons
+- where the logo and the in-app help links point
+- whether the attribution footer is shown at all
 - translated texts
 - additional CSS
 
@@ -21,7 +23,7 @@ defaults to `/baserow/branding`. In the all-in-one image the default is
 
 ```
 branding/
-├── branding.json     app name, colors, font, translations
+├── branding.json     app name, colors, font, translations, links
 ├── theme.css         extra CSS, loaded after the built-in styles
 ├── img/              logo and favicon overrides
 │   ├── logo.svg          main logo (176×29)
@@ -51,6 +53,10 @@ webp, gif, ico, woff, woff2, ttf and otf.
     "palette-neutral-1200": "#1f2933"
   },
   "fontFamily": "'Brand Sans', sans-serif",
+  "siteUrl": "https://acme.example",
+  "docsUrl": "https://docs.acme.example",
+  "siteTitle": "Acme Data",
+  "showAttribution": true,
   "messages": {
     "en": { "some": { "translation": { "key": "Replacement text" } } }
   }
@@ -77,8 +83,25 @@ webp, gif, ico, woff, woff2, ttf and otf.
   the web-frontend logs.
 - **`fontFamily`**: a CSS `font-family` value for the whole UI. Load custom
   fonts with `@font-face` in `theme.css`.
+- **`siteUrl`**: where the attribution logo links to — the sidebar footer, the
+  header of a publicly shared view, and the "Powered by" block on public form
+  views.
+- **`docsUrl`**: where the in-app documentation and help links point: the
+  dashboard resource cards, the automation docs button, the email tester, the
+  role and element-visibility help links.
+
+  Both must be `http(s)` URLs or root-relative paths (`/docs`). Anything else,
+  `javascript:` above all, is ignored with a warning: these values go straight
+  into a link.
+- **`siteTitle`**: the `title` and `alt` text on the attribution logo. Falls
+  back to `appName`, then to `Baserow`. Max 160 characters.
+- **`showAttribution`**: set to `false` to remove the attribution entirely —
+  the sidebar footer logo, the shared-view header logo, the public form
+  "Powered by" block and the dashboard "star on GitHub / share" alert all stop
+  rendering.
 - **`messages`**: translation overrides per locale, using the same keys as
-  `web-frontend/**/locales/<locale>.json`.
+  `web-frontend/**/locales/<locale>.json`. The "Powered by" label is
+  `formViewPoweredBy.poweredBy` in the database module.
 
 ### theme.css
 
@@ -106,6 +129,10 @@ These take precedence over `branding.json`, and empty values count as unset:
 | `BASEROW_BRANDING_DIR` | Branding directory path (default `/baserow/branding`). |
 | `BASEROW_BRANDING_APP_NAME` | Overrides `appName`. |
 | `BASEROW_BRANDING_COLORS` | JSON object merged over `colors`, e.g. `{"color-primary-500":"#0f766e"}`. |
+| `BASEROW_BRANDING_SITE_URL` | Overrides `siteUrl`. |
+| `BASEROW_BRANDING_DOCS_URL` | Overrides `docsUrl`. |
+| `BASEROW_BRANDING_SITE_TITLE` | Overrides `siteTitle`. |
+| `BASEROW_BRANDING_SHOW_ATTRIBUTION` | Overrides `showAttribution`; `true`/`false`. |
 
 ## Applying changes
 
@@ -142,6 +169,10 @@ branding:
   colors:
     color-primary-500: "#0f766e"
   fontFamily: ""
+  siteUrl: "https://acme.example"
+  docsUrl: "https://docs.acme.example"
+  siteTitle: "Acme Data"
+  showAttribution: true
   messages: {}
   themeCss: |
     .logo img { height: 24px; }
@@ -159,6 +190,8 @@ PersistentVolumeClaim holding a complete branding directory and set
 
 - Plugins that register their own logo component
   (`getLogoComponent()`) still take precedence over `img/logo.svg`.
+- A form view's own "show logo" setting still applies: `showAttribution` only
+  ever hides the block further, it never forces it back on.
 - Icons from the Iconoir icon font (`iconoir-*` classes) are font glyphs and
   cannot be swapped file by file; restyle or hide them with `theme.css`.
 - Application Builder sites keep their per-application theme settings.

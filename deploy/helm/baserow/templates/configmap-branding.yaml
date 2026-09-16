@@ -14,7 +14,7 @@ metadata:
     {{- include "baserow.labels" . | nindent 4 }}
 {{- if $inline }}
 data:
-  branding.json: {{ dict "appName" $b.appName "colors" $b.colors "fontFamily" $b.fontFamily "messages" $b.messages | toJson | quote }}
+  branding.json: {{ dict "appName" $b.appName "colors" $b.colors "fontFamily" $b.fontFamily "messages" $b.messages "siteUrl" $b.siteUrl "docsUrl" $b.docsUrl "siteTitle" $b.siteTitle "showAttribution" $b.showAttribution | toJson | quote }}
   {{- if $b.themeCss }}
   theme.css: {{ $b.themeCss | quote }}
   {{- end }}

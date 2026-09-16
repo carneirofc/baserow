@@ -128,6 +128,10 @@ services:
       # Runtime branding (docs/installation/branding.md): no rebuild needed.
       BASEROW_BRANDING_APP_NAME: ${BASEROW_BRANDING_APP_NAME:-}
       BASEROW_BRANDING_COLORS: ${BASEROW_BRANDING_COLORS:-}
+      BASEROW_BRANDING_SITE_URL: ${BASEROW_BRANDING_SITE_URL:-}
+      BASEROW_BRANDING_DOCS_URL: ${BASEROW_BRANDING_DOCS_URL:-}
+      BASEROW_BRANDING_SITE_TITLE: ${BASEROW_BRANDING_SITE_TITLE:-}
+      BASEROW_BRANDING_SHOW_ATTRIBUTION: ${BASEROW_BRANDING_SHOW_ATTRIBUTION:-}
     # To customize logos, colors, icons and CSS, mount a branding directory
     # (start from deploy/branding-example) read-only at /baserow/branding:
     # volumes:

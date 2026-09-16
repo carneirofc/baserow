@@ -113,6 +113,10 @@ All personalization is applied at runtime; no image rebuild is needed. See
   `img/logo.svg`, `img/favicon_32.png` or `icons/formula.svg`.
 - **Favicon.ico:** `branding.faviconBase64` is also mounted over the served
   `/favicon.ico`.
+- **Links and attribution:** `branding.siteUrl` retargets the attribution logo,
+  `branding.docsUrl` the in-app help links, and `branding.siteTitle` their
+  title text. `branding.showAttribution: false` removes the attribution logo,
+  the public form "Powered by" block and the dashboard promo alert.
 - **Large asset sets:** a ConfigMap holds at most about 1 MiB. Instead, set
   `branding.existingClaim` to a PersistentVolumeClaim that holds a complete
   branding directory.

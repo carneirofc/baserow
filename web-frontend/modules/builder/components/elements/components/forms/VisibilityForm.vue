@@ -70,7 +70,7 @@
       <template #title>{{ $t('visibilityForm.warningTitle') }}</template>
       <i18n-t keypath="visibilityForm.warningMessage" tag="p">
         <template #link>
-          <a href="https://github.com/carneirofc/baserow" target="_blank">{{
+          <a :href="$branding.docsUrl" target="_blank">{{
             $t('visibilityForm.documentationLink')
           }}</a>
         </template>
