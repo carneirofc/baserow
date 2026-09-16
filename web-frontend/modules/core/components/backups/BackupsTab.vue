@@ -34,6 +34,25 @@
         </FormGroup>
       </div>
     </div>
+    <FormGroup
+      v-if="applications.length > 0"
+      small-label
+      :label="$t('backupsModal.scope')"
+      class="margin-bottom-2"
+    >
+      <Checkbox v-model="onlySelectedApplications" :disabled="busy">
+        {{ $t('backupsModal.onlySelectedApplications') }}
+      </Checkbox>
+      <ApplicationSelector
+        v-if="onlySelectedApplications"
+        class="margin-top-1"
+        :workspace="workspace"
+        :selected-application-ids="selectedApplicationIds"
+        :disabled="busy"
+        @update="selectedApplicationIds = $event"
+      />
+    </FormGroup>
+
     <ProgressBar
       v-if="jobIsRunning"
       class="margin-bottom-2"
@@ -105,10 +124,12 @@ import error from '@baserow/modules/core/mixins/error'
 import job from '@baserow/modules/core/mixins/job'
 import moment from '@baserow/modules/core/moment'
 import BackupService from '@baserow/modules/core/services/backup'
+import ApplicationSelector from '@baserow/modules/core/components/export/ApplicationSelector'
 import { notifyIf } from '@baserow/modules/core/utils/error'
 
 export default {
   name: 'BackupsTab',
+  components: { ApplicationSelector },
   mixins: [error, job],
   props: {
     workspace: {
@@ -132,6 +153,8 @@ export default {
       jobKind: null,
       destination: '',
       onlyStructure: false,
+      onlySelectedApplications: false,
+      selectedApplicationIds: [],
       backups: [],
     }
   },
@@ -141,6 +164,17 @@ export default {
     },
     busy() {
       return this.starting || this.jobIsRunning
+    },
+    /**
+     * `ApplicationSelector` reads the applications out of the store, which only
+     * holds those of the workspace the user has open. The staff admin panel targets
+     * an arbitrary workspace, so there the list is empty and the picker is hidden
+     * rather than showing the wrong applications.
+     */
+    applications() {
+      return this.$store.getters['application/getAllOfWorkspace'](
+        this.workspace
+      )
     },
   },
   mounted() {
@@ -180,6 +214,9 @@ export default {
       const values = { only_structure: this.onlyStructure }
       if (this.destination) {
         values.destination = this.destination
+      }
+      if (this.onlySelectedApplications && this.selectedApplicationIds.length) {
+        values.application_ids = this.selectedApplicationIds
       }
       return this.run('backup', () =>
         this.resolvedService.startBackup(this.workspace.id, values)

@@ -81,6 +81,18 @@
           <FormInput v-model="values.keep_days" type="number" />
         </FormGroup>
       </div>
+      <div v-if="applications.length > 0" class="col col-12 margin-bottom-2">
+        <Checkbox v-model="onlySelectedApplications">
+          {{ $t('backupsModal.onlySelectedApplications') }}
+        </Checkbox>
+        <ApplicationSelector
+          v-if="onlySelectedApplications"
+          class="margin-top-1"
+          :workspace="workspace"
+          :selected-application-ids="selectedApplicationIds"
+          @update="selectedApplicationIds = $event"
+        />
+      </div>
       <div class="col col-12 margin-bottom-2">
         <Checkbox v-model="values.only_structure">
           {{ $t('backupsModal.onlyStructure') }}
@@ -106,6 +118,8 @@
 </template>
 
 <script>
+import ApplicationSelector from '@baserow/modules/core/components/export/ApplicationSelector'
+
 function toPositiveIntOrNull(value) {
   const number = parseInt(value, 10)
   return Number.isNaN(number) || number < 1 ? null : number
@@ -113,6 +127,7 @@ function toPositiveIntOrNull(value) {
 
 export default {
   name: 'BackupScheduleForm',
+  components: { ApplicationSelector },
   props: {
     schedule: {
       type: Object,
@@ -123,6 +138,13 @@ export default {
       type: Array,
       required: true,
     },
+    // Only needed to scope the schedule to some applications. Without it the
+    // schedule covers the whole workspace and the picker is not offered.
+    workspace: {
+      type: Object,
+      required: false,
+      default: null,
+    },
     loading: {
       type: Boolean,
       default: false,
@@ -131,8 +153,11 @@ export default {
   emits: ['submit', 'cancel'],
   data() {
     const schedule = this.schedule || {}
+    const applicationIds = schedule.application_ids ?? null
     return {
       showErrors: false,
+      onlySelectedApplications: applicationIds !== null,
+      selectedApplicationIds: applicationIds || [],
       values: {
         name: schedule.name || '',
         cron: schedule.cron || '0 3 * * *',
@@ -145,12 +170,25 @@ export default {
       },
     }
   },
+  computed: {
+    // The store only holds the applications of the workspace the user has open, so
+    // the picker stays hidden on surfaces that target another workspace.
+    applications() {
+      return this.workspace
+        ? this.$store.getters['application/getAllOfWorkspace'](this.workspace)
+        : []
+    },
+  },
   methods: {
     submit() {
       this.showErrors = true
       if (!this.values.name.trim() || !this.values.cron.trim()) {
         return
       }
+      const applicationIds =
+        this.onlySelectedApplications && this.selectedApplicationIds.length
+          ? this.selectedApplicationIds
+          : null
       this.$emit('submit', {
         ...this.values,
         name: this.values.name.trim(),
@@ -158,6 +196,9 @@ export default {
         timezone: this.values.timezone.trim() || 'UTC',
         keep_last: toPositiveIntOrNull(this.values.keep_last),
         keep_days: toPositiveIntOrNull(this.values.keep_days),
+        // Sent even when null, so editing a schedule back to covering the whole
+        // workspace actually clears the previous selection.
+        application_ids: applicationIds,
       })
     },
   },

@@ -3,6 +3,17 @@ from rest_framework import serializers
 from baserow.core.audit_log.models import AuditLogEntry
 
 
+class AuditLogEntryFilterOptionsSerializer(serializers.Serializer):
+    action_types = serializers.ListField(
+        child=serializers.CharField(),
+        help_text="Every value the `action_type` filter accepts.",
+    )
+    command_types = serializers.ListField(
+        child=serializers.CharField(),
+        help_text="Every value the `command_type` filter accepts.",
+    )
+
+
 class AuditLogEntrySerializer(serializers.ModelSerializer):
     class Meta:
         model = AuditLogEntry

@@ -5,13 +5,19 @@ from django.http import StreamingHttpResponse
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework.permissions import IsAdminUser
+from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from baserow.api.admin.views import AdminListingView
 from baserow.api.pagination import PageNumberPaginationWithApproximateCount
-from baserow.core.audit_log.models import AuditLogEntry
+from baserow.core.action.registries import action_type_registry
+from baserow.core.audit_log.models import (
+    AUTH_EVENT_TYPES,
+    COMMAND_TYPE_CHOICES,
+    AuditLogEntry,
+)
 
-from .serializers import AuditLogEntrySerializer
+from .serializers import AuditLogEntryFilterOptionsSerializer, AuditLogEntrySerializer
 
 AUDIT_LOG_EXTRA_PARAMETERS = [
     OpenApiParameter(
@@ -31,6 +37,14 @@ AUDIT_LOG_EXTRA_PARAMETERS = [
         location=OpenApiParameter.QUERY,
         type=OpenApiTypes.STR,
         description="Only return entries of this action type.",
+    ),
+    OpenApiParameter(
+        name="command_type",
+        location=OpenApiParameter.QUERY,
+        type=OpenApiTypes.STR,
+        description=(
+            "Only return entries with this command type, one of DO, UNDO, REDO or AUTH."
+        ),
     ),
     OpenApiParameter(
         name="created_after",
@@ -62,6 +76,7 @@ class AuditLogEntryAdminView(AdminListingView):
         "user_id": "user_id",
         "workspace_id": "workspace_id",
         "action_type": "action_type",
+        "command_type": "command_type",
         "created_after": "created_on__gte",
         "created_before": "created_on__lte",
     }
@@ -83,6 +98,33 @@ class AuditLogEntryAdminView(AdminListingView):
     )
     def get(self, request):
         return super().get(request)
+
+
+class AuditLogEntryFilterOptionsView(APIView):
+    permission_classes = (IsAdminUser,)
+
+    @extend_schema(
+        tags=["Admin"],
+        operation_id="admin_get_audit_log_filter_options",
+        description=(
+            "Lists the values the `action_type` and `command_type` filters accept, so "
+            "they can be offered as a choice instead of typed by hand."
+        ),
+        responses={200: AuditLogEntryFilterOptionsSerializer},
+    )
+    def get(self, request):
+        # Read from the registry rather than from the entries themselves: the audit
+        # log is permanent and unbounded, so a DISTINCT over it would grow more
+        # expensive for the lifetime of the instance.
+        action_types = sorted(action_type_registry.get_types() + AUTH_EVENT_TYPES)
+        return Response(
+            AuditLogEntryFilterOptionsSerializer(
+                {
+                    "action_types": action_types,
+                    "command_types": [value for value, _ in COMMAND_TYPE_CHOICES],
+                }
+            ).data
+        )
 
 
 class AuditLogEntryExportView(APIView):

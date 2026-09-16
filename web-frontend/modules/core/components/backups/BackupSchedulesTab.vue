@@ -5,6 +5,7 @@
       v-if="editing"
       :schedule="editingSchedule"
       :destinations="destinations"
+      :workspace="workspace"
       :loading="saving"
       @submit="save"
       @cancel="editing = false"

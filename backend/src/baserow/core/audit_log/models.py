@@ -7,6 +7,11 @@ from baserow.core.action.signals import ActionCommandType
 # auth flow is JWT based, so Django's session login signals never fire here).
 AUTH_COMMAND_TYPE = "AUTH"
 
+# Every `action_type` an entry can hold that is not a registered `ActionType.type`.
+# A new `log_auth_event` caller must be listed here, or the value it writes will be
+# missing from the audit log's action type filter.
+AUTH_EVENT_TYPES = ["sign_in_failed", "sign_out"]
+
 COMMAND_TYPE_CHOICES = [(c.value, c.value) for c in ActionCommandType] + [
     (AUTH_COMMAND_TYPE, AUTH_COMMAND_TYPE)
 ]

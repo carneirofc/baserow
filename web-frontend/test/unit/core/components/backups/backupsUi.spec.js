@@ -46,7 +46,35 @@ describe('backups and datalake export UI', () => {
       keep_days: null,
       only_structure: false,
       is_active: true,
+      // Null rather than absent, so editing a scoped schedule back to the whole
+      // workspace clears its previous selection.
+      application_ids: null,
     })
+  })
+
+  test('the backup schedule form scopes to the selected applications', async () => {
+    wrapper = await mountSuspended(BackupScheduleForm, {
+      props: {
+        destinations: [{ name: 'offsite', type: 's3' }],
+        schedule: {
+          name: 'Nightly',
+          cron: '0 3 * * *',
+          application_ids: [5, 9],
+        },
+      },
+    })
+
+    // An existing schedule that already names applications opens with the scope
+    // enabled and those applications selected.
+    expect(wrapper.vm.onlySelectedApplications).toBe(true)
+    expect(wrapper.vm.selectedApplicationIds).toEqual([5, 9])
+
+    wrapper.vm.submit()
+    expect(wrapper.emitted('submit')[0][0].application_ids).toEqual([5, 9])
+
+    wrapper.vm.onlySelectedApplications = false
+    wrapper.vm.submit()
+    expect(wrapper.emitted('submit')[1][0].application_ids).toBeNull()
   })
 
   test('the datalake export form requires tables when not exporting all', async () => {

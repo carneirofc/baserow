@@ -1,3 +1,5 @@
+import WorkspacesAdminService from '@baserow/modules/core/services/admin/workspaces'
+
 // Staff-only, workspace-membership-agnostic counterpart of
 // `@baserow/modules/core/services/backup`: same method names/signatures so it can
 // be passed as the `service` prop to `BackupsTab`/`BackupSchedulesTab`/
@@ -6,9 +8,7 @@
 export default (client) => {
   return {
     listWorkspaces(page, search) {
-      return client.get('/admin/workspaces/options/', {
-        params: { page, search },
-      })
+      return WorkspacesAdminService(client).listOptions(page, search)
     },
     listDestinations() {
       return client.get('/data-destinations/')

@@ -53,7 +53,9 @@
   },
   "action": {
     "cancel": "Cancel",
-    "submit": "Submit"
+    "submit": "Submit",
+    "rename": "Rename",
+    "delete": "Delete"
   },
   "sidebarApplication": {
     "rename": "Rename",
@@ -380,7 +382,9 @@
     "trustPublicKey": "Trust the signing key of the backup",
     "trustPublicKeyHelp": "Needed to restore a backup made by another instance. Only allowed when the storage permits it.",
     "untrustedKeyTitle": "Untrusted backup",
-    "untrustedKeyMessage": "This backup was signed by an instance this one does not trust. A staff member can restore it with the signing key trusted."
+    "untrustedKeyMessage": "This backup was signed by an instance this one does not trust. A staff member can restore it with the signing key trusted.",
+    "scope": "Scope",
+    "onlySelectedApplications": "Only selected applications"
   },
   "workspaceContext": {
     "renameWorkspace": "Rename workspace",
@@ -392,7 +396,8 @@
     "auditLog": "Audit log",
     "viewTrash": "View trash",
     "leaveWorkspace": "Leave workspace",
-    "deleteWorkspace": "Delete workspace"
+    "deleteWorkspace": "Delete workspace",
+    "apiClients": "API clients"
   },
   "workspaceSettingsModal": {
     "title": "Workspace Settings"
@@ -1089,7 +1094,10 @@
     "user": "User",
     "workspace": "Workspace",
     "actionType": "Action",
-    "description": "Description"
+    "description": "Description",
+    "commandType": "Command",
+    "ipAddress": "IP address",
+    "ipAddressHelp": "Only recorded for sign-in and sign-out events."
   },
   "workspacesAdminTable": {
     "allWorkspaces": "All workspaces",
@@ -1285,5 +1293,78 @@
   },
   "adminWorkspaces": {
     "title": "Workspaces"
+  },
+  "auditLogFilters": {
+    "user": "User",
+    "workspace": "Workspace",
+    "actionType": "Action",
+    "commandType": "Command",
+    "createdAfter": "From",
+    "createdBefore": "Until",
+    "all": "All",
+    "clear": "Clear filters"
+  },
+  "apiClientsModal": {
+    "title": "API clients of",
+    "description": "An API client lets an external integration act on your behalf in this workspace, limited to the scopes you grant it. Each client authenticates with keys you issue to it.",
+    "newClient": "Create client",
+    "create": "Create client",
+    "noClients": "This workspace has no API clients yet."
+  },
+  "apiClientForm": {
+    "nameLabel": "Name",
+    "scopesLabel": "Scopes",
+    "scopesHelp": "A scope never widens what the client can do: it always acts as you, narrowed down to what you tick here.",
+    "scopeRequired": "Select at least one scope."
+  },
+  "apiClientScopes": {
+    "backupRead": "Read backups",
+    "backupReadDescription": "List backups and obtain their download URL.",
+    "backupWrite": "Write backups",
+    "backupWriteDescription": "Start new backups and delete existing ones.",
+    "backupRestore": "Restore backups",
+    "backupRestoreDescription": "Restore a backup into a workspace.",
+    "contentsRead": "Read contents",
+    "contentsReadDescription": "Read the full contents of a workspace or application.",
+    "scheduleRead": "Read schedules",
+    "scheduleReadDescription": "List backup schedules.",
+    "scheduleWrite": "Write schedules",
+    "scheduleWriteDescription": "Create, update, delete and manually trigger schedules."
+  },
+  "apiClient": {
+    "noScopes": "No scopes",
+    "keysLabel": "Keys ({count})",
+    "activeLabel": "Status",
+    "activeHelp": "Deactivating stops every key of this client from working, without deleting anything.",
+    "active": "Active",
+    "keyName": "Name",
+    "keyPrefix": "Prefix",
+    "keyCreatedOn": "Created",
+    "keyLastUsedOn": "Last used",
+    "keyExpiresOn": "Expires",
+    "keyStatus": "Status",
+    "keyStatuses": {
+      "active": "Active",
+      "expired": "Expired",
+      "revoked": "Revoked"
+    },
+    "revoke": "Revoke",
+    "noKeys": "This client has no keys yet, so it cannot authenticate.",
+    "newKey": "Issue key"
+  },
+  "apiClientKeyForm": {
+    "nameLabel": "Name",
+    "nameHelp": "Optional, to tell your keys apart.",
+    "expiresOnLabel": "Expires on",
+    "expiresOnHelp": "Leave empty for a key that never expires.",
+    "create": "Issue key"
+  },
+  "apiClientKeyRevealModal": {
+    "title": "Your new key",
+    "warningTitle": "Copy it now",
+    "warning": "Only a hash of this key is stored, so this is the one and only time it can be read. If you lose it, revoke the key and issue a new one.",
+    "copy": "Copy key",
+    "usage": "Authenticate requests with an \"Authorization: Client\" header holding this key.",
+    "confirm": "I've saved it"
   }
 }

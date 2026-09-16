@@ -66,6 +66,7 @@ nav:
       - Debugging Connection Issues: tutorials/debugging-connection-issues.md
       - Prefill forms: tutorials/prefill-forms.md
       - Protected editing: tutorials/protected-editing.md
+      - API clients: tutorials/api-clients.md
   - API Usage:
       - REST API: apis/rest-api.md
       - WebSocket API: apis/web-socket-api.md
