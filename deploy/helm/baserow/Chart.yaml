@@ -15,9 +15,9 @@ keywords:
   - database
   - openshift
   - eks
-version: 0.4.2
+version: 0.4.3
 # Tracks the application version shipped by this fork's images.
-appVersion: "0.10.0"
+appVersion: "0.11.0"
 home: https://github.com/carneirofc/baserow
 sources:
   - https://github.com/carneirofc/baserow
@@ -29,9 +29,9 @@ annotations:
   artifacthub.io/changes: |
     - kind: changed
       description: >-
-        appVersion 0.10.0, adding protected editing for tables, a staff-only
-        extensive audit log and a staff-only admin UI to manage backups across
-        workspaces.
+        appVersion 0.11.0, adding a per-workspace API clients UI for external
+        integrations, audit log filtering with a filtered CSV export, and
+        backups scoped to selected applications.
 
 dependencies:
   - name: postgresql

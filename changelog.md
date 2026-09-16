@@ -1,5 +1,13 @@
 # Changelog
 
+## Released 0.11.0
+
+### New features
+* [Core] Filter the audit log by user, workspace, action, command and date range, and show the command and IP address columns. Exporting to CSV now exports exactly what the filters and search show instead of the whole log.
+* [Core] Limit a backup or a backup schedule to selected applications instead of the whole workspace.
+* [Core] Manage API clients from the workspace menu: create a client for an external integration, grant it scopes, issue keys with an optional expiry, and revoke or deactivate them. An issued key is shown once, so copy it before closing the dialog.
+
+
 ## Released 0.10.0
 
 ### New features
