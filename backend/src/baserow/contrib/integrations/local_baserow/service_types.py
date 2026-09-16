@@ -2147,7 +2147,7 @@ class LocalBaserowUpsertRowServiceType(
 
         model = table.get_model()
 
-        if row_id:
+        if row_id is not None:
             try:
                 (row,) = UpdateRowsActionType.do(
                     service.integration.authorized_user,
