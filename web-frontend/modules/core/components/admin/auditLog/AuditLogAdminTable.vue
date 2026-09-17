@@ -10,6 +10,9 @@
       {{ $t('auditLogAdminTable.title') }}
     </template>
     <template #header-right-side>
+      <span v-if="retentionDays" class="audit-log__retention">
+        {{ $t('auditLogAdminTable.retention', { count: retentionDays }) }}
+      </span>
       <a class="button button--ghost" @click="exportCsv">
         {{ $t('auditLogAdminTable.export') }}
       </a>
@@ -86,6 +89,20 @@ export default {
     ]
     this.service = AuditLogService(this.$client)
     return { filters: {} }
+  },
+  computed: {
+    /**
+     * How far back the log reaches. Entries older than
+     * BASEROW_USER_LOG_ENTRY_RETENTION_DAYS are cleaned up, which also bounds
+     * what an export can contain, so it is stated next to the export action. A
+     * non-positive value means the cleanup is switched off.
+     */
+    retentionDays() {
+      const days = parseInt(
+        this.$config.public.baserowUserLogEntryRetentionDays
+      )
+      return Number.isInteger(days) && days > 0 ? days : null
+    },
   },
   methods: {
     async exportCsv() {

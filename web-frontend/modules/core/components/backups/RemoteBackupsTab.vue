@@ -40,12 +40,13 @@
           </FormGroup>
         </div>
       </div>
-      <ProgressBar
-        v-if="jobIsRunning"
-        class="margin-bottom-2"
-        :value="job.progress_percentage || 0"
-        :status="jobHumanReadableState"
-      />
+      <template v-if="jobIsRunning">
+        <ProgressBar
+          :value="job.progress_percentage || 0"
+          :status="jobHumanReadableState"
+        />
+        <JobDuration :job="job" class="margin-bottom-2" />
+      </template>
       <div v-if="loading" class="loading margin-top-2"></div>
       <p v-else-if="backups.length === 0" class="margin-top-2">
         {{ $t('backupsModal.noRemoteBackups') }}
@@ -97,10 +98,12 @@ import job from '@baserow/modules/core/mixins/job'
 import moment from '@baserow/modules/core/moment'
 import BackupService from '@baserow/modules/core/services/backup'
 import { restoredApplicationsFinished } from '@baserow/modules/core/components/backups/BackupsTab'
+import JobDuration from '@baserow/modules/core/components/job/JobDuration'
 import { ResponseErrorMessage } from '@baserow/modules/core/plugins/clientHandler'
 
 export default {
   name: 'RemoteBackupsTab',
+  components: { JobDuration },
   mixins: [error, job],
   props: {
     workspace: {

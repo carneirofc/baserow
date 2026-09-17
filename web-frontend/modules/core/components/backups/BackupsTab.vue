@@ -53,12 +53,13 @@
       />
     </FormGroup>
 
-    <ProgressBar
-      v-if="jobIsRunning"
-      class="margin-bottom-2"
-      :value="job.progress_percentage || 0"
-      :status="jobHumanReadableState"
-    />
+    <template v-if="jobIsRunning">
+      <ProgressBar
+        :value="job.progress_percentage || 0"
+        :status="jobHumanReadableState"
+      />
+      <JobDuration :job="job" class="margin-bottom-2" />
+    </template>
     <Button :loading="busy" :disabled="busy" @click="startBackup">
       {{ $t('backupsModal.backupNow') }}
     </Button>
@@ -125,11 +126,12 @@ import job from '@baserow/modules/core/mixins/job'
 import moment from '@baserow/modules/core/moment'
 import BackupService from '@baserow/modules/core/services/backup'
 import ApplicationSelector from '@baserow/modules/core/components/export/ApplicationSelector'
+import JobDuration from '@baserow/modules/core/components/job/JobDuration'
 import { notifyIf } from '@baserow/modules/core/utils/error'
 
 export default {
   name: 'BackupsTab',
-  components: { ApplicationSelector },
+  components: { ApplicationSelector, JobDuration },
   mixins: [error, job],
   props: {
     workspace: {

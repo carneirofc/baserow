@@ -114,6 +114,7 @@
                 <thead>
                   <tr>
                     <th>{{ $t('dataExportModal.started') }}</th>
+                    <th>{{ $t('dataExportModal.duration') }}</th>
                     <th>{{ $t('dataExportModal.table') }}</th>
                     <th>{{ $t('dataExportModal.mode') }}</th>
                     <th>{{ $t('dataExportModal.state') }}</th>
@@ -123,6 +124,14 @@
                 <tbody>
                   <tr v-for="exportRun in runs" :key="exportRun.id">
                     <td>{{ formatDate(exportRun.started_on) }}</td>
+                    <td>
+                      <span v-if="exportRun.finished_on">{{
+                        runDuration(exportRun)
+                      }}</span>
+                      <span v-else class="job-duration">{{
+                        $t('dataExportModal.runInProgress')
+                      }}</span>
+                    </td>
                     <td>{{ tableName(exportRun.table_id) }}</td>
                     <td>{{ exportRun.mode }}</td>
                     <td :title="exportRun.error || exportRun.object_prefix">
@@ -153,6 +162,7 @@
 import modal from '@baserow/modules/core/mixins/modal'
 import error from '@baserow/modules/core/mixins/error'
 import moment from '@baserow/modules/core/moment'
+import { elapsedMs, formatElapsedMs } from '@baserow/modules/core/utils/job'
 import BackupService from '@baserow/modules/core/services/backup'
 import DataExportService from '@baserow/modules/database/services/dataExport'
 import DataExportScheduleForm from '@baserow/modules/database/components/dataExport/DataExportScheduleForm'
@@ -196,6 +206,11 @@ export default {
     },
     formatDate(value) {
       return value ? moment(value).format('YYYY-MM-DD HH:mm') : ''
+    },
+    runDuration(exportRun) {
+      return formatElapsedMs(
+        elapsedMs(exportRun.started_on, exportRun.finished_on)
+      )
     },
     tableName(tableId) {
       const table = (this.database.tables || []).find(

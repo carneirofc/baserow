@@ -271,6 +271,24 @@
           </div>
         </div>
       </div>
+      <div v-if="operationalLimits.length > 0" class="admin-settings__group">
+        <h2 class="admin-settings__group-title">
+          {{ $t('settings.operationalLimits') }}
+        </h2>
+        <p class="admin-settings__description margin-bottom-2">
+          {{ $t('settings.operationalLimitsDescription') }}
+        </p>
+        <div
+          v-for="limit in operationalLimits"
+          :key="limit.name"
+          class="admin-settings__item"
+        >
+          <div class="admin-settings__label">
+            <div class="admin-settings__name">{{ limit.name }}</div>
+          </div>
+          <div class="admin-settings__control">{{ limit.value }}</div>
+        </div>
+      </div>
       <component
         :is="component"
         v-for="(component, index) in additionalSettingsComponents"
@@ -295,6 +313,7 @@ import { required, integer, between, helpers } from '@vuelidate/validators'
 
 import { notifyIf } from '@baserow/modules/core/utils/error'
 import SettingsService from '@baserow/modules/core/services/settings'
+import LimitsService from '@baserow/modules/core/services/admin/limits'
 import { copyToClipboard } from '@baserow/modules/database/utils/clipboard'
 import { EMAIL_VERIFICATION_OPTIONS } from '@baserow/modules/core/enums'
 
@@ -350,6 +369,78 @@ const v$ = useVuelidate(rules, { values }, { $lazy: true })
 const { data: instanceData } = await useAsyncData('instance-id', async () => {
   const { data } = await SettingsService($client).getInstanceID()
   return data
+})
+
+// The limits below are read from the environment by the backend, so they are
+// shown but cannot be edited here: changing one means changing the environment
+// and restarting the instance.
+const { data: limitsData } = await useAsyncData(
+  'operational-limits',
+  async () => {
+    const { data } = await LimitsService($client).get()
+    return data
+  }
+)
+
+const operationalLimits = computed(() => {
+  const limits = limitsData.value
+  if (!limits) {
+    return []
+  }
+  return [
+    {
+      name: $t('settings.limitTrash'),
+      value: $t('settings.limitHours', {
+        count: limits.hours_until_trash_permanently_deleted,
+      }),
+    },
+    {
+      name: $t('settings.limitExportFile'),
+      value: $t('settings.limitMinutes', {
+        count: limits.export_file_expire_minutes,
+      }),
+    },
+    {
+      name: $t('settings.limitSnapshotExpiration'),
+      value: $t('settings.limitDays', {
+        count: limits.snapshot_expiration_time_days,
+      }),
+    },
+    {
+      name: $t('settings.limitMaxSnapshots'),
+      value: limits.max_snapshots_per_workspace,
+    },
+    {
+      name: $t('settings.limitAuditLogRetention'),
+      value: $t('settings.limitDays', {
+        count: limits.user_log_entry_retention_days,
+      }),
+    },
+    {
+      name: $t('settings.limitRowHistoryRetention'),
+      value: $t('settings.limitDays', {
+        count: limits.row_history_retention_days,
+      }),
+    },
+    {
+      name: $t('settings.limitJobSoftTimeLimit'),
+      value: $t('settings.limitMinutes', {
+        count: Math.round(limits.job_soft_time_limit_seconds / 60),
+      }),
+    },
+    {
+      name: $t('settings.limitJobExpiration'),
+      value: $t('settings.limitMinutes', {
+        count: limits.job_expiration_time_limit_minutes,
+      }),
+    },
+    {
+      name: $t('settings.limitImportExportRemoval'),
+      value: $t('settings.limitDays', {
+        count: limits.import_export_resource_removal_after_days,
+      }),
+    },
+  ]
 })
 
 const instanceId = computed(() => instanceData.value?.instance_id ?? '')
