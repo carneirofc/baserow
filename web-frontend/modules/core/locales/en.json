@@ -683,6 +683,20 @@
     "settingAllowNonStaffCreateWorkspaceOperationWarning": "New users will have a workspace automatically created for them where they are an Admin.",
     "settingTrackWorkspaceUsage": "Track workspace usage",
     "settingTrackWorkspaceUsageDescription": "Enables a nightly job that counts row and file usage per workspace, displayed on the premium workspace admin page.",
+    "operationalLimits": "Operational limits",
+    "operationalLimitsDescription": "How long this instance keeps data before it is cleaned up. These values come from the environment, so they are read-only here; change the environment variable and restart to adjust one.",
+    "limitTrash": "Trash is emptied after",
+    "limitExportFile": "Exported files are deleted after",
+    "limitSnapshotExpiration": "Snapshots are deleted after",
+    "limitMaxSnapshots": "Maximum snapshots per workspace",
+    "limitAuditLogRetention": "Audit log entries are kept for",
+    "limitRowHistoryRetention": "Row history is kept for",
+    "limitJobSoftTimeLimit": "A job is stopped after",
+    "limitJobExpiration": "Finished jobs are cleaned up after",
+    "limitImportExportRemoval": "Import and export files are removed after",
+    "limitHours": "{n} hours | 1 hour | {n} hours",
+    "limitMinutes": "{n} minutes | 1 minute | {n} minutes",
+    "limitDays": "{n} days | 1 day | {n} days",
     "userSettings": "User",
     "settingUserDeletionGraceDelay": "Delete grace delay",
     "settingUserDeletionGraceDelayDescription": "This is the number of days without a login after which an account scheduled for deletion is permanently deleted.",
@@ -775,6 +789,9 @@
         }
       }
     }
+  },
+  "jobDuration": {
+    "title": "Time elapsed"
   },
   "job": {
     "statePending": "Waiting to start...",
@@ -1034,6 +1051,7 @@
   "auditLogAdminTable": {
     "title": "Audit log",
     "export": "Export CSV",
+    "retention": "Entries are kept for {n} days | Entries are kept for 1 day | Entries are kept for {n} days",
     "createdOn": "Date",
     "user": "User",
     "workspace": "Workspace",

@@ -365,16 +365,11 @@ AUTHENTICATION_BACKENDS = ["django.contrib.auth.backends.AllowAllUsersModelBacke
 
 LANGUAGE_CODE = "en"
 
+# Must stay in sync with `locales` in web-frontend/config/locales.js: the account
+# language endpoint validates against these codes (baserow.api.user.validators).
 LANGUAGES = [
     ("en", "English"),
-    ("fr", "French"),
-    ("nl", "Dutch"),
-    ("de", "German"),
-    ("es", "Spanish"),
-    ("it", "Italian"),
-    ("pl", "Polish"),
-    ("ko", "Korean"),
-    ("uk", "Ukrainian"),
+    ("pt-BR", "Portuguese (Brazil)"),
 ]
 
 TIME_ZONE = "UTC"
@@ -995,7 +990,10 @@ USER_THUMBNAILS_DIRECTORY = "thumbnails"
 
 EXPORT_FILES_DIRECTORY = "export_files"
 EXPORT_CLEANUP_INTERVAL_MINUTES = 5
-EXPORT_FILE_EXPIRE_MINUTES = 60
+# If you change this default please also update the default for the web-frontend
+# found in web-frontend/modules/core/module.js, which tells the user how long an
+# export stays downloadable.
+EXPORT_FILE_EXPIRE_MINUTES = int(os.getenv("EXPORT_FILE_EXPIRE_MINUTES", 60))
 
 IMPORT_FILES_DIRECTORY = "import_files"
 
@@ -1292,6 +1290,8 @@ BASEROW_JOB_CLEANUP_INTERVAL_MINUTES = int(
 BASEROW_ROW_HISTORY_CLEANUP_INTERVAL_MINUTES = int(
     os.getenv("BASEROW_ROW_HISTORY_CLEANUP_INTERVAL_MINUTES", 30)  # 30 minutes
 )
+# Mirrored in web-frontend/modules/core/module.js so the row history panel can say
+# how far back it reaches. Keep both defaults in sync.
 BASEROW_ROW_HISTORY_RETENTION_DAYS = int(
     os.getenv("BASEROW_ROW_HISTORY_RETENTION_DAYS", 180)
 )
@@ -1299,13 +1299,17 @@ BASEROW_MAX_ROW_REPORT_ERROR_COUNT = int(
     os.getenv("BASEROW_MAX_ROW_REPORT_ERROR_COUNT", 30)
 )
 BASEROW_MAX_SNAPSHOTS_PER_GROUP = int(os.getenv("BASEROW_MAX_SNAPSHOTS_PER_GROUP", 50))
+# Mirrored in web-frontend/modules/core/module.js so the snapshot list can show how
+# long each snapshot has left. Keep both defaults in sync.
 BASEROW_SNAPSHOT_EXPIRATION_TIME_DAYS = int(
     os.getenv("BASEROW_SNAPSHOT_EXPIRATION_TIME_DAYS", 360)  # 360 days
 )
 BASEROW_USER_LOG_ENTRY_CLEANUP_INTERVAL_MINUTES = int(
     os.getenv("BASEROW_USER_LOG_ENTRY_CLEANUP_INTERVAL_MINUTES", 60)  # 60 minutes
 )
-# 61 days to accommodate timezone changes in admin dashboard
+# 61 days to accommodate timezone changes in admin dashboard. Mirrored in
+# web-frontend/modules/core/module.js so the audit log can state its own window.
+# Keep both defaults in sync.
 BASEROW_USER_LOG_ENTRY_RETENTION_DAYS = int(
     os.getenv("BASEROW_USER_LOG_ENTRY_RETENTION_DAYS", 61)
 )

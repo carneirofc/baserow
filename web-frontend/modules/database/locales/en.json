@@ -73,6 +73,8 @@
     "runs": "Runs",
     "noRuns": "This schedule has not exported anything yet.",
     "started": "Started",
+    "duration": "Duration",
+    "runInProgress": "Running…",
     "table": "Table",
     "mode": "Mode",
     "state": "State",
@@ -927,7 +929,8 @@
   },
   "exportTableLoadingBar": {
     "export": "Export",
-    "download": "Download"
+    "download": "Download",
+    "expires": "This file is deleted {minutes} minutes after the export finished. Export again if the download has stopped working."
   },
   "exportTableDropdown": {
     "exportEntireTable": "Export entire table"
@@ -1071,7 +1074,8 @@
   "snapshotListItem": {
     "restore": "restore",
     "delete": "delete",
-    "created": "created"
+    "created": "created",
+    "expiresIn": "deleted today | deleted in 1 day | deleted in {n} days"
   },
   "formViewModeType": {
     "form": "Form",
@@ -1132,6 +1136,7 @@
   "rowHistorySidebar": {
     "name": "History",
     "empty": "No changes yet. You'll be able to track any changes to this row here.",
+    "retention": "Changes are kept for {n} days | Changes are kept for 1 day | Changes are kept for {n} days",
     "you": "You",
     "created": "created this row",
     "updated": "updated this row",
