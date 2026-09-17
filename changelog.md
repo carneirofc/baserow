@@ -1,5 +1,20 @@
 # Changelog
 
+## Released 0.12.0
+
+### New features
+* [Database] Admins can set a default database access level when adding workspace members, shown and editable in a new access column on the members table.
+* [Core] Admins can add existing users straight into workspace teams when adding them as members, and manage a member's teams from a new column on the members table.
+* [Core] Configure where the logo and in-app help links point, and hide the attribution footer entirely, at runtime from the branding directory.
+
+### Refactors
+* [Core] Removed the unused billable/deactivated role admin column and menu badges from the members role picker; not applicable to this fork.
+* [Core] Only English and Brazilian Portuguese translations are shipped in the core module now; removed the other locale files, which were never registered and had drifted out of sync.
+
+### Breaking API changes
+* [Core] Workspace invitations are removed: admins add people who already have an account from Members → Add members. Pending invitations, invitation emails and notifications, invite-token signups and the "allow signups via workspace invitations" setting are gone, as are the /api/workspaces/invitations/ and /api/user/dashboard/ endpoints.
+
+
 ## Released 0.11.0
 
 ### New features
