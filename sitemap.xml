@@ -2,362 +2,362 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://carneirofc.github.io/baserow/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/AGENTS/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/adr/001-phone-number-field-validation/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/adr/002-baserow-data-backups/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/adr/004-baserow-metrics/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/adr/005-in-app-database-access-grants/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/agents/domain/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/agents/issue-tracker/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/agents/triage-labels/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/apis/deprecations/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/apis/rest-api/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/apis/web-socket-api/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/development/building-and-running-production-images/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/development/ci-cd/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/development/code-quality/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/development/create-a-template/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/development/debugging/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/development/development-environment/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/development/directory-structure/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/development/e2e-testing/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/development/feature-flags/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/development/intellij-setup/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/development/justfile/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/development/mcp-server/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/development/metrics-and-logs/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/development/read-replicas/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/development/running-tests/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/development/running-the-dev-env-locally/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/development/running-the-dev-env-with-docker/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/development/sso-saml/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/development/tools/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/development/vscode-setup/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/development/zed-setup/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/installation/branding/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/installation/configuration/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/installation/data-destinations/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/installation/install-on-aws/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/installation/install-on-digital-ocean/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/installation/install-on-eks/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/installation/install-on-railway/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/installation/install-on-ubuntu/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/installation/install-using-standalone-images/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/installation/install-with-docker-compose/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/installation/install-with-docker/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/installation/install-with-helm/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/installation/install-with-k8s/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/installation/instance-settings/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/installation/monitoring/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/installation/old-install-on-ubuntu/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/installation/sso-oidc/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/installation/sso-rhbk-keycloak/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/installation/supported/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/installation/third-party-hosting-providers/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/installation/workspace-access/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/other/external-resources/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/patterns/date-and-time/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/patterns/emails/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/patterns/forms/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/patterns/jobs/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/patterns/loading-animations/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/patterns/row_history_from_action/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/plugins/application-type/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/plugins/boilerplate/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/plugins/creation/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/plugins/field-converter/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/plugins/field-type/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/plugins/installation/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/plugins/introduction/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/plugins/view-filter-type/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/plugins/view-type/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/runbooks/back-up-and-restore-baserow/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/runbooks/migrate-from-user-tables-database/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/runbooks/upgrade-embedded-postgres/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/technical/collapsible-grid-group-by/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/technical/database-plugin/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/technical/formula-technical-guide/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/technical/introduction/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/technical/permissions-guide/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/technical/postgresql-locks/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/technical/realtime-presence/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/technical/undo-redo-guide/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/technical/websockets/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/technical/workspace-search/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/testing/grid-view-test-plan/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/testing/mcp-test-plan/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/tutorials/api-clients/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/tutorials/debugging-connection-issues/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/tutorials/prefill-forms/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/tutorials/protected-editing/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/tutorials/understanding-baserow-formulas/</loc>
-         <lastmod>2026-09-16</lastmod>
+         <lastmod>2026-09-17</lastmod>
     </url>
 </urlset>

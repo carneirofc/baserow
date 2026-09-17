@@ -3061,7 +3061,7 @@ way to password accounts.</p>
 </thead>
 <tbody>
 <tr>
-<td>Add existing users, invite, remove members, change <code>ADMIN</code>/<code>MEMBER</code></td>
+<td>Add existing users, remove members, change <code>ADMIN</code>/<code>MEMBER</code></td>
 <td>Yes</td>
 <td>No</td>
 <td>Only in workspaces they belong to as <code>ADMIN</code></td>
@@ -3096,9 +3096,9 @@ manage the workspace and give everyone else <code>MEMBER</code> plus access leve
   <strong>Add as</strong> <code>MEMBER</code> or <code>ADMIN</code>, and confirm. They are added immediately, without an email.
   Deactivated accounts, accounts pending deletion and existing members are never listed, and
   at most 20 matches are shown. Adding someone who is already a member leaves their
-  permissions unchanged.</li>
-<li><strong>Invite member</strong> — sends an email invitation, for people who do not have an account yet.
-  The invitation is accepted when they sign in with that address.</li>
+  permissions unchanged.
+There are no email invitations: a person needs an account (with SSO: signs in once) before
+they can be added.</li>
 </ul>
 <p>To change <code>MEMBER</code>/<code>ADMIN</code> later, use the role column of the members list. Removing a member
 also removes them from the workspace's teams.</p>
@@ -3249,7 +3249,7 @@ automations follow the member's normal <code>MEMBER</code> access.</p>
 <tbody>
 <tr>
 <td>A person is missing from <strong>Add members</strong></td>
-<td>They have no account yet (with SSO: never signed in), are deactivated or pending deletion, are already a member, or fewer than three characters were typed. Invite them instead.</td>
+<td>They have no account yet (with SSO: never signed in), are deactivated or pending deletion, are already a member, or fewer than three characters were typed. Ask them to sign in once first.</td>
 </tr>
 <tr>
 <td>A member still sees a table set to <strong>No access</strong></td>
