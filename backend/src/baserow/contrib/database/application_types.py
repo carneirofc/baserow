@@ -203,7 +203,8 @@ class DatabaseApplicationType(ApplicationType):
                     rule_type,
                 ) in field_rules_handler.applicable_rules_with_types:
                     exported_field_rule = field_rules_handler.export_rule(rule)
-                    serialized_field_rules.append(exported_field_rule)
+                    if exported_field_rule is not None:
+                        serialized_field_rules.append(exported_field_rule)
 
             structure = DatabaseExportSerializedStructure.table(
                 id=table.id,
@@ -684,6 +685,10 @@ class DatabaseApplicationType(ApplicationType):
             field_rules_handler = FieldRuleHandler(table)
             serialized_rules = serialized_table["field_rules"]
             for serialized_rule in serialized_rules:
+                # exports made before #6095 may contain null entries for rules
+                # that were active but invalid at export time.
+                if not serialized_rule:
+                    continue
                 # import_rule pops "type" off the dict, so read it beforehand for
                 # the warning below.
                 rule_type = serialized_rule.get("type")
