@@ -1,4 +1,6 @@
 // @vitest-environment node
+import path from 'node:path'
+
 import {
   parseAssetPath,
   resolveInside,
@@ -52,10 +54,15 @@ describe('parseAssetPath', () => {
   })
 })
 
+// The server runs on Linux, but the suite also has to pass on a Windows
+// checkout, where `path.resolve` prefixes a drive letter and joins with
+// backslashes. Build the expected path with `path` rather than writing a POSIX
+// literal, so the assertion is about the resolution and not the separator.
 describe('resolveInside', () => {
   test('resolves paths inside the directory', () => {
+    const dir = path.resolve('/baserow/branding')
     expect(resolveInside('/baserow/branding', 'img/logo.svg')).toBe(
-      '/baserow/branding/img/logo.svg'
+      path.join(dir, 'img', 'logo.svg')
     )
   })
 
