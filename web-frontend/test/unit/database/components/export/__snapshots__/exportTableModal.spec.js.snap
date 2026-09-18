@@ -1858,24 +1858,27 @@ exports[`Preview exportTableModal > Modal with no view 1`] = `
           </div>
         </div>
         
-        <div
-          class="modal-progress__actions"
-        >
-          <!--v-if-->
-          <button
-            class="button button--large button--full-width modal-progress__export-button"
-            disabled=""
+        <div>
+          <div
+            class="modal-progress__actions"
           >
             <!--v-if-->
-            <span
-              class="button__label"
+            <button
+              class="button button--large button--full-width modal-progress__export-button"
+              disabled=""
             >
-              
-              exportTableLoadingBar.export
-              
-            </span>
-            <!--v-if-->
-          </button>
+              <!--v-if-->
+              <span
+                class="button__label"
+              >
+                
+                exportTableLoadingBar.export
+                
+              </span>
+              <!--v-if-->
+            </button>
+          </div>
+          <!--v-if-->
         </div>
         
       </form>
@@ -3761,24 +3764,27 @@ exports[`Preview exportTableModal > Modal with view 1`] = `
           </div>
         </div>
         
-        <div
-          class="modal-progress__actions"
-        >
-          <!--v-if-->
-          <button
-            class="button button--large button--full-width modal-progress__export-button"
-            disabled=""
+        <div>
+          <div
+            class="modal-progress__actions"
           >
             <!--v-if-->
-            <span
-              class="button__label"
+            <button
+              class="button button--large button--full-width modal-progress__export-button"
+              disabled=""
             >
-              
-              exportTableLoadingBar.export
-              
-            </span>
-            <!--v-if-->
-          </button>
+              <!--v-if-->
+              <span
+                class="button__label"
+              >
+                
+                exportTableLoadingBar.export
+                
+              </span>
+              <!--v-if-->
+            </button>
+          </div>
+          <!--v-if-->
         </div>
         
       </form>
