@@ -15,9 +15,9 @@ keywords:
   - database
   - openshift
   - eks
-version: 0.6.0
+version: 0.7.0
 # Tracks the application version shipped by this fork's images.
-appVersion: "0.12.0"
+appVersion: "0.13.0"
 home: https://github.com/carneirofc/baserow
 sources:
   - https://github.com/carneirofc/baserow
@@ -29,10 +29,10 @@ annotations:
   artifacthub.io/changes: |
     - kind: changed
       description: >-
-        appVersion 0.12.0: members can be assigned to teams and given a
-        default database access level when added, workspace invitations are
-        removed in favor of adding existing users directly, and branding can
-        hide the attribution footer or redirect its links.
+        appVersion 0.13.0: the admin settings page lists the instance's
+        operational limits, retention and expiry values are stated next to the
+        data they govern, running jobs show how long they have been going, and
+        the interface now ships English and Brazilian Portuguese only.
 
 dependencies:
   - name: postgresql

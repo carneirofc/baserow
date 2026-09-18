@@ -1,5 +1,21 @@
 # Changelog
 
+## Released 0.13.0
+
+### New features
+* Added a read-only "Operational limits" section to the admin settings page, listing the retention, expiry and job time limits the instance runs with.
+* EXPORT_FILE_EXPIRE_MINUTES can now be set from the environment instead of being fixed at 60 minutes.
+* Show the duration of each datalake export run in the schedule's run history.
+* Show how long a job has been running next to its progress bar, for table and workspace exports, imports, snapshots, backups, restores, data syncs and application publishes.
+* State the retention and expiry limits where the affected data is shown.
+  * Exported files now say how long they stay downloadable.
+  * Snapshots now show how long they have left before they are deleted.
+  * The audit log and the row history now state how far back they reach.
+
+### Breaking API changes
+* The interface now ships English and Brazilian Portuguese only. Accounts set to one of the removed languages are migrated to English.
+
+
 ## Released 0.12.0
 
 ### New features
