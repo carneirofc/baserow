@@ -1254,6 +1254,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#build-metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      Build metadata
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#plugin-configuration" class="md-nav__link">
     <span class="md-ellipsis">
       Plugin Configuration
@@ -3315,6 +3324,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#build-metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      Build metadata
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#plugin-configuration" class="md-nav__link">
     <span class="md-ellipsis">
       Plugin Configuration
@@ -4621,6 +4639,49 @@ domain than your Baserow, you need to make sure CORS is configured correctly.</p
 </tr>
 </tbody>
 </table>
+<h3 id="build-metadata">Build metadata<a class="headerlink" href="#build-metadata" title="Permanent link">&para;</a></h3>
+<p>These identify the source a running instance was built from, which the version number
+alone cannot: the version tracks the upstream Baserow codebase, while these track this
+fork's release tag and commit. They are shown in the interface — on the login screen, in
+the user menu, and on the admin settings and health pages.</p>
+<p>The published images already carry them: <code>.github/workflows/build-publish-image.yml</code>
+passes all three as docker build arguments to the backend, web-frontend and all-in-one
+builds, so nothing needs configuring for a normal deployment. Set them yourself only when
+you build your own images, or to correct what an image reports without rebuilding it —
+pass them to the backend <strong>and</strong> the web-frontend service, which each report their own
+build. Leave them unset rather than empty: the backend reads an empty value as a
+development build and reports nothing. The web-frontend keeps whatever was baked into its
+image when the variable is empty, so an orchestrator that forwards unset variables cannot
+blank it out, but it also means an empty value will not clear a stale one — rebuild or
+pass a real value instead.</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BASEROW_BUILD_VERSION</td>
+<td>The release tag the instance was built from, for example <code>v0.14.0</code>.</td>
+<td></td>
+</tr>
+<tr>
+<td>BASEROW_BUILD_COMMIT</td>
+<td>The full git commit hash the instance was built from.</td>
+<td></td>
+</tr>
+<tr>
+<td>BASEROW_BUILD_DATE</td>
+<td>When the image was built, as an ISO 8601 timestamp, for example <code>2026-09-18T10:34:30Z</code>.</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>A backend and a web-frontend reporting different commits means only half of a deployment
+was upgraded; the admin settings and health pages say so explicitly when that happens.</p>
 <h3 id="plugin-configuration">Plugin Configuration<a class="headerlink" href="#plugin-configuration" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
