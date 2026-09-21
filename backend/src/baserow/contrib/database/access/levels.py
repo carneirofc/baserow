@@ -79,6 +79,8 @@ VIEWER_OPERATIONS = frozenset(
     }
 )
 
+# `database.table.replace_rows` is deliberately absent: an editor may import rows
+# but not run the import modes that trash the existing ones, so it stays builder-only.
 EDITOR_OPERATIONS = VIEWER_OPERATIONS | frozenset(
     {
         "database.table.create_row",

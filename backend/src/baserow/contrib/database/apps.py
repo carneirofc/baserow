@@ -846,6 +846,7 @@ class DatabaseConfig(AppConfig):
             ListRowNamesDatabaseTableOperationType,
             ListRowsDatabaseTableOperationType,
             ReadDatabaseTableOperationType,
+            ReplaceRowsDatabaseTableOperationType,
             UpdateDatabaseTableOperationType,
         )
         from .tokens.operations import (
@@ -940,6 +941,7 @@ class DatabaseConfig(AppConfig):
         operation_type_registry.register(OrderTablesDatabaseTableOperationType())
         operation_type_registry.register(CreateRowDatabaseTableOperationType())
         operation_type_registry.register(ImportRowsDatabaseTableOperationType())
+        operation_type_registry.register(ReplaceRowsDatabaseTableOperationType())
         operation_type_registry.register(DeleteDatabaseTableOperationType())
         operation_type_registry.register(DuplicateDatabaseTableOperationType())
         operation_type_registry.register(ListRowsDatabaseTableOperationType())

@@ -59,6 +59,28 @@
   margin-top: 8px;
 }
 
+.import-modal__confirm-summary {
+  margin-top: 16px;
+  border: 1px solid $color-neutral-200;
+  border-radius: 4px;
+}
+
+.import-modal__confirm-summary-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 6px 12px;
+  font-size: 13px;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid $color-neutral-200;
+  }
+}
+
+.import-modal__confirm-summary-count {
+  font-weight: 600;
+}
+
 .import-diff__summary {
   display: flex;
   flex-wrap: wrap;

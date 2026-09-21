@@ -638,7 +638,21 @@
     "stateRowCreation": "Importing...",
     "statePreValidation": "Validating data...",
     "stateCreateTable": "Creating table...",
-    "restoredFile": "Importing file \"{name}\"..."
+    "restoredFile": "Importing file \"{name}\"...",
+    "replaceNotAllowed": "Only someone who may replace the rows of this table can move existing rows to the trash.",
+    "pendingChanges": "This table has {count} unsaved change(s). Save or discard them before importing, otherwise saving them would overwrite the imported values.",
+    "confirmTitle": "Apply this import?",
+    "confirmMessage": "These are the changes the import makes to \"{table}\".",
+    "confirmDestructive": "Rows will be moved to the trash. They can be restored from the trash or by undoing the import.",
+    "confirmProtected": "This table has protected editing enabled. An import is applied at once and is not staged.",
+    "confirmCount": {
+      "create": "Rows created",
+      "update": "Rows updated",
+      "unchanged": "Rows unchanged",
+      "delete": "Rows moved to the trash",
+      "skip": "Rows skipped",
+      "errors": "Rows with errors"
+    }
   },
   "formulaAdvancedEditContext": {
     "textAreaFormulaInputPlaceholder": "Click to edit the formula",

@@ -30,6 +30,7 @@ from baserow.contrib.database.fields.exceptions import (
     SelectOptionDoesNotBelongToField,
 )
 from baserow.contrib.database.rows.actions import ImportRowsActionType
+from baserow.contrib.database.rows.constants import is_destructive_import
 from baserow.contrib.database.rows.exceptions import (
     ImportAmbiguousMatches,
     ReportMaxErrorCountExceeded,
@@ -41,7 +42,11 @@ from baserow.contrib.database.table.exceptions import (
     InitialTableDataLimitExceeded,
     InvalidInitialTableData,
 )
+from baserow.contrib.database.table.operations import (
+    ReplaceRowsDatabaseTableOperationType,
+)
 from baserow.core.action.registries import action_type_registry
+from baserow.core.handler import CoreHandler
 from baserow.core.jobs.exceptions import MaxJobCountExceeded
 from baserow.core.jobs.models import JobQuerySet
 from baserow.core.jobs.registries import JobType
@@ -151,6 +156,17 @@ class FileImportJobType(JobType):
         Filter data from the values dict. Data are going to be added later as a file.
         See `.after_job_creation()`.
         """
+
+        table = values.get("table")
+        # The job is the only way an import reaches the rows, so trashing rows is
+        # checked here as well as in the API view.
+        if table is not None and is_destructive_import(values.get("configuration")):
+            CoreHandler().check_permissions(
+                user,
+                ReplaceRowsDatabaseTableOperationType.type,
+                workspace=table.database.workspace,
+                context=table,
+            )
 
         filtered_dict = dict(**values)
         filtered_dict.pop("data")

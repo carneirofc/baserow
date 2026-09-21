@@ -13,3 +13,19 @@ IMPORT_MODES = [
 ]
 # The modes matching the imported rows with existing rows using `upsert_fields`.
 IMPORT_MATCHING_MODES = [IMPORT_MODE_UPSERT, IMPORT_MODE_UPDATE]
+
+
+def is_destructive_import(configuration) -> bool:
+    """
+    Whether the import would trash existing rows: a full `replace`, or a matching
+    mode dropping the rows that the file doesn't match.
+
+    :param configuration: A `FileImportConfiguration` or `None`.
+    """
+
+    if not configuration:
+        return False
+    mode = configuration.get("mode") or IMPORT_MODE_INSERT
+    if mode == IMPORT_MODE_REPLACE:
+        return True
+    return mode in IMPORT_MATCHING_MODES and bool(configuration.get("delete_unmatched"))

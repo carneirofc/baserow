@@ -45,6 +45,7 @@ from baserow.contrib.database.operations import (
     CreateTableDatabaseTableOperationType,
     ListTablesDatabaseTableOperationType,
 )
+from baserow.contrib.database.rows.constants import is_destructive_import
 from baserow.contrib.database.rows.exceptions import CannotCreateRowsInTable
 from baserow.contrib.database.rows.import_preview import TableImportPreviewHandler
 from baserow.contrib.database.table.actions import (
@@ -68,6 +69,7 @@ from baserow.contrib.database.table.models import Table
 from baserow.contrib.database.table.operations import (
     ImportRowsDatabaseTableOperationType,
     ReadDatabaseTableOperationType,
+    ReplaceRowsDatabaseTableOperationType,
 )
 from baserow.contrib.database.tokens.handler import TokenHandler
 from baserow.core.action.registries import action_type_registry
@@ -575,13 +577,21 @@ class AsyncTableImportView(APIView):
         table_handler = TableHandler()
         table = table_handler.get_table(table_id)
 
-        CoreHandler().check_permissions(
+        core_handler = CoreHandler()
+        core_handler.check_permissions(
             request.user,
             ImportRowsDatabaseTableOperationType.type,
             workspace=table.database.workspace,
             context=table,
         )
         configuration = data.get("configuration")
+        if is_destructive_import(configuration):
+            core_handler.check_permissions(
+                request.user,
+                ReplaceRowsDatabaseTableOperationType.type,
+                workspace=table.database.workspace,
+                context=table,
+            )
         importer_type = data.get("importer_type", "")
         original_file_name = data.get("original_file_name", "")
         data = data["data"]

@@ -85,6 +85,12 @@
               <p class="control__description margin-top-1">
                 {{ modeDescription }}
               </p>
+              <p
+                v-if="!canReplaceRows"
+                class="control__description margin-top-1"
+              >
+                {{ $t('importFileModal.replaceNotAllowed') }}
+              </p>
             </FormGroup>
 
             <FormGroup
@@ -110,7 +116,7 @@
               </div>
               <Checkbox
                 v-model="deleteUnmatched"
-                :disabled="importInProgress"
+                :disabled="importInProgress || !canReplaceRows"
                 class="margin-top-2"
                 >{{ $t('importFileModal.deleteUnmatched') }}</Checkbox
               >
@@ -185,6 +191,16 @@
           />
         </Tab>
       </Tabs>
+
+      <Alert
+        v-if="pendingChangeCount > 0"
+        type="warning"
+        class="margin-bottom-2"
+      >
+        {{
+          $t('importFileModal.pendingChanges', { count: pendingChangeCount })
+        }}
+      </Alert>
 
       <div v-if="!hasErrors" class="modal-progress__actions">
         <ProgressBar
@@ -291,6 +307,15 @@
           <i class="iconoir-cancel"></i>
         </a>
       </div>
+
+      <ConfirmImportModal
+        ref="confirmImportModal"
+        :table="table"
+        :summary="preview && preview.summary"
+        :destructive="isDestructive"
+        :protected-table="tableIsProtected"
+        @confirmed="runImport"
+      />
     </template>
   </Modal>
 </template>
@@ -318,13 +343,20 @@ import {
 import { ResponseErrorMessage } from '@baserow/modules/core/plugins/clientHandler'
 import ImportErrorReport from '@baserow/modules/database/components/table/ImportErrorReport.vue'
 import ImportDiffPreview from '@baserow/modules/database/components/table/ImportDiffPreview.vue'
+import ConfirmImportModal from '@baserow/modules/database/components/table/ConfirmImportModal.vue'
+import { isProtected } from '@baserow/modules/database/utils/editConfirmation'
 import { FileImportJobType } from '@baserow/modules/database/jobTypes'
 import { pageFinished } from '@baserow/modules/core/utils/routing'
 import { nextTick, useNuxtApp } from '#imports'
 
 export default {
   name: 'ImportFileModal',
-  components: { ImportErrorReport, ImportDiffPreview, SimpleGrid },
+  components: {
+    ImportErrorReport,
+    ImportDiffPreview,
+    ConfirmImportModal,
+    SimpleGrid,
+  },
   mixins: [modal, error, job],
   props: {
     database: {
@@ -396,6 +428,33 @@ export default {
         (value) => this.fieldIndexMap[value] !== undefined
       )
     },
+    tableIsProtected() {
+      return isProtected(this.table)
+    },
+    /**
+     * The number of staged, not yet saved cell changes of the table. An import
+     * would race with them, so it's blocked while there are any.
+     */
+    pendingChangeCount() {
+      if (!this.table) {
+        return 0
+      }
+      return this.$store.getters['pendingRowChanges/count'](this.table.id)
+    },
+    /**
+     * Trashing the existing rows of a table needs more than the permission to
+     * import into it.
+     */
+    canReplaceRows() {
+      return (
+        !!this.table &&
+        this.$hasPermission(
+          'database.table.replace_rows',
+          this.table,
+          this.database.workspace.id
+        )
+      )
+    },
     modeOptions() {
       const labels = {
         insert: this.$t('importFileModal.modeInsert'),
@@ -406,7 +465,9 @@ export default {
       return IMPORT_MODES.map((value) => ({
         value,
         label: labels[value],
-        disabled: this.importInProgress,
+        disabled:
+          this.importInProgress ||
+          (value === IMPORT_MODE_REPLACE && !this.canReplaceRows),
       }))
     },
     modeDescription() {
@@ -469,6 +530,13 @@ export default {
     },
     canBeSubmitted() {
       if (!this.canBePreviewed) {
+        return false
+      }
+      // Saving the staged changes afterwards would overwrite what was imported.
+      if (this.pendingChangeCount > 0) {
+        return false
+      }
+      if (this.isDestructive && !this.canReplaceRows) {
         return false
       }
       // Rows are trashed, the user must see what is going to happen first.
@@ -782,18 +850,37 @@ export default {
         )
         this.preview = preview
         this.previewSettingsKey = settingsKey
+        return true
       } catch (error) {
         this.handleError(error, 'application')
+        return false
       } finally {
         this.previewLoading = false
       }
+    },
+    /**
+     * An import changes a whole set of rows at once, so it is never sent straight
+     * away: the preview is refreshed if needed and the user has to accept the
+     * changes it reports first.
+     */
+    async submitted() {
+      this.hideError()
+
+      if (!this.hasFreshPreview && !(await this.previewChanges())) {
+        return
+      }
+      if (this.preview?.ambiguous_blocked) {
+        return
+      }
+
+      this.$refs.confirmImportModal.show()
     },
     /**
      * When the form is submitted we try to extract the initial data and first row
      * header setting from the values. An importer could have added those, but they
      * need to be removed from the values.
      */
-    async submitted() {
+    async runImport() {
       this.showProgressBar = false
       this.reset(false)
       let data = null

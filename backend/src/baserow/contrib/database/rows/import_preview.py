@@ -6,9 +6,11 @@ from django.db import transaction
 from baserow.contrib.database.table.models import Table
 from baserow.contrib.database.table.operations import (
     ImportRowsDatabaseTableOperationType,
+    ReplaceRowsDatabaseTableOperationType,
 )
 from baserow.core.handler import CoreHandler
 
+from .constants import is_destructive_import
 from .exceptions import CannotCreateRowsInTable
 from .handler import RowHandler
 from .import_planner import ImportPlanner
@@ -50,12 +52,22 @@ class TableImportPreviewHandler:
                 "Can't create rows because it has a data sync."
             )
 
-        CoreHandler().check_permissions(
+        core_handler = CoreHandler()
+        core_handler.check_permissions(
             user,
             ImportRowsDatabaseTableOperationType.type,
             workspace=table.database.workspace,
             context=table,
         )
+        # A user who may not trash rows may not enumerate the rows that would be
+        # trashed either.
+        if is_destructive_import(configuration):
+            core_handler.check_permissions(
+                user,
+                ReplaceRowsDatabaseTableOperationType.type,
+                workspace=table.database.workspace,
+                context=table,
+            )
 
         model = table.get_model()
         # Nothing is written, the transaction only keeps the temp tables used to
