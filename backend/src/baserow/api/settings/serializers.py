@@ -22,7 +22,6 @@ class SettingsSerializer(serializers.ModelSerializer):
         model = Settings
         fields = (
             "allow_new_signups",
-            "allow_signups_via_workspace_invitations",
             "allow_reset_password",
             "allow_global_workspace_creation",
             "account_deletion_grace_delay",
@@ -40,7 +39,6 @@ class SettingsSerializer(serializers.ModelSerializer):
         )
         extra_kwargs = {
             "allow_new_signups": {"required": False},
-            "allow_signups_via_workspace_invitations": {"required": False},
             "allow_reset_password": {"required": False},
             "allow_global_workspace_creation": {"required": False},
             "account_deletion_grace_delay": {"required": False},

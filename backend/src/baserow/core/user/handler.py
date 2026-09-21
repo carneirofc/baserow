@@ -22,10 +22,7 @@ from baserow.core.auth_provider.exceptions import AuthProviderDisabled
 from baserow.core.auth_provider.handler import PasswordProviderHandler
 from baserow.core.auth_provider.models import AuthProviderModel
 from baserow.core.emails import EmailPendingVerificationEmail
-from baserow.core.exceptions import (
-    BaseURLHostnameNotAllowed,
-    WorkspaceInvitationEmailMismatch,
-)
+from baserow.core.exceptions import BaseURLHostnameNotAllowed
 from baserow.core.handler import CoreHandler
 from baserow.core.models import (
     BlacklistedToken,
@@ -179,22 +176,18 @@ class UserHandler(metaclass=baserow_trace_methods(tracer)):
         email: str,
         password: str,
         language: Optional[str] = None,
-        workspace_invitation_token: Optional[str] = None,
         template: Template = None,
         auth_provider: Optional[AuthProviderModel] = None,
         bypass_signup_toggle: bool = False,
     ) -> AbstractUser:
         """
-        Creates a new user with the provided information and creates a new workspace and
-        application for him. If the optional workspace invitation is provided then the
-        user joins that workspace without creating a new one.
+        Creates a new user with the provided information. When a template is provided,
+        a workspace is created for them with that template installed.
 
         :param name: The name of the new user.
         :param email: The e-mail address of the user, this is also the username.
         :param password: The password of the user.
         :param language: The language selected by the user.
-        :param workspace_invitation_token: If provided and valid, the invitation will be
-            accepted and initial workspace will not be created.
         :param template: If provided, that template will be installed into the newly
             created workspace.
         :param auth_provider: If provided, a reference to the authentication
@@ -205,39 +198,19 @@ class UserHandler(metaclass=baserow_trace_methods(tracer)):
             provisioning; must never be set on the password self-service signup path.
         :raises: UserAlreadyExist: When a user with the provided username (email)
             already exists.
-        :raises WorkspaceInvitationEmailMismatch: If the workspace invitation email
-            does not match the one of the user.
         :raises SignupDisabledError: If signing up is disabled.
         :return: The user object.
         """
 
         core_handler = CoreHandler()
-
-        workspace_invitation = None
         workspace_user = None
 
-        if workspace_invitation_token:
-            workspace_invitation = core_handler.get_workspace_invitation_by_token(
-                workspace_invitation_token
-            )
-
-            if email != workspace_invitation.email:
-                raise WorkspaceInvitationEmailMismatch(
-                    "The email address of the invitation does not match the one of the "
-                    "user."
-                )
-
         instance_settings = core_handler.get_settings()
-        allow_new_signups = instance_settings.allow_new_signups
-        allow_signup_for_invited_user = (
-            instance_settings.allow_signups_via_workspace_invitations
-            and workspace_invitation is not None
-        )
         if not bypass_signup_toggle:
             if settings.BASEROW_OIDC_ONLY:
                 # OIDC-only mode disables self-service (password) signup entirely.
                 raise DisabledSignupError("Sign up is disabled.")
-            if not (allow_new_signups or allow_signup_for_invited_user):
+            if not instance_settings.allow_new_signups:
                 raise DisabledSignupError("Sign up is disabled.")
 
         user = self.force_create_user(
@@ -255,23 +228,12 @@ class UserHandler(metaclass=baserow_trace_methods(tracer)):
             instance_settings.show_admin_signup_page = False
             instance_settings.save()
 
-        # If we have an invitation to a workspace, then accept it.
-        if workspace_invitation_token:
-            workspace_user = core_handler.accept_workspace_invitation(
-                user, workspace_invitation
-            )
-            profile = user.profile
-            profile.email_verified = True
-            profile.save()
-
         if (
             # If the user signs up and installs a template, then we must create a
             # workspace because the template must be installed in one.
             template
-            # If we still don't have a `WorkspaceUser`, which will be because we weren't
-            # invited to a workspace, and `allow_global_workspace_creation` is enabled,
-            # we'll create a workspace for this new user.
-            and not workspace_user
+            # and `allow_global_workspace_creation` is enabled, we'll create a
+            # workspace for this new user.
             and instance_settings.allow_global_workspace_creation
         ):
             with translation.override(language):
@@ -283,16 +245,13 @@ class UserHandler(metaclass=baserow_trace_methods(tracer)):
         workspace = getattr(workspace_user, "workspace", None)
         user.default_workspace = workspace
 
-        if not workspace_invitation_token and template and workspace:
+        if template and workspace:
             core_handler.install_template(user, workspace, template)
 
         if (
-            # If the user accepted an invitation, then a workspace already exists
-            # making the onboarding redundant.
-            workspace_invitation
             # If the user signups up with a template, then we must create a workspace
             # because making the onboarding redundant.
-            or template
+            template
             # If the user can't create a new workspace then the onboarding is
             # redundant because it can't create a workspace anyway.
             or not instance_settings.allow_global_workspace_creation
@@ -303,7 +262,7 @@ class UserHandler(metaclass=baserow_trace_methods(tracer)):
 
         # Call the user_created method for each plugin that is in the registry.
         for plugin in plugin_registry.registry.values():
-            plugin.user_created(user, workspace, workspace_invitation, template)
+            plugin.user_created(user, workspace, template)
 
         # register the authentication provider used to create the user
         if auth_provider is None:

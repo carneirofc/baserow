@@ -87,6 +87,16 @@ export const routes = [
         file: path.resolve(__dirname, 'pages/admin/health.vue'),
       },
       {
+        name: 'admin-audit-log',
+        path: '/admin/audit-log',
+        file: path.resolve(__dirname, 'pages/admin/auditLog.vue'),
+      },
+      {
+        name: 'admin-backups',
+        path: '/admin/backups',
+        file: path.resolve(__dirname, 'pages/admin/backups.vue'),
+      },
+      {
         name: 'admin-dashboard',
         path: '/admin/dashboard',
         file: path.resolve(__dirname, 'pages/admin/dashboard.vue'),
@@ -112,20 +122,13 @@ export const routes = [
             file: path.resolve(__dirname, 'pages/settings/members.vue'),
           },
           {
-            name: 'settings-invites',
-            path: 'invites',
-            file: path.resolve(__dirname, 'pages/settings/invites.vue'),
+            name: 'settings-teams',
+            path: 'teams',
+            file: path.resolve(__dirname, 'pages/settings/teams.vue'),
           },
         ],
       },
     ],
-  },
-
-  {
-    name: 'workspace-invitation',
-    path: '/workspace-invitation/:token',
-    file: path.resolve(__dirname, 'pages/workspaceInvitation.vue'),
-    meta: { preventPageViewTracking: true },
   },
 
   {

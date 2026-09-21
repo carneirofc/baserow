@@ -1,6 +1,7 @@
 import {
   defineNuxtModule,
   addPlugin,
+  addServerHandler,
   extendPages,
   addLayout,
   createResolver,
@@ -60,6 +61,10 @@ export default defineNuxtModule({
         publicWebFrontendUrl: 'http://localhost:3000',
         initialTableDataLimit: null,
         hoursUntilTrashPermanentlyDeleted: 24 * 3,
+        exportFileExpireMinutes: 60,
+        baserowSnapshotExpirationTimeDays: 360,
+        baserowUserLogEntryRetentionDays: 61,
+        baserowRowHistoryRetentionDays: 180,
         disableAnonymousPublicViewWsConnections: '',
         baserowMaxImportFileSizeMb: 512,
         featureFlags: '',
@@ -99,6 +104,32 @@ export default defineNuxtModule({
         baseURL: '/',
         dir: resolve('static'),
       })
+      // Defaults for the runtime branding assets route. Nitro serves public
+      // assets before any handler runs, so files that branding can override
+      // are bundled as server assets and served by that route instead.
+      nitroConfig.serverAssets ||= []
+      nitroConfig.serverAssets.push(
+        { baseName: 'branding-img', dir: resolve('static/img') },
+        { baseName: 'branding-icons', dir: resolve('assets/icons') }
+      )
+    })
+
+    // Runtime branding, configured through BASEROW_BRANDING_DIR without a
+    // rebuild. See modules/core/server/branding/config.js.
+    addServerHandler({
+      route: '/_branding/theme.css',
+      method: 'get',
+      handler: resolve('server/branding/theme.js'),
+    })
+    addServerHandler({
+      route: '/_branding/config.json',
+      method: 'get',
+      handler: resolve('server/branding/configJson.js'),
+    })
+    addServerHandler({
+      route: '/_branding/assets/**',
+      method: 'get',
+      handler: resolve('server/branding/assets.js'),
     })
 
     addLayout({ src: resolve('layouts/app.vue'), filename: 'app.vue' }, 'app')
@@ -113,6 +144,7 @@ export default defineNuxtModule({
     addPlugin(resolve('plugin.js'))
     addPlugin(resolve('plugins/global.js'))
     addPlugin(resolve('plugins/i18n.js'))
+    addPlugin(resolve('plugins/branding.js'))
     addPlugin(resolve('plugins/clientHandler.js'))
     addPlugin(resolve('plugins/priorityBus.js'))
     addPlugin(resolve('plugins/registry.js'))

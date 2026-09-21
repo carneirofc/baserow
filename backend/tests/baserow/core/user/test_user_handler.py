@@ -15,8 +15,6 @@ from baserow.contrib.database.fields.models import SelectOption
 from baserow.contrib.database.models import Database, Table
 from baserow.core.exceptions import (
     BaseURLHostnameNotAllowed,
-    WorkspaceInvitationDoesNotExist,
-    WorkspaceInvitationEmailMismatch,
 )
 from baserow.core.handler import CoreHandler
 from baserow.core.models import BlacklistedToken, UserLogEntry, Workspace, WorkspaceUser
@@ -97,7 +95,7 @@ def test_create_user(data_fixture):
 
         assert Workspace.objects.all().count() == 0
 
-        plugin_mock.user_created.assert_called_with(user, None, None, None)
+        plugin_mock.user_created.assert_called_with(user, None, None)
 
         with pytest.raises(UserAlreadyExist):
             user_handler.create_user("Test1", "test@test.nl", valid_password)
@@ -106,14 +104,14 @@ def test_create_user(data_fixture):
 @pytest.mark.django_db
 def test_update_user(data_fixture):
     user_handler = UserHandler()
-    user = data_fixture.create_user(first_name="Initial", language="fr")
+    user = data_fixture.create_user(first_name="Initial", language="pt-BR")
 
     user_handler.update_user(user, first_name="Updated")
 
     user.refresh_from_db()
     user.profile.refresh_from_db()
     assert user.first_name == "Updated"
-    assert user.profile.language == "fr"
+    assert user.profile.language == "pt-BR"
 
     user_handler.update_user(user, language="en")
 
@@ -150,81 +148,6 @@ def test_first_ever_created_user_is_staff(data_fixture):
     )
     assert second_user.first_name == "Second User"
     assert not second_user.is_staff
-
-
-@pytest.mark.django_db
-def test_create_user_with_invitation(data_fixture):
-    plugin_mock = MagicMock()
-    with patch.dict(plugin_registry.registry, {"mock": plugin_mock}):
-        valid_password = "thisIsAValidPassword"
-
-        user_handler = UserHandler()
-        core_handler = CoreHandler()
-
-        invitation = data_fixture.create_workspace_invitation(email="test0@test.nl")
-        signer = core_handler.get_workspace_invitation_signer()
-
-        with pytest.raises(BadSignature):
-            user_handler.create_user(
-                "Test1",
-                "test0@test.nl",
-                valid_password,
-                workspace_invitation_token="INVALID",
-            )
-
-        with pytest.raises(WorkspaceInvitationDoesNotExist):
-            user_handler.create_user(
-                "Test1",
-                "test0@test.nl",
-                valid_password,
-                workspace_invitation_token=signer.dumps(99999),
-            )
-
-        with pytest.raises(WorkspaceInvitationEmailMismatch):
-            user_handler.create_user(
-                "Test1",
-                "test1@test.nl",
-                valid_password,
-                workspace_invitation_token=signer.dumps(invitation.id),
-            )
-
-        data_fixture.update_settings(
-            allow_new_signups=False, allow_signups_via_workspace_invitations=False
-        )
-        with pytest.raises(DisabledSignupError):
-            user_handler.create_user(
-                "Test1",
-                "test0@test.nl",
-                valid_password,
-                workspace_invitation_token=signer.dumps(invitation.id),
-            )
-
-        data_fixture.update_settings(
-            allow_new_signups=False, allow_signups_via_workspace_invitations=True
-        )
-        user = user_handler.create_user(
-            "Test1",
-            "test0@test.nl",
-            valid_password,
-            workspace_invitation_token=signer.dumps(invitation.id),
-        )
-
-        assert user.profile.completed_onboarding is True
-
-        assert Workspace.objects.all().count() == 1
-        assert Workspace.objects.all().first().id == invitation.workspace_id
-        assert WorkspaceUser.objects.all().count() == 2
-
-        plugin_mock.user_created.assert_called_once()
-        args = plugin_mock.user_created.call_args
-        assert args[0][0] == user
-        assert args[0][1].id == invitation.workspace_id
-        assert args[0][2].email == invitation.email
-        assert args[0][2].workspace_id == invitation.workspace_id
-
-        # We do not expect any initial data to have been created.
-        assert Database.objects.all().count() == 0
-        assert Table.objects.all().count() == 0
 
 
 @pytest.mark.django_db
@@ -265,13 +188,14 @@ def test_create_user_with_template_different_language(data_fixture):
     user_handler = UserHandler()
     valid_password = "thisIsAValidPassword"
     user = user_handler.create_user(
-        "Test1", "test0@test.nl", valid_password, template=template, language="fr"
+        "Test1", "test0@test.nl", valid_password, template=template, language="pt-BR"
     )
 
     assert Workspace.objects.all().count() == 2
     workspace = Workspace.objects.filter(users__in=[user.id]).first()
     assert workspace.users.filter(id=user.id).count() == 1
-    assert workspace.name == "Projet de « Test1 »"
+    # pt-BR has no translation for the workspace name, so it falls back to English.
+    assert workspace.name == "Test1's workspace"
 
     settings.APPLICATION_TEMPLATES_DIR = old_templates
 
@@ -309,13 +233,13 @@ def test_send_reset_password_email(data_fixture, mailoutbox):
 
 @pytest.mark.django_db(transaction=True)
 def test_send_reset_password_email_in_different_language(data_fixture, mailoutbox):
-    user = data_fixture.create_user(email="test@localhost", language="fr")
+    user = data_fixture.create_user(email="test@localhost", language="pt-BR")
     handler = UserHandler()
 
     handler.send_reset_password_email(user, "http://localhost:3000/reset-password")
 
     assert len(mailoutbox) == 1
-    assert mailoutbox[0].subject == "Réinitialiser le mot de passe - Baserow"
+    assert mailoutbox[0].subject == "Resetar senha - Baserow"
 
 
 @pytest.mark.django_db(transaction=True)
@@ -920,7 +844,7 @@ def test_send_change_email_confirmation_in_different_language(data_fixture, mail
     data_fixture.create_password_provider()
     valid_password = "thisIsAValidPassword"
     user = data_fixture.create_user(
-        email="test@localhost", password=valid_password, language="fr"
+        email="test@localhost", password=valid_password, language="pt-BR"
     )
     handler = UserHandler()
 
@@ -929,11 +853,8 @@ def test_send_change_email_confirmation_in_different_language(data_fixture, mail
     )
 
     assert len(mailoutbox) == 1
-    # The French translation for "Confirm email address change - Baserow"
-    assert (
-        "Confirmer le changement" in mailoutbox[0].subject
-        or "Baserow" in mailoutbox[0].subject
-    )
+    # pt-BR has no translation for this subject, so it falls back to English.
+    assert mailoutbox[0].subject == "Confirm email address change - Baserow"
 
 
 @pytest.mark.django_db(transaction=True)

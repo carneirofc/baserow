@@ -255,7 +255,7 @@
   align-items: flex-start;
 
   &.active {
-    background: rgba($palette-neutral-1300, 0.04);
+    background: alpha($palette-neutral-1300, 0.04);
   }
 }
 

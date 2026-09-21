@@ -1,0 +1,17 @@
+# Exceptions to the CVE gate (`just audit`, ci.yml `dependency-audit`,
+# image scans). The gate fails on HIGH/CRITICAL findings that have a fix.
+#
+# Only add an entry when the finding is verified non-exploitable here or the
+# fix cannot be taken yet. Every entry needs a `statement` explaining why and
+# an `expired_at` date so it is re-reviewed; expired entries stop applying.
+#
+# Format: https://trivy.dev/latest/docs/configuration/filtering/#trivyignoreyaml
+#
+# vulnerabilities:
+#   - id: CVE-0000-00000
+#     paths:
+#       - "web-frontend/yarn.lock"
+#     statement: "Dev-only build tool; never shipped in the prod image."
+#     expired_at: 2026-12-31
+
+vulnerabilities: []

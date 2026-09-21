@@ -15,9 +15,9 @@
     "errorProviderDoesNotExist": "The requested login provider does not exist.",
     "errorAuthFlowError": "Something went wrong during the login. Please try again.",
     "errorDifferentProvider": "This account is linked to a different login provider.",
-    "errorWorkspaceInvitationEmailMismatch": "The invitation was sent to a different email address than the one you signed in with.",
     "errorSignupDisabled": "New signups are disabled for this instance.",
-    "errorNoMappedRole": "Your account does not have a role that grants access to this instance. Ask an administrator to assign you one."
+    "errorNoMappedRole": "Your account does not have a role that grants access to this instance. Ask an administrator to assign you one.",
+    "errorEmailNotVerified": "Your login provider has not verified your email address. Verify it there, then try again."
   },
   "workspaceSearch": {
     "title": "Search",
@@ -52,7 +52,9 @@
   },
   "action": {
     "cancel": "Cancel",
-    "submit": "Submit"
+    "submit": "Submit",
+    "rename": "Rename",
+    "delete": "Delete"
   },
   "sidebarApplication": {
     "rename": "Rename",
@@ -72,7 +74,6 @@
   "sidebar": {
     "createWorkspace": "Create workspace",
     "addNewWorkspace": "Add new workspace",
-    "inviteOthers": "Invite others",
     "members": "Members",
     "logoff": "Log out",
     "errorNoWorkspace": "You don’t have any workspaces.",
@@ -232,8 +233,6 @@
     "password": "Password",
     "passwordRepeat": "Repeat password"
   },
-  "invitationTitle": "Invitation",
-  "invitationMessage": "{invitedBy} has invited you to join {workspace}.",
   "workspaceForm": {
     "nameLabel": "Name"
   },
@@ -242,7 +241,7 @@
   },
   "leaveWorkspaceModal": {
     "title": "Leave {workspace}",
-    "message": "Are you sure you want to leave the workspace {workspace}? You won't be able to access the related applications anymore and if you want to regain access, one of the admins must invite you again. If you leave the workspace, it will not be deleted. All the other members will still have access to it. It is not possible to leave a workspace if you're the last admin because that will leave it unmaintained.",
+    "message": "Are you sure you want to leave the workspace {workspace}? You won't be able to access the related applications anymore and if you want to regain access, one of the admins must add you again. If you leave the workspace, it will not be deleted. All the other members will still have access to it. It is not possible to leave a workspace if you're the last admin because that will leave it unmaintained.",
     "leave": "Leave workspace"
   },
   "exportWorkspaceModal": {
@@ -321,19 +320,60 @@
     "description": "Please check your mailbox and click on the link to verify. Once verified, your account will be activated.",
     "resend": "Resend confirmation email"
   },
-  "workspaceInvitation": {
-    "title": "Invitation",
-    "message": "{by} has invited you to join {workspace}.",
-    "reject": "Reject",
-    "accept": "Accept"
-  },
-  "workspaceInviteForm": {
-    "invitationFormTitle": "Invite by email",
-    "errorInvalidEmail": "Please enter a valid e-mail address.",
-    "additionalRoles": "Additional roles"
+  "backupsModal": {
+    "title": "Backups of",
+    "description": "Back up the applications of this workspace, optionally uploading them to external storage, restore a backup as new applications, and schedule recurring backups.",
+    "tabBackups": "Backups",
+    "tabSchedules": "Schedules",
+    "tabRemote": "External storage",
+    "destination": "Upload to",
+    "noDestination": "Keep on this instance only",
+    "content": "Content",
+    "onlyStructure": "Structure only, without row data",
+    "backupNow": "Back up now",
+    "noBackups": "You have not made any backups of this workspace yet.",
+    "uploadedTo": "uploaded to {name}",
+    "download": "Download",
+    "restore": "Restore",
+    "delete": "Delete",
+    "edit": "Edit",
+    "backupFinishedTitle": "Backup finished",
+    "backupFinishedMessage": "The backup of the workspace is ready.",
+    "restoreFinishedTitle": "Backup restored",
+    "restoreFinishedMessage": "No application was restored. | {count} application was restored. | {count} applications were restored.",
+    "newSchedule": "New schedule",
+    "noSchedules": "This workspace has no backup schedules yet.",
+    "inactive": "inactive",
+    "nextRun": "next run",
+    "runNow": "Run now",
+    "runStartedTitle": "Backup started",
+    "runStartedMessage": "The scheduled backup is running in the background.",
+    "name": "Name",
+    "cron": "Cron expression",
+    "cronHelp": "minute hour day-of-month month day-of-week, for example 0 3 * * * for every night at 03:00.",
+    "timezone": "Timezone",
+    "keepLast": "Keep last",
+    "keepDays": "Keep days",
+    "retentionHelp": "Older backups made by this schedule are removed. Leave empty to keep them all.",
+    "active": "Active",
+    "save": "Save",
+    "cancel": "Cancel",
+    "noBackupDestinations": "No external storage is configured for backups. An administrator can declare one with BASEROW_DATA_DESTINATIONS.",
+    "noRemoteBackups": "There are no backups of this workspace on this storage.",
+    "structureOnly": "structure only",
+    "scheduled": "scheduled",
+    "instance": "made by instance {id}",
+    "signingKey": "Signing key",
+    "trustPublicKey": "Trust the signing key of the backup",
+    "trustPublicKeyHelp": "Needed to restore a backup made by another instance. Only allowed when the storage permits it.",
+    "untrustedKeyTitle": "Untrusted backup",
+    "untrustedKeyMessage": "This backup was signed by an instance this one does not trust. A staff member can restore it with the signing key trusted.",
+    "scope": "Scope",
+    "onlySelectedApplications": "Only selected applications"
   },
   "workspaceContext": {
     "renameWorkspace": "Rename workspace",
+    "backups": "Backups",
     "exportWorkspace": "Export data",
     "importWorkspace": "Import data",
     "settings": "Settings",
@@ -341,7 +381,8 @@
     "auditLog": "Audit log",
     "viewTrash": "View trash",
     "leaveWorkspace": "Leave workspace",
-    "deleteWorkspace": "Delete workspace"
+    "deleteWorkspace": "Delete workspace",
+    "apiClients": "API clients"
   },
   "workspaceSettingsModal": {
     "title": "Workspace Settings"
@@ -426,7 +467,7 @@
   "trashModal": {
     "emptyTitle": "No workspaces found",
     "emptyMessage": "You aren't a member of any workspace. Applications like databases belong to a workspace, so in order to create them you need to create a workspace.",
-    "emptyMessageWithoutCreatePermission": "You aren't a member of any workspace. Applications like databases belong to a workspace, so in order to create them you will need to be invited to a workspace by an administrator first."
+    "emptyMessageWithoutCreatePermission": "You aren't a member of any workspace. Applications like databases belong to a workspace, so in order to create them you will need to be added to a workspace by an administrator first."
   },
   "uploadViaURLUserFileUpload": {
     "title": "Upload from a URL",
@@ -637,13 +678,25 @@
     "settingAllowResetPasswordWarning": "Please note that you could lock yourself out of the system and that access can't be restored if you forget your password.",
     "settingAllowNewAccountsName": "Allow creating new accounts",
     "settingAllowNewAccountsDescription": "By default, any user visiting your Baserow domain can sign up for a new account.",
-    "settingAllowSignupsViaWorkspaceInvitationsName": "Allow signups via workspace invitations",
-    "settingAllowSignupsViaWorkspaceInvitationDescription": "Even if the creation of new accounts is disabled, this option permits directly invited users to still create an account.",
     "settingAllowNonStaffCreateWorkspaceOperation": "Allow everyone to create new workspaces",
     "settingAllowNonStaffCreateWorkspaceOperationDescription": "By default, everyone can create new workspaces. Disable this to only allow staff to create new workspaces.",
     "settingAllowNonStaffCreateWorkspaceOperationWarning": "New users will have a workspace automatically created for them where they are an Admin.",
     "settingTrackWorkspaceUsage": "Track workspace usage",
     "settingTrackWorkspaceUsageDescription": "Enables a nightly job that counts row and file usage per workspace, displayed on the premium workspace admin page.",
+    "operationalLimits": "Operational limits",
+    "operationalLimitsDescription": "How long this instance keeps data before it is cleaned up. These values come from the environment, so they are read-only here; change the environment variable and restart to adjust one.",
+    "limitTrash": "Trash is emptied after",
+    "limitExportFile": "Exported files are deleted after",
+    "limitSnapshotExpiration": "Snapshots are deleted after",
+    "limitMaxSnapshots": "Maximum snapshots per workspace",
+    "limitAuditLogRetention": "Audit log entries are kept for",
+    "limitRowHistoryRetention": "Row history is kept for",
+    "limitJobSoftTimeLimit": "A job is stopped after",
+    "limitJobExpiration": "Finished jobs are cleaned up after",
+    "limitImportExportRemoval": "Import and export files are removed after",
+    "limitHours": "{n} hours | 1 hour | {n} hours",
+    "limitMinutes": "{n} minutes | 1 minute | {n} minutes",
+    "limitDays": "{n} days | 1 day | {n} days",
     "userSettings": "User",
     "settingUserDeletionGraceDelay": "Delete grace delay",
     "settingUserDeletionGraceDelayDescription": "This is the number of days without a login after which an account scheduled for deletion is permanently deleted.",
@@ -737,6 +790,9 @@
       }
     }
   },
+  "jobDuration": {
+    "title": "Time elapsed"
+  },
   "job": {
     "statePending": "Waiting to start...",
     "stateStarted": "Started...",
@@ -763,10 +819,9 @@
   },
   "membersSettings": {
     "membersTabTitle": "Members",
-    "invitesTabTitle": "Invites",
     "membersTable": {
       "title": "{userAmount} Members in {workspaceName}",
-      "inviteMember": "Invite member",
+      "addMembers": "Add members",
       "columns": {
         "name": "Name",
         "email": "Email",
@@ -775,34 +830,15 @@
         "highestRoleHelpText": "The highest role this user assigned to them directly or from a team, on anything in this workspace",
         "highestRoleInstanceHelpText": "The highest role this user has in the instance",
         "teams": "Teams",
-        "2fa": "2FA"
+        "2fa": "2FA",
+        "access": "Default access"
       },
       "actions": {
         "copyEmail": "Copy email",
         "remove": "Remove from workspace"
-      }
-    },
-    "invitesTable": {
-      "title": "{invitesAmount} Pending invites in {workspaceName}",
-      "columns": {
-        "email": "Email",
-        "role": "Default role"
       },
-      "actions": {
-        "copyEmail": "Copy email",
-        "remove": "Cancel invite"
-      }
-    },
-    "membersInviteModal": {
-      "title": "Invite workspace members",
-      "submit": "Send invite",
-      "helpIconText": "The selected role will be the users default role in this workspace.",
-      "errors": {
-        "userAlreadyInWorkspace": {
-          "title": "User is already in the workspace.",
-          "text": "It is not possible to send an invitation when the user is already a member of the workspace."
-        }
-      }
+      "noTeams": "No teams",
+      "noTeamsYet": "This workspace has no teams yet. Create one on the Teams tab."
     }
   },
   "memberSelectionList": {
@@ -810,21 +846,43 @@
     "selectedAmountLabel": "{count} selected"
   },
   "memberAssignmentModalFooter": {
-    "invite": "Invite {count}",
     "deselectAll": "Deselect all",
     "selectAll": "Select all"
+  },
+  "addWorkspaceMembersModal": {
+    "title": "Add members to {name}",
+    "description": "Add people who already have an account. Someone who hasn't signed in yet must sign in once before they can be added.",
+    "search": "Find users",
+    "searchPlaceholder": "Name or email",
+    "minSearch": "Type at least {count} characters.",
+    "noResults": "No users found. They may not have signed in yet or are already members.",
+    "selected": "{count} selected:",
+    "permissions": "Add as",
+    "add": "Add {count}",
+    "teams": "Add to teams",
+    "access": "Default access"
+  },
+  "teamsSettings": {
+    "tabTitle": "Teams",
+    "title": "{count} Teams in {workspaceName}",
+    "description": "Group members into teams, then give teams access to databases and tables from their context menu.",
+    "newTeamPlaceholder": "Team name",
+    "createTeam": "Create team",
+    "defaultAccess": "Workspace default access",
+    "rename": "Rename",
+    "save": "Save",
+    "delete": "Delete",
+    "members": "Members",
+    "noMembers": "No members yet.",
+    "addMember": "Add member",
+    "removeMember": "Remove",
+    "ssoManaged": "Managed by SSO",
+    "empty": "No teams yet."
   },
   "removeFromWorkspaceModal": {
     "title": "Confirm removal from workspace",
     "confirmation": "Are you sure you want to remove {name} from {workspaceName}? This action cannot be undone.",
     "remove": "Remove"
-  },
-  "editRoleContext": {
-    "billableRolesLink": "Billable roles documentation",
-    "additionalRoles": "Additional roles"
-  },
-  "highestPaidRoleField": {
-    "billable": "Billable"
   },
   "integrationCreateEditModal": {
     "createTitle": "New integration",
@@ -846,18 +904,6 @@
   },
   "richTextEditorMentionsList": {
     "notFound": "No users found"
-  },
-  "workspaceInvitationAcceptedNotification": {
-    "title": "{sender} has accepted your invitation to join {workspaceName}",
-    "deletedUser": "A deleted user"
-  },
-  "workspaceInvitationRejectedNotification": {
-    "title": "{sender} has rejected your invitation to join {workspaceName}",
-    "deletedUser": "A deleted user"
-  },
-  "workspaceInvitationCreatedNotification": {
-    "title": "{sender} has invited you to join {workspaceName}",
-    "deletedUser": "A deleted user"
   },
   "versionUpgradeNotification": {
     "title": "{version} is here! Check out what's new."
@@ -995,7 +1041,25 @@
   "adminType": {
     "dashboard": "Dashboard",
     "users": "Users",
-    "workspaces": "Workspaces"
+    "workspaces": "Workspaces",
+    "auditLog": "Audit log",
+    "backups": "Backups"
+  },
+  "backupsAdminPanel": {
+    "workspace": "Workspace"
+  },
+  "auditLogAdminTable": {
+    "title": "Audit log",
+    "export": "Export CSV",
+    "retention": "Entries are kept for {n} days | Entries are kept for 1 day | Entries are kept for {n} days",
+    "createdOn": "Date",
+    "user": "User",
+    "workspace": "Workspace",
+    "actionType": "Action",
+    "description": "Description",
+    "commandType": "Command",
+    "ipAddress": "IP address",
+    "ipAddressHelp": "Only recorded for sign-in and sign-out events."
   },
   "workspacesAdminTable": {
     "allWorkspaces": "All workspaces",
@@ -1011,6 +1075,7 @@
     "usageHelpText": "Calculated nightly when the track workspace usage setting is enabled"
   },
   "editWorkspaceContext": {
+    "manageAccess": "Manage default access",
     "delete": "Permanently delete"
   },
   "deleteWorkspaceModal": {
@@ -1122,7 +1187,7 @@
   },
   "controlCenterGuidedTourStep": {
     "title": "Your Baserow Control Center",
-    "content": "The left sidebar helps you manage your workspace:\n\n- Home – Access your main dashboard.\n- Notifications – Stay updated on changes and mentions.\n- Invite Members – Collaborate by adding team members.\n- Trash – List and recover all your deleted items."
+    "content": "The left sidebar helps you manage your workspace:\n\n- Home – Access your main dashboard.\n- Notifications – Stay updated on changes and mentions.\n- Members – Manage who has access to the workspace.\n- Trash – List and recover all your deleted items."
   },
   "createNewGuidedTourStep": {
     "title": "Create a new database or application",
@@ -1190,5 +1255,81 @@
   },
   "adminWorkspaces": {
     "title": "Workspaces"
+  },
+  "auditLogFilters": {
+    "user": "User",
+    "workspace": "Workspace",
+    "actionType": "Action",
+    "commandType": "Command",
+    "createdAfter": "From",
+    "createdBefore": "Until",
+    "all": "All",
+    "clear": "Clear filters"
+  },
+  "apiClientsModal": {
+    "title": "API clients of",
+    "description": "An API client lets an external integration act on your behalf in this workspace, limited to the scopes you grant it. Each client authenticates with keys you issue to it.",
+    "newClient": "Create client",
+    "create": "Create client",
+    "noClients": "This workspace has no API clients yet."
+  },
+  "apiClientForm": {
+    "nameLabel": "Name",
+    "scopesLabel": "Scopes",
+    "scopesHelp": "A scope never widens what the client can do: it always acts as you, narrowed down to what you tick here.",
+    "scopeRequired": "Select at least one scope."
+  },
+  "apiClientScopes": {
+    "backupRead": "Read backups",
+    "backupReadDescription": "List backups and obtain their download URL.",
+    "backupWrite": "Write backups",
+    "backupWriteDescription": "Start new backups and delete existing ones.",
+    "backupRestore": "Restore backups",
+    "backupRestoreDescription": "Restore a backup into a workspace.",
+    "contentsRead": "Read contents",
+    "contentsReadDescription": "Read the full contents of a workspace or application.",
+    "scheduleRead": "Read schedules",
+    "scheduleReadDescription": "List backup schedules.",
+    "scheduleWrite": "Write schedules",
+    "scheduleWriteDescription": "Create, update, delete and manually trigger schedules."
+  },
+  "apiClient": {
+    "noScopes": "No scopes",
+    "keysLabel": "Keys ({count})",
+    "activeLabel": "Status",
+    "activeHelp": "Deactivating stops every key of this client from working, without deleting anything.",
+    "active": "Active",
+    "keyName": "Name",
+    "keyPrefix": "Prefix",
+    "keyCreatedOn": "Created",
+    "keyLastUsedOn": "Last used",
+    "keyExpiresOn": "Expires",
+    "keyStatus": "Status",
+    "keyStatuses": {
+      "active": "Active",
+      "expired": "Expired",
+      "revoked": "Revoked"
+    },
+    "revoke": "Revoke",
+    "noKeys": "This client has no keys yet, so it cannot authenticate.",
+    "newKey": "Issue key"
+  },
+  "apiClientKeyForm": {
+    "nameLabel": "Name",
+    "nameHelp": "Optional, to tell your keys apart.",
+    "expiresOnLabel": "Expires on",
+    "expiresOnHelp": "Leave empty for a key that never expires.",
+    "create": "Issue key"
+  },
+  "apiClientKeyRevealModal": {
+    "title": "Your new key",
+    "warningTitle": "Copy it now",
+    "warning": "Only a hash of this key is stored, so this is the one and only time it can be read. If you lose it, revoke the key and issue a new one.",
+    "copy": "Copy key",
+    "usage": "Authenticate requests with an \"Authorization: Client\" header holding this key.",
+    "confirm": "I've saved it"
+  },
+  "memberAccessField": {
+    "fullAccess": "Full access"
   }
 }

@@ -46,16 +46,15 @@ ERROR_INITIAL_TABLE_DATA_HAS_DUPLICATE_NAMES = (
     "Field names must be unique in Baserow per table however the initial table data "
     "provided contains duplicate field names, please make them unique and try again.",
 )
+ERROR_IMPORT_AMBIGUOUS_MATCHES = (
+    "ERROR_IMPORT_AMBIGUOUS_MATCHES",
+    HTTP_400_BAD_REQUEST,
+    "The match keys are not unique in the imported data or in the table. Choose "
+    "other match fields or explicitly allow ambiguous matches.",
+)
 ERROR_FAILED_TO_LOCK_TABLE_DUE_TO_CONFLICT = (
     "ERROR_FAILED_TO_LOCK_TABLE_DUE_TO_CONFLICT",
     HTTP_409_CONFLICT,
     "The requested table is already being updated or used by another operation, "
     "please try again after other concurrent operations have finished.",
-)
-ERROR_TABLE_IMPORT_SCHEMA_MISMATCH = (
-    "ERROR_TABLE_IMPORT_SCHEMA_MISMATCH",
-    HTTP_400_BAD_REQUEST,
-    "The columns of the file don't match the fields of the table. Unmapped file "
-    "columns: {e.unmapped_file_columns}. Fields not covered by the file: "
-    "{e.uncovered_fields}. Fields mapped more than once: {e.duplicate_fields}.",
 )

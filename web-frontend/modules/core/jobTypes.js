@@ -279,6 +279,16 @@ export class ExportApplicationsJobType extends JobType {
   }
 }
 
+export class ExportApplicationsToDestinationJobType extends JobType {
+  static getType() {
+    return 'export_applications_to_destination'
+  }
+
+  getName() {
+    return 'exportApplicationsToDestination'
+  }
+}
+
 export class ImportApplicationsJobType extends JobType {
   static getType() {
     return 'import_applications'

@@ -8,7 +8,7 @@ from django.urls import reverse
 import pytest
 import responses
 
-from baserow.core.sso.oidc.handler import SESSION_NONCE_KEY
+from baserow.core.sso.oidc.handler import SESSION_NONCE_KEY, SESSION_STATE_KEY
 from baserow.core.user.exceptions import DisabledSignupError
 from baserow.core.user.handler import UserHandler
 from baserow.test_utils.oidc import FakeOIDCProvider
@@ -31,16 +31,15 @@ def _drive_callback(api_client, idp, responses_mock):
     nonce = api_client.session[SESSION_NONCE_KEY]
     idp.register_all(responses_mock, nonce=nonce)
     return api_client.get(
-        reverse("api:sso:oidc:callback", args=(idp.name,)) + "?code=the-code"
+        reverse("api:sso:oidc:callback", args=(idp.name,))
+        + f"?code=the-code&state={api_client.session[SESSION_STATE_KEY]}"
     )
 
 
 @responses.activate(assert_all_requests_are_fired=False)
 @pytest.mark.django_db
 def test_oidc_creates_user_even_when_signups_disabled(api_client, data_fixture):
-    data_fixture.update_settings(
-        allow_new_signups=False, allow_signups_via_workspace_invitations=False
-    )
+    data_fixture.update_settings(allow_new_signups=False)
     idp = FakeOIDCProvider(email="provisioned@example.com", full_name="Provisioned")
 
     with override_settings(BASEROW_OIDC_PROVIDERS=[idp.config]):
@@ -54,9 +53,7 @@ def test_oidc_creates_user_even_when_signups_disabled(api_client, data_fixture):
 
 @pytest.mark.django_db
 def test_password_signup_still_blocked_when_signups_disabled(data_fixture):
-    data_fixture.update_settings(
-        allow_new_signups=False, allow_signups_via_workspace_invitations=False
-    )
+    data_fixture.update_settings(allow_new_signups=False)
 
     # The password / self-service path never passes bypass_signup_toggle.
     with pytest.raises(DisabledSignupError):
@@ -71,9 +68,7 @@ def test_password_signup_still_blocked_when_signups_disabled(data_fixture):
 
 @pytest.mark.django_db
 def test_bypass_flag_provisions_user_when_signups_disabled(data_fixture):
-    data_fixture.update_settings(
-        allow_new_signups=False, allow_signups_via_workspace_invitations=False
-    )
+    data_fixture.update_settings(allow_new_signups=False)
 
     user = UserHandler().create_user(
         name="Bypassed",

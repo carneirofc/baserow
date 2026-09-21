@@ -29,13 +29,13 @@ jobs:
       packages: write
     steps:
       - name: Checkout code at tag
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
@@ -51,7 +51,7 @@ jobs:
 
       - name: Docker metadata for all-in-one image
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}/baserow
           tags: |
@@ -64,7 +64,7 @@ jobs:
       # Helm chart (deploy/helm/baserow) can consume them directly.
       - name: Docker metadata for backend image
         id: meta-backend
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}/backend
           tags: |
@@ -75,7 +75,7 @@ jobs:
 
       - name: Docker metadata for web-frontend image
         id: meta-webfrontend
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}/web-frontend
           tags: |
@@ -89,7 +89,7 @@ jobs:
       # official caddy image, which lags behind Go security releases.
       - name: Docker metadata for caddy image
         id: meta-caddy
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}/caddy
           tags: |
@@ -99,7 +99,7 @@ jobs:
             type=raw,value=latest
 
       - name: Build & push backend image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: backend/Dockerfile
@@ -119,7 +119,7 @@ jobs:
           cache-to: type=gha,scope=backend-prod,mode=max
 
       - name: Build & push web-frontend image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: web-frontend/Dockerfile
@@ -135,7 +135,7 @@ jobs:
           cache-to: type=gha,scope=frontend-prod,mode=max
 
       - name: Build & push caddy image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: deploy/caddy/Dockerfile
@@ -148,7 +148,7 @@ jobs:
           cache-to: type=gha,scope=caddy,mode=max
 
       - name: Build & push all-in-one image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: deploy/all-in-one/Dockerfile
@@ -183,3 +183,25 @@ jobs:
             fi
             echo "no pebble artefacts in $ref ($(wc -l < ./image-files.txt) files scanned)"
           done
+
+      # CVE gate on every published image (HIGH/CRITICAL with a fix; exceptions
+      # in .trivyignore.yaml). Pushes happen in the build steps above, so a
+      # failure here marks the release red rather than blocking the push; ci.yml
+      # scans the caddy and web-frontend prod images before merge. Keep
+      # TRIVY_IMAGE identical to ci.yml and the root justfile.
+      - name: Scan published images for CVEs
+        env:
+          TRIVY_IMAGE: docker.io/aquasec/trivy:0.74.0
+        run: |
+          set -euo pipefail
+          allinone=$(printf '%s\n' "${{ steps.meta.outputs.tags }}" | head -n1)
+          caddy=$(printf '%s\n' "${{ steps.meta-caddy.outputs.tags }}" | head -n1)
+          status=0
+          for ref in "${{ steps.refs.outputs.backend }}" "${{ steps.refs.outputs.webfrontend }}" "$caddy" "$allinone"; do
+            docker pull -q "$ref"
+            docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+              -v "$PWD:/src" -w /src "$TRIVY_IMAGE" \
+              image --scanners vuln --severity HIGH,CRITICAL --ignore-unfixed \
+              --ignorefile .trivyignore.yaml --exit-code 1 "$ref" || status=1
+          done
+          exit $status

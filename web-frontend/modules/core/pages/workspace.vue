@@ -66,18 +66,12 @@
         <DashboardVerifyEmail
           class="margin-top-0 margin-bottom-0"
         ></DashboardVerifyEmail>
-        <WorkspaceInvitation
-          v-for="invitation in workspaceInvitations"
-          :key="'invitation-' + invitation.id"
-          :invitation="invitation"
-          class="margin-top-0 margin-bottom-0"
-        ></WorkspaceInvitation>
         <div class="dashboard__extras">
           <div class="dashboard__resources">
             <h4>{{ $t('dashboard.resources') }}</h4>
             <div class="dashboard__resources-wrapper">
               <a
-                href="https://github.com/carneirofc/baserow"
+                :href="$branding.docsUrl"
                 target="_new"
                 class="dashboard__resource dashboard__resource--large"
               >
@@ -102,7 +96,7 @@
                 :key="index"
               ></component>
               <a
-                href="https://github.com/carneirofc/baserow"
+                :href="$branding.docsUrl"
                 target="_new"
                 class="dashboard__resource"
               >
@@ -199,7 +193,6 @@ import { useHead, useAsyncData } from '#imports'
 import WorkspaceContext from '@baserow/modules/core/components/workspace/WorkspaceContext'
 import CreateApplicationContext from '@baserow/modules/core/components/application/CreateApplicationContext'
 import DashboardApplication from '@baserow/modules/core/components/dashboard/DashboardApplication'
-import WorkspaceInvitation from '@baserow/modules/core/components/workspace/WorkspaceInvitation'
 import editWorkspace from '@baserow/modules/core/mixins/editWorkspace'
 import DashboardVerifyEmail from '@baserow/modules/core/components/dashboard/DashboardVerifyEmail'
 import DashboardHelp from '@baserow/modules/core/components/dashboard/DashboardHelp'
@@ -285,7 +278,6 @@ const {
     }
 
     try {
-      await $store.dispatch('auth/fetchWorkspaceInvitations')
       return await fetchWorkspaceExtraData(workspace)
     } catch {
       throw createError({
@@ -319,10 +311,6 @@ watchEffect(() => {
 useHead(() => ({
   title: $i18n.t('dashboard.title'),
 }))
-
-const workspaceInvitations = computed(
-  () => $store.getters['auth/getWorkspaceInvitations']
-)
 
 const getAllOfWorkspace = (ws) =>
   $store.getters['application/getAllOfWorkspace'](ws)

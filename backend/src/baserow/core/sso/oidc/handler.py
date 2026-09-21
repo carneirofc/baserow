@@ -2,11 +2,15 @@
 The OpenID Connect authorization-code flow, driven by env-configured providers.
 
 The flow is: discovery (``.well-known/openid-configuration``) → build authorization
-URL (with ``state`` and ``nonce``) → exchange the code for tokens → validate the ID
-token (issuer, audience, expiry, signature via JWKS, and nonce) → read the userinfo
-endpoint for the email and name.
+URL (with ``state``, ``nonce`` and a PKCE S256 challenge) → verify the returned
+``state`` and exchange the code (with the PKCE verifier) for tokens → validate the ID
+token (issuer, audience, expiry, subject, signature via JWKS, and nonce) → read the
+userinfo endpoint for the email and name, requiring its ``sub`` to match the ID token's
+and, unless the provider opts out, a verified email.
 """
 
+import base64
+import hashlib
 import secrets
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple
@@ -21,7 +25,11 @@ from requests_oauthlib import OAuth2Session
 
 from baserow.core.auth_provider.types import UserInfo
 from baserow.core.cache import global_cache
-from baserow.core.sso.exceptions import AuthFlowError, InvalidProviderUrl
+from baserow.core.sso.exceptions import (
+    AuthFlowError,
+    EmailNotVerified,
+    InvalidProviderUrl,
+)
 from baserow.core.sso.oidc.config import OIDCProviderConfig
 from baserow.core.sso.oidc.roles import extract_roles
 
@@ -30,9 +38,11 @@ JWKS_TIMEOUT_SECONDS = 30
 WELL_KNOWN_CACHE_TIMEOUT_SECONDS = 3600
 JWKS_CACHE_TIMEOUT_SECONDS = 3600
 ALLOWED_SIGNING_ALGORITHMS = ["RS256", "RS384", "RS512"]
+PKCE_CODE_CHALLENGE_METHOD = "S256"
 
 SESSION_STATE_KEY = "oidc_oauth_state"
 SESSION_NONCE_KEY = "oidc_oauth_nonce"
+SESSION_CODE_VERIFIER_KEY = "oidc_oauth_code_verifier"
 SESSION_REQUEST_DATA_KEY = "oidc_request_data"
 
 
@@ -83,6 +93,13 @@ def get_well_known_urls(config: OIDCProviderConfig) -> WellKnownUrls:
         raise InvalidProviderUrl() from exc
 
 
+def create_pkce_code_challenge(code_verifier: str) -> str:
+    """Returns the RFC 7636 S256 code challenge for the given verifier."""
+
+    digest = hashlib.sha256(code_verifier.encode("ascii")).digest()
+    return base64.urlsafe_b64encode(digest).rstrip(b"=").decode("ascii")
+
+
 class OIDCHandler:
     """Stateless helper driving the OIDC authorization-code flow for a provider."""
 
@@ -110,17 +127,25 @@ class OIDCHandler:
     ) -> str:
         """
         Builds the provider authorization URL that starts the login flow and stores the
-        ``state``, ``nonce`` and original request data in the session for the callback.
+        ``state``, ``nonce``, PKCE code verifier and original request data in the
+        session for the callback.
         """
 
         well_known = get_well_known_urls(config)
         oauth = cls._get_oauth_session(config, callback_url)
         nonce = secrets.token_urlsafe(32)
+        # The verifier is kept in the Django session rather than on the OAuth2Session,
+        # because the callback is served by a different request and session instance.
+        code_verifier = secrets.token_urlsafe(64)
         authorization_url, state = oauth.authorization_url(
-            well_known.authorization_endpoint, nonce=nonce
+            well_known.authorization_endpoint,
+            nonce=nonce,
+            code_challenge=create_pkce_code_challenge(code_verifier),
+            code_challenge_method=PKCE_CODE_CHALLENGE_METHOD,
         )
         session[SESSION_STATE_KEY] = state
         session[SESSION_NONCE_KEY] = nonce
+        session[SESSION_CODE_VERIFIER_KEY] = code_verifier
         session[SESSION_REQUEST_DATA_KEY] = request_data or {}
         return authorization_url
 
@@ -137,25 +162,42 @@ class OIDCHandler:
         config: OIDCProviderConfig,
         callback_url: str,
         code: str,
+        returned_state: Optional[str],
         session: SessionBase,
     ) -> Tuple[UserInfo, str, List[str]]:
         """
-        Exchanges the authorization code for tokens, validates the ID token and reads
-        the userinfo endpoint.
+        Verifies the returned state, exchanges the authorization code for tokens,
+        validates the ID token and reads the userinfo endpoint.
 
         :param config: The provider configuration.
         :param callback_url: The redirect URI registered with the provider.
         :param code: The authorization code returned by the provider.
-        :param session: The Django session holding the state / nonce.
+        :param returned_state: The ``state`` query parameter of the callback.
+        :param session: The Django session holding the state / nonce / verifier.
         :raises AuthFlowError: When the flow fails or the ID token is invalid.
+        :raises EmailNotVerified: When the provider requires a verified email and the
+            identity provider does not vouch for it.
         :return: The user info, the original (relative) url to redirect to, and the
             user's IdP roles.
         """
 
         well_known = get_well_known_urls(config)
+        # Everything is popped up front so a failed attempt can never be replayed.
         state = session.pop(SESSION_STATE_KEY, None)
         nonce = session.pop(SESSION_NONCE_KEY, None)
+        code_verifier = session.pop(SESSION_CODE_VERIFIER_KEY, None)
         request_data = cls._pop_request_data(session)
+
+        # Fail closed: `fetch_token(code=...)` does not compare the state itself.
+        if (
+            not state
+            or not returned_state
+            or not secrets.compare_digest(state, returned_state)
+        ):
+            raise AuthFlowError("The callback state is missing or does not match.")
+
+        if not code_verifier:
+            raise AuthFlowError("The PKCE code verifier is missing from the session.")
 
         try:
             oauth = cls._get_oauth_session(config, callback_url, state=state)
@@ -163,6 +205,7 @@ class OIDCHandler:
                 well_known.token_endpoint,
                 code=code,
                 client_secret=config.client_secret,
+                code_verifier=code_verifier,
             )
         except Exception as exc:
             logger.exception(
@@ -183,9 +226,17 @@ class OIDCHandler:
             )
             raise AuthFlowError() from exc
 
+        # OIDC Core 5.3.2: the userinfo response must be about the ID token's subject.
+        if userinfo.get("sub") != claims["sub"]:
+            raise AuthFlowError("The userinfo subject does not match the id_token.")
+
         email, name = cls._extract_email_and_name(config, userinfo)
         if not email:
             raise AuthFlowError("The provider did not return an email address.")
+
+        email_verified = cls._is_email_verified(claims, userinfo)
+        if config.require_verified_email and not email_verified:
+            raise EmailNotVerified()
 
         roles = extract_roles(config, claims, userinfo)
 
@@ -194,14 +245,23 @@ class OIDCHandler:
                 email=email,
                 name=name,
                 language=request_data.get("language") or None,
-                workspace_invitation_token=request_data.get(
-                    "workspace_invitation_token"
-                )
-                or None,
+                email_verified=email_verified,
             ),
             request_data.get("original", ""),
             roles,
         )
+
+    @classmethod
+    def _is_email_verified(
+        cls, claims: Dict[str, Any], userinfo: Dict[str, Any]
+    ) -> bool:
+        """
+        True only when the provider explicitly vouches for the email, preferring the
+        userinfo response and falling back to the ID token.
+        """
+
+        verified = userinfo.get("email_verified", claims.get("email_verified"))
+        return verified is True
 
     @classmethod
     def _validate_id_token(
@@ -212,7 +272,7 @@ class OIDCHandler:
         expected_nonce: Optional[str],
     ) -> Dict[str, Any]:
         """
-        Validates the ID token signature, issuer, audience, expiry and nonce.
+        Validates the ID token signature, issuer, audience, expiry, subject and nonce.
 
         :raises AuthFlowError: When any check fails.
         :return: The decoded, verified claims.
@@ -226,7 +286,7 @@ class OIDCHandler:
                 algorithms=ALLOWED_SIGNING_ALGORITHMS,
                 audience=config.client_id,
                 issuer=well_known.issuer,
-                options={"require": ["exp", "iat", "aud", "iss"]},
+                options={"require": ["exp", "iat", "aud", "iss", "sub"]},
             )
         except Exception as exc:
             logger.exception(

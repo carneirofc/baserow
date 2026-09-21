@@ -159,5 +159,8 @@ Validation commands:
 - Do not add per-object database queries inside `check_multiple_permissions`.
 - Do not rename operation or manager type strings casually; other code and saved
   data may depend on them.
+- A new database operation is `builder`-only for members restricted by in-app access
+  grants; add it to `VIEWER_OPERATIONS`/`EDITOR_OPERATIONS` in
+  `backend/src/baserow/contrib/database/access/levels.py` when lower levels need it.
 - Do not duplicate the full permission guide here; read
   `docs/technical/permissions-guide.md` for deeper conceptual background.

@@ -365,16 +365,11 @@ AUTHENTICATION_BACKENDS = ["django.contrib.auth.backends.AllowAllUsersModelBacke
 
 LANGUAGE_CODE = "en"
 
+# Must stay in sync with `locales` in web-frontend/config/locales.js: the account
+# language endpoint validates against these codes (baserow.api.user.validators).
 LANGUAGES = [
     ("en", "English"),
-    ("fr", "French"),
-    ("nl", "Dutch"),
-    ("de", "German"),
-    ("es", "Spanish"),
-    ("it", "Italian"),
-    ("pl", "Polish"),
-    ("ko", "Korean"),
-    ("uk", "Ukrainian"),
+    ("pt-BR", "Portuguese (Brazil)"),
 ]
 
 TIME_ZONE = "UTC"
@@ -501,7 +496,6 @@ SPECTACULAR_SETTINGS = {
         {"name": "User"},
         {"name": "User files"},
         {"name": "Workspaces"},
-        {"name": "Workspace invitations"},
         {"name": "Templates"},
         {"name": "Trash"},
         {"name": "Applications"},
@@ -996,7 +990,10 @@ USER_THUMBNAILS_DIRECTORY = "thumbnails"
 
 EXPORT_FILES_DIRECTORY = "export_files"
 EXPORT_CLEANUP_INTERVAL_MINUTES = 5
-EXPORT_FILE_EXPIRE_MINUTES = 60
+# If you change this default please also update the default for the web-frontend
+# found in web-frontend/modules/core/module.js, which tells the user how long an
+# export stays downloadable.
+EXPORT_FILE_EXPIRE_MINUTES = int(os.getenv("EXPORT_FILE_EXPIRE_MINUTES", 60))
 
 IMPORT_FILES_DIRECTORY = "import_files"
 
@@ -1225,6 +1222,28 @@ BASEROW_BACKUP_SCHEDULE_TICK_CRONTAB = get_crontab_from_env(
     "BASEROW_BACKUP_SCHEDULE_TICK_CRONTAB", default_crontab="* * * * *"
 )
 
+# Datalake (Parquet) table exports. The tick is how often due schedules are looked
+# for; rows are read in chunks and split over part files of a bounded row count.
+BASEROW_TABLE_EXPORT_SCHEDULE_TICK_CRONTAB = get_crontab_from_env(
+    "BASEROW_TABLE_EXPORT_SCHEDULE_TICK_CRONTAB", default_crontab="* * * * *"
+)
+BASEROW_DATA_EXPORT_CHUNK_SIZE = int(
+    os.getenv("BASEROW_DATA_EXPORT_CHUNK_SIZE", "5000")
+)
+BASEROW_DATA_EXPORT_MAX_ROWS_PER_FILE = int(
+    os.getenv("BASEROW_DATA_EXPORT_MAX_ROWS_PER_FILE", "1000000")
+)
+# How far an incremental export reaches back before the previous snapshot, to catch
+# rows committed with an older `updated_on` while that export was running.
+BASEROW_DATA_EXPORT_WATERMARK_OVERLAP_SECONDS = int(
+    os.getenv("BASEROW_DATA_EXPORT_WATERMARK_OVERLAP_SECONDS", "300")
+)
+# Where part files are written before they are uploaded. Empty uses the system default.
+BASEROW_DATA_EXPORT_TMP_DIR = os.getenv("BASEROW_DATA_EXPORT_TMP_DIR", "") or None
+BASEROW_DATA_EXPORT_SOFT_TIME_LIMIT = int(
+    os.getenv("BASEROW_DATA_EXPORT_SOFT_TIME_LIMIT", str(6 * 60 * 60))
+)
+
 # The maximum amount of rows the `/api/contents/` endpoints return in one synchronous
 # response. Larger requests are refused with ERROR_CONTENTS_TOO_LARGE and should use
 # `/api/backups/` instead. Set to 0 to disable the limit.
@@ -1271,34 +1290,26 @@ BASEROW_JOB_CLEANUP_INTERVAL_MINUTES = int(
 BASEROW_ROW_HISTORY_CLEANUP_INTERVAL_MINUTES = int(
     os.getenv("BASEROW_ROW_HISTORY_CLEANUP_INTERVAL_MINUTES", 30)  # 30 minutes
 )
+# Mirrored in web-frontend/modules/core/module.js so the row history panel can say
+# how far back it reaches. Keep both defaults in sync.
 BASEROW_ROW_HISTORY_RETENTION_DAYS = int(
     os.getenv("BASEROW_ROW_HISTORY_RETENTION_DAYS", 180)
 )
 BASEROW_MAX_ROW_REPORT_ERROR_COUNT = int(
     os.getenv("BASEROW_MAX_ROW_REPORT_ERROR_COUNT", 30)
 )
-# Caps how many rows of an import get per-cell row history. A large import would
-# otherwise write one history entry per changed row; beyond this cap only the
-# summary TableImportRecord is kept and it is flagged as truncated.
-BASEROW_MAX_ROW_HISTORY_ENTRIES_PER_IMPORT = int(
-    os.getenv("BASEROW_MAX_ROW_HISTORY_ENTRIES_PER_IMPORT", 10000)
-)
-# How long a TableImportRecord is kept. 0 (the default) keeps them forever, because
-# a compliance trail that expires on its own is worse than no trail at all.
-BASEROW_TABLE_IMPORT_RECORD_RETENTION_DAYS = int(
-    os.getenv("BASEROW_TABLE_IMPORT_RECORD_RETENTION_DAYS", 0)
-)
-BASEROW_TABLE_IMPORT_RECONCILE_INTERVAL_MINUTES = int(
-    os.getenv("BASEROW_TABLE_IMPORT_RECONCILE_INTERVAL_MINUTES", 10)  # 10 minutes
-)
 BASEROW_MAX_SNAPSHOTS_PER_GROUP = int(os.getenv("BASEROW_MAX_SNAPSHOTS_PER_GROUP", 50))
+# Mirrored in web-frontend/modules/core/module.js so the snapshot list can show how
+# long each snapshot has left. Keep both defaults in sync.
 BASEROW_SNAPSHOT_EXPIRATION_TIME_DAYS = int(
     os.getenv("BASEROW_SNAPSHOT_EXPIRATION_TIME_DAYS", 360)  # 360 days
 )
 BASEROW_USER_LOG_ENTRY_CLEANUP_INTERVAL_MINUTES = int(
     os.getenv("BASEROW_USER_LOG_ENTRY_CLEANUP_INTERVAL_MINUTES", 60)  # 60 minutes
 )
-# 61 days to accommodate timezone changes in admin dashboard
+# 61 days to accommodate timezone changes in admin dashboard. Mirrored in
+# web-frontend/modules/core/module.js so the audit log can state its own window.
+# Keep both defaults in sync.
 BASEROW_USER_LOG_ENTRY_RETENTION_DAYS = int(
     os.getenv("BASEROW_USER_LOG_ENTRY_RETENTION_DAYS", 61)
 )
@@ -1323,11 +1334,13 @@ PERMISSION_MANAGERS = [
     "core",
     "setting_operation",
     "staff",
+    "staff_bypass",
     "allow_if_template",
     "allow_public_builder",
     "element_visibility",
     "member",
-    "granular_role",
+    # In-app database/table access levels given to members and teams.
+    "database_access",
     "token",
     "write_field_values",
     "basic",
@@ -1416,8 +1429,8 @@ BASEROW_USER_SOURCE_COUNTING_TASK_INTERVAL_MINUTES = int(
 # Set this to True to enable users to login with auth providers different than the one
 # they were originally created with. Read by `AuthProviderType.get_user_and_sign_in`,
 # which third party authentication plugins inherit.
-BASEROW_ALLOW_MULTIPLE_SSO_PROVIDERS_FOR_SAME_ACCOUNT = bool(
-    os.getenv("BASEROW_ALLOW_MULTIPLE_SSO_PROVIDERS_FOR_SAME_ACCOUNT", False)
+BASEROW_ALLOW_MULTIPLE_SSO_PROVIDERS_FOR_SAME_ACCOUNT = str_to_bool(
+    os.getenv("BASEROW_ALLOW_MULTIPLE_SSO_PROVIDERS_FOR_SAME_ACCOUNT", "")
 )
 
 # Env-configured OpenID Connect providers. Declared as a JSON list; parsed and
@@ -1435,12 +1448,16 @@ BASEROW_OIDC_PROVIDERS = parse_oidc_providers_env(
 # superuser (break-glass admin) can still log in with a password.
 BASEROW_OIDC_ONLY = str_to_bool(os.getenv("BASEROW_OIDC_ONLY", ""))
 
-# Env-declared workspace roles, reconciled into `core.Role` rows so that an OIDC
-# workspace mapping can grant a granular role by name. Structurally validated here;
-# the workspace and operation names are checked at reconcile time.
-from baserow.core.roles.config import parse_roles_env  # noqa: E402
+# Env-declared external data destinations (S3, Azure Blob Storage or a mounted
+# filesystem) that backups and datalake table exports are written to. Declared as a
+# JSON list so credentials never live in the database; validated here to fail fast.
+from baserow.core.data_destinations.config import (  # noqa: E402
+    parse_data_destinations_env,
+)
 
-BASEROW_ROLES = parse_roles_env(os.getenv("BASEROW_ROLES", ""))
+BASEROW_DATA_DESTINATIONS = parse_data_destinations_env(
+    os.getenv("BASEROW_DATA_DESTINATIONS", "")
+)
 
 MIGRATION_LOCK_ID = os.getenv("BASEROW_MIGRATION_LOCK_ID", 123456)
 DEFAULT_SEARCH_MODE = os.getenv("BASEROW_DEFAULT_SEARCH_MODE", "compat")
@@ -1553,7 +1570,6 @@ else:
         "core_trashentry",
         "core_workspace",
         "core_workspaceuser",
-        "core_workspaceuserinvitation",
         "core_authprovidermodel",
         "core_passwordauthprovidermodel",
         "database_database",
@@ -1615,8 +1631,8 @@ BASEROW_DEADLOCK_INITIAL_BACKOFF = max(
     0.1,
 )
 
-# Set to "all" to enable captcha everywhere, or comma-separated contexts like
-# "signup,invitations" to enable only in specific places.
+# Set to "all" to enable captcha everywhere, or a comma-separated list of contexts
+# (currently only "signup") to enable only in specific places.
 BASEROW_ENABLE_CAPTCHA = os.getenv("BASEROW_ENABLE_CAPTCHA", "")
 BASEROW_CAPTCHA_PROVIDER = os.getenv("BASEROW_CAPTCHA_PROVIDER", "cloudflare_turnstile")
 BASEROW_CLOUDFLARE_TURNSTILE_SITE_KEY = os.getenv(

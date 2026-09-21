@@ -105,30 +105,86 @@ export class BasicPermissionManagerType extends PermissionManagerType {
   }
 }
 
-export class GranularRolePermissionManagerType extends PermissionManagerType {
+/**
+ * Mirrors the backend `database_access` manager: the in-app access level of a member
+ * on a table, its database or the workspace default decides database operations.
+ * Returns `null` whenever no grant applies so the other managers decide.
+ */
+export class DatabaseAccessPermissionManagerType extends PermissionManagerType {
   static getType() {
-    return 'granular_role'
+    return 'database_access'
   }
 
   /**
-   * Mirrors the backend `granular_role` manager: only the curated
-   * `controllable_operations` are gated, and only for a member who has a custom role
-   * assigned. `allowed_operations` is null for an admin or a member without a role,
-   * who keep the access the other managers decide.
+   * Returns `{ tableId, databaseId }` for a context living in a database, or `null`.
    */
-  hasPermission(permissions, operation, context, workspaceId) {
-    const {
-      controllable_operations: controllable,
-      allowed_operations: allowed,
-    } = permissions
+  resolveLocation(context) {
+    if (!context || typeof context !== 'object') {
+      return null
+    }
+    if (context.table_id !== undefined && context.table_id !== null) {
+      return {
+        tableId: context.table_id,
+        databaseId: this.findDatabaseIdOfTable(context.table_id),
+      }
+    }
+    if (context.database_id !== undefined && context.database_id !== null) {
+      return { tableId: context.id, databaseId: context.database_id }
+    }
+    if (context.type === 'database') {
+      return { tableId: null, databaseId: context.id }
+    }
+    return null
+  }
 
-    if (allowed === null || allowed === undefined) {
-      return
+  findDatabaseIdOfTable(tableId) {
+    const store = this.app?.$store
+    if (!store) {
+      return null
     }
-    if (!controllable.includes(operation)) {
-      return
+    const database = store.getters['application/getAll'].find(
+      (application) =>
+        application.type === 'database' &&
+        (application.tables || []).some((table) => table.id === tableId)
+    )
+    return database ? database.id : null
+  }
+
+  hasPermission(permissions, operation, context, workspaceId) {
+    if (!permissions || !permissions.family_operations.includes(operation)) {
+      return null
     }
-    return allowed.includes(operation)
+    const location = this.resolveLocation(context)
+    if (location === null) {
+      return null
+    }
+
+    const { tableId, databaseId } = location
+    let level
+    if (tableId !== null && permissions.tables[tableId] !== undefined) {
+      level = permissions.tables[tableId]
+    } else if (
+      databaseId !== null &&
+      permissions.databases[databaseId] !== undefined
+    ) {
+      level = permissions.databases[databaseId]
+    } else {
+      level = permissions.workspace
+    }
+
+    if (level === null || level === undefined) {
+      return null
+    }
+    if (level === 'none') {
+      if (
+        tableId === null &&
+        permissions.databases_with_accessible_tables.includes(databaseId)
+      ) {
+        return permissions.database_passthrough_operations.includes(operation)
+      }
+      return false
+    }
+    return permissions.level_operations[level].includes(operation)
   }
 }
 

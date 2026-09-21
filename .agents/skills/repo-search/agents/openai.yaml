@@ -1,0 +1,4 @@
+interface:
+  display_name: "Repo Search"
+  short_description: "Search another GitHub repo at a given ref and return cited findings"
+  default_prompt: "Use $repo-search to answer this question from the given repository and ref."

@@ -29,11 +29,13 @@ You can easily self-host Baserow by following one of the guides below:
   Docker and use it to install Baserow on a fresh ubuntu install.
 * [Third party hosting providers](installation/third-party-hosting-providers.md): A list
   of hosting/deployment providers that allow to easily self-host Baserow.
+* [Install with Helm](installation/install-with-helm.md): The recommended Kubernetes
+  path. Deploys the split backend/web-frontend/Celery pods with optional bundled
+  PostgreSQL/Redis and S3 media, and runs unmodified under OpenShift's restricted-v2 SCC.
+* [Install on Amazon EKS](installation/install-on-eks.md): Baserow on EKS behind an
+  internal ALB fronted by CloudFront, with S3 media authenticated through IRSA.
 * [Install with K8S](installation/install-with-k8s.md): An example performant 
   production ready K8S configuration for use as a starting point.
-* [Helm chart (OpenShift-hardened)](../deploy/helm/README.md): Deploy the split
-  backend/web-frontend/Celery pods under the default restricted-v2 SCC, with optional
-  bundled PostgreSQL/Redis and S3 media.
 * [DEPRECATED: Install on Ubuntu](installation/old-install-on-ubuntu.md): A deprecated
   and now unsupported guide on how to manually install Baserow and its required services
   on a fresh Ubuntu install. Please use the guides above instead.
@@ -41,8 +43,17 @@ You can easily self-host Baserow by following one of the guides below:
   the supported and recommended runtime dependencies.
 * [Monitoring Baserow](installation/monitoring.md): Learn how to monitor your Baserow
   server using open telemetry.
+* [Single sign-on with OpenID Connect](installation/sso-oidc.md): Full OIDC reference —
+  provider keys, the user/staff/superuser profiles the IdP defines, a complete example and
+  error codes.
 * [Single sign-on with RHBK/Keycloak](installation/sso-rhbk-keycloak.md): Configure
-  OpenID Connect login and drive every level of access from Keycloak client roles.
+  OpenID Connect login with Keycloak client roles deciding who may sign in and who is staff.
+* [Managing workspace access](installation/workspace-access.md): Add existing users to
+  workspaces, group them into teams, and set no access, viewer, editor or builder levels
+  per database and table.
+* [Data destinations, backups and datalake exports](installation/data-destinations.md):
+  Ship backups to S3, Azure Blob Storage or a volume and restore them, and export table
+  rows as Parquet to a datalake on a schedule.
 * [Turning application types off instance-wide](installation/instance-settings.md): Use
   the admin settings to disable databases, the application builder, dashboards or
   automations for the whole instance.
@@ -76,8 +87,6 @@ Baserow provides various APIs detailed below:
   redo technically.
 * [Permissions handling Guide](technical/permissions-guide.md): How Baserow implements
   permission checking technically.
-* [Table file imports](technical/table-file-imports.md): The append/upsert/replace
-  import modes, the strict column contract, and the trail every import leaves behind.
 
 ## Development
 

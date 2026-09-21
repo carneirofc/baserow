@@ -19,57 +19,6 @@
         <div class="modal__actions"></div>
       </div>
 
-      <div v-if="table" class="control margin-bottom-2">
-        <FormGroup
-          :label="$t('importFileModal.modeLabel')"
-          :helper-text="$t('importFileModal.modeDescription')"
-          small-label
-          required
-        >
-          <ul class="choice-items margin-top-1">
-            <li v-for="option in modeOptions" :key="option.value">
-              <a
-                class="choice-items__link"
-                :class="{
-                  active: mode === option.value,
-                  disabled:
-                    importInProgress || restoredFromStore || !option.allowed,
-                }"
-                @click="onModeClick(option)"
-              >
-                <i class="choice-items__icon" :class="option.iconClass"></i>
-                <span>{{ option.name }}</span>
-                <HelpIcon
-                  v-if="!option.allowed"
-                  :icon="'lock'"
-                  :tooltip="$t('importFileModal.modeNotAllowed')"
-                />
-                <i
-                  v-else-if="mode === option.value"
-                  class="choice-items__icon-active iconoir-check-circle"
-                ></i>
-              </a>
-            </li>
-          </ul>
-        </FormGroup>
-      </div>
-
-      <Alert v-if="isReplace" type="error" class="margin-bottom-2">
-        <template #title>{{
-          $t('importFileModal.replaceWarningTitle')
-        }}</template>
-        <p>
-          {{
-            $t('importFileModal.replaceWarningDescription', {
-              table: table.name,
-            })
-          }}
-        </p>
-        <Checkbox v-model="replaceConfirmed" :disabled="importInProgress">
-          {{ $t('importFileModal.replaceConfirm') }}
-        </Checkbox>
-      </Alert>
-
       <div class="control margin-bottom-2">
         <FormGroup
           :label="$t('importFileModal.importLabel')"
@@ -123,50 +72,102 @@
           @get-data="onGetData($event)"
         >
           <template #upsertMapping>
-            <div v-if="isUpsert" class="control margin-top-1">
-              <label class="control__label control__label--small">
-                {{ $t('importFileModal.upsertFieldLabel') }}
-                <HelpIcon
-                  :icon="'info-empty'"
-                  :tooltip="$t('importFileModal.upsertTooltip')"
-                />
-              </label>
+            <FormGroup
+              :label="$t('importFileModal.modeLabel')"
+              small-label
+              class="margin-top-1"
+            >
+              <RadioGroup
+                v-model="mode"
+                :options="modeOptions"
+                vertical-layout
+              ></RadioGroup>
+              <p class="control__description margin-top-1">
+                {{ modeDescription }}
+              </p>
+            </FormGroup>
 
-              <Dropdown
-                v-model="upsertField"
-                :disabled="availableUpsertFields.length === 0"
-                class="margin-top-1"
+            <FormGroup
+              v-if="isMatchingMode"
+              :label="$t('importFileModal.matchFieldsLabel')"
+              :helper-text="$t('importFileModal.matchFieldsHelp')"
+              small-label
+              required
+              class="margin-top-2"
+            >
+              <p v-if="availableUpsertFields.length === 0">
+                {{ $t('importFileModal.matchFieldsEmpty') }}
+              </p>
+              <div v-else class="import-modal__match-fields">
+                <Checkbox
+                  v-for="field in availableUpsertFields"
+                  :key="field.id"
+                  :checked="matchFieldIds.includes(field.id)"
+                  :disabled="importInProgress"
+                  @input="toggleMatchField(field.id, $event)"
+                  >{{ field.name }}</Checkbox
+                >
+              </div>
+              <Checkbox
+                v-model="deleteUnmatched"
+                :disabled="importInProgress"
+                class="margin-top-2"
+                >{{ $t('importFileModal.deleteUnmatched') }}</Checkbox
               >
-                <DropdownItem
-                  v-for="item in availableUpsertFields"
-                  :key="item.id"
-                  :name="item.name"
-                  :value="item.id"
-                />
-              </Dropdown>
-            </div>
+            </FormGroup>
+
+            <Alert v-if="isDestructive" type="warning" class="margin-top-2">
+              {{ $t('importFileModal.replaceWarning') }}
+            </Alert>
           </template>
         </component>
       </div>
 
+      <ImportErrorReport :job="job" :error="error"></ImportErrorReport>
+
       <Alert
-        v-if="strictMappingProblems.length > 0"
+        v-if="preview && preview.ambiguous.length > 0"
         type="warning"
         class="margin-bottom-2"
       >
-        <template #title>{{
-          $t('importFileModal.strictMappingTitle')
-        }}</template>
+        <template #title>{{ $t('importFileModal.ambiguousTitle') }}</template>
+        <p>{{ $t('importFileModal.ambiguousMessage') }}</p>
         <ul>
-          <li v-for="problem in strictMappingProblems" :key="problem">
-            {{ problem }}
+          <li v-for="(key, index) in preview.ambiguous" :key="index">
+            {{
+              $t('importFileModal.ambiguousKey', {
+                values: key.values.join(' / '),
+                fileCount: key.file_count,
+                tableCount: key.table_count,
+              })
+            }}
           </li>
         </ul>
+        <Checkbox
+          v-model="allowAmbiguousMatches"
+          :disabled="importInProgress"
+          >{{ $t('importFileModal.allowAmbiguous') }}</Checkbox
+        >
       </Alert>
 
-      <ImportErrorReport :job="job" :error="error"></ImportErrorReport>
+      <Alert v-if="previewStale" type="info" class="margin-bottom-2">
+        {{ $t('importFileModal.previewStale') }}
+      </Alert>
 
-      <Tabs v-if="dataLoaded" header-no-padding content-no-x-padding>
+      <Tabs
+        v-if="dataLoaded"
+        :key="preview ? 'with-changes' : 'without-changes'"
+        header-no-padding
+        content-no-x-padding
+      >
+        <Tab v-if="preview" :title="$t('importFileModal.changesTab')">
+          <ImportDiffPreview
+            :preview="preview"
+            :fields="mappedFields"
+            :all-fields="sortedFields"
+            :get-imported-row="getImportedRow"
+          />
+        </Tab>
         <Tab :title="$t('importFileModal.importPreview')">
           <SimpleGrid
             class="import-modal__preview"
@@ -201,6 +202,24 @@
         >
           {{ $t('action.cancel') }}
         </ButtonText>
+        <p
+          v-if="isDestructive && !hasFreshPreview && canBePreviewed"
+          class="control__description margin-bottom-1"
+        >
+          {{ $t('importFileModal.previewRequired') }}
+        </p>
+        <Button
+          v-if="!importInProgress"
+          type="secondary"
+          size="large"
+          full-width
+          class="margin-bottom-1"
+          :loading="previewLoading"
+          :disabled="previewLoading || !canBePreviewed"
+          @click="previewChanges"
+        >
+          {{ $t('importFileModal.previewChanges') }}
+        </Button>
         <Button
           type="primary"
           size="large"
@@ -209,6 +228,7 @@
           :loading="importInProgress || (jobIsFinished && !isTableCreated)"
           :disabled="
             importInProgress ||
+            previewLoading ||
             !canBeSubmitted ||
             (jobIsFinished && !isTableCreated)
           "
@@ -244,12 +264,7 @@
             class="margin-bottom-2"
           >
             <Dropdown v-model="mapping[index]">
-              <DropdownItem
-                v-if="!isStrictMode"
-                name="Skip"
-                :value="0"
-                icon="ban"
-              />
+              <DropdownItem name="Skip" :value="0" icon="ban" />
               <DropdownItem
                 v-for="field in availableFields"
                 :key="field.id"
@@ -281,7 +296,6 @@
 </template>
 
 <script>
-import { clone } from '@baserow/modules/core/utils/object'
 import modal from '@baserow/modules/core/mixins/modal'
 import error from '@baserow/modules/core/mixins/error'
 import job from '@baserow/modules/core/mixins/job'
@@ -291,23 +305,26 @@ import {
   getNextAvailableNameInSequence,
 } from '@baserow/modules/core/utils/string'
 import SimpleGrid from '@baserow/modules/database/components/view/grid/SimpleGrid'
-import _ from 'lodash'
+import {
+  IMPORT_MATCHING_MODES,
+  IMPORT_MODES,
+  IMPORT_MODE_INSERT,
+  IMPORT_MODE_REPLACE,
+  buildImportConfiguration,
+  buildImportPayload,
+  getFieldMapping,
+} from '@baserow/modules/database/utils/import'
 
 import { ResponseErrorMessage } from '@baserow/modules/core/plugins/clientHandler'
 import ImportErrorReport from '@baserow/modules/database/components/table/ImportErrorReport.vue'
+import ImportDiffPreview from '@baserow/modules/database/components/table/ImportDiffPreview.vue'
 import { FileImportJobType } from '@baserow/modules/database/jobTypes'
 import { pageFinished } from '@baserow/modules/core/utils/routing'
-import {
-  IMPORT_MODE_APPEND,
-  IMPORT_MODE_REPLACE,
-  IMPORT_MODE_UPSERT,
-  STRICT_IMPORT_MODES,
-} from '@baserow/modules/database/constants'
 import { nextTick, useNuxtApp } from '#imports'
 
 export default {
   name: 'ImportFileModal',
-  components: { ImportErrorReport, SimpleGrid },
+  components: { ImportErrorReport, ImportDiffPreview, SimpleGrid },
   mixins: [modal, error, job],
   props: {
     database: {
@@ -342,9 +359,17 @@ export default {
       getData: null,
       previewData: [],
       dataLoaded: false,
-      mode: IMPORT_MODE_APPEND,
-      replaceConfirmed: false,
-      upsertField: undefined,
+      // Incremented every time the file data changes, to invalidate the caches.
+      dataVersion: 0,
+      mode: IMPORT_MODE_INSERT,
+      matchFieldIds: [],
+      deleteUnmatched: false,
+      allowAmbiguousMatches: false,
+      preview: null,
+      previewSettingsKey: null,
+      previewLoading: false,
+      // The raw and prepared file data, reused between the preview and the import.
+      prepared: null,
     }
   },
   computed: {
@@ -371,101 +396,86 @@ export default {
         (value) => this.fieldIndexMap[value] !== undefined
       )
     },
-    isUpsert() {
-      return this.mode === IMPORT_MODE_UPSERT
-    },
-    isReplace() {
-      return this.mode === IMPORT_MODE_REPLACE
-    },
-    isStrictMode() {
-      return STRICT_IMPORT_MODES.includes(this.mode)
-    },
     modeOptions() {
-      const workspaceId = this.database.workspace.id
-      return [
-        {
-          value: IMPORT_MODE_APPEND,
-          name: this.$t('importFileModal.modeAppend'),
-          iconClass: 'iconoir-plus',
-          allowed: this.$hasPermission(
-            'database.table.import_rows',
-            this.table,
-            workspaceId
-          ),
-        },
-        {
-          value: IMPORT_MODE_UPSERT,
-          name: this.$t('importFileModal.modeUpsert'),
-          iconClass: 'iconoir-refresh-double',
-          allowed: this.$hasPermission(
-            'database.table.upsert_rows',
-            this.table,
-            workspaceId
-          ),
-        },
-        {
-          value: IMPORT_MODE_REPLACE,
-          name: this.$t('importFileModal.modeReplace'),
-          iconClass: 'iconoir-repeat',
-          allowed: this.$hasPermission(
-            'database.table.replace_rows',
-            this.table,
-            workspaceId
-          ),
-        },
-      ]
+      const labels = {
+        insert: this.$t('importFileModal.modeInsert'),
+        upsert: this.$t('importFileModal.modeUpsert'),
+        update: this.$t('importFileModal.modeUpdate'),
+        replace: this.$t('importFileModal.modeReplace'),
+      }
+      return IMPORT_MODES.map((value) => ({
+        value,
+        label: labels[value],
+        disabled: this.importInProgress,
+      }))
+    },
+    modeDescription() {
+      const descriptions = {
+        insert: this.$t('importFileModal.modeInsertDescription'),
+        upsert: this.$t('importFileModal.modeUpsertDescription'),
+        update: this.$t('importFileModal.modeUpdateDescription'),
+        replace: this.$t('importFileModal.modeReplaceDescription'),
+      }
+      return descriptions[this.mode]
+    },
+    isMatchingMode() {
+      return IMPORT_MATCHING_MODES.includes(this.mode)
     },
     /**
-     * The file columns the user has not assigned a field to. In a strict mode this
-     * is what stops the import: a column the table has no home for would be dropped
-     * silently otherwise.
+     * The selected match fields that are still mapped, in the field order.
      */
-    unmappedFileColumns() {
-      return this.header.filter((name, index) => !this.mapping[index])
-    },
-    /**
-     * The importable fields no file column maps onto. In a strict mode these would
-     * be blanked (replace) or left stale (upsert) without the user noticing.
-     */
-    uncoveredFields() {
-      const mapped = Object.values(this.mapping)
-      return this.availableFields.filter((field) => !mapped.includes(field.id))
-    },
-    strictMappingProblems() {
-      if (!this.isStrictMode || !this.dataLoaded) {
+    activeMatchFieldIds() {
+      if (!this.isMatchingMode) {
         return []
       }
-      const problems = []
-      if (this.unmappedFileColumns.length > 0) {
-        problems.push(
-          this.$t('importFileModal.strictUnmappedColumns', {
-            columns: this.unmappedFileColumns.join(', '),
-          })
-        )
-      }
-      if (this.uncoveredFields.length > 0) {
-        problems.push(
-          this.$t('importFileModal.strictUncoveredFields', {
-            fields: this.uncoveredFields.map((field) => field.name).join(', '),
-          })
-        )
-      }
-      return problems
+      return this.availableUpsertFields
+        .map((field) => field.id)
+        .filter((id) => this.matchFieldIds.includes(id))
+    },
+    isDestructive() {
+      return (
+        this.mode === IMPORT_MODE_REPLACE ||
+        (this.isMatchingMode && this.deleteUnmatched)
+      )
+    },
+    /**
+     * Identifies everything the preview depends on. When it changes, the current
+     * preview doesn't reflect what would be imported anymore.
+     */
+    settingsKey() {
+      return JSON.stringify({
+        dataVersion: this.dataVersion,
+        mapping: this.mapping,
+        mode: this.mode,
+        matchFieldIds: this.activeMatchFieldIds,
+        deleteUnmatched: this.isMatchingMode && this.deleteUnmatched,
+        allowAmbiguousMatches:
+          this.isMatchingMode && this.allowAmbiguousMatches,
+      })
+    },
+    hasFreshPreview() {
+      return !!this.preview && this.previewSettingsKey === this.settingsKey
+    },
+    previewStale() {
+      return !!this.preview && !this.hasFreshPreview
+    },
+    canBePreviewed() {
+      return (
+        !!this.importer &&
+        typeof this.getData === 'function' &&
+        this.mappingNotEmpty &&
+        (!this.isMatchingMode || this.activeMatchFieldIds.length > 0)
+      )
     },
     canBeSubmitted() {
-      if (!this.importer || !this.mappingNotEmpty) {
+      if (!this.canBePreviewed) {
         return false
       }
-      if (this.isStrictMode && this.strictMappingProblems.length > 0) {
+      // Rows are trashed, the user must see what is going to happen first.
+      if (this.isDestructive && !this.hasFreshPreview) {
         return false
       }
-      if (this.isReplace && !this.replaceConfirmed) {
-        return false
-      }
-      if (
-        this.isUpsert &&
-        !Object.values(this.mapping).includes(this.upsertField)
-      ) {
+      if (this.hasFreshPreview && this.preview.ambiguous_blocked) {
         return false
       }
       return true
@@ -516,16 +526,18 @@ export default {
       )
     },
     fieldMapping() {
-      return Object.entries(this.mapping)
-        .filter(
-          ([, targetFieldId]) =>
-            !!targetFieldId ||
-            // Check if we have an id from a removed field
-            this.fieldIndexMap[targetFieldId] !== undefined
-        )
-        .map(([importIndex, targetFieldId]) => {
-          return [importIndex, this.fieldIndexMap[targetFieldId]]
-        })
+      return getFieldMapping(this.mapping, this.fieldIndexMap)
+    },
+    /**
+     * The fields mapped to a file column, in the field order.
+     */
+    mappedFields() {
+      const mappedIndexes = new Set(
+        this.fieldMapping.map(([, fieldIndex]) => fieldIndex)
+      )
+      return this.writableFields.filter((field, index) =>
+        mappedIndexes.has(index)
+      )
     },
     previewFileData() {
       return this.previewData.map((row) => {
@@ -541,19 +553,7 @@ export default {
     },
     previewImportData() {
       return this.previewData.map((row) => {
-        const newRow = Object.fromEntries(
-          this.fieldMapping.map(([importIndex, fieldIndex]) => {
-            const field = this.writableFields[fieldIndex]
-            return [
-              `field_${field.id}`,
-              this.fieldTypes[field.type].prepareValueForPaste(
-                field,
-                `${row[importIndex]}`,
-                row[importIndex]
-              ),
-            ]
-          })
-        )
+        const newRow = this.toImportedRow(row)
         newRow.id = uuid()
         return newRow
       })
@@ -646,7 +646,6 @@ export default {
       this.job = null
       this.restoredFromStore = false
       this.uploadProgressPercentage = 0
-      this.replaceConfirmed = false
       if (full) {
         this.header = []
         this.importState = null
@@ -654,15 +653,15 @@ export default {
         this.getData = null
         this.previewData = []
         this.dataLoaded = false
+        this.invalidateData()
       }
       this.hideError()
     },
-    onModeClick(option) {
-      if (!option.allowed || this.importInProgress || this.restoredFromStore) {
-        return
-      }
-      this.mode = option.value
-      this.replaceConfirmed = false
+    invalidateData() {
+      this.dataVersion += 1
+      this.prepared = null
+      this.preview = null
+      this.previewSettingsKey = null
     },
     onImporterClick(type) {
       // Don't let the user change the importer while a job is in progress
@@ -673,32 +672,121 @@ export default {
       this.importer = type
       this.reset()
     },
+    getAutoMapping(header) {
+      return Object.fromEntries(
+        header.map((name, index) => {
+          const foundField = this.availableFields.find(
+            ({ name: fieldName }) => fieldName === name
+          )
+          return [index, foundField ? foundField.id : 0]
+        })
+      )
+    },
     onData({ header, previewData }) {
       this.header = header
       this.previewData = previewData
-      this.mapping = Object.fromEntries(
-        header.map((name, index) => {
-          const foundField = this.availableFields.find(
-            ({ name: fieldName }) => fieldName === name
-          )
-          return [index, foundField ? foundField.id : 0]
-        })
-      )
+      this.mapping = this.getAutoMapping(header)
       this.dataLoaded = header.length > 0 || previewData.length > 0
+      this.invalidateData()
     },
     onGetData(getData) {
       this.getData = getData
+      this.invalidateData()
     },
     onHeader(header) {
       this.header = header
-      this.mapping = Object.fromEntries(
-        header.map((name, index) => {
-          const foundField = this.availableFields.find(
-            ({ name: fieldName }) => fieldName === name
-          )
-          return [index, foundField ? foundField.id : 0]
+      this.mapping = this.getAutoMapping(header)
+      this.invalidateData()
+    },
+    toggleMatchField(fieldId, checked) {
+      const others = this.matchFieldIds.filter((id) => id !== fieldId)
+      this.matchFieldIds = checked ? [...others, fieldId] : others
+    },
+    /**
+     * Converts a raw file row into a row object as displayed in the grid.
+     */
+    toImportedRow(row) {
+      return Object.fromEntries(
+        this.fieldMapping.map(([importIndex, fieldIndex]) => {
+          const field = this.writableFields[fieldIndex]
+          return [
+            `field_${field.id}`,
+            this.fieldTypes[field.type].prepareValueForPaste(
+              field,
+              `${row[importIndex]}`,
+              row[importIndex]
+            ),
+          ]
         })
       )
+    },
+    getImportedRow(importIndex) {
+      const row = this.prepared?.rawData[importIndex]
+      return row ? this.toImportedRow(row) : {}
+    },
+    getSkippedFieldIds() {
+      const mappedFieldIds = Object.values(this.mapping).filter(
+        (id) => id !== 0
+      )
+      return this.writableFields
+        .filter((field) => !mappedFieldIds.includes(field.id))
+        .map((field) => field.id)
+    },
+    /**
+     * Reads and prepares the whole file once for the current mapping and match
+     * fields, so that the preview and the import send exactly the same data.
+     */
+    async prepareData() {
+      const key = JSON.stringify({
+        dataVersion: this.dataVersion,
+        mapping: this.mapping,
+        matchFieldIds: this.activeMatchFieldIds,
+      })
+      if (this.prepared?.key === key) {
+        return this.prepared
+      }
+      const rawData = await this.getData()
+      const { data, upsertValues } = await buildImportPayload(rawData, {
+        mapping: this.mapping,
+        writableFields: this.writableFields,
+        fieldTypes: this.fieldTypes,
+        fieldIndexMap: this.fieldIndexMap,
+        upsertFieldIds: this.activeMatchFieldIds,
+        onChunk: () => this.$ensureRender(),
+      })
+      this.prepared = { key, rawData, data, upsertValues }
+      return this.prepared
+    },
+    getImportConfiguration(upsertValues) {
+      return buildImportConfiguration({
+        mode: this.mode,
+        upsertFieldIds: this.activeMatchFieldIds,
+        upsertValues,
+        skippedFieldIds: this.getSkippedFieldIds(),
+        deleteUnmatched: this.deleteUnmatched,
+        allowAmbiguousMatches: this.allowAmbiguousMatches,
+      })
+    },
+    async previewChanges() {
+      this.hideError()
+      this.previewLoading = true
+      const settingsKey = this.settingsKey
+      try {
+        const { data, upsertValues } = await this.prepareData()
+        const { data: preview } = await TableService(
+          this.$client
+        ).previewImport(
+          this.table.id,
+          data,
+          this.getImportConfiguration(upsertValues)
+        )
+        this.preview = preview
+        this.previewSettingsKey = settingsKey
+      } catch (error) {
+        this.handleError(error, 'application')
+      } finally {
+        this.previewLoading = false
+      }
     },
     /**
      * When the form is submitted we try to extract the initial data and first row
@@ -709,34 +797,7 @@ export default {
       this.showProgressBar = false
       this.reset(false)
       let data = null
-      const importConfiguration = {}
-
-      if (this.isUpsert && this.upsertField) {
-        // at the moment we use only one field, but the key may be composed of several
-        // fields.
-        importConfiguration.upsert_fields = [this.upsertField]
-        importConfiguration.upsert_values = []
-      }
-
-      if (this.isStrictMode) {
-        // The backend re-checks this mapping against the table before it writes
-        // anything, so the file can never reshape the table's data format.
-        importConfiguration.file_header = [...this.header]
-        importConfiguration.field_mapping = this.header.map(
-          (name, index) => this.mapping[index] || 0
-        )
-      }
-
-      const mappedFieldIds = Object.values(this.mapping).filter(
-        (id) => id !== 0
-      )
-      const skippedFieldIds = this.writableFields
-        .filter((field) => !mappedFieldIds.includes(field.id))
-        .map((field) => field.id)
-
-      if (skippedFieldIds.length > 0) {
-        importConfiguration.skipped_fields = skippedFieldIds
-      }
+      let configuration = null
 
       if (typeof this.getData === 'function') {
         try {
@@ -744,88 +805,13 @@ export default {
           this.importState = 'preparingData'
           await this.$ensureRender()
 
-          data = await this.getData()
-          const upsertFields = importConfiguration.upsert_fields || []
-          const upsertValues = importConfiguration.upsert_values || []
-          const upsertFieldIndexes = []
-
-          Object.entries(this.mapping).forEach(
-            ([importIndex, targetFieldId]) => {
-              if (upsertFields.includes(targetFieldId)) {
-                upsertFieldIndexes.push(importIndex)
-              }
-            }
-          )
-
-          const fieldMapping = Object.entries(this.mapping)
-            .filter(
-              ([, targetFieldId]) =>
-                !!targetFieldId ||
-                // Check if we have an id from a removed field
-                this.fieldIndexMap[targetFieldId] !== undefined
-            )
-            .map(([importIndex, targetFieldId]) => {
-              return [importIndex, this.fieldIndexMap[targetFieldId]]
-            })
-
-          // Template row with default values
-          const defaultRow = this.writableFields.map((field) =>
-            this.fieldTypes[field.type].getDefaultValue(field, true)
-          )
-
-          // Precompute the prepare value function for each field
-          const prepareValueByField = this.writableFields.map(
-            (field) => (value) =>
-              this.fieldTypes[field.type].prepareValueForUpdate(
-                field,
-                this.fieldTypes[field.type].prepareValueForPaste(
-                  field,
-                  `${value}`,
-                  value
-                )
-              )
-          )
-
-          // Processes the data by chunk to avoid UI freezes
-          const result = []
-
-          for (const chunk of _.chunk(data, 1000)) {
-            result.push(
-              chunk.map((row) => {
-                const newRow = clone(defaultRow)
-                const upsertRow = []
-                fieldMapping.forEach(([importIndex, targetIndex]) => {
-                  newRow[targetIndex] = prepareValueByField[targetIndex](
-                    row[importIndex]
-                  )
-                  if (upsertFieldIndexes.includes(importIndex)) {
-                    upsertRow.push(newRow[targetIndex])
-                  }
-                })
-
-                if (upsertFields.length > 0 && upsertRow.length > 0) {
-                  if (upsertFields.length !== upsertRow.length) {
-                    throw new Error(
-                      "upsert row length doesn't match required fields"
-                    )
-                  }
-                  upsertValues.push(upsertRow)
-                }
-                return newRow
-              })
-            )
-            await this.$ensureRender()
-          }
-          data = result.flat()
-          if (upsertFields.length > 0) {
-            if (upsertValues.length !== data.length) {
-              throw new Error('upsert values lenght mismatch')
-            }
-            importConfiguration.upsert_values = upsertValues
-          }
+          const prepared = await this.prepareData()
+          data = prepared.data
+          configuration = this.getImportConfiguration(prepared.upsertValues)
         } catch (error) {
-          this.reset()
+          this.importState = null
           this.handleError(error, 'application')
+          return
         }
       }
 
@@ -845,11 +831,8 @@ export default {
           {
             onUploadProgress,
           },
-          Object.keys(importConfiguration).length > 0
-            ? importConfiguration
-            : null,
+          configuration,
           {
-            mode: this.mode,
             importer_type: this.importer,
             original_file_name: this.$refs.importerRef?.values?.filename || '',
           }
@@ -861,10 +844,6 @@ export default {
             this.$t('job.errorJobAlreadyRunningTitle'),
             this.$t('job.errorJobAlreadyRunningDescription')
           ),
-          ERROR_TABLE_IMPORT_SCHEMA_MISMATCH: new ResponseErrorMessage(
-            this.$t('importFileModal.strictMappingTitle'),
-            this.$t('importFileModal.strictMappingServerDescription')
-          ),
         })
       }
     },
@@ -872,7 +851,6 @@ export default {
       const translations = {
         'row-import-creation': this.$t('importFileModal.stateRowCreation'),
         'row-import-validation': this.$t('importFileModal.statePreValidation'),
-        'row-import-deletion': this.$t('importFileModal.stateRowDeletion'),
         'import-create-table': this.$t('importFileModal.stateCreateTable'),
       }
       return translations[jobState]
@@ -912,8 +890,10 @@ export default {
     },
     onShow() {
       this.importer = ''
-      this.mode = IMPORT_MODE_APPEND
-      this.upsertField = undefined
+      this.mode = IMPORT_MODE_INSERT
+      this.matchFieldIds = []
+      this.deleteUnmatched = false
+      this.allowAmbiguousMatches = false
       this.reset()
       this.loadRunningJob()
     },
@@ -927,9 +907,6 @@ export default {
         this.job = runningJob
         this.restoredFromStore = true
         this.showProgressBar = true
-        if (runningJob.mode) {
-          this.mode = runningJob.mode
-        }
         // Restore the importer type if it's still registered; otherwise the
         // modal shows just the progress bar + file name.
         if (

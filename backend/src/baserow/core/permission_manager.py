@@ -4,6 +4,9 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
 from django.contrib.contenttypes.models import ContentType
 
+from baserow.contrib.database.access.operations import (
+    ManageDatabaseAccessWorkspaceOperationType,
+)
 from baserow.contrib.database.field_rules.operations import ReadFieldRuleOperationType
 from baserow.contrib.database.tokens.subjects import TokenSubjectType
 from baserow.core.cache import local_cache
@@ -24,6 +27,13 @@ from baserow.core.user_sources.operations import (
 )
 from baserow.core.user_sources.subjects import UserSourceUserSubjectType
 
+from .backups.operations import (
+    CreateBackupScheduleOperationType,
+    DeleteBackupScheduleOperationType,
+    ListBackupSchedulesOperationType,
+    ReadBackupScheduleOperationType,
+    UpdateBackupScheduleOperationType,
+)
 from .exceptions import (
     IsNotAdminError,
     PermissionDenied,
@@ -31,19 +41,17 @@ from .exceptions import (
     UserNotInWorkspace,
 )
 from .operations import (
-    CreateInvitationsWorkspaceOperationType,
+    AddWorkspaceUsersWorkspaceOperationType,
+    CreateApplicationsWorkspaceOperationType,
     CreateWorkspaceOperationType,
-    DeleteWorkspaceInvitationOperationType,
     DeleteWorkspaceOperationType,
     DeleteWorkspaceUserOperationType,
+    ExportWorkspaceOperationType,
     ListApplicationsWorkspaceOperationType,
-    ListInvitationsWorkspaceOperationType,
     ListWorkspacesOperationType,
     ListWorkspaceUsersWorkspaceOperationType,
-    ReadInvitationWorkspaceOperationType,
     ReadWorkspaceOperationType,
     UpdateSettingsOperationType,
-    UpdateWorkspaceInvitationType,
     UpdateWorkspaceOperationType,
     UpdateWorkspaceUserOperationType,
 )
@@ -54,6 +62,7 @@ from .registries import (
     operation_type_registry,
 )
 from .subjects import AnonymousUserSubjectType, UserSubjectType
+from .teams.operations import TEAM_OPERATION_TYPES
 
 User = get_user_model()
 
@@ -107,6 +116,45 @@ class StaffOnlyPermissionManagerType(PermissionManagerType):
             "staff_only_operations": self.STAFF_ONLY_OPERATIONS,
             "is_staff": actor.is_staff,
         }
+
+
+class StaffBypassPermissionManagerType(PermissionManagerType):
+    """
+    Grants staff an extra allowance on top of whatever the other permission
+    managers decide, for a short list of operations a staff member should be able
+    to perform on any workspace regardless of membership (e.g. managing backups
+    from the admin area). Unlike `StaffOnlyPermissionManagerType`, this manager
+    never denies: for a non-staff actor, or for an operation not in the list, it
+    leaves the check undetermined so the normal `member`-based managers still
+    decide it. This must run before the `member` permission manager in
+    `settings.PERMISSION_MANAGERS`.
+    """
+
+    type = "staff_bypass"
+    supported_actor_types = [UserSubjectType.type]
+
+    # Reused, workspace-membership-scoped operations that a staff member must also
+    # be able to perform on workspaces they are not a member of, so the admin
+    # backups UI can manage backups/restores across every workspace. Regular,
+    # non-staff use of these same operations by workspace members is untouched.
+    STAFF_BYPASS_OPERATIONS = [
+        ExportWorkspaceOperationType.type,
+        CreateApplicationsWorkspaceOperationType.type,
+        ListBackupSchedulesOperationType.type,
+        CreateBackupScheduleOperationType.type,
+        ReadBackupScheduleOperationType.type,
+        UpdateBackupScheduleOperationType.type,
+        DeleteBackupScheduleOperationType.type,
+    ]
+
+    def check_multiple_permissions(self, checks, workspace=None, include_trash=False):
+        result = {}
+        for check in checks:
+            if check.operation_name in self.STAFF_BYPASS_OPERATIONS and getattr(
+                check.actor, "is_staff", False
+            ):
+                result[check] = True
+        return result
 
 
 class AllowIfTemplatePermissionManagerType(PermissionManagerType):
@@ -302,16 +350,14 @@ class BasicPermissionManagerType(PermissionManagerType):
     supported_actor_types = [UserSubjectType.type]
 
     ADMIN_ONLY_OPERATIONS = [
-        ListInvitationsWorkspaceOperationType.type,
-        CreateInvitationsWorkspaceOperationType.type,
-        ReadInvitationWorkspaceOperationType.type,
-        UpdateWorkspaceInvitationType.type,
-        DeleteWorkspaceInvitationOperationType.type,
         ListWorkspaceUsersWorkspaceOperationType.type,
         UpdateWorkspaceOperationType.type,
         DeleteWorkspaceOperationType.type,
         UpdateWorkspaceUserOperationType.type,
         DeleteWorkspaceUserOperationType.type,
+        AddWorkspaceUsersWorkspaceOperationType.type,
+        *[team_operation_type.type for team_operation_type in TEAM_OPERATION_TYPES],
+        ManageDatabaseAccessWorkspaceOperationType.type,
     ]
 
     def check_multiple_permissions(self, checks, workspace=None, include_trash=False):

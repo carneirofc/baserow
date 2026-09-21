@@ -71,12 +71,14 @@ class DatabaseConfig(AppConfig):
             DuplicateTableActionType,
             OrderTableActionType,
             UpdateTableActionType,
+            UpdateTableEditConfirmationActionType,
         )
 
         action_type_registry.register(CreateTableActionType())
         action_type_registry.register(DeleteTableActionType())
         action_type_registry.register(OrderTableActionType())
         action_type_registry.register(UpdateTableActionType())
+        action_type_registry.register(UpdateTableEditConfirmationActionType())
         action_type_registry.register(DuplicateTableActionType())
 
         from .rows.actions import (
@@ -86,17 +88,13 @@ class DatabaseConfig(AppConfig):
             DeleteRowsActionType,
             ImportRowsActionType,
             MoveRowActionType,
-            ReplaceRowsFromFileActionType,
             UpdateRowActionType,
             UpdateRowsActionType,
-            UpsertRowsFromFileActionType,
         )
 
         action_type_registry.register(CreateRowActionType())
         action_type_registry.register(CreateRowsActionType())
         action_type_registry.register(ImportRowsActionType())
-        action_type_registry.register(UpsertRowsFromFileActionType())
-        action_type_registry.register(ReplaceRowsFromFileActionType())
         action_type_registry.register(DeleteRowActionType())
         action_type_registry.register(DeleteRowsActionType())
         action_type_registry.register(MoveRowActionType())
@@ -759,10 +757,7 @@ class DatabaseConfig(AppConfig):
 
         from baserow.core.jobs.registries import job_type_registry
 
-        # The durable table import records live in their own module that nothing
-        # else imports eagerly. Import them so Django registers the model.
         from .airtable.job_types import AirtableImportJobType
-        from .data_import import models as data_import_models  # noqa: F401
         from .data_sync.job_types import SyncDataSyncTableJobType
         from .fields.job_types import DuplicateFieldJobType
         from .file_import.job_types import FileImportJobType
@@ -851,9 +846,7 @@ class DatabaseConfig(AppConfig):
             ListRowNamesDatabaseTableOperationType,
             ListRowsDatabaseTableOperationType,
             ReadDatabaseTableOperationType,
-            ReplaceRowsDatabaseTableOperationType,
             UpdateDatabaseTableOperationType,
-            UpsertRowsDatabaseTableOperationType,
         )
         from .tokens.operations import (
             CreateTokenOperationType,
@@ -947,8 +940,6 @@ class DatabaseConfig(AppConfig):
         operation_type_registry.register(OrderTablesDatabaseTableOperationType())
         operation_type_registry.register(CreateRowDatabaseTableOperationType())
         operation_type_registry.register(ImportRowsDatabaseTableOperationType())
-        operation_type_registry.register(UpsertRowsDatabaseTableOperationType())
-        operation_type_registry.register(ReplaceRowsDatabaseTableOperationType())
         operation_type_registry.register(DeleteDatabaseTableOperationType())
         operation_type_registry.register(DuplicateDatabaseTableOperationType())
         operation_type_registry.register(ListRowsDatabaseTableOperationType())
@@ -1039,14 +1030,31 @@ class DatabaseConfig(AppConfig):
         operation_type_registry.register(ListPropertiesOperationType())
         operation_type_registry.register(GetIncludingPublicValuesOperationType())
 
+        import baserow.contrib.database.access.receivers  # noqa: F401
+
+        from .access.operations import ManageDatabaseAccessWorkspaceOperationType
+
+        operation_type_registry.register(ManageDatabaseAccessWorkspaceOperationType())
+
+        from baserow.api.user.registries import member_data_registry
+        from baserow.core.registries import workspace_users_add_option_registry
+
+        from .access.add_options import DefaultAccessLevelAddOptionType
+        from .access.member_data_types import DefaultAccessMemberDataType
+
+        member_data_registry.register(DefaultAccessMemberDataType())
+        workspace_users_add_option_registry.register(DefaultAccessLevelAddOptionType())
+
         from baserow.core.registries import permission_manager_type_registry
 
+        from .access.permission_manager import DatabaseAccessPermissionManagerType
         from .permission_manager import (
             AllowIfTemplatePermissionManagerType,
             FieldValuePermissionManagerType,
         )
         from .tokens.permission_manager import TokenPermissionManagerType
 
+        permission_manager_type_registry.register(DatabaseAccessPermissionManagerType())
         permission_manager_type_registry.register(TokenPermissionManagerType())
         permission_manager_type_registry.register(FieldValuePermissionManagerType())
 
@@ -1142,10 +1150,8 @@ class DatabaseConfig(AppConfig):
             CreateRowsHistoryProvider,
             DeleteRowHistoryProvider,
             DeleteRowsHistoryProvider,
-            ReplaceRowsFromFileHistoryProvider,
             RestoreFromTrashHistoryProvider,
             UpdateRowsHistoryProvider,
-            UpsertRowsFromFileHistoryProvider,
         )
         from baserow.contrib.database.rows.registries import (
             row_history_provider_registry,
@@ -1157,8 +1163,6 @@ class DatabaseConfig(AppConfig):
         row_history_provider_registry.register(DeleteRowHistoryProvider())
         row_history_provider_registry.register(UpdateRowsHistoryProvider())
         row_history_provider_registry.register(RestoreFromTrashHistoryProvider())
-        row_history_provider_registry.register(UpsertRowsFromFileHistoryProvider())
-        row_history_provider_registry.register(ReplaceRowsFromFileHistoryProvider())
 
         from baserow.core.search.registries import workspace_search_registry
 
@@ -1197,6 +1201,24 @@ class DatabaseConfig(AppConfig):
         operation_type_registry.register(SetFieldRuleOperationType())
         operation_type_registry.register(ReadFieldRuleOperationType())
 
+        from baserow.contrib.database.data_export.object_scopes import (
+            TableExportScheduleObjectScopeType,
+        )
+        from baserow.contrib.database.data_export.operations import (
+            CreateTableExportScheduleOperationType,
+            DeleteTableExportScheduleOperationType,
+            ListTableExportSchedulesOperationType,
+            ReadTableExportScheduleOperationType,
+            UpdateTableExportScheduleOperationType,
+        )
+
+        object_scope_type_registry.register(TableExportScheduleObjectScopeType())
+        operation_type_registry.register(ListTableExportSchedulesOperationType())
+        operation_type_registry.register(CreateTableExportScheduleOperationType())
+        operation_type_registry.register(ReadTableExportScheduleOperationType())
+        operation_type_registry.register(UpdateTableExportScheduleOperationType())
+        operation_type_registry.register(DeleteTableExportScheduleOperationType())
+
         action_type_registry.register(CreateFieldRuleActionType())
         action_type_registry.register(UpdateFieldRuleActionType())
         action_type_registry.register(DeleteFieldRuleActionType())
@@ -1219,7 +1241,7 @@ class DatabaseConfig(AppConfig):
         post_migrate.connect(safely_update_formula_versions, sender=self)
         pre_migrate.connect(clear_generated_model_cache_receiver, sender=self)
 
-        import baserow.contrib.database.data_import.tasks  # noqa: F401
+        import baserow.contrib.database.data_export.tasks  # noqa: F401
         import baserow.contrib.database.field_rules.receivers  # noqa: F401
         import baserow.contrib.database.field_rules.signals  # noqa: F401
         import baserow.contrib.database.fields.receivers  # noqa: F401

@@ -1,6 +1,6 @@
+from contextlib import contextmanager
 from datetime import datetime, timedelta
 from typing import List, Optional
-from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from django.contrib.auth.models import AbstractUser
 from django.db.models import QuerySet
@@ -8,9 +8,12 @@ from django.utils import timezone
 
 from celery.schedules import crontab
 
+from baserow.core.data_destinations.config import PURPOSE_BACKUP
+from baserow.core.data_destinations.handler import DataDestinationHandler
 from baserow.core.handler import CoreHandler
 from baserow.core.import_export.handler import ImportExportHandler
 from baserow.core.models import ExportApplicationsJob, Workspace
+from baserow.core.scheduling import cron as cron_utils
 
 from .exceptions import BackupScheduleDoesNotExist, InvalidBackupScheduleCron
 from .handler import BackupHandler
@@ -23,9 +26,20 @@ from .operations import (
     UpdateBackupScheduleOperationType,
 )
 
-# A cron expression that never matches within four years is treated as invalid rather
-# than looping forever. Four years covers the leap year cycle.
-MAX_DAYS_LOOKAHEAD = 366 * 4
+
+@contextmanager
+def _as_backup_schedule_error():
+    """
+    Re-raises a generic cron error as `InvalidBackupScheduleCron`, so the backup API
+    keeps its own error code.
+    """
+
+    try:
+        yield
+    except InvalidBackupScheduleCron:
+        raise
+    except cron_utils.InvalidCron as exc:
+        raise InvalidBackupScheduleCron(str(exc)) from exc
 
 
 class BackupScheduleHandler:
@@ -38,31 +52,8 @@ class BackupScheduleHandler:
         :return: The parsed schedule.
         """
 
-        fields = expression.split()
-
-        if len(fields) != 5:
-            raise InvalidBackupScheduleCron(
-                "A cron expression must have exactly five fields: minute, hour, "
-                "day_of_month, month_of_year and day_of_week."
-            )
-
-        minute, hour, day_of_month, month_of_year, day_of_week = fields
-
-        try:
-            # `crontab` expands every field into a set of allowed values in its
-            # constructor, so an invalid expression is rejected here instead of at run
-            # time.
-            return crontab(
-                minute=minute,
-                hour=hour,
-                day_of_month=day_of_month,
-                month_of_year=month_of_year,
-                day_of_week=day_of_week,
-            )
-        except (ValueError, KeyError) as exc:
-            raise InvalidBackupScheduleCron(
-                f"The cron expression '{expression}' is invalid: {exc}"
-            )
+        with _as_backup_schedule_error():
+            return cron_utils.parse_cron(expression)
 
     def validate_timezone(self, name: str) -> str:
         """
@@ -73,12 +64,8 @@ class BackupScheduleHandler:
         :return: The validated name.
         """
 
-        try:
-            ZoneInfo(name)
-        except ZoneInfoNotFoundError, ValueError:
-            raise InvalidBackupScheduleCron(f"The timezone '{name}' is not known.")
-
-        return name
+        with _as_backup_schedule_error():
+            return cron_utils.validate_timezone(name)
 
     def compute_next_run_on(
         self,
@@ -97,52 +84,8 @@ class BackupScheduleHandler:
         :return: The next due moment, as an aware UTC datetime.
         """
 
-        schedule = self.parse_cron(cron)
-        tz = ZoneInfo(self.validate_timezone(tz_name))
-        after = (after or timezone.now()).astimezone(tz)
-
-        hours = sorted(schedule.hour)
-        minutes = sorted(schedule.minute)
-
-        # Start looking from the next whole minute so the result is never the moment
-        # we were asked to look after.
-        candidate = after.replace(second=0, microsecond=0) + timedelta(minutes=1)
-
-        for day in range(MAX_DAYS_LOOKAHEAD):
-            if self._day_matches(schedule, candidate):
-                for hour in hours:
-                    if hour < candidate.hour:
-                        continue
-                    for minute in minutes:
-                        if hour == candidate.hour and minute < candidate.minute:
-                            continue
-                        found = candidate.replace(hour=hour, minute=minute)
-                        return found.astimezone(ZoneInfo("UTC"))
-
-            candidate = (candidate + timedelta(days=1)).replace(hour=0, minute=0)
-
-        raise InvalidBackupScheduleCron(
-            f"The cron expression '{cron}' does not match any moment within "
-            f"{MAX_DAYS_LOOKAHEAD} days."
-        )
-
-    def _day_matches(self, schedule: crontab, moment: datetime) -> bool:
-        """
-        Whether the date part of the given moment satisfies the schedule.
-
-        Both `day_of_month` and `day_of_week` must match. Note that this is stricter
-        than the OR semantics of some cron implementations, and matches how celery
-        itself evaluates a crontab.
-        """
-
-        # Python counts weekdays from Monday, cron counts them from Sunday.
-        cron_weekday = (moment.weekday() + 1) % 7
-
-        return (
-            moment.month in schedule.month_of_year
-            and moment.day in schedule.day_of_month
-            and cron_weekday in schedule.day_of_week
-        )
+        with _as_backup_schedule_error():
+            return cron_utils.compute_next_run_on(cron, tz_name, after)
 
     def list_schedules(self, user: AbstractUser, workspace_id: int) -> QuerySet:
         """
@@ -211,6 +154,7 @@ class BackupScheduleHandler:
         keep_last: Optional[int] = None,
         keep_days: Optional[int] = None,
         is_active: bool = True,
+        destination: str = "",
     ) -> BackupSchedule:
         """
         Creates a new backup schedule for a workspace.
@@ -222,6 +166,8 @@ class BackupScheduleHandler:
         :param tz_name: The timezone the cron expression is evaluated in.
         :param application_ids: The applications to back up, None means all of them.
         :param only_structure: If true the row data is left out of the archive.
+        :param destination: The data destination every backup is uploaded to, empty
+            keeps the backups on the instance storage only.
         :param keep_last: Count based retention, None disables it.
         :param keep_days: Age based retention in days, None disables it.
         :param is_active: Whether the schedule runs.
@@ -236,6 +182,7 @@ class BackupScheduleHandler:
         )
 
         tz_name = self.validate_timezone(tz_name)
+        self._validate_destination(destination)
 
         return BackupSchedule.objects.create(
             name=name,
@@ -245,6 +192,7 @@ class BackupScheduleHandler:
             timezone=tz_name,
             application_ids=application_ids,
             only_structure=only_structure,
+            destination=destination,
             keep_last=keep_last,
             keep_days=keep_days,
             is_active=is_active,
@@ -276,6 +224,7 @@ class BackupScheduleHandler:
             "timezone",
             "application_ids",
             "only_structure",
+            "destination",
             "keep_last",
             "keep_days",
             "is_active",
@@ -286,6 +235,8 @@ class BackupScheduleHandler:
                 setattr(schedule, field, values[field])
 
         schedule.timezone = self.validate_timezone(schedule.timezone)
+        if "destination" in values:
+            self._validate_destination(schedule.destination)
 
         if "cron" in values or "timezone" in values or values.get("is_active"):
             schedule.next_run_on = self.compute_next_run_on(
@@ -341,7 +292,22 @@ class BackupScheduleHandler:
             schedule.workspace_id,
             application_ids=schedule.application_ids,
             only_structure=schedule.only_structure,
+            destination=schedule.destination or None,
+            backup_schedule=schedule,
         )
+
+    def _validate_destination(self, destination: str):
+        """
+        Checks that a non-empty destination is configured and meant for backups.
+
+        :raises DataDestinationDoesNotExist: When it is not configured.
+        :raises DataDestinationPurposeNotAllowed: When it is not meant for backups.
+        """
+
+        if destination:
+            DataDestinationHandler().get_destination(
+                destination, purpose=PURPOSE_BACKUP
+            )
 
     def apply_retention(self, schedule: BackupSchedule) -> int:
         """

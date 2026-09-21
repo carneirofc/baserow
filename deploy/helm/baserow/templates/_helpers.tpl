@@ -50,6 +50,105 @@ app.kubernetes.io/component: {{ .component }}
 {{- end -}}
 {{- end -}}
 
+{{/*
+Annotations for the ServiceAccount: whatever the operator supplied, plus the EKS
+IRSA role annotation when aws.irsa is enabled.
+*/}}
+{{- define "baserow.serviceAccountAnnotations" -}}
+{{- $annotations := deepCopy (default dict .Values.serviceAccount.annotations) -}}
+{{- if .Values.aws.irsa.enabled -}}
+{{- $_ := set $annotations "eks.amazonaws.com/role-arn" .Values.aws.irsa.roleArn -}}
+{{- end -}}
+{{- if $annotations -}}
+{{- toYaml $annotations -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Annotations for one albGroup Ingress. Call with (dict "root" . "component" <name>).
+
+Everything is merged into a single map before rendering, so a key supplied twice cannot
+produce a duplicate YAML key. `merge` gives precedence to its first argument, so the
+dedicated ingress.group.* values win over anything set in ingress.annotations - those
+two keys are what join the Ingresses onto one ALB, and letting a stray annotation
+override them would silently split the load balancer in two.
+*/}}
+{{- define "baserow.albGroupIngressAnnotations" -}}
+{{- $ing := .root.Values.ingress -}}
+{{- $perIngress := ternary $ing.backendAnnotations $ing.webFrontendAnnotations (eq .component "backend") -}}
+{{- $order := ternary $ing.group.backendOrder $ing.group.webFrontendOrder (eq .component "backend") -}}
+{{- $owned := dict "alb.ingress.kubernetes.io/group.name" $ing.group.name
+                   "alb.ingress.kubernetes.io/group.order" (toString $order) -}}
+{{- toYaml (merge $owned (deepCopy (default dict $perIngress)) (deepCopy (default dict $ing.annotations))) -}}
+{{- end -}}
+
+{{/*
+True when the chart must inject long-lived S3 credentials. In the "irsa" and
+"podIdentity" modes the AWS_* credential variables are OMITTED entirely so boto3
+falls through to its default credential chain and picks up the pod's web identity
+token. They must never be emitted as empty strings: the backend's
+set_setting_from_env_if_present() treats a present-but-empty variable as a real
+value and would set AWS_ACCESS_KEY_ID = "", breaking the credential chain.
+*/}}
+{{- define "baserow.objectStorage.useStaticKeys" -}}
+{{- if and .Values.objectStorage.enabled (eq .Values.objectStorage.auth "staticKeys") -}}true{{- end -}}
+{{- end -}}
+
+{{/*
+Fail fast on value combinations that would otherwise only break inside the cluster.
+Included from NOTES.txt so it runs on every template/install/upgrade.
+*/}}
+{{- define "baserow.validateValues" -}}
+{{- if and .Values.aws.irsa.enabled .Values.aws.podIdentity.enabled -}}
+{{- fail "aws.irsa.enabled and aws.podIdentity.enabled are mutually exclusive: IRSA annotates the ServiceAccount, EKS Pod Identity associates it out-of-band. Pick one." -}}
+{{- end -}}
+{{- if and .Values.aws.irsa.enabled (not .Values.aws.irsa.roleArn) -}}
+{{- fail "aws.irsa.enabled=true requires aws.irsa.roleArn (e.g. arn:aws:iam::123456789012:role/baserow)." -}}
+{{- end -}}
+{{- if and .Values.aws.irsa.enabled (not .Values.serviceAccount.create) (not .Values.serviceAccount.name) -}}
+{{- fail "aws.irsa.enabled=true needs a ServiceAccount to annotate: set serviceAccount.create=true, or serviceAccount.name to a ServiceAccount you annotate yourself." -}}
+{{- end -}}
+{{- if and .Values.objectStorage.enabled (ne .Values.objectStorage.auth "staticKeys") (not (or .Values.aws.irsa.enabled .Values.aws.podIdentity.enabled)) -}}
+{{- fail (printf "objectStorage.auth=%s requires aws.irsa.enabled=true or aws.podIdentity.enabled=true, otherwise the pods have no AWS identity at all." .Values.objectStorage.auth) -}}
+{{- end -}}
+{{- if and .Values.ingress.enabled (eq .Values.ingress.mode "albGroup") (not .Values.ingress.group.name) -}}
+{{- fail "ingress.mode=albGroup requires ingress.group.name; it is what merges the two Ingress objects onto a single ALB." -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Pod annotations shared by every app Deployment. The checksums roll the pods when the
+config or the credentials change - without them a config-only `helm upgrade` updates
+the ConfigMap and leaves the running pods on the old values.
+
+The secret checksum deliberately hashes the operator-supplied credential VALUES rather
+than the rendered secret.yaml. That template falls back to randAlphaNum whenever it
+cannot look the live Secret up, so hashing its output would produce a different
+checksum on every `helm template` - rolling every pod on each Argo CD sync and showing
+permanent drift. The generated secret-key/jwt-signing-key are preserved across upgrades
+anyway, so they are not a reason to restart.
+*/}}
+{{- define "baserow.podAnnotations" -}}
+checksum/config: {{ include (print $.Template.BasePath "/configmap-env.yaml") . | sha256sum }}
+{{- if or .Values.branding.faviconBase64 (include "baserow.branding.inline" .) }}
+checksum/branding: {{ include (print $.Template.BasePath "/configmap-branding.yaml") . | sha256sum }}
+{{- end }}
+checksum/secret: {{ list .Values.secrets.existingSecret
+                        .Values.secrets.secretKey
+                        .Values.secrets.jwtSigningKey
+                        .Values.externalDatabase.password
+                        .Values.externalDatabase.existingSecret
+                        .Values.externalRedis.password
+                        .Values.externalRedis.existingSecret
+                        .Values.objectStorage.accessKeyId
+                        .Values.objectStorage.secretAccessKey
+                        .Values.objectStorage.existingSecret
+                        | toString | sha256sum }}
+{{- with .Values.podAnnotations }}
+{{ toYaml . }}
+{{- end }}
+{{- end -}}
+
 {{/* Chart-managed Secret name (for SECRET_KEY, external creds, S3, etc.) */}}
 {{- define "baserow.secretName" -}}
 {{- if .Values.secrets.existingSecret -}}
@@ -182,7 +281,7 @@ redis-password
     secretKeyRef:
       name: {{ include "baserow.redis.secretName" . }}
       key: {{ include "baserow.redis.secretKey" . }}
-{{- if .Values.objectStorage.enabled }}
+{{- if include "baserow.objectStorage.useStaticKeys" . }}
 - name: AWS_ACCESS_KEY_ID
   valueFrom:
     secretKeyRef:
@@ -210,4 +309,14 @@ redis-password
   mountPath: /tmp
 - name: dshm
   mountPath: /dev/shm
+{{- end -}}
+
+{{/*
+Whether any inline runtime branding value is set (branding.json, theme.css or
+files); see templates/configmap-branding.yaml.
+*/}}
+{{- define "baserow.branding.inline" -}}
+{{- $b := .Values.branding -}}
+{{- /* showAttribution defaults to true, so only switching it off is a change. */ -}}
+{{- if or $b.appName $b.colors $b.fontFamily $b.messages $b.themeCss $b.files $b.siteUrl $b.docsUrl $b.siteTitle (not $b.showAttribution) -}}true{{- end -}}
 {{- end -}}

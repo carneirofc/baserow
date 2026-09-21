@@ -149,6 +149,7 @@ x-backend-variables:
 
   BASEROW_AIRTABLE_IMPORT_SOFT_TIME_LIMIT:
   HOURS_UNTIL_TRASH_PERMANENTLY_DELETED:
+  EXPORT_FILE_EXPIRE_MINUTES:
   OLD_ACTION_CLEANUP_INTERVAL_MINUTES:
   MINUTES_UNTIL_ACTION_CLEANED_UP:
   BASEROW_GROUP_STORAGE_USAGE_QUEUE:
@@ -160,9 +161,6 @@ x-backend-variables:
   BASEROW_JOB_CLEANUP_INTERVAL_MINUTES:
   BASEROW_ROW_HISTORY_CLEANUP_INTERVAL_MINUTES:
   BASEROW_ROW_HISTORY_RETENTION_DAYS:
-  BASEROW_MAX_ROW_HISTORY_ENTRIES_PER_IMPORT:
-  BASEROW_TABLE_IMPORT_RECORD_RETENTION_DAYS:
-  BASEROW_TABLE_IMPORT_RECONCILE_INTERVAL_MINUTES:
   BASEROW_USER_LOG_ENTRY_CLEANUP_INTERVAL_MINUTES:
   BASEROW_USER_LOG_ENTRY_RETENTION_DAYS:
   BASEROW_IMPORT_EXPORT_RESOURCE_CLEANUP_INTERVAL_MINUTES:
@@ -273,7 +271,7 @@ services:
       local:
 
   backend:
-    image: ghcr.io/carneirofc/baserow/backend:${BASEROW_VERSION:-0.5.1}
+    image: ghcr.io/carneirofc/baserow/backend:${BASEROW_VERSION:-0.13.0}
     restart: unless-stopped
 
     environment:
@@ -287,7 +285,7 @@ services:
       local:
 
   web-frontend:
-    image: ghcr.io/carneirofc/baserow/web-frontend:${BASEROW_VERSION:-0.5.1}
+    image: ghcr.io/carneirofc/baserow/web-frontend:${BASEROW_VERSION:-0.13.0}
     restart: unless-stopped
     environment:
       BASEROW_PUBLIC_URL: ${BASEROW_PUBLIC_URL-http://localhost}
@@ -303,6 +301,13 @@ services:
       BASEROW_DISABLE_GOOGLE_DOCS_FILE_PREVIEW:
       BASEROW_DISABLE_SUPPORT:
       HOURS_UNTIL_TRASH_PERMANENTLY_DELETED:
+      # Retention and expiry values the frontend states in the UI. They must reach
+      # this service too, otherwise it falls back to its own defaults and shows
+      # numbers the backend does not actually enforce.
+      EXPORT_FILE_EXPIRE_MINUTES:
+      BASEROW_SNAPSHOT_EXPIRATION_TIME_DAYS:
+      BASEROW_USER_LOG_ENTRY_RETENTION_DAYS:
+      BASEROW_ROW_HISTORY_RETENTION_DAYS:
       DISABLE_ANONYMOUS_PUBLIC_VIEW_WS_CONNECTIONS:
       FEATURE_FLAGS:
       BASEROW_PRESENCE_VISIBLE_USERS:
@@ -344,7 +349,7 @@ services:
       local:
 
   celery:
-    image: ghcr.io/carneirofc/baserow/backend:${BASEROW_VERSION:-0.5.1}
+    image: ghcr.io/carneirofc/baserow/backend:${BASEROW_VERSION:-0.13.0}
     restart: unless-stopped
     environment:
       <<: *backend-variables
@@ -366,7 +371,7 @@ services:
       local:
 
   celery-export-worker:
-    image: ghcr.io/carneirofc/baserow/backend:${BASEROW_VERSION:-0.5.1}
+    image: ghcr.io/carneirofc/baserow/backend:${BASEROW_VERSION:-0.13.0}
     restart: unless-stopped
     command: celery-exportworker
     environment:
@@ -388,7 +393,7 @@ services:
       local:
 
   celery-beat-worker:
-    image: ghcr.io/carneirofc/baserow/backend:${BASEROW_VERSION:-0.5.1}
+    image: ghcr.io/carneirofc/baserow/backend:${BASEROW_VERSION:-0.13.0}
     restart: unless-stopped
     command: celery-beat
     healthcheck:

@@ -589,27 +589,46 @@ class TableHandler(metaclass=baserow_trace_methods(tracer)):
         data = []
         return fields, data
 
-    def update_table_by_id(self, user: AbstractUser, table_id: int, name: str) -> Table:
+    def update_table_by_id(
+        self,
+        user: AbstractUser,
+        table_id: int,
+        name: Optional[str] = None,
+        require_edit_confirmation: Optional[bool] = None,
+    ) -> Table:
         """
         Updates an existing table instance.
 
         :param user: The user on whose behalf the table is updated.
         :param table_id: The id of the table that needs to be updated.
-        :param name: The name to be updated.
+        :param name: The name to be updated, if provided.
+        :param require_edit_confirmation: The new protected editing state, if
+            provided.
         :raises ValueError: When the provided table is not an instance of Table.
         :return: The updated table instance.
         """
 
         table = self.get_table_for_update(table_id)
-        return self.update_table(user, table, name)
+        return self.update_table(
+            user, table, name=name, require_edit_confirmation=require_edit_confirmation
+        )
 
-    def update_table(self, user: AbstractUser, table: Table, name: str) -> Table:
+    def update_table(
+        self,
+        user: AbstractUser,
+        table: Table,
+        name: Optional[str] = None,
+        require_edit_confirmation: Optional[bool] = None,
+    ) -> Table:
         """
-        Updates an existing table instance.
+        Updates an existing table instance. Only the provided values are changed.
 
         :param user: The user on whose behalf the table is updated.
         :param table: The table instance that needs to be updated.
-        :param name: The name to be updated.
+        :param name: The name to be updated, if provided.
+        :param require_edit_confirmation: Whether the web frontend must stage row
+            edits until they're explicitly saved, if provided. This is a UI
+            safeguard only and is never enforced by the API.
         :raises ValueError: When the provided table is not an instance of Table.
         :return: The updated table instance.
         """
@@ -624,7 +643,10 @@ class TableHandler(metaclass=baserow_trace_methods(tracer)):
             context=table,
         )
 
-        table.name = name
+        if name is not None:
+            table.name = name
+        if require_edit_confirmation is not None:
+            table.require_edit_confirmation = require_edit_confirmation
         table.save()
 
         table_updated.send(self, table=table, user=user)

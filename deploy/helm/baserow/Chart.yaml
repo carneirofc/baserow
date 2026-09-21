@@ -1,21 +1,38 @@
 apiVersion: v2
 name: baserow
 description: >-
-  Baserow (FOSS fork) for OpenShift. Deploys the backend, web-frontend and
-  Celery workers as separate hardened pods that run unmodified under the
-  restricted-v2 SCC (arbitrary UID, non-root, no privileged ports). PostgreSQL
-  and Redis are optional, toggleable subcharts; point at an external managed
-  database instead by disabling them.
+  Baserow (FOSS fork) for Kubernetes, OpenShift and Amazon EKS. Deploys the
+  backend, web-frontend and Celery workers as separate hardened pods that run
+  unmodified under OpenShift's restricted-v2 SCC (arbitrary UID, non-root, no
+  privileged ports). Routing is via Ingress, an AWS ALB IngressGroup, or
+  OpenShift Routes. S3 media can authenticate with static keys, EKS IRSA or EKS
+  Pod Identity. PostgreSQL and Redis are optional, toggleable subcharts; point
+  at an external managed database instead by disabling them.
 type: application
-version: 0.1.5
+keywords:
+  - baserow
+  - no-code
+  - database
+  - openshift
+  - eks
+version: 0.7.0
 # Tracks the application version shipped by this fork's images.
-appVersion: "0.5.1"
+appVersion: "0.13.0"
 home: https://github.com/carneirofc/baserow
 sources:
   - https://github.com/carneirofc/baserow
 maintainers:
   - name: carneirofc
     email: claudiofcarneiro@gmail.com
+
+annotations:
+  artifacthub.io/changes: |
+    - kind: changed
+      description: >-
+        appVersion 0.13.0: the admin settings page lists the instance's
+        operational limits, retention and expiry values are stated next to the
+        data they govern, running jobs show how long they have been going, and
+        the interface now ships English and Brazilian Portuguese only.
 
 dependencies:
   - name: postgresql

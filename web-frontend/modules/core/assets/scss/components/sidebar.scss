@@ -271,7 +271,7 @@
   @include rounded($rounded-md);
 
   &:hover {
-    background-color: rgba($palette-neutral-1300, 0.04);
+    background-color: alpha($palette-neutral-1300, 0.04);
   }
 }
 
@@ -302,7 +302,7 @@
   @include rounded($rounded-md);
 
   &:hover {
-    background-color: rgba($palette-neutral-1300, 0.04);
+    background-color: alpha($palette-neutral-1300, 0.04);
   }
 }
 

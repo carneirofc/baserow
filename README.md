@@ -59,65 +59,80 @@ stripped-down core.
 
 Enterprise SSO/SAML was deleted with `enterprise/`, but this fork reintroduces
 single sign-on as a small, self-contained OIDC implementation configured entirely
-through environment variables — no admin UI, no database provider rows to manage. It is
-the source of truth and is validated at startup, so a bad configuration fails fast.
+through environment variables — no admin UI, no database provider rows to manage. It
+works with any OpenID Connect provider (Keycloak/RHBK, Authentik, Zitadel, Entra ID,
+Okta, …) and is validated at startup, so a bad configuration fails fast.
 
-All access is derived from the IdP's **client roles**: which of them make someone a
-Baserow admin, which put them in a workspace, and what they may do once there. See
-[the RHBK/Keycloak guide](docs/installation/sso-rhbk-keycloak.md) for the realm setup.
+The IdP only defines **global profiles** through roles in its token — who may sign in,
+who is staff and who is superuser. Everything inside a workspace is managed in the app, so
+creating workspaces never needs an IdP or environment change.
 
-* `BASEROW_OIDC_PROVIDERS` — a JSON list of providers. Each provider carries its
-  `issuer`, `client_id`/`client_secret`, and optional claim overrides. `roles_claim`
-  defaults to Keycloak's own `resource_access.${client_id}.roles`.
-* **Client role → global role mapping** — `staff_roles` and `superuser_roles` grant
-  Baserow global staff / superuser to holders of the named client roles.
-* **Client role → workspace membership mapping** — `workspace_mappings` places users into
-  specific workspaces with `ADMIN` or `MEMBER` permissions, and can name a `role`
-  declared in `BASEROW_ROLES` to restrict them to that role's operations.
-* **Deny by default** — a provider that maps any client role refuses to sign in (and
-  refuses to provision) a user holding none of them.
-* **Strict membership** — with `strict_membership: true`, SSO-granted workspace
-  memberships are revoked when the user loses the mapped client role. Memberships added
-  manually are never touched.
-* **`BASEROW_ROLES`** — a JSON list declaring per-workspace roles and the operations they
-  grant, reconciled into the database after every migrate and by `sync_roles`.
-* **`BASEROW_OIDC_ONLY`** — makes the instance OIDC-only for normal users: password
-  signup and password login are refused, while a staff/superuser **break-glass admin**
-  can still log in with a password so you can never lock yourself out.
-* **Auto-provisioning** — SSO users are created on first login even when open signups
-  are disabled.
+* **`BASEROW_OIDC_PROVIDERS`** — a JSON list of providers: `issuer`, `client_id` /
+  `client_secret`, claim overrides and the profile mappings below.
+* **Profiles** — `user_roles` (may sign in), `staff_roles` and `superuser_roles`, the last
+  two reconciled on every login.
+* **Deny by default** — a provider that maps any role refuses (and never provisions) a
+  user holding none of them.
+* **`BASEROW_OIDC_ONLY`** — password signup and login off for normal users, with a
+  staff **break-glass** password login so an IdP outage cannot lock you out.
+* **Auto-provisioning** — SSO users are created on first login even with signups disabled.
 
-A minimal single-provider example:
-
-```jsonc
-BASEROW_OIDC_PROVIDERS='[
-  {
-    "name": "rhbk",
-    "display_name": "Company SSO",
-    "issuer": "https://idp.example.com/realms/main",
-    "client_id": "baserow",
-    "client_secret": "…",
-    "staff_roles": ["baserow-admins"],
-    "workspace_mappings": [
-      { "client_role": "engineering", "workspace": 1, "permissions": "MEMBER" },
-      { "client_role": "analysts", "workspace": 1, "permissions": "MEMBER",
-        "role": "Reader" }
-    ],
-    "strict_membership": true
-  }
-]'
-
-BASEROW_ROLES='[
-  { "workspace": 1, "name": "Reader", "operations": ["database.table.read"] }
-]'
+```json
+BASEROW_OIDC_PROVIDERS='[{
+  "name": "rhbk",
+  "display_name": "Company SSO",
+  "issuer": "https://keycloak.example.com/realms/main",
+  "client_id": "baserow",
+  "client_secret": "change-me",
+  "user_roles": ["baserow-user"],
+  "staff_roles": ["baserow-staff"]
+}]'
 ```
+
+### In-app workspace access
+
+Workspace admins manage who is in their workspace and what they can do:
+
+* **Add members** — pick users who already signed in, by name or email, without an
+  invitation.
+* **Teams** — group members.
+* **Access levels** — *No access*, *Viewer*, *Editor* or *Builder* per member or team, on
+  the workspace default, a database or a table; the most specific wins. Staff can manage
+  access in any workspace.
+
+**Full guide: [Single sign-on with OpenID Connect](docs/installation/sso-oidc.md)** —
+every provider key, in-app workspace access, the login decision flow, a complete
+multi-provider example, Docker/Compose/Helm wiring, RHBK/Keycloak setup, error codes and
+troubleshooting. A step-by-step Keycloak walkthrough lives in
+[the RHBK/Keycloak guide](docs/installation/sso-rhbk-keycloak.md).
 
 ### Per-application-type admin feature flags
 
-The instance settings gain `enable_database`, `enable_builder`, `enable_automation` and
-`enable_dashboard` toggles (all on by default), settable from the admin settings page.
-Disabling a type hides it from the create-application menu and rejects creation of new
-applications of that type; existing applications remain accessible.
+An instance administrator can switch whole application types off — databases, the
+application builder, dashboards and automations — for everyone on the instance.
+
+* **Four toggles** — `enable_database`, `enable_builder`, `enable_dashboard` and
+  `enable_automation`, all on by default. Only global staff can change them; a
+  workspace ADMIN cannot.
+* **Admin UI or API** — flip them under **Admin → Settings → Application features**, or
+  send `PATCH /api/settings/update/` as a staff user.
+* **Refused everywhere** — a disabled type is gone from the **Create new** menu, creating
+  one returns `400 ERROR_APPLICATION_TYPE_DISABLED`, and existing applications of that
+  type are hidden from listings and denied on every request (including published builder
+  pages and database API tokens).
+* **Nothing is deleted** — the data stays in place, and enabling the type again brings
+  every application back exactly as it was.
+* **No redeploy** — these are database-backed settings, not environment variables, and
+  take effect on the next request.
+
+```jsonc
+// PATCH /api/settings/update/  (Authorization: JWT <staff token>)
+{ "enable_builder": false, "enable_dashboard": false, "enable_automation": false }
+```
+
+**Full guide: [Turning application types off instance-wide](docs/installation/instance-settings.md)** —
+what each toggle blocks, the admin page and API, scripting the settings after an
+install, and a worked database-only example.
 
 ## Telemetry
 
@@ -158,15 +173,16 @@ Redis, uploads) inside the `baserow_data` volume.
 * Set `BASEROW_PUBLIC_URL` to `https://YOUR_DOMAIN` or `http://YOUR_IP` for external
   access — it must match the address you use in the browser.
 * Pin a specific release instead of `latest` with a version tag, e.g.
-  `ghcr.io/carneirofc/baserow/baserow:1.2.3`.
-* To enable SSO, pass the `BASEROW_OIDC_PROVIDERS` (and optionally `BASEROW_ROLES` and
-  `BASEROW_OIDC_ONLY`) environment variables shown above.
+  `ghcr.io/carneirofc/baserow/baserow:0.13.0`.
+* To enable SSO, pass the `BASEROW_OIDC_PROVIDERS` (and optionally `BASEROW_OIDC_ONLY`)
+  environment variables — see
+  [Passing the configuration to Baserow](docs/installation/sso-oidc.md#passing-the-configuration-to-baserow).
 
 Images are published automatically by the
 [`build-publish-image`](.github/workflows/build-publish-image.yml) GitHub Actions
 workflow whenever a `v*` version tag is pushed; the `latest` tag always points at the
-most recent release. The GHCR package may be private by default — make it public (or
-`docker login ghcr.io`) if a pull is denied.
+most recent release. The images and the Helm chart are public on GHCR, so they pull
+without `docker login`.
 
 ## Installation
 
@@ -181,11 +197,21 @@ This fork supports two deployment paths:
   docker compose up -d --build   # http://localhost
   ```
 
-* **Kubernetes / OpenShift** — the [Helm chart](deploy/helm/baserow) deploys the backend,
-  web-frontend and Celery workers as hardened pods that run under OpenShift's default
-  `restricted-v2` SCC (no security-profile changes needed). PostgreSQL and Redis are
-  optional, toggleable subcharts; media uses S3 object storage. See
-  [`deploy/helm/README.md`](deploy/helm/README.md).
+* **Kubernetes, OpenShift or Amazon EKS** — the [Helm chart](deploy/helm/baserow) deploys
+  the backend, web-frontend and Celery workers as hardened pods. It is published to GHCR
+  as an OCI artifact:
+
+  ```bash
+  helm install baserow oci://ghcr.io/carneirofc/baserow/charts/baserow \
+    -n baserow --create-namespace --set publicURL=https://baserow.example.com
+  ```
+
+  PostgreSQL and Redis are optional, toggleable subcharts; media uses S3 object storage.
+  Routing works through an Ingress, an AWS ALB IngressGroup or OpenShift Routes, and the
+  pods run under OpenShift's default `restricted-v2` SCC with no security-profile changes.
+  On EKS, S3 access can use IRSA or Pod Identity so no AWS credentials are stored at all.
+  See [Installing with Helm](docs/installation/install-with-helm.md) and
+  [Installing on Amazon EKS](docs/installation/install-on-eks.md).
 
 For a single-container deployment, the all-in-one image
 `ghcr.io/carneirofc/baserow/baserow` (embedded PostgreSQL + Redis) is published by CI and
@@ -193,7 +219,8 @@ covered by the generic [Docker](docs/installation/install-with-docker.md) guide.
 
 ## Documentation
 
-Documentation lives [in the repository](./docs/index.md). Upstream's hosted docs at
+Browse the hosted docs at https://carneirofc.github.io/baserow/, or the source
+[in the repository](./docs/index.md). Upstream's hosted docs at
 https://baserow.io/docs/index also cover the premium and enterprise features that this
 fork does not ship.
 

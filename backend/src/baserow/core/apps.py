@@ -155,6 +155,7 @@ class CoreConfig(AppConfig):
             ApplicationTypeEnabledPermissionManagerType,
             BasicPermissionManagerType,
             CorePermissionManagerType,
+            StaffBypassPermissionManagerType,
             StaffOnlyPermissionManagerType,
             StaffOnlySettingOperationPermissionManagerType,
             WorkspaceMemberOnlyPermissionManagerType,
@@ -164,9 +165,6 @@ class CoreConfig(AppConfig):
             object_scope_type_registry,
             operation_type_registry,
             permission_manager_type_registry,
-        )
-        from baserow.core.roles.permission_manager import (
-            GranularRolePermissionManagerType,
         )
 
         from .emails_context_types import CoreEmailContextType
@@ -178,6 +176,7 @@ class CoreConfig(AppConfig):
         )
         permission_manager_type_registry.register(CorePermissionManagerType())
         permission_manager_type_registry.register(StaffOnlyPermissionManagerType())
+        permission_manager_type_registry.register(StaffBypassPermissionManagerType())
         permission_manager_type_registry.register(BasicPermissionManagerType())
         permission_manager_type_registry.register(
             WorkspaceMemberOnlyPermissionManagerType()
@@ -188,12 +187,10 @@ class CoreConfig(AppConfig):
         permission_manager_type_registry.register(
             AllowIfTemplatePermissionManagerType()
         )
-        permission_manager_type_registry.register(GranularRolePermissionManagerType())
 
         from .object_scopes import (
             ApplicationObjectScopeType,
             CoreObjectScopeType,
-            WorkspaceInvitationObjectScopeType,
             WorkspaceObjectScopeType,
             WorkspaceUserObjectScopeType,
         )
@@ -202,7 +199,6 @@ class CoreConfig(AppConfig):
         object_scope_type_registry.register(CoreObjectScopeType())
         object_scope_type_registry.register(ApplicationObjectScopeType())
         object_scope_type_registry.register(WorkspaceObjectScopeType())
-        object_scope_type_registry.register(WorkspaceInvitationObjectScopeType())
         object_scope_type_registry.register(SnapshotObjectScopeType())
         object_scope_type_registry.register(WorkspaceUserObjectScopeType())
 
@@ -221,28 +217,24 @@ class CoreConfig(AppConfig):
             MarkNotificationAsReadOperationType,
         )
         from .operations import (
+            AddWorkspaceUsersWorkspaceOperationType,
             CreateApplicationsWorkspaceOperationType,
-            CreateInvitationsWorkspaceOperationType,
             CreateWorkspaceOperationType,
             DeleteApplicationOperationType,
-            DeleteWorkspaceInvitationOperationType,
             DeleteWorkspaceOperationType,
             DeleteWorkspaceUserOperationType,
             DuplicateApplicationOperationType,
             ExportWorkspaceOperationType,
             ListApplicationsWorkspaceOperationType,
-            ListInvitationsWorkspaceOperationType,
             ListWorkspacesOperationType,
             ListWorkspaceUsersWorkspaceOperationType,
             OrderApplicationsOperationType,
             ReadApplicationOperationType,
-            ReadInvitationWorkspaceOperationType,
             ReadWorkspaceOperationType,
             RestoreApplicationOperationType,
             RestoreWorkspaceOperationType,
             UpdateApplicationOperationType,
             UpdateSettingsOperationType,
-            UpdateWorkspaceInvitationType,
             UpdateWorkspaceOperationType,
             UpdateWorkspaceUserOperationType,
         )
@@ -264,15 +256,20 @@ class CoreConfig(AppConfig):
         operation_type_registry.register(MarkNotificationAsReadOperationType())
         operation_type_registry.register(CreateApplicationsWorkspaceOperationType())
         operation_type_registry.register(CreateWorkspaceOperationType())
-        operation_type_registry.register(CreateInvitationsWorkspaceOperationType())
-        operation_type_registry.register(DeleteWorkspaceInvitationOperationType())
         operation_type_registry.register(DeleteWorkspaceOperationType())
         operation_type_registry.register(ListApplicationsWorkspaceOperationType())
-        operation_type_registry.register(ListInvitationsWorkspaceOperationType())
-        operation_type_registry.register(ReadInvitationWorkspaceOperationType())
         operation_type_registry.register(ListWorkspacesOperationType())
-        operation_type_registry.register(UpdateWorkspaceInvitationType())
         operation_type_registry.register(ReadWorkspaceOperationType())
+
+        operation_type_registry.register(AddWorkspaceUsersWorkspaceOperationType())
+
+        from .teams.operations import TEAM_OPERATION_TYPES
+
+        for team_operation_type in TEAM_OPERATION_TYPES:
+            operation_type_registry.register(team_operation_type())
+
+        import baserow.core.teams.receivers  # noqa: F401
+
         operation_type_registry.register(ExportWorkspaceOperationType())
         operation_type_registry.register(UpdateWorkspaceOperationType())
         operation_type_registry.register(ListWorkspaceUsersWorkspaceOperationType())
@@ -296,14 +293,11 @@ class CoreConfig(AppConfig):
         operation_type_registry.register(ReadApplicationOperationType())
 
         from baserow.core.actions import (
-            AcceptWorkspaceInvitationActionType,
             CreateApplicationActionType,
             CreateInitialWorkspaceActionType,
             CreateWorkspaceActionType,
-            CreateWorkspaceInvitationActionType,
             DeleteApplicationActionType,
             DeleteWorkspaceActionType,
-            DeleteWorkspaceInvitationActionType,
             DuplicateApplicationActionType,
             ExportApplicationsActionType,
             ImportApplicationsActionType,
@@ -311,10 +305,8 @@ class CoreConfig(AppConfig):
             LeaveWorkspaceActionType,
             OrderApplicationsActionType,
             OrderWorkspacesActionType,
-            RejectWorkspaceInvitationActionType,
             UpdateApplicationActionType,
             UpdateWorkspaceActionType,
-            UpdateWorkspaceInvitationActionType,
         )
 
         action_type_registry.register(CreateWorkspaceActionType())
@@ -327,11 +319,6 @@ class CoreConfig(AppConfig):
         action_type_registry.register(OrderApplicationsActionType())
         action_type_registry.register(DuplicateApplicationActionType())
         action_type_registry.register(InstallTemplateActionType())
-        action_type_registry.register(CreateWorkspaceInvitationActionType())
-        action_type_registry.register(DeleteWorkspaceInvitationActionType())
-        action_type_registry.register(AcceptWorkspaceInvitationActionType())
-        action_type_registry.register(RejectWorkspaceInvitationActionType())
-        action_type_registry.register(UpdateWorkspaceInvitationActionType())
         action_type_registry.register(LeaveWorkspaceActionType())
         action_type_registry.register(CreateInitialWorkspaceActionType())
         action_type_registry.register(ExportApplicationsActionType())
@@ -439,6 +426,10 @@ class CoreConfig(AppConfig):
         job_type_registry.register(ExportApplicationsJobType())
         job_type_registry.register(ImportApplicationsJobType())
 
+        from .backups.job_types import ExportApplicationsToDestinationJobType
+
+        job_type_registry.register(ExportApplicationsToDestinationJobType())
+
         from baserow.api.notifications.user_data_types import (
             UnreadUserNotificationsCountPermissionsDataType,
         )
@@ -447,6 +438,11 @@ class CoreConfig(AppConfig):
 
         user_data_registry.register(GlobalPermissionsDataType())
         user_data_registry.register(UnreadUserNotificationsCountPermissionsDataType())
+
+        from baserow.api.user.registries import member_data_registry
+        from baserow.core.teams.member_data_types import TeamsMemberDataType
+
+        member_data_registry.register(TeamsMemberDataType())
 
         from baserow.core.auth_provider.auth_provider_types import (
             PasswordAuthProviderType,
@@ -480,21 +476,9 @@ class CoreConfig(AppConfig):
         import baserow.core.notifications.tasks  # noqa: F401
         from baserow.core.notification_types import (
             BaserowVersionUpgradeNotificationType,
-            WorkspaceInvitationAcceptedNotificationType,
-            WorkspaceInvitationCreatedNotificationType,
-            WorkspaceInvitationRejectedNotificationType,
         )
         from baserow.core.notifications.registries import notification_type_registry
 
-        notification_type_registry.register(
-            WorkspaceInvitationAcceptedNotificationType()
-        )
-        notification_type_registry.register(
-            WorkspaceInvitationCreatedNotificationType()
-        )
-        notification_type_registry.register(
-            WorkspaceInvitationRejectedNotificationType()
-        )
         notification_type_registry.register(BaserowVersionUpgradeNotificationType())
 
         self._setup_health_checks()
@@ -503,12 +487,11 @@ class CoreConfig(AppConfig):
         post_migrate.connect(start_sync_templates_task_after_migrate, sender=self)
         # Create all operations from registry
         post_migrate.connect(sync_operations_after_migrate, sender=self)
-        # Reconcile the env-declared roles, after the operations they reference exist.
-        post_migrate.connect(sync_declared_roles_after_migrate, sender=self)
 
         if settings.CACHALOT_ENABLED:
             pre_migrate.connect(lambda *a, **kw: clear_cachalot_cache(), sender=self)
 
+        import baserow.core.audit_log.receivers  # noqa: F401
         import baserow.core.receivers  # noqa: F401
         from baserow.core.telemetry.telemetry import setup_logging
 
@@ -671,20 +654,3 @@ def sync_operations_after_migrate(sender, **kwargs):
             ).delete()
             ops_deleted = deletions.get("core.Operation", 0)
             print(f"Deleted {ops_deleted} un-registered operations...")
-
-
-def sync_declared_roles_after_migrate(sender, **kwargs):
-    apps = kwargs.get("apps", None)
-
-    if apps is None:
-        return
-
-    try:
-        apps.get_model("core", "Role")
-    except LookupError:
-        print("Skipping role sync as the Role model does not exist.")
-        return
-
-    from baserow.core.roles.handler import sync_declared_roles
-
-    sync_declared_roles()

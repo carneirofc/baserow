@@ -324,7 +324,11 @@ exports[`Table Component Tests > Adding a row to a table increases the row count
         </teleport-stub>
       </div>
       <!--v-if-->
+      <!--v-if-->
     </div>
+    <teleport-stub to="body">
+      <!--v-if-->
+    </teleport-stub>
   </div>
   <!--v-if-->
 </div>"
@@ -654,7 +658,11 @@ exports[`Table Component Tests > Adding a row to a table increases the row count
         </teleport-stub>
       </div>
       <!--v-if-->
+      <!--v-if-->
     </div>
+    <teleport-stub to="body">
+      <!--v-if-->
+    </teleport-stub>
   </div>
   <!--v-if-->
 </div>"

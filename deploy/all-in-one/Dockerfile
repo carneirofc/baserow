@@ -4,7 +4,7 @@ ARG GID="9999"
 ARG BACKEND_IMAGE=ghcr.io/carneirofc/baserow/backend
 ARG WEBFRONTEND_IMAGE=ghcr.io/carneirofc/baserow/web-frontend
 ARG CADDY_VERSION=2.11.4
-ARG GO_VERSION=1.26.7
+ARG GO_VERSION=1.26.8
 # hadolint ignore=DL3006
 FROM ${BACKEND_IMAGE} AS backend_image
 # hadolint ignore=DL3006
@@ -18,14 +18,22 @@ FROM ${WEBFRONTEND_IMAGE} AS web_frontend_image
 # CVE-2026-39821 and friends). Building the same pinned Caddy release here lets
 # the Go toolchain be bumped independently of upstream image rebuilds.
 # GOTOOLCHAIN=local keeps the build on GO_VERSION instead of letting go.mod pull
-# a different toolchain down.
+# a different toolchain down. Built in module mode so CADDY_MODULE_UPGRADES can
+# raise CVE-bearing Go modules past the Caddy release; see
+# deploy/caddy/Dockerfile, which must stay identical.
 # =============================================================================
 FROM golang:${GO_VERSION} AS caddy_image
 ARG CADDY_VERSION
+ARG CADDY_MODULE_UPGRADES="golang.org/x/crypto@v0.57.0 golang.org/x/net@v0.59.0 golang.org/x/text@v0.42.0 google.golang.org/grpc@v1.83.2"
 ENV CGO_ENABLED=0 \
-    GOTOOLCHAIN=local \
-    GOBIN=/usr/bin
-RUN go install "github.com/caddyserver/caddy/v2/cmd/caddy@v${CADDY_VERSION}" && \
+    GOTOOLCHAIN=local
+WORKDIR /src/caddy
+# hadolint ignore=SC2086
+RUN printf 'package main\n\nimport (\n\tcaddycmd "github.com/caddyserver/caddy/v2/cmd"\n\t_ "github.com/caddyserver/caddy/v2/modules/standard"\n)\n\nfunc main() {\n\tcaddycmd.Main()\n}\n' > main.go && \
+    go mod init caddy && \
+    go get "github.com/caddyserver/caddy/v2@v${CADDY_VERSION}" ${CADDY_MODULE_UPGRADES} && \
+    go mod tidy && \
+    go build -trimpath -o /usr/bin/caddy . && \
     caddy version
 
 # =============================================================================
@@ -86,11 +94,18 @@ COPY --from=caddy_image /usr/bin/caddy /usr/bin/caddy
 # the recipe in web-frontend/Dockerfile's node-base stage rather than copying the
 # runtime out of the web-frontend image: that image's prod target deletes npm and
 # yarn to shed their CVEs, but the plugin scripts in deploy/plugins/ run
-# `yarn add`/`yarn remove` inside this image. Keep NODE_VERSION, the SHA256s and
-# YARN_VERSION in sync with web-frontend/Dockerfile.
-ENV NODE_VERSION=v24.18.1 \
-    NODE_SHA256_amd64=d6c664df3f3f61458e8c277585571328522d705166723a7c7823a9253a4d15a0 \
-    NODE_SHA256_arm64=7201e3a09dc825bac57867c81913e2b8f0ef87d04cb9082af4cda82f6ff3d88c \
+# `yarn add`/`yarn remove` inside this image. Keep NODE_VERSION, the SHA256s,
+# NPM_VERSION and YARN_VERSION in sync with web-frontend/Dockerfile.
+#
+# npm stays in this image (plugin install scripts may call it), so it is pinned
+# rather than left at the version bundled with Node: the bundled npm can ship
+# vulnerable copies of its own dependencies (tar, brace-expansion, ip-address),
+# which the release image CVE scan fails on. Raise NPM_VERSION when that scan
+# flags a package under /usr/local/lib/node_modules/npm.
+ENV NODE_VERSION=v24.21.0 \
+    NODE_SHA256_amd64=fd8e59d5a511510f6a298afb548f18c7d2b1be404d8b4a27d94fbe49f56cb2d6 \
+    NODE_SHA256_arm64=6ad1325edbdb5649c379b75a237147a666c95d4f9ae8d340fef2d1575d289ad2 \
+    NPM_VERSION=11.19.1 \
     YARN_VERSION=1.22.22
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
@@ -106,10 +121,11 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     tar -xJf /tmp/node.tar.xz -C /usr/local --strip-components=1 --no-same-owner \
     --exclude=CHANGELOG.md --exclude=LICENSE --exclude=README.md && \
     rm /tmp/node.tar.xz && \
+    npm install -g "npm@${NPM_VERSION}" && \
     npm install -g "yarn@${YARN_VERSION}" && \
     npm cache clean --force && \
     apt-get clean && rm -rf /var/lib/apt/lists/* && \
-    node --version && yarn --version
+    node --version && npm --version && yarn --version
 
 # Copy su-exec from backend image (already built with pinned version + SHA256 verification)
 COPY --from=backend_image /usr/local/bin/su-exec /usr/local/bin/su-exec

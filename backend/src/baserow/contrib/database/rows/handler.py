@@ -92,7 +92,6 @@ from baserow.core.types import PermissionCheck
 from baserow.core.utils import Progress, get_non_unique_values, grouper
 
 from .constants import ROW_IMPORT_CREATION, ROW_IMPORT_VALIDATION
-from .error_report import RowErrorReport
 from .exceptions import InvalidRowLength, RowDoesNotExist, RowIdsNotUnique
 from .operations import (
     DeleteDatabaseRowOperationType,
@@ -116,7 +115,7 @@ from .types import (
     FieldsMetadata,
     FileImportConfiguration,
     GeneratedTableModelForUpdate,
-    ImportChangeCollector,
+    ImportRowsResult,
     RowId,
     RowsForUpdate,
     UpdatedRowsData,
@@ -127,6 +126,8 @@ if TYPE_CHECKING:
 
     from baserow.contrib.database.fields.models import Field
     from baserow.contrib.database.views.models import View
+
+    from .import_planner import ImportPlan
 
 tracer = trace.get_tracer(__name__)
 
@@ -1968,11 +1969,10 @@ class RowHandler(metaclass=baserow_trace_methods(tracer)):
         user: AbstractUser,
         table: Table,
         rows_values: List[Dict[str, Any]],
-        progress: Progress,
+        progress: Optional[Progress] = None,
         model: Optional[Type[GeneratedTableModel]] = None,
         signal_params: Optional[Dict] = None,
         skip_search_update: bool = True,
-        change_collector: Optional[ImportChangeCollector] = None,
     ) -> Tuple[List[Dict[str, Any] | None], Dict[str, Dict[str, Any]]]:
         """
         Updates rows by batch and generates an error report instead of failing on first
@@ -1986,8 +1986,6 @@ class RowHandler(metaclass=baserow_trace_methods(tracer)):
         :param signal_params: Additional parameters that are added to the signal.
         :param skip_search_update: When True, skip search updates. The caller is
             responsible for managing search updates.
-        :param change_collector: Optionally collects the before/after values of the
-            updated rows so the caller can write row history for them.
         :return: The updated rows and the error report.
         """
 
@@ -1997,7 +1995,8 @@ class RowHandler(metaclass=baserow_trace_methods(tracer)):
         if signal_params is None:
             signal_params = {}
 
-        progress.increment(state=ROW_IMPORT_CREATION)
+        if progress:
+            progress.increment(state=ROW_IMPORT_CREATION)
 
         if model is None:
             model = table.get_model()
@@ -2022,8 +2021,6 @@ class RowHandler(metaclass=baserow_trace_methods(tracer)):
                     )
                     report.update(result.errors)
                     all_updated_rows.extend(result.updated_rows)
-                    if change_collector is not None:
-                        change_collector.collect_updated(result)
             except Exception as exc:
                 if is_unique_violation_error(exc):
                     for index, _ in enumerate(chunk):
@@ -2049,8 +2046,6 @@ class RowHandler(metaclass=baserow_trace_methods(tracer)):
         validate: bool = True,
         progress: Optional[Progress] = None,
         send_realtime_update: bool = True,
-        change_collector: Optional[ImportChangeCollector] = None,
-        check_permissions: bool = True,
     ) -> Tuple[List[GeneratedTableModel], Dict[str, Dict[str, Any]]]:
         """
         Creates new rows for a given table if the user belongs to the related
@@ -2069,190 +2064,151 @@ class RowHandler(metaclass=baserow_trace_methods(tracer)):
             import.
         :param send_realtime_update: The parameter passed to the rows_created
             signal indicating if a realtime update should be send.
-        :param change_collector: Optionally collects the before/after values of the
-            created and updated rows, so the caller can write row history for them.
-        :param check_permissions: Set to False when the caller has already checked a
-            more specific operation, such as an upsert or a replace.
 
         :raises InvalidRowLength:
+        :raises ImportAmbiguousMatches:
 
         :return: The created row instances and the error report.
         """
 
+        result = self.import_rows_with_result(
+            user,
+            table,
+            data,
+            configuration=configuration,
+            validate=validate,
+            progress=progress,
+            send_realtime_update=send_realtime_update,
+        )
+        return result.created_rows, result.error_report
+
+    def check_import_permissions(
+        self, user: AbstractUser, table: Table, plan: "ImportPlan"
+    ):
+        """
+        Checks the user can apply the provided import plan to the table: importing
+        rows, and also updating or deleting rows when the plan does so.
+
+        :raises PermissionDenied: When the user isn't allowed.
+        """
+
         workspace = table.database.workspace
-        if check_permissions:
+        operation_types = [ImportRowsDatabaseTableOperationType.type]
+        if plan.to_update:
+            operation_types.append(UpdateDatabaseRowOperationType.type)
+        if plan.to_delete_ids:
+            operation_types.append(DeleteDatabaseRowOperationType.type)
+
+        for operation_type in operation_types:
             CoreHandler().check_permissions(
-                user,
-                ImportRowsDatabaseTableOperationType.type,
-                workspace=workspace,
-                context=table,
+                user, operation_type, workspace=workspace, context=table
             )
+
+    def import_rows_with_result(
+        self,
+        user: AbstractUser,
+        table: Table,
+        data: list[list[Any]],
+        configuration: FileImportConfiguration | None = None,
+        validate: bool = True,
+        progress: Optional[Progress] = None,
+        send_realtime_update: bool = True,
+    ) -> "ImportRowsResult":
+        """
+        Applies a file import to an existing table according to the import mode of
+        the configuration: rows are created, updated and trashed as planned by the
+        `ImportPlanner`, which the import preview uses as well. When a row fails to
+        import, it doesn't stop the import, the error is added to the report.
+
+        See `import_rows` for the parameters.
+
+        :raises InvalidRowLength:
+        :raises ImportAmbiguousMatches:
+        :return: The result of the import.
+        """
+
+        from .import_planner import ImportPlanner
+
+        workspace = table.database.workspace
+        CoreHandler().check_permissions(
+            user,
+            ImportRowsDatabaseTableOperationType.type,
+            workspace=workspace,
+            context=table,
+        )
         model = table.get_model()
 
-        error_report = RowErrorReport(data)
-        configuration = configuration or {}
-        update_handler = UpsertRowsMappingHandler(
-            table=table,
-            upsert_fields=configuration.get("upsert_fields") or [],
-            upsert_values=configuration.get("upsert_values") or [],
-        )
-        # Pre-run upsert configuration validation.
-        # Can raise InvalidRowLength
-        update_handler.validate()
+        plan = ImportPlanner(
+            user,
+            table,
+            data,
+            configuration=configuration,
+            model=model,
+            validate=validate,
+            progress=progress,
+        ).plan()
+        self.check_import_permissions(user, table, plan)
 
-        skipped_field_ids = configuration.get("skipped_fields", []) or []
-        try:
-            skipped_fields = [
-                model.get_field_object_by_id(field_id)["field"]
-                for field_id in skipped_field_ids
-            ]
-        except ValueError:
-            raise FieldNotInTable("The field ID is not found in the table.")
-
-        fields = [
-            field_object["field"]
-            for field_object in model._field_objects.values()
-            if not field_object["type"].read_only
-            and not field_object["field"].read_only
-        ]
-
-        # Sort by primary first (descending), then by order, then by id
-        fields.sort(key=lambda f: (not f.primary, f.order, f.id))
-
-        for index, row in enumerate(data):
-            # Check row length
-            if len(row) > len(fields):
-                error_report.add_error(
-                    index,
-                    {"non_field_errors": ["Too many values in this line."]},
-                )
-            else:
-                new_row = list(row)
-                # Fill incomplete rows with empty values
-                new_row.extend([None] * (len(fields) - len(row)))
-
-                # Reshape data by field as expected by the import
-                error_report.update_row(
-                    index,
-                    {
-                        f"field_{fields[index].id}": value
-                        for index, value in enumerate(new_row)
-                    },
-                )
-
-        # STEP 1: pre-validate data with serializer
-        if validate:
-            (
-                valid_rows,
-                original_row_index_mapping,
-            ) = error_report.get_valid_rows_and_mapping()
-
-            validation_sub_progress = (
-                progress.create_child(50, len(valid_rows)) if progress else None
+        changed_rows = len(plan.to_create) + len(plan.to_update)
+        write_sub_progress = (
+            progress.create_child(
+                50 if validate else 100,
+                changed_rows + len(plan.to_delete_ids),
             )
-
-            validation_report = self.validate_rows(
-                table, valid_rows, progress=validation_sub_progress
-            )
-
-            for index, error in validation_report.items():
-                error_report.add_error(original_row_index_mapping[int(index)], error)
-
-        (
-            valid_rows,
-            original_row_index_mapping,
-        ) = error_report.get_valid_rows_and_mapping()
-
-        # STEP 2: create rows in DB
-        creation_sub_progress = (
-            progress.create_child(50 if validate else 100, len(valid_rows))
             if progress
             else None
         )
-
-        # Make sure to exclude fields that cannot be written by the user.
-        # NOTE: all rows contain the same fields, so we can just check the first one
-        unwritable_fields = self._check_write_fields_values_permissions(
-            user, model, valid_rows[:1], raise_if_not_permitted=False
-        )
-        unwritable_field_names = set(f.db_column for f in unwritable_fields)
-        valid_rows = [
-            {k: v for k, v in row.items() if k not in unwritable_field_names}
-            for row in valid_rows
-        ]
-
-        # split rows to insert and update lists. If there's no upsert field selected,
-        # this will not populate rows_values_to_update.
-        update_map = update_handler.process_map
-
-        rows_values_to_create = []
-        rows_values_to_update = []
-        if update_map:
-            skipped_field_names = set()
-
-            if skipped_fields:
-                skipped_field_names = {field.db_column for field in skipped_fields}
-
-            for current_idx, import_idx in original_row_index_mapping.items():
-                row = valid_rows[current_idx]
-                if update_idx := update_map.get(import_idx):
-                    # For upsert operations, filter out skipped fields that were
-                    # explicitly marked to be ignored during import. This ensures
-                    # that existing values in those fields are preserved in the
-                    # database rather than being overwritten.
-                    filtered_row = {
-                        k: v for k, v in row.items() if k not in skipped_field_names
-                    }
-                    filtered_row["id"] = update_idx
-                    rows_values_to_update.append(filtered_row)
-                else:
-                    rows_values_to_create.append(row)
-        else:
-            rows_values_to_create = valid_rows
-
-        changed_rows = len(rows_values_to_create) + len(rows_values_to_update)
         full_field_search_update = self._should_use_full_field_search_update_for_import(
             changed_rows, model
         )
 
+        trashed_rows_entry_id = None
+        if plan.to_delete_ids:
+            trashed_rows = self.force_delete_rows(
+                user,
+                table,
+                plan.to_delete_ids,
+                model=model,
+                send_realtime_update=False,
+                send_webhook_events=False,
+            )
+            trashed_rows_entry_id = trashed_rows.id
+            if write_sub_progress:
+                write_sub_progress.increment(len(plan.to_delete_ids))
+
         created_rows, creation_report = self.force_create_rows_by_batch(
             user,
             table,
-            rows_values_to_create,
-            progress=creation_sub_progress,
+            [values for _, values in plan.to_create],
+            progress=write_sub_progress,
             model=model,
             skip_search_update=full_field_search_update,
         )
+        for index, error in creation_report.items():
+            plan.error_report.add_error(plan.to_create[int(index)][0], error)
 
-        if change_collector is not None and created_rows:
-            self._collect_created_rows_for_history(
-                change_collector, created_rows, model
-            )
-
-        if rows_values_to_update:
+        updated_rows = []
+        failed_update_indexes = set()
+        if plan.to_update:
             updated_rows, updated_report = self.force_update_rows_by_batch(
                 user,
                 table,
-                rows_values_to_update,
-                progress=creation_sub_progress,
+                [planned.values for planned in plan.to_update],
+                progress=write_sub_progress,
                 model=model,
                 skip_search_update=full_field_search_update,
-                change_collector=change_collector,
             )
-
-        # Add errors to global report
-        for index, error in creation_report.items():
-            error_report.add_error(
-                original_row_index_mapping[int(index)],
-                error,
-            )
-
-        if rows_values_to_update:
             for index, error in updated_report.items():
-                error_report.add_error(
-                    original_row_index_mapping[int(index)],
-                    error,
+                failed_update_indexes.add(int(index))
+                plan.error_report.add_error(
+                    plan.to_update[int(index)].import_index, error
                 )
+
+        original_rows_values_by_id = {
+            planned.row_id: planned.original_values
+            for index, planned in enumerate(plan.to_update)
+            if index not in failed_update_indexes
+        }
 
         if send_realtime_update:
             # Just send a single table_updated here as realtime update instead
@@ -2262,43 +2218,20 @@ class RowHandler(metaclass=baserow_trace_methods(tracer)):
         if full_field_search_update and changed_rows > 0:
             SearchHandler.schedule_update_search_data(table)
 
-        return created_rows, error_report.to_dict()
-
-    def _collect_created_rows_for_history(
-        self,
-        change_collector: ImportChangeCollector,
-        created_rows: List[GeneratedTableModel],
-        model: Type[GeneratedTableModel],
-    ) -> None:
-        """
-        Feeds the rows an import created into the change collector, gathering the
-        values and metadata only for the rows that still fit within its budget.
-        """
-
-        if not change_collector.enabled:
-            return
-
-        budget = change_collector.remaining
-        if len(created_rows) > budget:
-            change_collector.truncated = True
-        rows = created_rows[:budget]
-        if not rows:
-            return
-
-        field_objects = [
-            field_object
-            for field_object in model.get_field_objects()
-            if field_object["name"] != "id" and not field_object["type"].read_only
-        ]
-        fields = [field_object["field"] for field_object in field_objects]
-        field_ids = [field.id for field in fields]
-        fields_metadata = self.get_fields_metadata_for_rows(rows, fields)
-        rows_values = [
-            {"id": row.id, **self.get_internal_values_for_fields(row, field_ids)}
-            for row in rows
-        ]
-        change_collector.collect_created(
-            [row.id for row in rows], rows_values, fields_metadata
+        return ImportRowsResult(
+            created_rows=created_rows,
+            updated_row_ids=list(original_rows_values_by_id.keys()),
+            original_rows_values_by_id=original_rows_values_by_id,
+            trashed_row_ids=plan.to_delete_ids,
+            trashed_rows_entry_id=trashed_rows_entry_id,
+            error_report=plan.error_report.to_dict(),
+            summary={
+                "created": len(created_rows),
+                "updated": len(original_rows_values_by_id),
+                "unchanged": len(plan.unchanged),
+                "deleted": len(plan.to_delete_ids),
+                "skipped": len(plan.skipped),
+            },
         )
 
     def get_fields_metadata_for_row_history(
@@ -3658,8 +3591,14 @@ class UpsertRowsMappingHandler:
         if not self.import_fields:
             return {}
 
+        # The connection can be reused between requests (e.g. an import preview
+        # followed by another one), so temp objects of a previous run may still exist.
         script_template = sql.SQL(
             """
+        DROP VIEW IF EXISTS table_import_indexes;
+        DROP TABLE IF EXISTS table_upsert_indexes;
+        DROP TABLE IF EXISTS table_import;
+
         CREATE TEMP TABLE table_upsert_indexes (id INT, upsert_value TEXT, group_index INT);
 
         CREATE TEMP TABLE table_import (id INT, upsert_value TEXT);
@@ -3761,3 +3700,66 @@ class UpsertRowsMappingHandler:
         """
         )
         return self.execute(q).fetchall()
+
+    def ambiguous_keys(self, limit: int = 100) -> list[dict[str, Any]]:
+        """
+        Returns the match keys that can't be paired unambiguously: keys that occur
+        more than once in the imported data or in the table while also occurring on
+        the other side. Unmatched duplicates are not ambiguous, they are simply
+        inserted or left untouched.
+
+        :param limit: The maximum number of keys to return.
+        :return: A list of dicts with the key `values` and how often the key occurs
+            in the imported data (`file_count`) and in the table (`table_count`).
+        """
+
+        if not self.import_fields:
+            return []
+
+        # Make sure the temp tables are populated.
+        self.process_map  # noqa: B018
+
+        q = sql.SQL(
+            """
+        WITH f AS (SELECT upsert_value, COUNT(*) AS c
+                   FROM table_import GROUP BY upsert_value),
+             t AS (SELECT upsert_value, COUNT(*) AS c
+                   FROM table_upsert_indexes GROUP BY upsert_value)
+        SELECT f.upsert_value, f.c, t.c
+            FROM f JOIN t ON f.upsert_value = t.upsert_value
+            WHERE f.c > 1 OR t.c > 1
+            ORDER BY f.upsert_value
+            LIMIT {};
+        """
+        ).format(sql.Placeholder())
+        separator = "__-__"
+        return [
+            {
+                "values": [
+                    None if part == "<NULL>" else part
+                    for part in value.split(separator)
+                ],
+                "file_count": file_count,
+                "table_count": table_count,
+            }
+            for value, file_count, table_count in self.execute(q, [limit]).fetchall()
+        ]
+
+    def cleanup(self):
+        """
+        Drops the temp objects created to calculate the map, so that the same
+        connection can safely run another import.
+        """
+
+        if "process_map" not in self.__dict__:
+            return
+
+        self.execute(
+            sql.SQL(
+                """
+            DROP VIEW IF EXISTS table_import_indexes;
+            DROP TABLE IF EXISTS table_upsert_indexes;
+            DROP TABLE IF EXISTS table_import;
+            """
+            )
+        )

@@ -1,13 +1,12 @@
 from django.urls import re_path
 
-from baserow.contrib.database.api.data_import.views import TableImportRecordsView
-
 from .views import (
     AllTablesView,
     AsyncCreateTableView,
     AsyncDuplicateTableView,
     AsyncTableImportView,
     OrderTablesView,
+    TableImportPreviewView,
     TablesView,
     TableView,
 )
@@ -39,8 +38,8 @@ urlpatterns = [
         name="import_async",
     ),
     re_path(
-        r"(?P<table_id>[0-9]+)/import-records/$",
-        TableImportRecordsView.as_view(),
-        name="import_records",
+        r"(?P<table_id>[0-9]+)/import/preview/$",
+        TableImportPreviewView.as_view(),
+        name="import_preview",
     ),
 ]

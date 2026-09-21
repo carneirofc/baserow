@@ -79,12 +79,14 @@ Default section order:
 When the user requests a durable behavior change, record it here or in the relevant child AGENTS.md
 
 - This is a FOSS fork of Baserow. Scrub pointers/branding/infra ties back to Baserow B.V.; do not reintroduce them.
+- Change-candidate discovery via `change-scout` / `find-change-candidates` runs automatically; the user does not call it manually.
+- Remote repo retrieval via `repo-reader` and CI inspection via `ci-inspector` (and their skills) run automatically; the user does not call them manually.
 
 ## Project
 
 Baserow (FOSS fork): a no-code database and application platform. Django backend + Nuxt/Vue web frontend, orchestrated with Docker Compose and shipped via a Helm chart.
 
-Layout: `backend/` (Django API + workers), `web-frontend/` (Nuxt app), `e2e-tests/` (Playwright), `deploy/` (Compose + Helm), `docs/`, `changelog/`, `.agents/skills/` (canonical project skills; `.claude/skills` symlinks here).
+Layout: `backend/` (Django API + workers), `web-frontend/` (Nuxt app), `e2e-tests/` (Playwright), `deploy/` (Compose + Helm), `docs/`, `changelog/`, `.agents/skills/` (canonical project skills; `.claude/skills` symlinks here), `.claude/agents/` (project subagents).
 
 ### Repo-wide rules
 
@@ -92,6 +94,10 @@ Layout: `backend/` (Django API + workers), `web-frontend/` (Nuxt app), `e2e-test
 - Every user-facing or behavioral change needs a changelog entry — `just changelog add`. See `changelog/AGENTS.md`.
 - Commits: Conventional Commits; never add a `Co-Authored-By` or tooling-attribution trailer.
 - `.pre-commit-config.yaml` runs lint/format gates; keep changes passing before committing.
+- CVE gate: `just audit deps` (every `uv.lock`/`yarn.lock`) and `just audit images <refs>` run the pinned Trivy image and fail on HIGH/CRITICAL findings that have a fix. CI enforces the same gate (`dependency-audit` job plus image scans). Fix findings by upgrading (yarn `resolutions`, uv constraints) rather than suppressing; a suppression goes in `.trivyignore.yaml` with a `statement` and `expired_at`. Keep the Trivy version identical in the root `justfile`, `ci.yml` and `build-publish-image.yml`.
+- File discovery: before planning or editing, if the target files are not already known, delegate discovery to the `change-scout` subagent (`.claude/agents/change-scout.md`, Sonnet, effort medium) or the `find-change-candidates` skill instead of searching inline, then read only the files it returns.
+- Remote repo content: when a task needs code, docs, or history from another GitHub repo or ref (upstream, a dependency, another branch/tag/commit), delegate automatically to the `repo-reader` subagent (`.claude/agents/repo-reader.md`, Sonnet, effort medium) or the `repo-fetch` / `repo-search` / `repo-compare` skills instead of web-fetching or cloning inline. Checkouts are cached under `${XDG_CACHE_HOME:-~/.cache}/agent-repos`, never in this repo.
+- CI: after pushing or opening a PR, and whenever checks fail or CI state matters, delegate automatically to the `ci-inspector` subagent (`.claude/agents/ci-inspector.md`, Sonnet, effort medium) or the `ci-status` / `ci-failure-report` / `ci-watch` skills; feed its report into debugging instead of reading raw logs inline. It is read-only (never reruns or cancels).
 - Domain docs: read root `CONTEXT.md` and `docs/adr/` (per `docs/agents/domain.md`) before deep work; proceed silently if absent.
 
 ## Child DOX Index

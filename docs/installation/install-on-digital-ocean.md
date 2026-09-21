@@ -48,10 +48,12 @@ Keys` tab, click on `Generate New Key`, and create a new key. Copy the `Access K
 ## Application
 
 Navigate to the `Apps` page in the left sidebar of your Digital Ocean dashboard. Click
-on `Create App`, select `Docker Hub`, and fill out the following:
+on `Create App`, choose a container image from `GitHub Container Registry` (GHCR), and
+fill out the following. The image is public, so no registry credentials are needed:
 
+Registry (owner): `carneirofc`
 Repository: `baserow/baserow`
-Image tag or digest: `2.3.2`
+Image tag or digest: `0.6.0`
 
 Click on `Next`, then on the `Edit` button of the `baserow-baserow` web service. Here
 you must change the HTTP Port to 80, and then click on `Back`. Click on the `Next`
@@ -124,7 +126,9 @@ environment.
 In order to update the Baserow version, you simply need to replace the image tag.
 Navigate to the `Settings` tag of your created app, click on the `baserow-baserow`
 component, then click on the `Edit` button next to source, change the `Image tag` into
-the desired version (latest is `2.3.2`), and click on save. The app will redeploy
+the desired version (see the
+[releases](https://github.com/carneirofc/baserow/releases) for the latest tag), and click
+on save. The app will redeploy
 with the latest version.
 
 ## External email server

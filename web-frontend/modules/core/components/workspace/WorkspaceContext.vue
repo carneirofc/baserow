@@ -33,6 +33,21 @@
         </a>
       </li>
       <li
+        v-if="$hasPermission('workspace.export', workspace, workspace.id)"
+        class="context__menu-item"
+      >
+        <a class="context__menu-item-link" @click="openBackups">
+          <i class="context__menu-item-icon iconoir-archive"></i>
+          {{ $t('workspaceContext.backups') }}
+        </a>
+      </li>
+      <li class="context__menu-item">
+        <a class="context__menu-item-link" @click="openApiClients">
+          <i class="context__menu-item-icon iconoir-key-alt-plus"></i>
+          {{ $t('workspaceContext.apiClients') }}
+        </a>
+      </li>
+      <li
         v-if="$hasPermission('workspace.update', workspace, workspace.id)"
         class="context__menu-item"
       >
@@ -54,7 +69,13 @@
         </a>
       </li>
       <li
-        v-if="$hasPermission('invitation.read', workspace, workspace.id)"
+        v-if="
+          $hasPermission(
+            'workspace.list_workspace_users',
+            workspace,
+            workspace.id
+          )
+        "
         class="context__menu-item"
       >
         <a
@@ -122,6 +143,15 @@
       ref="importWorkspaceModal"
       :workspace="workspace"
     ></ImportWorkspaceModal>
+    <BackupsModal
+      v-if="$hasPermission('workspace.export', workspace, workspace.id)"
+      ref="backupsModal"
+      :workspace="workspace"
+    ></BackupsModal>
+    <ApiClientsModal
+      ref="apiClientsModal"
+      :workspace="workspace"
+    ></ApiClientsModal>
     <LeaveWorkspaceModal
       ref="leaveWorkspaceModal"
       :workspace="workspace"
@@ -139,6 +169,8 @@ import context from '@baserow/modules/core/mixins/context'
 import { notifyIf } from '@baserow/modules/core/utils/error'
 import ExportWorkspaceModal from '@baserow/modules/core/components/export/ExportWorkspaceModal.vue'
 import ImportWorkspaceModal from '@baserow/modules/core/components/import/ImportWorkspaceModal.vue'
+import BackupsModal from '@baserow/modules/core/components/backups/BackupsModal'
+import ApiClientsModal from '@baserow/modules/core/components/apiClients/ApiClientsModal'
 import TrashModal from '@baserow/modules/core/components/trash/TrashModal'
 import LeaveWorkspaceModal from '@baserow/modules/core/components/workspace/LeaveWorkspaceModal'
 import WorkspaceSettingsModal from '@baserow/modules/core/components/workspace/WorkspaceSettingsModal'
@@ -148,6 +180,8 @@ import { nextTick, useNuxtApp } from '#imports'
 export default {
   name: 'WorkspaceContext',
   components: {
+    ApiClientsModal,
+    BackupsModal,
     ExportWorkspaceModal,
     ImportWorkspaceModal,
     LeaveWorkspaceModal,
@@ -187,6 +221,14 @@ export default {
     openImportData() {
       this.$refs.context.hide()
       this.$refs.importWorkspaceModal.show()
+    },
+    openBackups() {
+      this.$refs.context.hide()
+      this.$refs.backupsModal.show()
+    },
+    openApiClients() {
+      this.$refs.context.hide()
+      this.$refs.apiClientsModal.show()
     },
     async deleteWorkspace() {
       this.loading = true

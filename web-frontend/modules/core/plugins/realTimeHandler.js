@@ -594,6 +594,17 @@ export class RealTimeHandler {
       })
     })
 
+    this.registerEvent('permissions_updated', async ({ store }, data) => {
+      const workspace = store.getters['workspace/get'](data.workspace_id)
+      if (workspace === undefined) {
+        return
+      }
+      await store.dispatch('workspace/forceFetchPermissions', workspace)
+      // Visible databases and tables may have changed as well.
+      await store.dispatch('application/fetchAll')
+      store.dispatch('toast/setPermissionsUpdated', true)
+    })
+
     this.registerEvent('group_user_updated', ({ store }, data) => {
       store.dispatch('workspace/forceUpdateWorkspaceUser', {
         id: data.id,
@@ -640,25 +651,6 @@ export class RealTimeHandler {
           isHashed: true,
         })
       }
-    })
-
-    // invitations
-    this.registerEvent(
-      'workspace_invitation_updated_or_created',
-      ({ store }, data) => {
-        store.dispatch(
-          'auth/forceUpdateOrCreateWorkspaceInvitation',
-          data.invitation
-        )
-      }
-    )
-
-    this.registerEvent('workspace_invitation_accepted', ({ store }, data) => {
-      store.dispatch('auth/forceAcceptWorkspaceInvitation', data.invitation)
-    })
-
-    this.registerEvent('workspace_invitation_rejected', ({ store }, data) => {
-      store.dispatch('auth/forceRejectWorkspaceInvitation', data.invitation)
     })
 
     // notifications

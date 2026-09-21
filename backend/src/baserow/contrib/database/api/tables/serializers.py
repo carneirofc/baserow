@@ -4,12 +4,13 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from baserow.contrib.database.api.data_sync.serializers import DataSyncSerializer
-from baserow.contrib.database.data_import.constants import (
-    IMPORT_MODE_APPEND,
-    IMPORT_MODES,
-    STRICT_IMPORT_MODES,
-)
 from baserow.contrib.database.fields.registries import field_type_registry
+from baserow.contrib.database.rows.constants import (
+    IMPORT_MATCHING_MODES,
+    IMPORT_MODE_INSERT,
+    IMPORT_MODE_UPSERT,
+    IMPORT_MODES,
+)
 from baserow.contrib.database.table.models import Table
 
 
@@ -64,51 +65,72 @@ class TableImportConfiguration(serializers.Serializer):
         default=None,
         help_text="A list of field IDs that should not be overwritten during upsert operations.",
     )
-    file_header = serializers.ListField(
-        child=serializers.CharField(allow_blank=True),
+    mode = serializers.ChoiceField(
+        choices=IMPORT_MODES,
+        required=False,
         allow_null=True,
-        allow_empty=True,
         default=None,
         help_text=(
-            "The column headers as they were read from the imported file, in file "
-            "order. Required for the `upsert` and `replace` modes, which check that "
-            "the file's columns line up exactly with the table's fields."
+            "How the imported rows are applied to the table. `insert` appends every "
+            "row. `upsert` updates the rows matching `upsert_fields` and inserts the "
+            "others. `update` only updates the matching rows. `replace` trashes every "
+            "existing row before inserting. Defaults to `upsert` when `upsert_fields` "
+            "is provided, otherwise `insert`."
         ),
     )
-    field_mapping = serializers.ListField(
-        child=serializers.IntegerField(min_value=0),
-        allow_null=True,
-        allow_empty=True,
-        default=None,
+    delete_unmatched = serializers.BooleanField(
+        required=False,
+        default=False,
         help_text=(
-            "One target field ID per column of `file_header`, in the same order. "
-            "`0` marks a column that is not imported, which the `upsert` and "
-            "`replace` modes reject."
+            "Only with `upsert` or `update`: trash the existing rows that are not "
+            "matched by any imported row."
+        ),
+    )
+    allow_ambiguous_matches = serializers.BooleanField(
+        required=False,
+        default=False,
+        help_text=(
+            "When the match keys are not unique in the imported data or in the table, "
+            "the import is refused unless this is true. In that case duplicates are "
+            "paired in order."
         ),
     )
 
     def validate(self, attrs):
-        file_header = attrs.get("file_header")
-        field_mapping = attrs.get("field_mapping")
-        if (
-            file_header is not None
-            and field_mapping is not None
-            and len(file_header) != len(field_mapping)
-        ):
-            raise ValidationError(
-                {
-                    "field_mapping": (
-                        "field_mapping must have exactly one entry per column of "
-                        "file_header."
-                    )
-                }
-            )
         if attrs.get("upsert_fields") and not len(attrs.get("upsert_values") or []):
             raise ValidationError(
                 {
                     "upsert_value": (
                         "upsert_values must not be empty "
                         "when upsert_fields are provided."
+                    )
+                }
+            )
+
+        if not attrs.get("mode"):
+            # Imports without an explicit mode keep pairing duplicates in order.
+            attrs["allow_ambiguous_matches"] = True
+        mode = attrs.get("mode") or (
+            IMPORT_MODE_UPSERT if attrs.get("upsert_fields") else IMPORT_MODE_INSERT
+        )
+        attrs["mode"] = mode
+
+        if mode in IMPORT_MATCHING_MODES and not attrs.get("upsert_fields"):
+            raise ValidationError(
+                {"upsert_fields": f"upsert_fields are required with the `{mode}` mode."}
+            )
+        if mode not in IMPORT_MATCHING_MODES and attrs.get("upsert_fields"):
+            raise ValidationError(
+                {
+                    "upsert_fields": f"upsert_fields can't be used with the `{mode}` mode."
+                }
+            )
+        if attrs.get("delete_unmatched") and mode not in IMPORT_MATCHING_MODES:
+            raise ValidationError(
+                {
+                    "delete_unmatched": (
+                        "delete_unmatched can only be used with the `upsert` or "
+                        "`update` mode."
                     )
                 }
             )
@@ -120,7 +142,14 @@ class TableSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Table
-        fields = ("id", "name", "order", "database_id", "data_sync")
+        fields = (
+            "id",
+            "name",
+            "order",
+            "database_id",
+            "require_edit_confirmation",
+            "data_sync",
+        )
         extra_kwargs = {
             "id": {"read_only": True},
             "database_id": {"read_only": True},
@@ -137,6 +166,7 @@ class TableWithoutDataSyncSerializer(TableSerializer):
             "name",
             "order",
             "database_id",
+            "require_edit_confirmation",
         )
 
 
@@ -208,19 +238,6 @@ class TableImportSerializer(serializers.Serializer):
         ),
     )
     configuration = TableImportConfiguration(required=False, default=None)
-    mode = serializers.ChoiceField(
-        choices=IMPORT_MODES,
-        required=False,
-        default=IMPORT_MODE_APPEND,
-        help_text=(
-            "How the data is written into the table. `append` adds the rows to the "
-            "existing ones. `upsert` updates the rows matched by the configured "
-            "`upsert_fields` and adds the rest. `replace` trashes every existing row "
-            "and then adds the imported ones. None of these change the table's "
-            "fields; `upsert` and `replace` additionally require the file's columns "
-            "to cover the table's importable fields exactly."
-        ),
-    )
     importer_type = serializers.CharField(
         max_length=32,
         required=False,
@@ -237,23 +254,9 @@ class TableImportSerializer(serializers.Serializer):
     )
 
     class Meta:
-        fields = ("data", "mode", "importer_type", "original_file_name")
+        fields = ("data", "importer_type", "original_file_name")
 
     def validate(self, attrs):
-        if attrs.get("mode") in STRICT_IMPORT_MODES:
-            configuration = attrs.get("configuration") or {}
-            if not configuration.get("file_header") or not configuration.get(
-                "field_mapping"
-            ):
-                raise ValidationError(
-                    {
-                        "configuration": (
-                            "`configuration.file_header` and "
-                            "`configuration.field_mapping` are required for the "
-                            f"`{attrs['mode']}` mode."
-                        )
-                    }
-                )
         if attrs.get("configuration"):
             if attrs["configuration"].get("upsert_values"):
                 if len(attrs["configuration"].get("upsert_values")) != len(
@@ -269,10 +272,79 @@ class TableImportSerializer(serializers.Serializer):
         return attrs
 
 
+class TableImportPreviewSerializer(TableImportSerializer):
+    sample_size = serializers.IntegerField(
+        min_value=0,
+        max_value=200,
+        default=50,
+        help_text="The maximum number of rows returned for each kind of change.",
+    )
+
+
+class TableImportPreviewUpdateSerializer(serializers.Serializer):
+    import_index = serializers.IntegerField(
+        help_text="The index of the row in the imported `data`."
+    )
+    row = serializers.DictField(help_text="The existing row before the import.")
+    changed_field_ids = serializers.ListField(child=serializers.IntegerField())
+
+
+class TableImportPreviewAmbiguousKeySerializer(serializers.Serializer):
+    values = serializers.ListField(
+        child=serializers.CharField(allow_null=True),
+        help_text="The values of the match fields, in `upsert_fields` order.",
+    )
+    file_count = serializers.IntegerField()
+    table_count = serializers.IntegerField()
+
+
+class TableImportPreviewResponseSerializer(serializers.Serializer):
+    summary = serializers.DictField(
+        child=serializers.IntegerField(),
+        help_text=(
+            "The number of rows the import would `create`, `update`, leave "
+            "`unchanged`, `delete`, `skip`, and the rows in `errors`."
+        ),
+    )
+    ambiguous_blocked = serializers.BooleanField(
+        help_text=(
+            "True if the import would be refused because of ambiguous match keys."
+        )
+    )
+    ambiguous = TableImportPreviewAmbiguousKeySerializer(many=True)
+    create = serializers.ListField(
+        child=serializers.IntegerField(),
+        help_text="Indexes in `data` of the rows that would be created.",
+    )
+    update = TableImportPreviewUpdateSerializer(many=True)
+    delete = serializers.ListField(
+        child=serializers.DictField(), help_text="The rows that would be trashed."
+    )
+    skipped = serializers.ListField(
+        child=serializers.IntegerField(),
+        help_text="Indexes in `data` of the unmatched rows the `update` mode ignores.",
+    )
+    errors = serializers.DictField(
+        child=serializers.DictField(),
+        help_text="Validation errors by index in `data`.",
+    )
+
+
 class TableUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Table
-        fields = ("name",)
+        fields = ("name", "require_edit_confirmation")
+        extra_kwargs = {
+            "name": {"required": False},
+            "require_edit_confirmation": {"required": False},
+        }
+
+    def validate(self, attrs):
+        if not attrs:
+            raise ValidationError(
+                "At least one of name or require_edit_confirmation must be provided."
+            )
+        return attrs
 
 
 class OrderTablesSerializer(serializers.Serializer):

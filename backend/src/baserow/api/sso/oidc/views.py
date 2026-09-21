@@ -1,3 +1,4 @@
+from datetime import timedelta
 from typing import Any, Dict
 
 from django.db import transaction
@@ -14,17 +15,17 @@ from rest_framework.views import APIView
 from baserow.api.decorators import validate_query_parameters
 from baserow.api.sso.oidc.serializers import OIDCLoginRequestSerializer
 from baserow.core.auth_provider.exceptions import DifferentAuthProvider
-from baserow.core.exceptions import WorkspaceInvitationEmailMismatch
 from baserow.core.sso.exceptions import (
     AuthFlowError,
+    EmailNotVerified,
     NoMappedRole,
     OIDCProviderNotFound,
 )
 from baserow.core.sso.oidc.config import get_oidc_provider
 from baserow.core.sso.oidc.handler import OIDCHandler
+from baserow.core.sso.oidc.linking import link_existing_account
 from baserow.core.sso.oidc.provider import OIDCAuthProviderType
 from baserow.core.sso.oidc.roles import enforce_role_access, sync_global_roles
-from baserow.core.sso.oidc.workspaces import sync_workspace_memberships
 from baserow.core.sso.utils import (
     SsoErrorCode,
     map_sso_exceptions,
@@ -50,12 +51,6 @@ class OIDCLoginView(APIView):
                 location=OpenApiParameter.QUERY,
                 type=OpenApiTypes.STR,
                 description="The relative URL the user wanted to access.",
-            ),
-            OpenApiParameter(
-                name="workspace_invitation_token",
-                location=OpenApiParameter.QUERY,
-                type=OpenApiTypes.STR,
-                description="An optional workspace invitation token.",
             ),
         ],
         tags=["Auth"],
@@ -123,11 +118,9 @@ class OIDCCallbackView(APIView):
             AuthFlowError: SsoErrorCode.AUTH_FLOW_ERROR,
             DeactivatedUserException: SsoErrorCode.USER_DEACTIVATED,
             DifferentAuthProvider: SsoErrorCode.DIFFERENT_PROVIDER,
-            WorkspaceInvitationEmailMismatch: (
-                SsoErrorCode.GROUP_INVITATION_EMAIL_MISMATCH
-            ),
             DisabledSignupError: SsoErrorCode.SIGNUP_DISABLED,
             NoMappedRole: SsoErrorCode.NO_MAPPED_ROLE,
+            EmailNotVerified: SsoErrorCode.EMAIL_NOT_VERIFIED,
         }
     )
     @transaction.atomic
@@ -144,6 +137,7 @@ class OIDCCallbackView(APIView):
             config,
             OIDCAuthProviderType.get_callback_url(config),
             code,
+            request.query_params.get("state", None),
             request.session,
         )
         logger.debug("OIDC extracted user info: {0}", user_info)
@@ -163,11 +157,20 @@ class OIDCCallbackView(APIView):
             raise
 
         provider = OIDCAuthProviderType().get_or_create_provider_model(config)
+        # Runs inside the transaction, so a refusal further down undoes the link.
+        link_existing_account(config, provider, user_info)
         user, _ = provider.get_type().get_or_create_user_and_sign_in(
             provider, user_info
         )
 
+        # The IdP only defines global profiles; workspace access is managed in the app.
         sync_global_roles(user, roles, config)
-        sync_workspace_memberships(user, roles, config, provider)
 
-        return redirect_user_on_success(user, original_url)
+        # Bounding the session is what makes a client role removed in the IdP stop
+        # applying: the next sign-in re-runs the syncs above.
+        refresh_lifetime = (
+            timedelta(minutes=config.session_lifetime_minutes)
+            if config.session_lifetime_minutes is not None
+            else None
+        )
+        return redirect_user_on_success(user, original_url, refresh_lifetime)

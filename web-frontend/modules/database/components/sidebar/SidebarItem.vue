@@ -47,6 +47,12 @@
             :database="database"
           ></component>
         </li>
+        <li v-if="canManageAccess" class="context__menu-item">
+          <a class="context__menu-item-link" @click="openAccessModal()">
+            <i class="context__menu-item-icon iconoir-lock"></i>
+            {{ $t('sidebarItem.manageAccess') }}
+          </a>
+        </li>
         <li
           v-if="
             $hasPermission(
@@ -171,6 +177,29 @@
         <li
           v-if="
             $hasPermission(
+              'database.table.update',
+              table,
+              database.workspace.id
+            )
+          "
+          class="context__menu-item"
+        >
+          <a
+            class="context__menu-item-link"
+            :title="$t('confirmDataChange.enableTitle')"
+            @click="toggleProtectedEditing()"
+          >
+            <i class="context__menu-item-icon iconoir-shield-check"></i>
+            {{ $t('sidebarItem.protectedEditing') }}
+            <i
+              v-if="table.require_edit_confirmation"
+              class="sidebar-item__protected-check iconoir-check"
+            ></i>
+          </a>
+        </li>
+        <li
+          v-if="
+            $hasPermission(
               'database.table.duplicate',
               table,
               database.workspace.id
@@ -212,6 +241,14 @@
       />
       <WebhookModal ref="webhookModal" :database="database" :table="table" />
       <SyncTableModal ref="syncModal" :table="table"></SyncTableModal>
+      <DatabaseAccessModal
+        v-if="canManageAccess"
+        ref="accessModal"
+        :workspace="database.workspace"
+        scope-type="table"
+        :scope-id="table.id"
+        :scope-name="table.name"
+      ></DatabaseAccessModal>
     </Context>
   </li>
 </template>
@@ -225,6 +262,7 @@ import SidebarDuplicateTableContextItem from '@baserow/modules/database/componen
 import SidebarImportTableContextItem from '@baserow/modules/database/components/sidebar/table/SidebarImportTableContextItem'
 import SyncTableModal from '@baserow/modules/database/components/dataSync/SyncTableModal'
 import ConfigureDataSyncModal from '@baserow/modules/database/components/dataSync/ConfigureDataSyncModal.vue'
+import DatabaseAccessModal from '@baserow/modules/database/components/access/DatabaseAccessModal'
 import { pageFinished } from '@baserow/modules/core/utils/routing'
 import { nextTick, useNuxtApp } from '#imports'
 
@@ -232,6 +270,7 @@ export default {
   name: 'SidebarItem',
   components: {
     ConfigureDataSyncModal,
+    DatabaseAccessModal,
     ExportTableModal,
     WebhookModal,
     SyncTableModal,
@@ -258,8 +297,16 @@ export default {
     }
   },
   computed: {
+    canManageAccess() {
+      return this.$hasPermission(
+        'workspace.manage_database_access',
+        this.database.workspace,
+        this.database.workspace.id
+      )
+    },
     showOptions() {
       return (
+        this.canManageAccess ||
         this.additionalContextComponents.length > 0 ||
         this.$hasPermission(
           'database.table.run_export',
@@ -361,6 +408,10 @@ export default {
       this.$refs.context.hide()
       this.$refs.exportTableModal.show()
     },
+    openAccessModal() {
+      this.$refs.context.hide()
+      this.$refs.accessModal.show()
+    },
     openWebhookModal() {
       this.$refs.context.hide()
       this.$refs.webhookModal.show()
@@ -402,6 +453,33 @@ export default {
       }
 
       this.setLoading(database, false)
+    },
+    async toggleProtectedEditing() {
+      const enable = !this.table.require_edit_confirmation
+      this.$refs.context.hide()
+
+      if (
+        !enable &&
+        this.$store.getters['pendingRowChanges/hasPending'](this.table.id)
+      ) {
+        this.$store.dispatch('toast/info', {
+          title: this.$t('sidebarItem.protectedEditingPendingTitle'),
+          message: this.$t('sidebarItem.protectedEditingPendingMessage'),
+        })
+        return
+      }
+
+      this.setLoading(this.database, true)
+      try {
+        await this.$store.dispatch('table/update', {
+          database: this.database,
+          table: this.table,
+          values: { require_edit_confirmation: enable },
+        })
+      } catch (error) {
+        notifyIf(error, 'table')
+      }
+      this.setLoading(this.database, false)
     },
     async deleteTable() {
       this.deleteLoading = true

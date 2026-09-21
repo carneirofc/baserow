@@ -17,6 +17,13 @@ class OIDCProviderNotFound(SsoError):
     """Raised when no env-configured OIDC provider matches the requested name."""
 
 
+class EmailNotVerified(SsoError):
+    """
+    Raised when the identity provider does not vouch for the user's email address, so
+    it must not be used to find or provision a Baserow account.
+    """
+
+
 class NoMappedRole(SsoError):
     """
     Raised when the identity provider derives access from client roles but the user

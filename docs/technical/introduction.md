@@ -57,8 +57,8 @@ local environment at http://localhost:8000/style-guide.
 
 ### Workspaces
 
-A workspace can contain multiple applications. It can be used to define a company, and it is
-possible to invite additional users to a workspace. Every user in the workspace has access to
+A workspace can contain multiple applications. It can be used to define a company, and
+workspace admins can add other registered users to it. Every user in the workspace has access to
 all the applications within that workspace. Live collaboration allows users to immediately
 see changes made by others without having to refresh the page. Workspaces can easily be
 created, edited and deleted via the `baserow.core.handler.CoreHandler`

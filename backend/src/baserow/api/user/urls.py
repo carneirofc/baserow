@@ -5,7 +5,6 @@ from .views import (
     BlacklistJSONWebToken,
     ChangeEmailView,
     ChangePasswordView,
-    DashboardView,
     ObtainJSONWebToken,
     RedoView,
     RefreshJSONWebToken,
@@ -54,7 +53,6 @@ urlpatterns = [
         r"^send-verify-email/$", SendVerifyEmailView.as_view(), name="send_verify_email"
     ),
     re_path(r"^verify-email/$", VerifyEmailAddressView.as_view(), name="verify_email"),
-    re_path(r"^dashboard/$", DashboardView.as_view(), name="dashboard"),
     re_path(r"^undo/$", UndoView.as_view(), name="undo"),
     re_path(r"^redo/$", RedoView.as_view(), name="redo"),
     re_path(r"^$", UserView.as_view(), name="index"),

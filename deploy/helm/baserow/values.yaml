@@ -2,6 +2,11 @@
 # Designed to run under OpenShift's default restricted-v2 SCC with NO cluster
 # security changes: arbitrary UID, non-root, read-only rootfs, unprivileged ports.
 
+# Override the generated resource names. `nameOverride` replaces the chart name
+# ("baserow") inside them; `fullnameOverride` replaces the whole prefix.
+nameOverride: ""
+fullnameOverride: ""
+
 # -- Number of replicas for the stateless app pods (safe to raise only when
 #    objectStorage is enabled; with the media PVC fallback keep backend at 1).
 replicaCount:
@@ -34,9 +39,11 @@ publicURL: "https://baserow.apps.example.com"
 extraAllowedHosts: ""
 
 openshift:
-  # Create OpenShift Route objects (requires the route.openshift.io API).
+  # Create OpenShift Route objects. Requires the route.openshift.io API, so this is
+  # off by default and the chart installs on a plain cluster out of the box;
+  # values-openshift.yaml turns it back on.
   route:
-    enabled: true
+    enabled: false
     host: "baserow.apps.example.com"
     tls:
       enabled: true
@@ -55,16 +62,43 @@ openshift:
 # Plain-Kubernetes Ingress alternative (leave disabled on OpenShift).
 ingress:
   enabled: false
+  # single   -> one Ingress carrying both the backend paths and "/".
+  # albGroup -> two Ingress objects joined onto a single AWS ALB via
+  #             alb.ingress.kubernetes.io/group.name. Use this on EKS: the AWS Load
+  #             Balancer Controller reads the health-check annotations per Ingress,
+  #             so this is what lets the backend target group probe
+  #             /api/_health/ while the web-frontend target group probes "/".
+  mode: single
   className: ""
   host: "baserow.example.com"
   tls: []
+  # Applied to every rendered Ingress.
   annotations: {}
+  # albGroup only: merged on top of `annotations` for that one Ingress.
+  backendAnnotations: {}
+  webFrontendAnnotations: {}
+  group:
+    # The ALB all albGroup Ingresses are merged into. Lower order wins, so the
+    # backend paths are evaluated before the web-frontend catch-all.
+    name: "baserow"
+    backendOrder: 10
+    webFrontendOrder: 20
   backendPaths:
     - /api
     - /ws
     - /mcp
     - /assistant
     - /static
+
+# Annotations on the per-component Services. The AWS Load Balancer Controller merges
+# Service annotations over Ingress annotations when it builds a target group, so
+# per-target settings (healthcheck-path, target-type, backend-protocol,
+# target-group-attributes) can be set here instead of using ingress.mode=albGroup.
+service:
+  backend:
+    annotations: {}
+  webFrontend:
+    annotations: {}
 
 # ---------------------------------------------------------------------------
 # Secrets (generated on first install if left empty, then preserved on upgrade)
@@ -151,14 +185,33 @@ externalRedis:
 # multi-replica safe. Disable to fall back to an RWO PVC (single backend replica).
 objectStorage:
   enabled: true
+  # How the pods authenticate to S3:
+  #   staticKeys  - accessKeyId/secretAccessKey below, or existingSecret. Works with
+  #                 any S3-compatible endpoint (MinIO, Ceph, ...). Default.
+  #   irsa        - EKS IAM Roles for Service Accounts. Set aws.irsa.* as well.
+  #   podIdentity - EKS Pod Identity. Set aws.podIdentity.enabled; the association
+  #                 itself is created outside the chart.
+  # In the irsa/podIdentity modes no AWS credential env vars are rendered at all, so
+  # boto3 falls through to its default credential chain.
+  auth: staticKeys
   bucketName: "baserow-media"
   endpointURL: "" # e.g. https://s3.us-east-1.amazonaws.com or a MinIO endpoint
   region: "us-east-1"
   # Public base URL objects are served from (sets MEDIA_URL). Leave empty to
   # let Baserow build it from the bucket/endpoint.
   customDomain: ""
-  # Credentials (stored in the chart Secret). Or use existingSecret with keys
-  # s3-access-key-id / s3-secret-access-key.
+  # Canned ACL put on every uploaded object. The backend defaults this to
+  # "public-read", which every bucket with ACLs disabled (S3 Object Ownership set to
+  # "Bucket owner enforced" - the default for buckets created since April 2023)
+  # rejects with AccessControlListNotSupported. Empty means "send no ACL", which is
+  # the right setting on AWS; set it to public-read only for a bucket that still has
+  # ACLs enabled.
+  defaultACL: ""
+  # Sign media URLs. Set to false when the bucket is fronted by a CDN (e.g. a
+  # CloudFront distribution with an origin access control) that reads it directly.
+  querystringAuth: true
+  # Credentials for auth: staticKeys (stored in the chart Secret). Or use
+  # existingSecret with keys s3-access-key-id / s3-secret-access-key.
   accessKeyId: ""
   secretAccessKey: ""
   existingSecret: ""
@@ -170,6 +223,28 @@ mediaPersistence:
   accessMode: ReadWriteOnce
 
 # ---------------------------------------------------------------------------
+# AWS / EKS integration (entirely opt-in; ignored on every other platform)
+# ---------------------------------------------------------------------------
+aws:
+  # Sets AWS_REGION / AWS_DEFAULT_REGION for the SDK, and pins STS to the regional
+  # endpoint. Leave empty outside AWS.
+  region: ""
+  # IAM Roles for Service Accounts: annotates the chart's ServiceAccount so the EKS
+  # pod identity webhook projects a web identity token into the app pods. Pair it
+  # with objectStorage.auth: irsa to drop the static S3 keys entirely.
+  irsa:
+    enabled: false
+    # arn:aws:iam::<account-id>:role/<role-name>
+    # The role's trust policy must allow the cluster OIDC provider for
+    # system:serviceaccount:<namespace>:<serviceAccountName>.
+    roleArn: ""
+  # EKS Pod Identity: the alternative to IRSA. The association is created outside the
+  # chart (eksctl / the EKS API) against this release's ServiceAccount, so the chart
+  # only has to stop injecting static credentials.
+  podIdentity:
+    enabled: false
+
+# ---------------------------------------------------------------------------
 # App behaviour
 # ---------------------------------------------------------------------------
 migrateOnStartup: true # runs Django migrations from the backend pod on boot
@@ -178,34 +253,72 @@ migrateOnStartup: true # runs Django migrations from the backend pod on boot
 #    settings the chart does not model explicitly. Values are rendered as strings.
 #    Do not put secrets here; the ConfigMap is not encrypted.
 #
-#    Single sign-on and RBAC are configured this way, for example:
+#    Single sign-on is configured this way, for example:
 #      extraEnv:
 #        BASEROW_OIDC_PROVIDERS: |
 #          [{"name": "rhbk", "issuer": "https://idp.example.com/realms/main",
 #            "client_id": "baserow", "client_secret": "…",
-#            "workspace_mappings": [{"client_role": "engineering", "workspace": 1,
-#                                    "permissions": "MEMBER", "role": "Editor"}]}]
-#        BASEROW_ROLES: |
-#          [{"workspace": 1, "name": "Editor",
-#            "operations": ["database.table.read", "database.table.update_row"]}]
+#            "user_roles": ["baserow-user"], "staff_roles": ["baserow-staff"]}]
+#
+#    So are the external destinations for backups and datalake exports; keep their
+#    credentials in a Secret mounted through `extraVolumes` and point at the files:
+#      extraEnv:
+#        BASEROW_DATA_DESTINATIONS: |
+#          [{"name": "lake", "type": "s3", "bucket": "baserow-lake",
+#            "access_key_id_file": "/run/secrets/lake/access-key-id",
+#            "secret_access_key_file": "/run/secrets/lake/secret-access-key"}]
 extraEnv: {}
+
+# -- Extra volumes and mounts added to the backend, Celery worker and Celery beat
+#    pods. Typically the Secret or PVC a `BASEROW_DATA_DESTINATIONS` entry refers to
+#    (docs/installation/data-destinations.md), for example:
+#      extraVolumes:
+#        - name: lake-credentials
+#          secret:
+#            secretName: baserow-lake-credentials
+#      extraVolumeMounts:
+#        - name: lake-credentials
+#          mountPath: /run/secrets/lake
+#          readOnly: true
+extraVolumes: []
+extraVolumeMounts: []
 
 # ---------------------------------------------------------------------------
 # Branding / personalization
 # ---------------------------------------------------------------------------
 branding:
-  # Runtime override: base64-encoded favicon (.ico/.png) mounted over the
-  # web-frontend favicon. Leave empty to keep the default.
+  # Runtime web-frontend branding, applied without rebuilding the image; see
+  # docs/installation/branding.md. Everything is optional and rendered into a
+  # ConfigMap mounted at /baserow/branding.
+  appName: ""
+  # Color token overrides, keyed by the palette-*/color-* tokens of
+  # web-frontend/modules/core/assets/scss/colors.scss, e.g.
+  #   colors: {"color-primary-500": "#0f766e"}
+  colors: {}
+  # CSS font-family for the whole UI, e.g. "'Roboto', sans-serif".
+  fontFamily: ""
+  # Translation overrides per locale, e.g. {en: {"some.key": "Text"}}.
+  messages: {}
+  # Where the attribution logo links to (sidebar footer, public form views).
+  siteUrl: ""
+  # Where the in-app documentation and help links point.
+  docsUrl: ""
+  # title/alt text on the attribution logo; defaults to appName.
+  siteTitle: ""
+  # Set to false to drop the attribution logo, the public form "Powered by"
+  # block and the dashboard promo alert entirely.
+  showAttribution: true
+  # Extra CSS appended after the built-in styles.
+  themeCss: ""
+  # Image, icon and font overrides as base64, keyed by their path inside the
+  # branding directory, e.g. {"img/logo.svg": "<base64>"}. A ConfigMap holds at
+  # most ~1 MiB; mount a volume with existingClaim for larger asset sets.
+  files: {}
+  # Mount this PersistentVolumeClaim (holding a complete branding directory) at
+  # /baserow/branding instead of rendering the values above.
+  existingClaim: ""
+  # Base64-encoded favicon (.ico), also mounted over the served /favicon.ico.
   faviconBase64: ""
-  # The following are BUILD-TIME only in Baserow FOSS (compiled into the image)
-  # and cannot be changed at deploy time. To customise, rebuild the fork image
-  # and point image.*.tag at it. Pointers for the rebuild:
-  #   appName -> web-frontend app title strings / i18n
-  #   logo    -> web-frontend/modules/core/components/Logo.vue
-  #   palette -> web-frontend/modules/core/assets/scss/colors.scss ($palette-*)
-  appName: "" # documentation only; not applied at runtime
-  logo: "" # documentation only; not applied at runtime
-  palette: {} # documentation only; not applied at runtime
 
 # ---------------------------------------------------------------------------
 # Pod hardening (restricted-v2 friendly). Do NOT set runAsUser/fsGroup here on
@@ -242,6 +355,11 @@ serviceAccount:
   create: true
   name: ""
   annotations: {}
+
+# Extra annotations on every app pod. The chart always adds checksum/config and
+# checksum/secret annotations so that a config-only `helm upgrade` actually rolls
+# the pods.
+podAnnotations: {}
 
 nodeSelector: {}
 tolerations: []

@@ -10,17 +10,30 @@
 # GOTOOLCHAIN=local keeps the build on GO_VERSION instead of letting go.mod pull
 # a different toolchain down.
 #
-# Keep CADDY_VERSION and GO_VERSION in sync with deploy/all-in-one/Dockerfile.
+# Caddy is built in module mode (as xcaddy does) so Go modules compiled into
+# the binary can be raised past a Caddy release: CADDY_MODULE_UPGRADES lists
+# the ones carrying CVE fixes Caddy has not shipped yet. Raise an entry when the
+# image CVE scan flags a module in /usr/bin/caddy; drop it once CADDY_VERSION
+# requires that version or newer.
+#
+# Keep CADDY_VERSION, GO_VERSION and CADDY_MODULE_UPGRADES in sync with
+# deploy/all-in-one/Dockerfile.
 # =============================================================================
 ARG CADDY_VERSION=2.11.4
-ARG GO_VERSION=1.26.7
+ARG GO_VERSION=1.26.8
 
 FROM golang:${GO_VERSION} AS caddy_builder
 ARG CADDY_VERSION
+ARG CADDY_MODULE_UPGRADES="golang.org/x/crypto@v0.57.0 golang.org/x/net@v0.59.0 golang.org/x/text@v0.42.0 google.golang.org/grpc@v1.83.2"
 ENV CGO_ENABLED=0 \
-    GOTOOLCHAIN=local \
-    GOBIN=/usr/bin
-RUN go install "github.com/caddyserver/caddy/v2/cmd/caddy@v${CADDY_VERSION}" && \
+    GOTOOLCHAIN=local
+WORKDIR /src/caddy
+# hadolint ignore=SC2086
+RUN printf 'package main\n\nimport (\n\tcaddycmd "github.com/caddyserver/caddy/v2/cmd"\n\t_ "github.com/caddyserver/caddy/v2/modules/standard"\n)\n\nfunc main() {\n\tcaddycmd.Main()\n}\n' > main.go && \
+    go mod init caddy && \
+    go get "github.com/caddyserver/caddy/v2@v${CADDY_VERSION}" ${CADDY_MODULE_UPGRADES} && \
+    go mod tidy && \
+    go build -trimpath -o /usr/bin/caddy . && \
     caddy version
 
 # =============================================================================

@@ -10,7 +10,11 @@ repos:
     rev: v5.0.0
     hooks:
       - id: check-yaml
-        exclude: ^(web-frontend/\.nuxt/|web-frontend/dist/|web-frontend/\.output/)
+        # Helm templates are Go templates, not YAML — `{{- if }}` at the top level is a
+        # parse error — so they can never satisfy this hook. The chart is validated
+        # instead by `helm lint --strict` + `kubeconform` in publish-helm-chart.yml.
+        # Chart.yaml and the values files are plain YAML and stay covered.
+        exclude: ^(web-frontend/\.nuxt/|web-frontend/dist/|web-frontend/\.output/|deploy/helm/baserow/templates/)
       - id: check-added-large-files
         # Built-in templates ship as multi-MB .zip fixtures; bump the limit so
         # those are allowed while still flagging unexpectedly large additions.

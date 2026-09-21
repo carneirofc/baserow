@@ -1,0 +1,4 @@
+interface:
+  display_name: "CI Status"
+  short_description: "Report GitHub Actions status for a branch, commit, PR, or workflow"
+  default_prompt: "Use $ci-status to report CI status for this target."

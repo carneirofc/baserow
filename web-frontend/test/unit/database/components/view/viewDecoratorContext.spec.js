@@ -229,6 +229,15 @@ describe('GridViewRows component with decoration', () => {
     expect(wrapper.element).toMatchSnapshot()
   })
 
+  // Other suites can leave Nuxt's empty `#teleports` container on the shared
+  // `document.body`, so whether it exists depends on test order. Drop it from a
+  // copy of the body to keep the tooltip snapshots stable.
+  const bodyWithoutTeleports = () => {
+    const body = document.body.cloneNode(true)
+    body.querySelector('#teleports:empty')?.remove()
+    return body
+  }
+
   test('Should show unavailable decorator tooltip', async () => {
     const { application, table, fields, view } = await populateStore()
 
@@ -252,7 +261,7 @@ describe('GridViewRows component with decoration', () => {
       .find('.decorator-list > div:first-child')
       .trigger('mouseenter')
 
-    expect(document.body).toMatchSnapshot()
+    expect(bodyWithoutTeleports()).toMatchSnapshot()
   })
 
   test('Should show cant add decorator tooltip', async () => {
@@ -278,6 +287,6 @@ describe('GridViewRows component with decoration', () => {
       .find('.decorator-list > div:first-child')
       .trigger('mouseenter')
 
-    expect(document.body).toMatchSnapshot()
+    expect(bodyWithoutTeleports()).toMatchSnapshot()
   })
 })

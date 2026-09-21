@@ -1,5 +1,124 @@
 # Changelog
 
+## Released 0.13.0
+
+### New features
+* Added a read-only "Operational limits" section to the admin settings page, listing the retention, expiry and job time limits the instance runs with.
+* EXPORT_FILE_EXPIRE_MINUTES can now be set from the environment instead of being fixed at 60 minutes.
+* Show the duration of each datalake export run in the schedule's run history.
+* Show how long a job has been running next to its progress bar, for table and workspace exports, imports, snapshots, backups, restores, data syncs and application publishes.
+* State the retention and expiry limits where the affected data is shown.
+  * Exported files now say how long they stay downloadable.
+  * Snapshots now show how long they have left before they are deleted.
+  * The audit log and the row history now state how far back they reach.
+
+### Breaking API changes
+* The interface now ships English and Brazilian Portuguese only. Accounts set to one of the removed languages are migrated to English.
+
+
+## Released 0.12.0
+
+### New features
+* [Database] Admins can set a default database access level when adding workspace members, shown and editable in a new access column on the members table.
+* [Core] Admins can add existing users straight into workspace teams when adding them as members, and manage a member's teams from a new column on the members table.
+* [Core] Configure where the logo and in-app help links point, and hide the attribution footer entirely, at runtime from the branding directory.
+
+### Refactors
+* [Core] Removed the unused billable/deactivated role admin column and menu badges from the members role picker; not applicable to this fork.
+* [Core] Only English and Brazilian Portuguese translations are shipped in the core module now; removed the other locale files, which were never registered and had drifted out of sync.
+
+### Breaking API changes
+* [Core] Workspace invitations are removed: admins add people who already have an account from Members → Add members. Pending invitations, invitation emails and notifications, invite-token signups and the "allow signups via workspace invitations" setting are gone, as are the /api/workspaces/invitations/ and /api/user/dashboard/ endpoints.
+
+
+## Released 0.11.0
+
+### New features
+* [Core] Filter the audit log by user, workspace, action, command and date range, and show the command and IP address columns. Exporting to CSV now exports exactly what the filters and search show instead of the whole log.
+* [Core] Limit a backup or a backup schedule to selected applications instead of the whole workspace.
+* [Core] Manage API clients from the workspace menu: create a client for an external integration, grant it scopes, issue keys with an optional expiry, and revoke or deactivate them. An issued key is shown once, so copy it before closing the dialog.
+
+
+## Released 0.10.0
+
+### New features
+* [Core] Add a staff-only admin UI to manage, schedule, and restore workspace backups across all workspaces, including ones staff do not belong to.
+* [Core] Add a staff-only extensive audit log covering user actions plus sign-in, sign-out and failed sign-in events.
+* [Core] Add a hosted MkDocs Material documentation site built from docs/, published to GitHub Pages on push to develop.
+* [Database] Protected editing for tables: when enabled from the table menu, row edits are kept as unsaved changes until you click Save (or Discard), and creating, pasting, clearing, deleting, moving rows and undo/redo ask for confirmation first. Saved changes are recorded in the audit log with their before and after values.
+
+
+## Released 0.9.1
+
+### Bug fixes
+* [Database] Importing rows with upsert fields but no import mode pairs duplicate match values in order again instead of failing with an ambiguous matches error.
+
+
+## Released 0.9.0
+
+### New features
+* [Database] Import into a table can now update, upsert or replace rows and preview the changes first
+* [Core] Added recovery from errorDifferentProvider OIDC lockouts: a per-provider link_existing_accounts option links an existing non-staff account on sign-in when the IdP verifies its email, and the link_oidc_account management command lists, links, unlinks and carries over account links after a provider rename.
+* [Core] Workspace admins can add existing users directly, group members into teams and set no access, viewer, editor or builder levels per database and table
+
+### Bug fixes
+* [Core] BASEROW_ALLOW_MULTIPLE_SSO_PROVIDERS_FOR_SAME_ACCOUNT is now parsed as a boolean, so values like "false" or "0" no longer enable it.
+
+### Breaking API changes
+* [Core] SSO now only defines who may sign in (new user_roles), staff and superuser. workspace_mappings, strict_membership, BASEROW_ROLES, sync_roles and granular roles were removed and are refused at startup; members that had a granular role become unrestricted members until restricted again with in-app access levels
+
+
+## Released v0.8.0
+
+### New features
+* [Core] Manage backups from the workspace menu: back up now (optionally to external storage), restore or delete backups, schedule recurring backups and restore backups kept on external storage. Manage a database's datalake export schedules, run them and follow their runs from the database menu.
+
+
+## Released v0.7.0
+
+### New features
+* [Core] Declare external data destinations (S3 or S3-compatible, Azure Blob Storage, or a mounted filesystem) with BASEROW_DATA_DESTINATIONS. Credentials stay in the environment and can be read from secret files; GET /api/data-destinations/ lists the names only.
+* [Core] Harden OIDC sign-in with PKCE (S256), callback state verification and a check that the userinfo subject matches the ID token.
+* [Core] The Helm chart adds extraVolumes and extraVolumeMounts to the backend and Celery pods, and Docker Compose forwards BASEROW_DATA_DESTINATIONS, so destination credentials can be mounted as files.
+* [Database] Schedule Parquet exports of database tables to a datalake destination: the first export is full, later ones only hold changed and deleted rows, with a manifest and _SUCCESS marker per run. Manage schedules through /api/database/data-export/ or run them with the export_table_parquet command.
+* [Core] Backups and backup schedules can upload their archives to a data destination, with retention applied there too. Remote backups can be listed and restored through the API or the backup_to_destination, list_destination_backups and restore_from_destination commands, including onto a fresh instance.
+
+### Bug fixes
+* [Core] Hide actions a member's workspace role does not allow instead of showing them and failing when used.
+* [Database] Trashing or restoring rows now updates their last modified time, so incremental consumers of a table, such as datalake exports, see rows disappear and come back.
+
+### Refactors
+* [Core] Update frontend, e2e, email compiler and Zapier dependencies to their latest compatible versions and GitHub Actions to their current major versions.
+
+### Breaking API changes
+* [Core] OIDC sign-in now refuses users whose email the identity provider has not verified, and SSO sessions end after 8 hours by default so role changes in Keycloak apply sooner. Configure with require_verified_email and session_lifetime_minutes.
+
+
+## Released v0.6.0
+
+### New features
+* [Core] Add a CVE gate: `just audit` and CI scan all lockfiles and images with Trivy and fail on fixable HIGH/CRITICAL vulnerabilities.
+* [Core] Customize the app name, colors, font, logos, favicons, icons, translations and CSS at runtime from a mounted branding directory, without rebuilding the frontend.
+
+### Refactors
+* [Core] Upgrade backend, frontend, e2e, email compiler and Zapier dependencies, Node 24.21, Go 1.26.8 and Caddy's bundled Go modules, fixing all fixable HIGH/CRITICAL CVEs.
+
+
+## Released v0.5.2
+
+### New features
+* [Core] The Helm chart now supports Amazon EKS. S3 media can authenticate through IRSA or EKS Pod Identity instead of static access keys, in which case no AWS credentials are stored or handed to the pods at all. A new ALB ingress mode puts the backend and web-frontend behind a single load balancer while giving each its own health check, and a values-eks.yaml preset covers the internal-ALB-behind-CloudFront setup. The chart also validates its values before anything reaches the cluster, and now restarts pods when only the configuration changed.
+
+### Bug fixes
+* [Core] Editing Helm chart configuration and running an upgrade now restarts the affected pods. Previously a configuration-only change updated the ConfigMap but left every pod running on the old values until it happened to be restarted for another reason.
+
+### Refactors
+* [Core] Upgraded TipTap to 3.31.3 to resolve a high-severity CVE in @tiptap/core.
+
+### Breaking API changes
+* [Core] The Helm chart no longer creates OpenShift Routes by default, so it installs on a plain Kubernetes cluster out of the box. Set openshift.route.enabled=true (or use values-openshift.yaml, which already does) to keep the previous behaviour.
+
+
 ## Released v0.5.0
 
 ### New features

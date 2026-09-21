@@ -6,7 +6,7 @@ from baserow.core.mixins import (
     HierarchicalModelMixin,
     ParentWorkspaceTrashableModelMixin,
 )
-from baserow.core.models import Workspace
+from baserow.core.models import ExportApplicationsJob, Workspace
 
 User = get_user_model()
 
@@ -63,6 +63,15 @@ class BackupSchedule(
         default=False,
         help_text="If true the backup contains the structure but not the row data.",
     )
+    destination = models.CharField(
+        max_length=100,
+        blank=True,
+        default="",
+        help_text=(
+            "The name of the env-declared data destination the backups are also "
+            "shipped to. Empty keeps them on the instance storage only."
+        ),
+    )
     keep_last = models.PositiveIntegerField(
         null=True,
         blank=True,
@@ -105,3 +114,30 @@ class BackupSchedule(
 
     def get_parent(self):
         return self.workspace
+
+
+class ExportApplicationsToDestinationJob(ExportApplicationsJob):
+    """
+    A regular application export whose archive is also uploaded to an external data
+    destination. Inheriting from `ExportApplicationsJob` keeps it visible to the
+    existing backup listing and retention logic.
+    """
+
+    destination = models.CharField(
+        max_length=100,
+        help_text="The name of the data destination the archive is uploaded to.",
+    )
+    backup_schedule = models.ForeignKey(
+        BackupSchedule,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+        help_text="The schedule that started the backup, if any.",
+    )
+    remote_key = models.CharField(
+        max_length=512,
+        blank=True,
+        default="",
+        help_text="The key of the uploaded archive, relative to the destination prefix.",
+    )

@@ -5,7 +5,9 @@ from .views import (
     BackupScheduleView,
     BackupsView,
     BackupView,
+    RemoteBackupsView,
     RestoreBackupView,
+    RestoreRemoteBackupView,
     RunBackupScheduleView,
     StartBackupView,
 )
@@ -13,6 +15,18 @@ from .views import (
 app_name = "baserow.api.backups"
 
 urlpatterns = [
+    re_path(
+        r"^destinations/(?P<destination>[A-Za-z0-9_-]+)/workspace/"
+        r"(?P<workspace_id>[0-9]+)/restore/$",
+        RestoreRemoteBackupView.as_view(),
+        name="remote_restore",
+    ),
+    re_path(
+        r"^destinations/(?P<destination>[A-Za-z0-9_-]+)/workspace/"
+        r"(?P<workspace_id>[0-9]+)/$",
+        RemoteBackupsView.as_view(),
+        name="remote_list",
+    ),
     re_path(
         r"^schedules/workspace/(?P<workspace_id>[0-9]+)/$",
         BackupSchedulesView.as_view(),

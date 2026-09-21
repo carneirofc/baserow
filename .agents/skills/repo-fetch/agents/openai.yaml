@@ -1,0 +1,4 @@
+interface:
+  display_name: "Repo Fetch"
+  short_description: "Check out a GitHub repo at a branch, tag, or commit into a local cache"
+  default_prompt: "Use $repo-fetch to check out this repository ref locally and report the path and SHA."

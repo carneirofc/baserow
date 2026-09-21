@@ -10,6 +10,7 @@ import {
   CreateSnapshotJobType,
   DuplicateApplicationJobType,
   ExportApplicationsJobType,
+  ExportApplicationsToDestinationJobType,
   ImportApplicationsJobType,
   InstallTemplateJobType,
   RestoreSnapshotJobType,
@@ -34,12 +35,14 @@ import {
   WorkspacesAdminType,
   HealthCheckAdminType,
   SettingsAdminType,
+  AuditLogAdminType,
+  BackupsAdminType,
 } from '@baserow/modules/core/adminTypes'
 
 import {
   BasicPermissionManagerType,
+  DatabaseAccessPermissionManagerType,
   CorePermissionManagerType,
-  GranularRolePermissionManagerType,
   StaffPermissionManagerType,
   WorkspaceMemberPermissionManagerType,
   StaffOnlySettingOperationPermissionManagerType,
@@ -48,14 +51,9 @@ import {
 
 import {
   MembersWorkspaceSettingsPageType,
-  InvitesWorkspaceSettingsPageType,
+  TeamsWorkspaceSettingsPageType,
 } from '@baserow/modules/core/workspaceSettingsPageTypes'
-import {
-  WorkspaceInvitationCreatedNotificationType,
-  WorkspaceInvitationAcceptedNotificationType,
-  WorkspaceInvitationRejectedNotificationType,
-  BaserowVersionUpgradeNotificationType,
-} from '@baserow/modules/core/notificationTypes'
+import { BaserowVersionUpgradeNotificationType } from '@baserow/modules/core/notificationTypes'
 import { MoreOnboardingType } from '@baserow/modules/core/onboardingTypes'
 import { SidebarGuidedTourType } from '@baserow/modules/core/guidedTourTypes'
 import { TOTPAuthType } from '@baserow/modules/core/twoFactorAuthTypes'
@@ -188,7 +186,7 @@ export default defineNuxtPlugin({
     )
     registry.register(
       'permissionManager',
-      new GranularRolePermissionManagerType(context)
+      new DatabaseAccessPermissionManagerType(context)
     )
     registry.register(
       'permissionManager',
@@ -213,6 +211,8 @@ export default defineNuxtPlugin({
     registry.register('admin', new WorkspacesAdminType(context))
     registry.register('admin', new SettingsAdminType(context))
     registry.register('admin', new HealthCheckAdminType(context))
+    registry.register('admin', new AuditLogAdminType(context))
+    registry.register('admin', new BackupsAdminType(context))
 
     registry.register('authProvider', new PasswordAuthProviderType(context))
     registry.register(
@@ -225,6 +225,10 @@ export default defineNuxtPlugin({
     registry.register('job', new CreateSnapshotJobType(context))
     registry.register('job', new RestoreSnapshotJobType(context))
     registry.register('job', new ExportApplicationsJobType(context))
+    registry.register(
+      'job',
+      new ExportApplicationsToDestinationJobType(context)
+    )
     registry.register('job', new ImportApplicationsJobType(context))
 
     registry.register(
@@ -233,7 +237,7 @@ export default defineNuxtPlugin({
     )
     registry.register(
       'workspaceSettingsPage',
-      new InvitesWorkspaceSettingsPageType(context)
+      new TeamsWorkspaceSettingsPageType(context)
     )
 
     registry.register('runtimeFormulaFunction', new RuntimeConcat(context))
@@ -357,18 +361,6 @@ export default defineNuxtPlugin({
     registry.register('roles', new AdminRoleType(context))
     registry.register('roles', new MemberRoleType(context))
 
-    registry.register(
-      'notification',
-      new WorkspaceInvitationCreatedNotificationType(context)
-    )
-    registry.register(
-      'notification',
-      new WorkspaceInvitationAcceptedNotificationType(context)
-    )
-    registry.register(
-      'notification',
-      new WorkspaceInvitationRejectedNotificationType(context)
-    )
     registry.register(
       'notification',
       new BaserowVersionUpgradeNotificationType(context)

@@ -25,7 +25,7 @@
     <template #actions>
       <Button
         tag="a"
-        href="https://github.com/carneirofc/baserow"
+        :href="branding.siteUrl"
         target="_blank"
         rel="noopener noreferrer"
         type="secondary"
@@ -59,7 +59,7 @@
         tag="a"
         tooltip-position="top"
         icon="baserow-icon-facebook"
-        href="https://www.facebook.com/sharer/sharer.php?u=https://github.com/carneirofc/baserow"
+        :href="facebookUrl"
         target="_blank"
         rel="noopener noreferrer"
       />
@@ -69,7 +69,7 @@
         tag="a"
         tooltip-position="top"
         icon="baserow-icon-linkedin"
-        href="https://www.linkedin.com/sharing/share-offsite/?url=https://github.com/carneirofc/baserow"
+        :href="linkedInUrl"
         target="_blank"
         rel="noopener noreferrer"
       />
@@ -82,6 +82,9 @@ import { getCookieName } from '@baserow/modules/core/utils/cookie'
 
 const helpDisplayCookieName = 'baserow_dashboard_alert_closed_v2'
 const config = useRuntimeConfig()
+// This alert promotes the upstream project, so it follows the same switch as
+// the rest of the attribution.
+const { $branding: branding } = useNuxtApp()
 
 const showAlert = ref(true)
 
@@ -90,7 +93,9 @@ const closedCookie = useCookie(getCookieName(config, helpDisplayCookieName), {
   path: '/',
 })
 
-const displayAlert = computed(() => showAlert.value && !closedCookie.value)
+const displayAlert = computed(
+  () => branding.showAttribution && showAlert.value && !closedCookie.value
+)
 
 const handleAlertClose = () => {
   showAlert.value = false
@@ -99,17 +104,29 @@ const handleAlertClose = () => {
 
 const { t } = useI18n()
 
+const sharedUrl = computed(() => encodeURIComponent(branding.siteUrl))
+
 const twitterUrl = computed(
   () =>
-    `https://twitter.com/intent/tweet?url=https://github.com/carneirofc/baserow&hashtags=opensource,nocode,database,baserow&text=${encodeURI(
+    `https://twitter.com/intent/tweet?url=${
+      sharedUrl.value
+    }&hashtags=opensource,nocode,database,baserow&text=${encodeURI(
       t('dashboard.tweetContent')
     )}`
 )
 
 const redditUrl = computed(
   () =>
-    `https://www.reddit.com/submit?url=https://github.com/carneirofc/baserow&title=${encodeURI(
+    `https://www.reddit.com/submit?url=${sharedUrl.value}&title=${encodeURI(
       t('dashboard.redditTitle')
     )}`
+)
+
+const facebookUrl = computed(
+  () => `https://www.facebook.com/sharer/sharer.php?u=${sharedUrl.value}`
+)
+
+const linkedInUrl = computed(
+  () => `https://www.linkedin.com/sharing/share-offsite/?url=${sharedUrl.value}`
 )
 </script>

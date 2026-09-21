@@ -76,6 +76,7 @@ def apply_backup_retention(self, schedule_id: int):
     :param schedule_id: The id of the schedule whose retention rules are applied.
     """
 
+    from baserow.core.backups.destination import BackupDestinationHandler
     from baserow.core.backups.models import BackupSchedule
     from baserow.core.backups.schedule_handler import BackupScheduleHandler
 
@@ -89,6 +90,16 @@ def apply_backup_retention(self, schedule_id: int):
         return
 
     BackupScheduleHandler().apply_retention(schedule)
+
+    try:
+        BackupDestinationHandler().apply_remote_retention(schedule)
+    except Exception as exc:  # noqa: BLE001 - an unreachable destination must not
+        # break the local retention, the next run tries again.
+        logger.error(
+            "Remote retention of backup schedule {schedule_id} failed: {error}",
+            schedule_id=schedule_id,
+            error=exc,
+        )
 
 
 @app.on_after_finalize.connect

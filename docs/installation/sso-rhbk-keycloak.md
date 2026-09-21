@@ -1,9 +1,10 @@
 # Single sign-on with Red Hat build of Keycloak (RHBK)
 
-This guide configures Baserow so that **every kind of access is decided by Keycloak
-client roles**: who administers the instance, who is a member of which workspace, and what
-they may do inside it. A user holding none of the mapped client roles is refused at login
-and no account is created for them.
+This guide configures Baserow so that **Keycloak client roles decide who may sign in and
+who administers the instance**. Everything inside a workspace — members, workspace admins,
+teams and database/table access — is managed in Baserow by the workspace's admins, so
+creating a workspace never needs a Keycloak or environment change. A user holding none of
+the mapped client roles is refused at login and no account is created for them.
 
 It then covers how to run that setup day to day — onboarding, granting access, offboarding
 and rotating the secret — and how to prove the integration works before handing it to
@@ -11,6 +12,10 @@ users.
 
 It applies equally to upstream Keycloak and the Red Hat build (RHBK); the admin console
 paths are the same.
+
+For the provider-agnostic reference — every configuration key, a complete multi-provider
+example and the login error codes — see
+[Single sign-on with OpenID Connect](sso-oidc.md).
 
 ## What this guide assumes
 
@@ -36,57 +41,47 @@ In the realm you want Baserow to use:
    `<BASEROW_PUBLIC_URL>/api/sso/oidc/callback/<name>/`, where `<name>` is the provider
    `name` you will put in `BASEROW_OIDC_PROVIDERS` — for example
    `https://baserow.example.com/api/sso/oidc/callback/rhbk/`.
-5. Copy the secret from the client's **Credentials** tab.
+5. Under **Advanced → Advanced settings**, set **Proof Key for Code Exchange Code
+   Challenge Method** to `S256`. Baserow always sends a PKCE challenge; this makes
+   Keycloak refuse any code exchange that lacks one.
+6. Copy the secret from the client's **Credentials** tab.
 
 ## 2. Define the client roles
 
 Baserow reads **client** roles (`resource_access.<client_id>.roles`), not realm roles.
-On the `baserow` client, open **Roles → Create role** and add one role per profile you
-want to express, for example:
+On the `baserow` client, open **Roles → Create role** and add one role per profile:
 
 | Client role | What Baserow will do with it |
 | --- | --- |
+| `baserow-user` | allow signing in as a regular user |
+| `baserow-staff` | grant global staff (admin area) |
 | `baserow-admins` | grant global superuser |
-| `baserow-staff` | grant global staff |
-| `engineering` | full member of workspace 1 |
-| `analysts` | member of workspace 1, restricted to the `Reader` role |
 
-Pick the names deliberately: they are the contract between the two systems, and renaming
-one later means editing `BASEROW_OIDC_PROVIDERS` and restarting the backend.
+These three names are the whole contract between the two systems. Renaming one later means
+editing `BASEROW_OIDC_PROVIDERS` and restarting the backend.
 
 ### Administrator means the whole instance
 
-Baserow has two separate notions of privilege, and this guide only ever grants the first
-one through SSO:
+Baserow has two separate notions of privilege, and Keycloak only ever grants the first:
 
 * **Global** — `is_staff` / `is_superuser`. Instance-wide authority: the admin area,
   instance settings, every workspace. Granted by `staff_roles` / `superuser_roles`.
-* **Workspace-scoped** — a member's `ADMIN` or `MEMBER` permissions inside one workspace.
-  `ADMIN` there can invite and remove members and delete that workspace, but has no
-  authority anywhere else.
-
-Throughout this guide **"administrator" means the global one**, and every workspace
-mapping grants `MEMBER`. What varies between workspace profiles is the granular role, not
-the membership level.
-
-`workspace_mappings` does accept `"permissions": "ADMIN"` (see
-[configuration.md](configuration.md)) — this setup just does not use it. It is a poor fit
-for role-driven access anyway: a workspace admin bypasses the granular role permission
-manager, so Baserow refuses to combine `ADMIN` with a `role`.
+* **Workspace-scoped** — a member's `ADMIN` or `MEMBER` permissions inside one workspace,
+  plus teams and access levels. Managed in Baserow by that workspace's admins (whoever
+  created it, or someone they promoted), or by staff.
 
 ## 3. Assign the roles through groups
 
 You can assign client roles directly to users, but groups are the shape worth building.
-Baserow reconciles access on **every** login, so one group membership becomes the single
-lever that both grants and revokes a person's access.
+Baserow reconciles staff and superuser on **every** login, so one group membership becomes
+the single lever that both grants and revokes a person's profile.
 
-1. **Groups → Create group**, one per profile — for example `baserow-engineering`.
+1. **Groups → Create group**, one per profile — for example `baserow-users`,
+   `baserow-staff`.
 2. Open the group, go to **Role mapping → Assign role**, then switch the filter to
-   **Filter by clients** and pick the `baserow` roles. This filter is the step people
+   **Filter by clients** and pick the `baserow` role. This filter is the step people
    miss: the default view lists only realm roles, and Baserow ignores those.
 3. Add users to the group under its **Members** tab.
-
-From then on, onboarding and offboarding are group membership changes and nothing else.
 
 ## 4. Put the client roles into the ID token and userinfo
 
@@ -129,7 +124,7 @@ Use **Clients → baserow → Client scopes → Evaluate**, pick a user, and loo
 ```json
 "resource_access": {
   "baserow": {
-    "roles": ["analysts"]
+    "roles": ["baserow-user"]
   }
 }
 ```
@@ -137,74 +132,7 @@ Use **Clients → baserow → Client scopes → Evaluate**, pick a user, and loo
 If `resource_access` is missing from the ID token, the mapper's *Add to ID token* toggle
 is still off.
 
-## 5. Declare the granular roles Baserow will grant
-
-A workspace mapping can restrict a member to a named set of operations. Declare those
-roles in `BASEROW_ROLES`, one entry per workspace and role name.
-
-Steps 5 and 6 below configure one worked scenario. It is worth reading as a whole before
-transcribing it, because the two blocks reference each other by workspace id and role name:
-
-| Keycloak client role | Grants | Workspace | Level | Granular role |
-| --- | --- | --- | --- | --- |
-| `baserow-admins` | global superuser | — (instance-wide) | — | — |
-| `baserow-staff` | global staff | — (instance-wide) | — | — |
-| `engineering` | workspace membership | `Engineering` (id `1`) | `MEMBER` | none — full member |
-| `analysts` | workspace membership | `Engineering` (id `1`) | `MEMBER` | `Reader` |
-
-```jsonc
-BASEROW_ROLES='[
-  {
-    // The numeric id of the workspace this role belongs to — here, "Engineering".
-    // A role is resolved per workspace, so this must match the `workspace` of the
-    // mapping that names it in step 7.
-    "workspace": 1,
-
-    // The name a workspace mapping refers to with its `role` key.
-    "name": "Reader",
-
-    // Exactly what a member holding this role may do. Anything not listed is denied.
-    "operations": ["database.table.read"]
-  }
-]'
-```
-
-The declaration is the source of truth and is reconciled into the database after every
-migrate. Workspaces are usually created *after* a deploy, so run the reconcile again once
-the workspace exists:
-
-```bash
-# all-in-one image
-docker exec baserow ./baserow.sh backend-cmd manage sync_roles
-# from a development checkout
-just backend manage sync_roles
-```
-
-Roles that are no longer declared are left in place, because members may still be
-assigned to them.
-
-## 6. Find the workspace ids
-
-Mappings key off the **numeric workspace id**, never the workspace name. Both
-`workspace_mappings[].workspace` and `BASEROW_ROLES[].workspace` must be integers. Three
-ways to find the id of a workspace:
-
-* **Admin area → Workspaces** (`/admin/workspaces`, staff only). The list is searchable
-  and sortable by `id`.
-* **The API** — `GET /api/admin/workspaces/` returns `id` and `name` for every workspace.
-  It needs a token belonging to a staff account.
-* **The workspace URL** — open the workspace in Baserow and read it off the address bar,
-  which is `/workspace/<id>`.
-
-> Ids are assigned per database, so they differ between environments. The same
-> `BASEROW_OIDC_PROVIDERS` value copied from staging to production will silently grant
-> access to whichever workspaces happen to hold those ids there. Re-check the ids after
-> any copy.
-
-A mapping naming a workspace id that does not exist is skipped with a warning in the
-backend log rather than refused at startup — the user simply signs in with no membership.
-
-## 7. Configure the provider
+## 5. Configure the provider
 
 ```jsonc
 BASEROW_OIDC_PROVIDERS='[
@@ -223,29 +151,19 @@ BASEROW_OIDC_PROVIDERS='[
     "client_id": "baserow",
     "client_secret": "the-secret",
 
-    // --- Instance-wide authority. Not tied to any workspace. ---
-    "superuser_roles": ["baserow-admins"],
+    // --- Who may sign in, and who administers the instance. ---
+    "user_roles": ["baserow-user"],
     "staff_roles": ["baserow-staff"],
+    "superuser_roles": ["baserow-admins"],
 
-    // --- Workspace membership. One entry per client role, per workspace. ---
-    "workspace_mappings": [
-      {
-        "client_role": "engineering", // the Keycloak client role from step 2
-        "workspace": 1,               // numeric id of "Engineering" (see step 6)
-        "permissions": "MEMBER"       // membership level; no `role`, so a full member
-      },
-      {
-        "client_role": "analysts",
-        "workspace": 1,               // the same workspace...
-        "permissions": "MEMBER",
-        "role": "Reader"              // ...but restricted to the BASEROW_ROLES entry
-                                      // named "Reader" for workspace 1
-      }
-    ],
+    // How long a session started through Keycloak lasts before the user must sign in
+    // again, which is when profile changes are applied. Default 480 (8 hours); null
+    // falls back to BASEROW_REFRESH_TOKEN_LIFETIME_HOURS.
+    "session_lifetime_minutes": 480,
 
-    // Revoke the memberships this sync created once the user loses the client role
-    // that granted them. Memberships added by hand are never touched.
-    "strict_membership": true
+    // Refuse users whose email Keycloak has not verified (default true). The email is
+    // what links a Keycloak identity to a Baserow account.
+    "require_verified_email": true
   }
 ]'
 ```
@@ -255,13 +173,11 @@ BASEROW_OIDC_PROVIDERS='[
 `client_id`. Override it to read realm roles (`realm_access.roles`) or a custom mapper's
 claim instead. A literal dot inside a claim name is escaped as `\.`.
 
-The full key reference lives in [configuration.md](configuration.md).
+> `BASEROW_OIDC_PROVIDERS` is parsed and validated once, at startup. **Every change needs a
+> backend restart** before it takes effect, and an invalid value stops the backend from
+> starting rather than failing later at login.
 
-> `BASEROW_OIDC_PROVIDERS` and `BASEROW_ROLES` are parsed and validated once, at startup.
-> **Every change to either needs a backend restart** before it takes effect, and an
-> invalid value stops the backend from starting rather than failing later at login.
-
-## 8. Verify the integration end to end
+## 6. Verify the integration end to end
 
 Work through these in order, so a failure tells you which layer is wrong.
 
@@ -274,82 +190,72 @@ Work through these in order, so a failure tells you which layer is wrong.
    ```
 
    A failure here is network, DNS or TLS trust — not configuration.
-3. **A mapped user gets the right access.** Log in as a test user holding exactly one
-   mapped client role. They should land in the expected workspace, with the expected
-   permissions, and — if the mapping names a granular role — be unable to perform
-   operations outside it.
-4. **An unmapped user is refused.** Log in as a test user holding none of the mapped
+3. **A user signs in.** Log in as a test user holding `baserow-user`. They land in Baserow
+   with no workspace (or can create one, if the instance allows it).
+4. **A workspace admin adds them.** In a workspace, *Settings → Members → Add members*,
+   search the test user and add them. They now see the workspace.
+5. **Staff is granted and revoked.** Log in as a user holding `baserow-staff`: the admin
+   area is available. Remove the role, sign in again: it is gone.
+6. **An unmapped user is refused.** Log in as a test user holding none of the mapped
    roles. Baserow must redirect to `/login?error=errorNoMappedRole`, and **no account may
-   exist for them afterwards**. Check the admin area's user list: a user appearing there means
-   the provider maps no client role at all, so the gate is inactive.
+   exist for them afterwards**.
 
 ## How access is decided on each login
 
-1. Baserow reads the client roles from the ID token and the userinfo response and unions
+1. Baserow verifies the callback: the `state` and PKCE verifier must match the ones it
+   issued, the ID token's signature, issuer, audience, expiry and nonce must check out,
+   and the userinfo `sub` must equal the ID token's. With `require_verified_email` (the
+   default), a user whose `email_verified` claim is not `true` is refused with
+   `errorEmailNotVerified`.
+2. Baserow reads the client roles from the ID token and the userinfo response and unions
    them.
-2. If the provider maps any client role and the user holds none of them, the login is
+3. If the user holds none of `user_roles`, `staff_roles` or `superuser_roles`, the login is
    refused with `errorNoMappedRole` — **before** any account is provisioned.
-3. `staff_roles` / `superuser_roles` are reconciled onto the user: granted when held,
+4. `staff_roles` / `superuser_roles` are reconciled onto the user: granted when held,
    revoked when not. Only the dimensions you configure are touched.
-4. Each matching workspace mapping is applied, as a `MEMBER` of that workspace. The sync
-   is authoritative for the workspaces it maps, writing both the membership level and the
-   granular role, so removing `role` from a mapping restores full member access on the
-   next login. What distinguishes one workspace profile from another is the granular role,
-   not the membership level.
-5. With `strict_membership: true`, memberships this sync previously created are revoked
-   once the user loses the mapped client role. Memberships added by hand are never
-   tracked and never revoked.
 
-Because all of this runs only during an OIDC login, a local break-glass administrator who
-never signs in through Keycloak is never modified.
+Workspace memberships are never changed by a login. Because all of this runs only during an
+OIDC login, a local break-glass administrator who never signs in through Keycloak is never
+modified.
 
 ## Day-to-day operations
 
-Everything below reconciles on the user's **next login**. Nothing in Keycloak reaches into
-a session that is already open.
+Profile changes reconcile on the user's **next login**. Nothing in Keycloak reaches into a
+session that is already open, but a session only lasts `session_lifetime_minutes`
+(8 hours by default).
 
 ### Onboard someone
 
-Add them to the Keycloak group from step 3. There is nothing to do in Baserow — the
-account is provisioned on their first login, with the memberships their roles imply.
+1. Add them to the `baserow-users` group in Keycloak.
+2. They sign in once, which creates their account.
+3. A workspace admin adds them from *Workspace settings → Members → Add members*.
 
-### Give someone access to another workspace
+### Give someone access to another workspace, or restrict it
 
-Add a `workspace_mappings` entry for the client role and the workspace id, restart the
-backend, and have the user log in again.
-
-### Add a new restricted profile
-
-Order matters, because an unknown granular role fails closed and the membership is
-refused outright rather than granted unrestricted:
-
-1. Add the role to `BASEROW_ROLES` and restart the backend.
-2. Run `sync_roles` so the role exists in the database.
-3. Create the client role in Keycloak and assign it to a group.
-4. Add the `workspace_mappings` entry naming both the `client_role` and the `role`, then
-   restart.
+Done entirely in Baserow by that workspace's admins: add the member, put them in a team,
+and set *No access* / *Viewer* / *Editor* / *Builder* with *Manage access* on databases and
+tables. Changes apply immediately. See
+[Workspace access in the app](sso-oidc.md#workspace-access-in-the-app).
 
 ### Promote or demote a global administrator
 
-This is instance-wide authority, not access to one workspace. Add or remove the client
-role listed in `staff_roles` / `superuser_roles`. The flags are reconciled on the next
-login — including revocation, so a demotion takes effect the next time they sign in.
+Add or remove the client role listed in `staff_roles` / `superuser_roles`. The flags are
+reconciled on the next login — including revocation.
 
 ### Give a workspace an administrator
 
-SSO only ever grants `MEMBER`, so a workspace's own `ADMIN` never arrives from Keycloak.
-It is whoever created the workspace, or someone promoted by hand from the workspace's
-members list. Do not wait for a client role to produce one.
+An existing workspace admin (or staff, from the admin area) changes the member's role to
+`ADMIN` in the members list. Keycloak is not involved.
 
 ### Offboard someone
 
-Remove the client roles, or remove them from the group. With `strict_membership: true`
-the memberships this sync created are revoked the next time they log in.
+Remove them from the Baserow groups in Keycloak: they can no longer sign in once their
+session ends (`session_lifetime_minutes`). Their workspace memberships stay until a
+workspace admin removes them.
 
-> Removing a role does **not** end an active session, and a user who simply never logs in
-> again keeps the memberships they already have. To cut access immediately, disable or
-> delete the user in Keycloak, and deactivate the account from Baserow's admin area if
-> they must lose access to data they can already see.
+> Removing a role does **not** end an active session early. To cut access immediately,
+> disable or delete the user in Keycloak, and deactivate the account from Baserow's admin
+> area.
 
 ### Rotate the client secret
 
@@ -371,7 +277,9 @@ consequences:
 * Leave `BASEROW_ALLOW_MULTIPLE_SSO_PROVIDERS_FOR_SAME_ACCOUNT` unset. By default, an
   account created through a different authentication method cannot be taken over through
   this provider — Baserow refuses with `errorDifferentProvider`. That env var removes the
-  check.
+  check instance-wide; to recover specific accounts use the `link_oidc_account` command or
+  the provider's `link_existing_accounts` key (see
+  [Recovering locked-out accounts](sso-oidc.md#recovering-locked-out-accounts)).
 
 ### The Baserow instance
 
@@ -384,20 +292,16 @@ non-staff accounts. A staff/superuser account can still use the password form (v
 "display password login" on the login page) so an outage of the IdP cannot lock you out
 of your own instance. **Create that break-glass account before turning this on.**
 
+Decide who may create workspaces in the admin settings: whoever creates a workspace becomes
+its admin.
+
 ### Reduce the surface: turn off the application types you don't use
 
-Everything above decides *who* gets in and *which* workspaces they land in. It says
-nothing about *what kinds of application* the instance offers. If your deployment only
-ever uses databases, leave the application builder, dashboards and automations switched
-off rather than relying on nobody creating one.
-
-The switches are in the admin area under **Settings → Application features**, and they are
-instance-wide in the same sense as the global staff/superuser flags above — the same
-distinction the [Administrator means the whole instance](#administrator-means-the-whole-instance)
-section draws. A disabled type cannot be created, and its existing applications are hidden
-and refused; the data is not deleted, and re-enabling restores it. This is deliberately
-not something Keycloak can drive: it is a property of the instance, not of a user or a
-workspace, so no client role or `workspace_mappings` entry affects it.
+If your deployment only ever uses databases, leave the application builder, dashboards and
+automations switched off rather than relying on nobody creating one. The switches are in
+the admin area under **Settings → Application features**, and they are instance-wide. A
+disabled type cannot be created, and its existing applications are hidden and refused; the
+data is not deleted, and re-enabling restores it.
 
 See [Turning application types off instance-wide](instance-settings.md) for what each
 toggle covers and how to set it through the API.
@@ -406,13 +310,15 @@ toggle covers and how to set it through the API.
 
 | Symptom | Cause |
 | --- | --- |
-| Every login redirects to `/login?error=errorNoMappedRole` | The client-roles mapper is not enabled on the ID token *and* userinfo, or the user holds none of the mapped client roles. Check **Evaluate** (step 4). |
-| The user signs in but lands in no workspace | The client role in `workspace_mappings[].client_role` does not match the Keycloak role name exactly, or `workspace` points at an id that does not exist — the backend logs a warning naming it. |
-| The user is refused a workspace they should get | The mapping names a `role` that is not in the database. Declare it in `BASEROW_ROLES` and run `sync_roles`; Baserow fails closed rather than granting unrestricted access. |
+| Every login redirects to `/login?error=errorEmailNotVerified` | Keycloak reports `email_verified: false`. Verify the users' emails, enable **Trust Email** on an LDAP/AD federation provider, or set `require_verified_email: false` if the realm's addresses are authoritative. |
+| Every login redirects to `/login?error=errorAuthFlowError` after a Keycloak upgrade or client change | Check the backend log: a `state`, PKCE or `sub` mismatch means something is rewriting the callback URL or the client's PKCE method is not `S256`. |
+| Every login redirects to `/login?error=errorNoMappedRole` | The client-roles mapper is not enabled on the ID token *and* userinfo, or the user holds none of `user_roles` / `staff_roles` / `superuser_roles`. Check **Evaluate** (step 4). |
+| The user signs in but sees no workspace | Expected: a workspace admin must add them in Baserow. |
+| A workspace admin cannot find the user in *Add members* | The user has not signed in yet (no account exists), is deactivated, or the search has fewer than 3 characters. Ask them to sign in once first. |
 | A configuration change had no effect | The provider JSON is read at startup. Restart the backend. |
-| The backend refuses to start after an upgrade | The provider JSON still uses the retired `groups_claim` / `staff_groups` / `superuser_groups` keys, or the old `workspace_mappings` shape. The error names the replacement for each. |
-| `errorAuthFlowError` immediately after the Keycloak redirect | The redirect URI registered on the client does not match `<BASEROW_PUBLIC_URL>/api/sso/oidc/callback/<name>/`, or the backend cannot reach the issuer. Check the backend log and step 8.2. |
-| `errorDifferentProvider` on login | The email already exists under another authentication method. See `BASEROW_ALLOW_MULTIPLE_SSO_PROVIDERS_FOR_SAME_ACCOUNT`. |
+| The backend refuses to start after an upgrade | The provider JSON still uses retired keys: `groups_claim` / `staff_groups` / `superuser_groups` (rename), or `workspace_mappings` / `team_mappings` / `strict_membership` (remove; see [Upgrading from workspace mappings](sso-oidc.md#upgrading-from-workspace-mappings)). |
+| `errorAuthFlowError` immediately after the Keycloak redirect | The redirect URI registered on the client does not match `<BASEROW_PUBLIC_URL>/api/sso/oidc/callback/<name>/`, or the backend cannot reach the issuer. Check the backend log and step 6.2. |
+| `errorDifferentProvider` on login | The email already exists under another authentication method, or the provider `name` was changed. See [Recovering locked-out accounts](sso-oidc.md#recovering-locked-out-accounts). |
 
 ## Appendix: configuring the realm declaratively
 
@@ -423,18 +329,14 @@ it in version control.
 It creates exactly three things, matching steps 1, 2 and 4:
 
 * the confidential `baserow` client, with the redirect URI from step 1;
-* the four client roles from step 2 — two that map to instance-wide authority
-  (`baserow-admins`, `baserow-staff`) and two that map to workspace membership
-  (`engineering`, `analysts`);
+* the three client roles from step 2;
 * the `oidc-usermodel-client-role-mapper` from step 4, emitting
   `resource_access.baserow.roles` into the ID token, the access token and userinfo.
 
-It deliberately does **not** contain the workspace ids or membership levels — those live
-only in Baserow's `BASEROW_OIDC_PROVIDERS`, because Keycloak has no notion of a Baserow
-workspace. The client role name is the entire contract between the two files.
+It contains no workspace information — Keycloak has no notion of a Baserow workspace.
 
-Unlike the examples in steps 5 and 7, this block carries no `//` comments: it is pasted
-into Keycloak's partial import and `kcadm.sh`, which accept strict JSON only.
+Unlike the example in step 5, this block carries no `//` comments: it is pasted into
+Keycloak's partial import and `kcadm.sh`, which accept strict JSON only.
 
 > Keycloak's export format varies between versions. Treat this as a starting point:
 > configure one realm through the console, then use **Realm settings → Action → Partial
@@ -477,10 +379,9 @@ into Keycloak's partial import and `kcadm.sh`, which accept strict JSON only.
   "roles": {
     "client": {
       "baserow": [
-        { "name": "baserow-admins", "description": "Baserow global superuser" },
+        { "name": "baserow-user", "description": "May sign in to Baserow" },
         { "name": "baserow-staff", "description": "Baserow global staff" },
-        { "name": "engineering", "description": "Member of workspace 1" },
-        { "name": "analysts", "description": "Reader in workspace 1" }
+        { "name": "baserow-admins", "description": "Baserow global superuser" }
       ]
     }
   }

@@ -58,18 +58,131 @@
     "errorTableWebhookMaxLimitExceededTitle": "Max webhooks exceeded",
     "errorTableWebhookMaxLimitExceededDescription": "Can't create the webhook because the maximum amount of webhooks per table has been exceeded."
   },
+  "dataExportModal": {
+    "title": "Datalake exports of",
+    "description": "Export the rows of this database's tables as Parquet files to external storage on a schedule. The first export of a table is full, later ones only hold the rows that changed or were deleted.",
+    "noDestinations": "No external storage is configured for datalake exports. An administrator can declare one with BASEROW_DATA_DESTINATIONS.",
+    "newSchedule": "New export schedule",
+    "noSchedules": "This database has no export schedules yet.",
+    "inactive": "inactive",
+    "nextRun": "next run",
+    "allTables": "All tables",
+    "selectTables": "Select at least one table.",
+    "runNow": "Run now",
+    "runFull": "Run full",
+    "runs": "Runs",
+    "noRuns": "This schedule has not exported anything yet.",
+    "started": "Started",
+    "duration": "Duration",
+    "runInProgress": "Running…",
+    "table": "Table",
+    "mode": "Mode",
+    "state": "State",
+    "rows": "Rows",
+    "resetState": "Reset, next export is full",
+    "resetStateTitle": "Export state reset",
+    "resetStateMessage": "The next export of every table of this schedule will be full.",
+    "runQueuedTitle": "Export started",
+    "runQueuedMessage": "The export runs in the background, follow it in the runs of the schedule.",
+    "edit": "Edit",
+    "delete": "Delete",
+    "name": "Name",
+    "destination": "Storage",
+    "cron": "Cron expression",
+    "cronHelp": "minute hour day-of-month month day-of-week, for example 0 * * * * for every hour.",
+    "timezone": "Timezone",
+    "fullEveryN": "Full export every",
+    "fullEveryNHelp": "Export fully after this many incremental exports. 0 only when required.",
+    "columnNaming": "Column names",
+    "columnNamingHelp": "Field ids keep columns stable when fields are renamed.",
+    "columnNamingFieldId": "Field id (field_123)",
+    "columnNamingFieldName": "Field name",
+    "tables": "Tables",
+    "active": "Active",
+    "save": "Save",
+    "cancel": "Cancel"
+  },
   "sidebar": {
     "viewAPI": "View API Docs",
+    "datalakeExports": "Datalake exports",
+    "manageAccess": "Manage access",
     "createTable": "New table"
   },
+  "databaseAccessModal": {
+    "title": "Access to {name}",
+    "workspaceTitle": "Default access in {name}",
+    "description": "Workspace admins always have full access. Members and teams without a level here inherit it from the database or the workspace default.",
+    "subject": "Member or team",
+    "level": "Access",
+    "team": "Team",
+    "admin": "Admin",
+    "inherit": "Inherit",
+    "inheritedFrom": "Inherits {level} from {scope}",
+    "inheritsFullAccess": "Inherits full member access",
+    "scopes": {
+      "workspace": "workspace",
+      "database": "database",
+      "table": "table"
+    },
+    "levels": {
+      "none": "No access",
+      "viewer": "Viewer",
+      "editor": "Editor",
+      "builder": "Builder"
+    },
+    "levelDescriptions": {
+      "none": "Hidden",
+      "viewer": "Read rows, fields and views",
+      "editor": "Viewer and change rows",
+      "builder": "Editor and change fields, views and tables"
+    },
+    "save": "Save",
+    "saved": "Access updated"
+  },
   "sidebarItem": {
+    "manageAccess": "Manage access",
     "exportTable": "Export table",
     "importFile": "Import file",
     "webhooks": "Webhooks",
     "lastSynced": "Last synced",
     "notSynced": "not synced",
     "sync": "Sync table",
-    "updateSyncConfig": "Update sync configuration"
+    "updateSyncConfig": "Update sync configuration",
+    "protectedEditing": "Protected editing",
+    "protectedEditingPendingTitle": "Unsaved changes",
+    "protectedEditingPendingMessage": "Save or discard the unsaved changes of this table before disabling protected editing."
+  },
+  "pendingChanges": {
+    "count": "No unsaved changes | {count} unsaved change | {count} unsaved changes",
+    "save": "Save",
+    "discard": "Discard",
+    "saved": "Changes saved"
+  },
+  "confirmDataChange": {
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "updateCellsTitle": "Apply changes",
+    "updateCellsMessage": "Paste into {count} cell(s)? This changes data in a table with protected editing.",
+    "clearCellsTitle": "Clear cells",
+    "clearCellsMessage": "Clear the values of the selected cells? This changes data in a table with protected editing.",
+    "deleteRowTitle": "Delete row",
+    "deleteRowMessage": "Are you sure you want to delete this row?",
+    "deleteRowsTitle": "Delete rows",
+    "deleteRowsMessage": "Are you sure you want to delete the selected rows?",
+    "createRowTitle": "Create row",
+    "createRowMessage": "Create {count} new row(s) in this table?",
+    "moveRowTitle": "Move row",
+    "moveRowMessage": "Move this row to the new position?",
+    "undoTitle": "Undo",
+    "undoMessage": "Undo the last action? This may change data in a table with protected editing.",
+    "redoTitle": "Redo",
+    "redoMessage": "Redo the last undone action? This may change data in a table with protected editing.",
+    "discardTitle": "Discard unsaved changes",
+    "discardMessage": "You have {count} unsaved change(s) in this table. Leaving discards them.",
+    "discardConfirm": "Discard",
+    "enableTitle": "Stage edits and ask before changes",
+    "leaveMessage": "You have unsaved changes."
   },
   "duplicateTableJobType": {
     "name": "Duplicate table",
@@ -470,7 +583,20 @@
   "importErrorReport": {
     "reportTitleFailure": "Failing rows",
     "reportTitleSuccess": "Import successful but...",
-    "reportMessage": "The following row indexes couldn't be imported:"
+    "reportMessage": "The following row indexes couldn't be imported:",
+    "summary": "{created} created, {updated} updated, {unchanged} unchanged, {deleted} trashed, {skipped} skipped."
+  },
+  "importDiffPreview": {
+    "create": "Inserted",
+    "update": "Updated",
+    "unchanged": "Unchanged",
+    "delete": "Trashed",
+    "skipped": "Skipped",
+    "errors": "Errors",
+    "index": "File row",
+    "noChanges": "This import wouldn't change the table.",
+    "empty": "No rows.",
+    "sampleNotice": "Only the first {count} rows are shown."
   },
   "importFileModal": {
     "defaultName": "Table",
@@ -487,26 +613,32 @@
     "selectImportMessage": "Please select data to import.",
     "filePreview": "File content preview",
     "importPreview": "Import preview",
-    "upsertTooltip": "Match existing rows using a unique field to overwrite data with imported values.",
+    "modeLabel": "Import mode",
+    "modeInsert": "Insert",
+    "modeUpsert": "Upsert",
+    "modeUpdate": "Update matching",
+    "modeReplace": "Replace all",
+    "modeInsertDescription": "Append every row of the file to the table.",
+    "modeUpsertDescription": "Update the rows matching the file and insert the other rows.",
+    "modeUpdateDescription": "Only update the rows matching the file, other file rows are ignored.",
+    "modeReplaceDescription": "Move every existing row to the trash, then insert the rows of the file.",
+    "matchFieldsLabel": "Match rows on",
+    "matchFieldsHelp": "A file row matches an existing row when all the selected fields are equal.",
+    "matchFieldsEmpty": "Map a column to a field that supports matching first.",
+    "deleteUnmatched": "Move the rows that are not in the file to the trash",
+    "replaceWarning": "All existing rows will be moved to the trash. They can be restored from the trash or by undoing the import.",
+    "previewChanges": "Preview changes",
+    "changesTab": "Changes",
+    "previewStale": "The import settings changed since the last preview.",
+    "previewRequired": "Preview the changes first, this import moves rows to the trash.",
+    "ambiguousTitle": "Ambiguous matches",
+    "ambiguousMessage": "These match values are not unique in the file or in the table, so rows can't be paired reliably:",
+    "ambiguousKey": "{values} ({fileCount} in the file, {tableCount} in the table)",
+    "allowAmbiguous": "Allow ambiguous matches and pair duplicates in order",
     "stateRowCreation": "Importing...",
     "statePreValidation": "Validating data...",
     "stateCreateTable": "Creating table...",
-    "restoredFile": "Importing file \"{name}\"...",
-    "modeLabel": "How should this file be applied?",
-    "modeDescription": "The table's fields are never changed by an import, only its rows.",
-    "modeAppend": "Add rows",
-    "modeUpsert": "Update existing rows",
-    "modeReplace": "Replace all rows",
-    "modeNotAllowed": "You don't have permission to use this mode in this workspace.",
-    "upsertFieldLabel": "Match existing rows on",
-    "replaceWarningTitle": "This removes every row in the table",
-    "replaceWarningDescription": "All {table} rows are moved to the trash and replaced by the rows in this file. You can restore them from the trash afterwards.",
-    "replaceConfirm": "I understand the current rows will be replaced",
-    "strictMappingTitle": "The file's columns don't match the table",
-    "strictMappingServerDescription": "The import was refused because the file's columns don't line up with the table's fields. Nothing was changed.",
-    "strictUnmappedColumns": "These file columns are not assigned to a field: {columns}.",
-    "strictUncoveredFields": "These fields are not covered by any file column: {fields}.",
-    "stateRowDeletion": "Removing the current rows..."
+    "restoredFile": "Importing file \"{name}\"..."
   },
   "formulaAdvancedEditContext": {
     "textAreaFormulaInputPlaceholder": "Click to edit the formula",
@@ -797,7 +929,8 @@
   },
   "exportTableLoadingBar": {
     "export": "Export",
-    "download": "Download"
+    "download": "Download",
+    "expires": "This file is deleted {minutes} minutes after the export finished. Export again if the download has stopped working."
   },
   "exportTableDropdown": {
     "exportEntireTable": "Export entire table"
@@ -941,7 +1074,8 @@
   "snapshotListItem": {
     "restore": "restore",
     "delete": "delete",
-    "created": "created"
+    "created": "created",
+    "expiresIn": "deleted today | deleted in 1 day | deleted in {n} days"
   },
   "formViewModeType": {
     "form": "Form",
@@ -959,6 +1093,9 @@
     "descriptionPlaceholder": "Description",
     "noFieldsTitle": "This form doesn't have any fields",
     "noFieldsContent": "Click on a field in the left sidebar to add one."
+  },
+  "formViewPoweredBy": {
+    "poweredBy": "Powered by"
   },
   "table": {
     "adjacentRow": {
@@ -999,6 +1136,7 @@
   "rowHistorySidebar": {
     "name": "History",
     "empty": "No changes yet. You'll be able to track any changes to this row here.",
+    "retention": "Changes are kept for {n} days | Changes are kept for 1 day | Changes are kept for {n} days",
     "you": "You",
     "created": "created this row",
     "updated": "updated this row",

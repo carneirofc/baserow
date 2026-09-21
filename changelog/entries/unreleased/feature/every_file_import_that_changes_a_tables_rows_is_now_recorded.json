@@ -1,9 +1,0 @@
-{
-    "type": "feature",
-    "message": "Every file import that changes a table's rows is now recorded with who ran it, the file it came from, the row counts and the changed cells, kept independently of the import job.",
-    "issue_origin": "github",
-    "issue_number": null,
-    "domain": "database",
-    "bullet_points": [],
-    "created_at": "2026-09-08"
-}

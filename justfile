@@ -1179,6 +1179,69 @@ changelog-test *args:
     cd backend && PYTHONPATH="../changelog/src:../changelog:${PYTHONPATH:-}" uv run --group changelog --group dev pytest ../changelog/tests/ {{ args }}
 
 # =============================================================================
+# Security (CVE scanning)
+# =============================================================================
+
+# Trivy runs from its pinned container image so no local install is needed.
+# Keep this version identical to TRIVY_IMAGE in .github/workflows/*.yml.
+trivy_image := "docker.io/aquasec/trivy:0.74.0"
+trivy_cache := env("TRIVY_CACHE_DIR", env("HOME", "/tmp") / ".cache/trivy")
+
+# The gate: HIGH/CRITICAL findings that have a fixed version available.
+# Exceptions live in .trivyignore.yaml, each with a statement and expiry.
+_trivy_gate := "--scanners vuln --severity HIGH,CRITICAL --ignore-unfixed --ignorefile /src/.trivyignore.yaml --exit-code 1"
+
+# Scan dependency lockfiles and/or built images for fixable HIGH/CRITICAL CVEs
+[group('6 - ci')]
+[doc("CVE scan: just audit <deps|images|all> [image refs...]")]
+audit target="all" *IMAGES:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    mkdir -p "{{ trivy_cache }}"
+    TRIVY=(docker run --rm -v "$PWD:/src:ro" -v "{{ trivy_cache }}:/root/.cache/trivy" {{ trivy_image }})
+
+    audit_deps() {
+        echo "==> Scanning lockfiles (uv.lock, yarn.lock)..."
+        # Dev deps are included: build/test tooling runs in CI and on developer
+        # machines even though it never ships in the prod images.
+        "${TRIVY[@]}" fs {{ _trivy_gate }} --include-dev-deps --skip-dirs '**/node_modules' /src
+    }
+
+    audit_images() {
+        local images=({{ IMAGES }})
+        if [ ${#images[@]} -eq 0 ]; then
+            images=(baserow/backend:latest baserow/web-frontend:latest baserow/baserow:latest)
+        fi
+        for ref in "${images[@]}"; do
+            echo "==> Scanning image $ref..."
+            # The image is exported to a tarball so the scan works with both
+            # Docker and Podman without mounting the engine socket.
+            tmp=$(mktemp -d)
+            docker save -o "$tmp/image.tar" "$ref"
+            docker run --rm -v "$PWD:/src:ro" -v "$tmp:/img:ro" -v "{{ trivy_cache }}:/root/.cache/trivy" \
+                {{ trivy_image }} image {{ _trivy_gate }} --input /img/image.tar || { rm -rf "$tmp"; exit 1; }
+            rm -rf "$tmp"
+        done
+    }
+
+    case "{{ target }}" in
+        deps) audit_deps ;;
+        images) audit_images ;;
+        all) audit_deps; audit_images ;;
+        *)
+            echo "Usage: just audit <deps|images|all> [image refs...]"
+            echo ""
+            echo "  deps    Scan every uv.lock / yarn.lock in the repo"
+            echo "  images  Scan built images (default: baserow/{backend,web-frontend,baserow}:latest)"
+            echo ""
+            echo "Examples:"
+            echo "  just audit deps"
+            echo "  just build web-frontend prod && just audit images baserow/web-frontend:prod"
+            exit 1
+            ;;
+    esac
+
+# =============================================================================
 # CI Docker Image Testing
 # =============================================================================
 

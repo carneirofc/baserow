@@ -240,7 +240,7 @@ run_backend_server(){
   if [[ "$1" = "wsgi" ]]; then
     STARTUP_ARGS=(baserow.config.wsgi:application)
   elif [[ "$1" = "asgi" ]]; then
-    STARTUP_ARGS=(-k uvicorn.workers.UvicornWorker baserow.config.asgi:application)
+    STARTUP_ARGS=(-k uvicorn_worker.UvicornWorker baserow.config.asgi:application)
   else
     echo -e "\e[31mUnknown run_backend_server argument $1 \e[0m" >&2
     exit 1

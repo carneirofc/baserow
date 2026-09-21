@@ -3,7 +3,7 @@
     <h2>
       {{ $t('emailTester.title') }}
 
-      <a href="https://github.com/carneirofc/baserow" target="_blank"
+      <a :href="$branding.docsUrl" target="_blank"
         ><i class="iconoir-chat-bubble-question"
       /></a>
     </h2>

@@ -213,6 +213,7 @@ class DatabaseApplicationType(ApplicationType):
                 data_sync=serialized_data_sync,
                 field_rules=serialized_field_rules,
             )
+            structure["require_edit_confirmation"] = table.require_edit_confirmation
 
             for serialized_structure in serialization_processor_registry.get_all():
                 extra_data = serialized_structure.export_serialized(
@@ -1018,6 +1019,9 @@ class DatabaseApplicationType(ApplicationType):
                 name=serialized_table["name"],
                 order=serialized_table["order"],
                 last_modified_by_column_added=True,
+                require_edit_confirmation=serialized_table.get(
+                    "require_edit_confirmation", False
+                ),
             )
             id_mapping["database_tables"][serialized_table["id"]] = table_instance.id
             serialized_table["_object"] = table_instance

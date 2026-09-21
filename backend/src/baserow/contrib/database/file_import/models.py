@@ -9,12 +9,6 @@ from baserow.core.jobs.mixins import (
 )
 from baserow.core.jobs.models import Job
 
-from ..data_import.constants import (
-    IMPORT_MODE_APPEND,
-    IMPORT_MODE_REPLACE,
-    IMPORT_MODE_UPSERT,
-)
-
 
 # If you ever change the return value of this function please duplicate the old
 # version into migration database.0080 and change that migration to use the duplicate
@@ -56,18 +50,6 @@ class FileImportJob(JobWithUserIpAddress, JobWithWebsocketId, JobWithUndoRedoIds
     )
     first_row_header = models.BooleanField(
         default=False, help_text="Is the first row of the provided data the header?"
-    )
-    mode = models.CharField(
-        max_length=16,
-        choices=[
-            (IMPORT_MODE_APPEND, "Append"),
-            (IMPORT_MODE_UPSERT, "Upsert"),
-            (IMPORT_MODE_REPLACE, "Replace"),
-        ],
-        default=IMPORT_MODE_APPEND,
-        help_text="Whether the data is appended to the table, upserted into it or "
-        "used to replace its contents. Only applies to imports into an existing "
-        "table.",
     )
     importer_type = models.TextField(
         blank=True,

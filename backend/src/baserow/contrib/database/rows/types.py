@@ -1,5 +1,5 @@
 from collections.abc import Iterable
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, NamedTuple, NewType, TypedDict, TypeVar
 
@@ -17,10 +17,14 @@ GeneratedTableModelForUpdate = NewType(
 RowsForUpdate = NewType("RowsForUpdate", QuerySet)
 
 
-class FileImportConfiguration(TypedDict):
+class FileImportConfiguration(TypedDict, total=False):
     upsert_fields: list[int]
     upsert_values: list[list[Any]]
     skipped_fields: list[int]
+    # One of `baserow.contrib.database.rows.constants.IMPORT_MODES`.
+    mode: str
+    delete_unmatched: bool
+    allow_ambiguous_matches: bool
 
 
 class FileImportDict(TypedDict):
@@ -48,146 +52,20 @@ class UpdatedRowsData(NamedTuple):
 
 
 @dataclass
-class ImportChangeCollector:
+class ImportRowsResult:
     """
-    Accumulates the before/after row data a file import needs in order to write
-    per-cell row history, bounded by `max_entries`.
-
-    A bulk import can touch hundreds of thousands of rows; keeping every original
-    value in memory and writing a history entry for each would dwarf the import
-    itself. Once the budget is spent the collector stops recording and flags itself
-    as `truncated`, which the import's compliance record surfaces.
-
-    `max_entries` of 0 disables collection entirely.
+    The outcome of a file import into an existing table.
     """
 
-    max_entries: int = 0
-    created_row_ids: list[int] = field(default_factory=list)
-    created_rows_values: list[dict[str, Any]] = field(default_factory=list)
-    created_fields_metadata_by_row_id: dict[int, dict[str, Any]] = field(
-        default_factory=dict
-    )
-    updated_row_ids: list[int] = field(default_factory=list)
-    updated_rows_values: list[dict[str, Any]] = field(default_factory=list)
-    original_rows_values_by_id: dict[int, dict[str, Any]] = field(default_factory=dict)
-    updated_fields_metadata_by_row_id: dict[int, dict[str, Any]] = field(
-        default_factory=dict
-    )
-    deleted_row_ids: list[int] = field(default_factory=list)
-    deleted_rows_values: list[dict[str, Any]] = field(default_factory=list)
-    deleted_fields_metadata_by_row_id: dict[int, dict[str, Any]] = field(
-        default_factory=dict
-    )
-    # Totals for the whole import, as opposed to the capped per-row detail above.
-    updated_row_count: int = 0
-    deleted_row_count: int = 0
-    trashed_rows_entry_id: int | None = None
-    truncated: bool = False
-
-    @property
-    def enabled(self) -> bool:
-        return self.max_entries > 0
-
-    @property
-    def remaining(self) -> int:
-        collected = (
-            len(self.created_row_ids)
-            + len(self.updated_row_ids)
-            + len(self.deleted_row_ids)
-        )
-        return max(self.max_entries - collected, 0)
-
-    def collect_updated(self, updated: "UpdatedRowsData") -> None:
-        """
-        Records the rows an update touched, up to the remaining budget.
-        """
-
-        rows = list(updated.updated_rows)
-        # Counted before the budget applies: the summary must stay complete even when
-        # the per-row detail is capped.
-        self.updated_row_count += len(rows)
-
-        if not self.enabled:
-            return
-
-        budget = self.remaining
-        if len(rows) > budget:
-            self.truncated = True
-            rows = rows[:budget]
-        if not rows:
-            return
-
-        row_ids = [row.id for row in rows]
-        values_by_id = {
-            values["id"]: values
-            for values in updated.updated_rows_values
-            if "id" in values
-        }
-        for row_id in row_ids:
-            self.updated_row_ids.append(row_id)
-            self.updated_rows_values.append(values_by_id.get(row_id, {"id": row_id}))
-            self.original_rows_values_by_id[row_id] = (
-                updated.original_rows_values_by_id.get(row_id, {})
-            )
-            self.updated_fields_metadata_by_row_id[row_id] = (
-                updated.updated_fields_metadata_by_row_id.get(row_id, {})
-            )
-
-    def collect_created(
-        self,
-        row_ids: list[int],
-        rows_values: list[dict[str, Any]],
-        fields_metadata_by_row_id: dict[int, dict[str, Any]],
-    ) -> None:
-        """
-        Records the rows an import created, up to the remaining budget.
-        """
-
-        if not self.enabled:
-            return
-
-        budget = self.remaining
-        if len(row_ids) > budget:
-            self.truncated = True
-            row_ids = row_ids[:budget]
-            rows_values = rows_values[:budget]
-        if not row_ids:
-            return
-
-        self.created_row_ids.extend(row_ids)
-        self.created_rows_values.extend(rows_values)
-        for row_id in row_ids:
-            self.created_fields_metadata_by_row_id[row_id] = (
-                fields_metadata_by_row_id.get(row_id, {})
-            )
-
-    def collect_deleted(
-        self,
-        row_ids: list[int],
-        rows_values: list[dict[str, Any]],
-        fields_metadata_by_row_id: dict[int, dict[str, Any]],
-    ) -> None:
-        """
-        Records the rows a replace removed, up to the remaining budget.
-        """
-
-        if not self.enabled:
-            return
-
-        budget = self.remaining
-        if len(row_ids) > budget:
-            self.truncated = True
-            row_ids = row_ids[:budget]
-            rows_values = rows_values[:budget]
-        if not row_ids:
-            return
-
-        self.deleted_row_ids.extend(row_ids)
-        self.deleted_rows_values.extend(rows_values)
-        for row_id in row_ids:
-            self.deleted_fields_metadata_by_row_id[row_id] = (
-                fields_metadata_by_row_id.get(row_id, {})
-            )
+    created_rows: list[GeneratedTableModel]
+    updated_row_ids: list[int]
+    # The internal values of the updated fields before the import, by row id.
+    original_rows_values_by_id: dict[int, dict[str, Any]]
+    # The rows trashed by the import and their trash entry, if any.
+    trashed_row_ids: list[int]
+    trashed_rows_entry_id: int | None
+    error_report: dict[int, dict[str, Any]]
+    summary: dict[str, int]
 
 
 class CreatedRowsData(NamedTuple):

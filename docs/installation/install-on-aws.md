@@ -48,7 +48,7 @@ overview this is what any AWS deployment of Baserow will need:
 
 ## Option 1) Deploying the all-in-one image to Fargate/ECS
 
-The `baserow/baserow:2.3.2` image runs all of Baserow’s various services inside the
+The `ghcr.io/carneirofc/baserow/baserow:0.6.0` image runs all of Baserow’s various services inside the
 container for ease of use.
 
 This image is designed for single server deployments or simple deployments to
@@ -66,7 +66,7 @@ Run.
     * You don't need to worry about configuring and linking together the different
       services that make up a Baserow deployment.
     * Configuring load balancers is easier as you can just directly route through all
-      requests to any horizontally scaled container running `baserow/baserow:2.3.2`.
+      requests to any horizontally scaled container running `ghcr.io/carneirofc/baserow/baserow:0.6.0`.
 
 #### Cons
 
@@ -74,7 +74,7 @@ Run.
 * Potentially higher resource usage overall as each of the all-in-one containers will
   come with its internal services, so you have less granular control over scaling
   specific services.
-    * For example if you deploy 10 `baserow/baserow:2.3.2` containers horizontally you
+    * For example if you deploy 10 `ghcr.io/carneirofc/baserow/baserow:0.6.0` containers horizontally you
       by default end up with:
         * 10 web-frontend services
         * 10 backend services
@@ -187,18 +187,18 @@ Generally, the Redis server is not the bottleneck in Baserow deployments as they
 Now create a target group on port 80 and ALB ready to route traffic to the Baserow
 containers.
 
-When setting up the health check for the ALB the `baserow/baserow:2.3.2` container
+When setting up the health check for the ALB the `ghcr.io/carneirofc/baserow/baserow:0.6.0` container
 ,which you'll be deploying next, choose port `80` and health check
 URL `/api/_health/`. We recommend a long grace period of 900 seconds to account for
 first-time migrations being run on the first container's startup.
 
 #### 5) Launching Baserow on ECS/Fargate
 
-Now we are ready to spin up our `baserow/baserow:2.3.2` containers. See below for a
+Now we are ready to spin up our `ghcr.io/carneirofc/baserow/baserow:0.6.0` containers. See below for a
 full task definition and environment variables. We recommend launching the containers
 with 2vCPUs and 4 GB of RAM each to start with. In short, you will want to:
 
-1. Select the `baserow/baserow:2.3.2` image.
+1. Select the `ghcr.io/carneirofc/baserow/baserow:0.6.0` image.
 2. Add a port mapping of `80` on TCP as this is where this images HTTP server is
    listening by default.
 3. Mark the container as essential.
@@ -224,7 +224,7 @@ with 2vCPUs and 4 GB of RAM each to start with. In short, you will want to:
 | `BASEROW_EXTRA_ALLOWED_HOSTS` | An optional comma-separated list of hostnames which will be added to Baserow’s Django backend ALLOWED_HOSTS setting. Add your ALB IP address here so the health checks it sends are allowed through, or alternatively configure the less secure value `*` to get things running and restrict hosts later once everything is working.                                                                                                      |
 | `BASEROW_JWT_SIGNING_KEY`     | **Must be set so all the containers share the same signing key.** The signing key is used to sign the content of generated tokens. For HMAC signing, this should be a random string with at least as many bits of data as is required by the signing protocol. See [here](https://django-rest-framework-simplejwt.readthedocs.io/en/latest/settings.html#signing-key) for more details. `BASEROW_JWT_SIGNING_KEY_FILE` is also supported. |
 | `SECRET_KEY`                  | **Must be set so all the containers share the same secret key.** The Secret key used by Django for cryptographic signing such as generating secure password reset links and managing sessions. See [here](https://docs.djangoproject.com/en/3.2/ref/settings/#std:setting-SECRET_KEY) for more details. `SECRET_KEY_FILE` is also supported.                                                                                              |
-| `EMAIL_SMTP_*`                | There are a number of SMTP related environment variables documented in our environment variable guide [here](./configuration.md) which will also need to be set so Baserow can send invitation and password reset emails.                                                                                                                                                                                                                 |
+| `EMAIL_SMTP_*`                | There are a number of SMTP related environment variables documented in our environment variable guide [here](./configuration.md) which will also need to be set so Baserow can send password reset and notification emails.                                                                                                                                                                                                                 |
 
 5. Select the desired launch type (we used Fargate).
 6. Set the OS family as Linux.
@@ -243,7 +243,7 @@ container_definitions    = <<DEFINITION
   [
     {
       "name": "baserow_task",
-      "image": "baserow/baserow:2.3.2", 
+      "image": "ghcr.io/carneirofc/baserow/baserow:0.6.0", 
       "logConfiguration": {                     #logs are not mandatory
                 "logDriver": "awslogs",
                 "options": {
@@ -367,7 +367,7 @@ in-tool settings, promote other users to being staff etc.
 
 ## Option 2) Deploying Baserow as separate services to Fargate/ECS
 
-The `baserow/backend:2.3.2` and `baserow/web-frontend:2.3.2` images allow you to run
+The `ghcr.io/carneirofc/baserow/backend:0.6.0` and `ghcr.io/carneirofc/baserow/web-frontend:0.6.0` images allow you to run
 Baserow's various services as separate containers.
 
 These images are used by the Official Helm chart, our various docker-compose.yml
@@ -440,7 +440,7 @@ Alternatively [this docker-compose](https://github.com/carneirofc/baserow/blob/d
 
 This service is our HTTP REST API service. When creating the task definition you should:
 
-1. In the task defintion use the `baserow/backend:2.3.2` image
+1. In the task defintion use the `ghcr.io/carneirofc/baserow/backend:0.6.0` image
 2. Under docker configuration set `gunicorn-wsgi,--timeout,60` as the Command.
 
 > We recommend setting the timeout of each HTTP API request to 60 seconds in the
@@ -469,7 +469,7 @@ This service is our HTTP REST API service. When creating the task definition you
 | `BASEROW_EXTRA_ALLOWED_HOSTS` | An optional comma-separated list of hostnames which will be added to Baserow’s Django backend ALLOWED_HOSTS setting. Add your ALB IP address here so the health checks it sends are allowed through, or alternatively configure the less secure value `*` to get things running and restrict hosts later once everything is working.                                                                                                      |
 | `BASEROW_JWT_SIGNING_KEY`     | **Must be set so all the containers share the same signing key.** The signing key is used to sign the content of generated tokens. For HMAC signing, this should be a random string with at least as many bits of data as is required by the signing protocol. See [here](https://django-rest-framework-simplejwt.readthedocs.io/en/latest/settings.html#signing-key) for more details. `BASEROW_JWT_SIGNING_KEY_FILE` is also supported. |
 | `SECRET_KEY`                  | **Must be set so all the containers share the same secret key.** The Secret key used by Django for cryptographic signing such as generating secure password reset links and managing sessions. See [here](https://docs.djangoproject.com/en/3.2/ref/settings/#std:setting-SECRET_KEY) for more details. `SECRET_KEY_FILE` is also supported.                                                                                              |
-| `EMAIL_SMTP_*`                | There are a number of SMTP related environment variables documented in our environment variable guide [here](./configuration.md) which will also need to be set so Baserow can send invitation and password reset emails.                                                                                                                                                                                                                 |
+| `EMAIL_SMTP_*`                | There are a number of SMTP related environment variables documented in our environment variable guide [here](./configuration.md) which will also need to be set so Baserow can send password reset and notification emails.                                                                                                                                                                                                                 |
 
 #### 7) The backend ASGI service
 
@@ -483,7 +483,7 @@ This service is our HTTP REST API service. When creating the task definition you
 This service is our Websocket API service and when configuring the task definition you
 should:
 
-1. Use the `baserow/backend:2.3.2`
+1. Use the `ghcr.io/carneirofc/baserow/backend:0.6.0`
 2. Under docker configuration set `gunicorn` as the Command.
 3. We recommend 2vCPUs and 4 GB of RAM per container to start with.
 4. Map the container port `8000`/`TCP`
@@ -495,7 +495,7 @@ should:
 This service is our asynchronous high priority task worker queue used for realtime
 collaboration and sending emails.
 
-1. Use the `baserow/backend:2.3.2` image with `celery-worker` as the image command.
+1. Use the `ghcr.io/carneirofc/baserow/backend:0.6.0` image with `celery-worker` as the image command.
 2. Under docker configuration set `celery-worker` as the Command.
 3. No port mappings needed.
 4. We recommend 2vCPUs and 4 GB of RAM per container to start with.
@@ -508,7 +508,7 @@ This service is our asynchronous slow/low priority task worker queue for batch
 processes and running potentially slow operations for users like table exports and
 imports etc.
 
-1. Use the `baserow/backend:2.3.2` image.
+1. Use the `ghcr.io/carneirofc/baserow/backend:0.6.0` image.
 2. Under docker configuration set `celery-exportworker` as the Command.
 3. No port mappings needed.
 4. We recommend 2vCPUs and 4 GB of RAM per container to start with.
@@ -519,7 +519,7 @@ imports etc.
 
 This service is our CRON task scheduler that can have multiple replicas deployed.
 
-1. Use the `baserow/backend:2.3.2` image.
+1. Use the `ghcr.io/carneirofc/baserow/backend:0.6.0` image.
 2. Under docker configuration set `celery-beat` as the Command.
 3. No port mapping needed.
 4. We recommend 1vCPUs and 3 GB of RAM per container to start with.
@@ -536,7 +536,7 @@ This service is our CRON task scheduler that can have multiple replicas deployed
 Finally, this service is used for server side rendering and serving the frontend of
 Baserow.
 
-1. Use the `baserow/web-frontend:2.3.2` image with no arguments needed.
+1. Use the `ghcr.io/carneirofc/baserow/web-frontend:0.6.0` image with no arguments needed.
 2. Map the container port `3000`
 3. We recommend 2vCPUs and 4 GB of RAM per container to start with.
 4. Mark the container as essential.

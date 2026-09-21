@@ -26,11 +26,13 @@ x-backend-env: &backend-env
   MIGRATE_ON_STARTUP: "true"
   # Built-in templates are stripped in this fork, so never try to sync them.
   SYNC_TEMPLATES_ON_STARTUP: "false"
-  # Single sign-on and the roles an OIDC client role can be mapped to. See
-  # .env.example and docs/installation/sso-rhbk-keycloak.md.
+  # Single sign-on. See .env.example and docs/installation/sso-oidc.md.
   BASEROW_OIDC_PROVIDERS: ${BASEROW_OIDC_PROVIDERS:-}
   BASEROW_OIDC_ONLY: ${BASEROW_OIDC_ONLY:-}
-  BASEROW_ROLES: ${BASEROW_ROLES:-}
+  # External storage for backups and datalake exports. Secrets referenced through
+  # `*_file` keys must be mounted into the backend and celery containers. See
+  # docs/installation/data-destinations.md.
+  BASEROW_DATA_DESTINATIONS: ${BASEROW_DATA_DESTINATIONS:-}
 
 services:
   db:
@@ -123,6 +125,17 @@ services:
     environment:
       BASEROW_PUBLIC_URL: ${BASEROW_PUBLIC_URL:-http://localhost}
       PRIVATE_BACKEND_URL: http://backend:8000
+      # Runtime branding (docs/installation/branding.md): no rebuild needed.
+      BASEROW_BRANDING_APP_NAME: ${BASEROW_BRANDING_APP_NAME:-}
+      BASEROW_BRANDING_COLORS: ${BASEROW_BRANDING_COLORS:-}
+      BASEROW_BRANDING_SITE_URL: ${BASEROW_BRANDING_SITE_URL:-}
+      BASEROW_BRANDING_DOCS_URL: ${BASEROW_BRANDING_DOCS_URL:-}
+      BASEROW_BRANDING_SITE_TITLE: ${BASEROW_BRANDING_SITE_TITLE:-}
+      BASEROW_BRANDING_SHOW_ATTRIBUTION: ${BASEROW_BRANDING_SHOW_ATTRIBUTION:-}
+    # To customize logos, colors, icons and CSS, mount a branding directory
+    # (start from deploy/branding-example) read-only at /baserow/branding:
+    # volumes:
+    #   - ./branding:/baserow/branding:ro
     depends_on:
       - backend
 

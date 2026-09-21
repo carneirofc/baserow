@@ -867,6 +867,13 @@ class Table(
         "This field will be removed in a future version.",
     )
     version = models.TextField(default="initial_version")
+    require_edit_confirmation = models.BooleanField(
+        default=False,
+        db_default=False,
+        help_text="When enabled, the web frontend stages row edits until the user "
+        "explicitly saves them and asks for confirmation before destructive or bulk "
+        "row operations. This is a UI safeguard only and is not enforced by the API.",
+    )
     needs_background_update_column_added = models.BooleanField(
         default=False,
         help_text="Indicates whether the table has had the background_update_needed "

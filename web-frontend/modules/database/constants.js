@@ -29,14 +29,3 @@ export const FIELD_CONSTRAINT_ERROR_CODES = [
   'ERROR_INVALID_FIELD_CONSTRAINT',
   'ERROR_FIELD_CONSTRAINT_DOES_NOT_SUPPORT_DEFAULT_VALUE',
 ]
-
-// How a file import writes into an existing table. Mirrors the backend's
-// `baserow.contrib.database.data_import.constants`.
-export const IMPORT_MODE_APPEND = 'append'
-export const IMPORT_MODE_UPSERT = 'upsert'
-export const IMPORT_MODE_REPLACE = 'replace'
-
-// The modes that change or destroy rows the table already has. They require the
-// file's columns to cover the table's importable fields exactly, so an import can
-// never silently write a partial row.
-export const STRICT_IMPORT_MODES = [IMPORT_MODE_UPSERT, IMPORT_MODE_REPLACE]

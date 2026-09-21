@@ -20,16 +20,11 @@ function mountButton(props = {}, query = {}) {
 }
 
 describe('OIDCLoginButton.vue', () => {
-  it('uses the redirect url as-is when there is no invitation token', () => {
+  it('uses the redirect url as-is', () => {
     const wrapper = mountButton()
     expect(wrapper.vm.loginUrl).toBe(
       'http://localhost:8000/api/sso/oidc/login/keycloak/'
     )
-  })
-
-  it('appends the workspace invitation token from the route query', () => {
-    const wrapper = mountButton({}, { workspaceInvitationToken: 'abc123' })
-    expect(wrapper.vm.loginUrl).toContain('workspace_invitation_token=abc123')
   })
 
   it('renders the provider name when not small', () => {

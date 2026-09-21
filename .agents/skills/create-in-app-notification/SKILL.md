@@ -121,7 +121,7 @@ The repo uses several duplicate-prevention patterns already:
 
 ### Pattern 1: Query for an existing active notification
 
-Use this when the event has a natural unique object, such as an invitation, mention, or failing webhook.
+Use this when the event has a natural unique object, such as a mention or a failing webhook.
 
 Typical lookup shape:
 
@@ -153,7 +153,7 @@ Use `UserNotificationsGrouper` when one operation can generate many notification
 
 ### Pattern 4: Update or mark read instead of inserting
 
-If the event resolves a prior notification, prefer updating state over inserting another notification. For example, invitation follow-up flows mark the original invitation notification as read.
+If the event resolves a prior notification, prefer updating state over inserting another notification. For example, when a follow-up event resolves the original one, mark the original notification as read.
 
 ## Choosing A Dedupe Key
 
@@ -166,8 +166,8 @@ A dedupe key is usually an implicit tuple made from:
 
 Examples:
 
-- One notification per invitation per user:
-  `type + recipient + data.invitation_id`
+- One notification per failing webhook per user:
+  `type + recipient + data.webhook_id`
 - One notification per row-field mention per user:
   `type + recipient + data.field_id + data.row_id`
 
