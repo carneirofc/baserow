@@ -3441,13 +3441,24 @@ access control, so media URLs are not signed.</p>
 <span class="nt">mediaPersistence</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">50Gi</span>
 <span class="w">  </span><span class="nt">storageClassName</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gp3</span>
-<span class="w">  </span><span class="nt">accessMode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ReadWriteOnce</span>
+<span class="w">  </span><span class="nt">accessMode</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ReadWriteMany</span>
 <span class="nt">replicaCount</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">backend</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span><span class="w">        </span><span class="c1"># RWO: one writer only</span>
+<span class="w">  </span><span class="nt">backend</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
 </code></pre></div>
-<p>Uploads are then served through the backend. Outside OpenShift nothing assigns an
-<code>fsGroup</code>, so add <code>podSecurityContext.fsGroup: 1000</code> if the backend cannot write to
-<code>/baserow/media</code>.</p>
+<p>The backend and the Celery worker both mount this claim, and the worker is what writes
+exports and backups, so it needs <code>ReadWriteMany</code>. <code>ReadWriteOnce</code> appears to work for as
+long as the two pods happen to land on the same node, and then fails with a Multi-Attach
+error after a reschedule. Outside OpenShift nothing assigns an <code>fsGroup</code>, so add
+<code>podSecurityContext.fsGroup: 1000</code> if the backend cannot write to <code>/baserow/media</code>.</p>
+<p><strong>Attachments need object storage.</strong> Exported files and backups are downloaded through
+<code>/api/</code>, streamed out of the storage by the backend, so they work in this mode. User file
+attachments and their thumbnails are still served from <code>MEDIA_URL</code>, and nothing in this
+chart serves <code>/media/</code> — Django only serves it with <code>DEBUG=True</code>, and <code>/media</code> is not one
+of the <code>backendPaths</code>. A deployment that relies on file fields therefore needs
+<code>objectStorage.enabled: true</code>.</p>
+<p>If a download reports that the file storage is unavailable, check
+<strong>Admin → Health</strong> first: the instance runs a probe from a worker and reads it back from
+the web process, so a split between the two is reported there by name.</p>
 <h2 id="secrets">Secrets<a class="headerlink" href="#secrets" title="Permanent link">&para;</a></h2>
 <p>Unless <code>secrets.existingSecret</code> is set, the chart creates <code>&lt;release&gt;-baserow</code> holding a
 generated <code>secret-key</code> and <code>jwt-signing-key</code>. Both are <strong>preserved across upgrades</strong> —
@@ -3565,6 +3576,18 @@ helm<span class="w"> </span>template<span class="w"> </span>baserow<span class="
 <tr>
 <td>Backend cannot write to <code>/baserow/media</code></td>
 <td>PVC mode outside OpenShift; set <code>podSecurityContext.fsGroup</code>.</td>
+</tr>
+<tr>
+<td>Download says the file storage is unavailable</td>
+<td>The worker wrote the file where the backend cannot read it. Check <strong>Admin → Health</strong>; in PVC mode set <code>mediaPersistence.accessMode: ReadWriteMany</code>, or switch to <code>objectStorage</code>.</td>
+</tr>
+<tr>
+<td>An export finishes but the download 404s</td>
+<td>Chart older than 0.8.0, where downloads still pointed at <code>MEDIA_URL</code>. Upgrade.</td>
+</tr>
+<tr>
+<td>Image attachments do not load in PVC mode</td>
+<td>Expected: the chart does not serve <code>/media/</code>. Set <code>objectStorage.enabled: true</code>.</td>
 </tr>
 </tbody>
 </table>

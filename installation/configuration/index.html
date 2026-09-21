@@ -1177,6 +1177,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#when-the-workers-and-the-web-process-disagree-about-the-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      When the workers and the web process disagree about the storage
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#file-service-alternatives" class="md-nav__link">
     <span class="md-ellipsis">
       File Service alternatives
@@ -3247,6 +3256,15 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#when-the-workers-and-the-web-process-disagree-about-the-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      When the workers and the web process disagree about the storage
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#file-service-alternatives" class="md-nav__link">
     <span class="md-ellipsis">
       File Service alternatives
@@ -4305,8 +4323,26 @@ come with a <a href="https://caddy.io">Caddy</a> reverse proxy which is configur
 back any user uploaded files which are stored in the data/media volume.</p>
 <p>If you do not wish to use our default Caddy proxy, place your own reverse proxy in front
 of the backend and web-frontend services and have it serve user files from the media
-volume. On OpenShift/Kubernetes the <a href="../../deploy/helm/README.md">Helm chart</a> does this
-via path-based Routes and S3 object storage instead.</p>
+volume. Django itself only serves <code>MEDIA_URL</code> when <code>DEBUG</code> is on, so in production
+something in front has to.</p>
+<p>Exported files and backups are the exception: they are downloaded through the API,
+streamed out of the storage by the backend, so they need no media route and work the
+same whether the files sit on a volume or in a bucket the browser cannot reach. The
+link is short lived and signed; <code>BASEROW_EXPORT_DOWNLOAD_TOKEN_MAX_AGE_SECONDS</code>
+(default 600) controls how long, and <code>BASEROW_EXPORT_DOWNLOAD_BLOCK_SIZE</code> (default
+65536) how much is read per chunk while streaming.</p>
+<p>On OpenShift/Kubernetes the <a href="../../deploy/helm/README.md">Helm chart</a> routes by path
+and has no media route at all, so a deployment that relies on file fields needs object
+storage.</p>
+<h4 id="when-the-workers-and-the-web-process-disagree-about-the-storage">When the workers and the web process disagree about the storage<a class="headerlink" href="#when-the-workers-and-the-web-process-disagree-about-the-storage" title="Permanent link">&para;</a></h4>
+<p>When exports are written by a Celery worker in one container and downloaded through a
+web process in another, the two must share the storage. If they do not, the export
+finishes perfectly and the download then fails — which is why the download reports a
+misconfigured file storage rather than a missing file, and why a worker writes a probe
+file that the web process reads back. The result is on the instance health page
+(<code>/api/_health/full/</code>, <strong>Admin → Health</strong>), so the split is visible before anyone runs
+an export. <code>BASEROW_SHARED_STORAGE_PROBE_INTERVAL_MINUTES</code> (default 5) controls how
+often the probe is written; the check allows three intervals before it complains.</p>
 <h4 id="file-service-alternatives">File Service alternatives<a class="headerlink" href="#file-service-alternatives" title="Permanent link">&para;</a></h4>
 <p>You can alternatively configure Baserow to store files by uploading them to an external service.
 This is highly recommended if you wish to horizontally scale Baserow or deploy it in
