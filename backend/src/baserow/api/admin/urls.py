@@ -3,6 +3,7 @@ from django.urls import include, path
 from baserow.api.audit_log import urls as audit_log_urls
 
 from .backups import urls as backups_urls
+from .build import urls as build_urls
 from .dashboard import urls as dashboard_urls
 from .limits import urls as limits_urls
 from .users import urls as users_urls
@@ -17,4 +18,5 @@ urlpatterns = [
     path("audit-log/", include(audit_log_urls, namespace="audit_log")),
     path("backups/", include(backups_urls, namespace="backups")),
     path("limits/", include(limits_urls, namespace="limits")),
+    path("build/", include(build_urls, namespace="build")),
 ]

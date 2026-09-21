@@ -3,6 +3,15 @@
     <div class="admin-settings">
       <h1>{{ $t('settings.settingsTitle') }}</h1>
       <div class="admin-settings__group">
+        <h2 class="admin-settings__group-title">
+          {{ $t('settings.versionTitle') }}
+        </h2>
+        <p class="admin-settings__group-description">
+          {{ $t('settings.versionDescription') }}
+        </p>
+        <BuildInfo :backend="buildInfo" :error="buildInfoFailed"></BuildInfo>
+      </div>
+      <div class="admin-settings__group">
         <div class="admin-settings__item">
           <div class="admin-settings__label">
             <div class="admin-settings__name">
@@ -12,25 +21,12 @@
               {{ $t('settings.instanceIdDescription') }}
             </div>
           </div>
-          <div class="admin-settings__control">
+          <div class="admin-settings__control admin-settings__control--inline">
             {{ instanceId }}
-            <a class="licenses__instance-id-copy" @click.prevent="handleCopy()">
+            <a class="admin-settings__copy" @click.prevent="handleCopy()">
               {{ $t('action.copy') }}
               <Copied ref="instanceIdCopied" />
             </a>
-          </div>
-        </div>
-        <div class="admin-settings__item">
-          <div class="admin-settings__label">
-            <div class="admin-settings__name">
-              {{ $t('settings.baserowVersion') }}
-            </div>
-            <div class="admin-settings__description">
-              {{ $t('settings.baserowVersionDescription') }}
-            </div>
-          </div>
-          <div class="admin-settings__control">
-            {{ baserowVersion }}
           </div>
         </div>
         <div class="admin-settings__item">
@@ -275,7 +271,7 @@
         <h2 class="admin-settings__group-title">
           {{ $t('settings.operationalLimits') }}
         </h2>
-        <p class="admin-settings__description margin-bottom-2">
+        <p class="admin-settings__group-description">
           {{ $t('settings.operationalLimitsDescription') }}
         </p>
         <div
@@ -314,10 +310,12 @@ import { required, integer, between, helpers } from '@vuelidate/validators'
 import { notifyIf } from '@baserow/modules/core/utils/error'
 import SettingsService from '@baserow/modules/core/services/settings'
 import LimitsService from '@baserow/modules/core/services/admin/limits'
+import BuildService from '@baserow/modules/core/services/admin/build'
+import BuildInfo from '@baserow/modules/core/components/version/BuildInfo.vue'
 import { copyToClipboard } from '@baserow/modules/database/utils/clipboard'
 import { EMAIL_VERIFICATION_OPTIONS } from '@baserow/modules/core/enums'
 
-const { $registry, $client, $baserowVersion, $i18n } = useNuxtApp()
+const { $registry, $client, $i18n } = useNuxtApp()
 const { t: $t } = useI18n()
 const store = useStore()
 
@@ -445,6 +443,23 @@ const operationalLimits = computed(() => {
 
 const instanceId = computed(() => instanceData.value?.instance_id ?? '')
 
+// The build the backend is running. The web-frontend build needs no request,
+// BuildInfo reads it from the bundle it is served with.
+const { data: buildData, error: buildDataError } = await useAsyncData(
+  'build-info',
+  async () => {
+    const { data } = await BuildService($client).get()
+    return data
+  }
+)
+
+const buildInfo = computed(() => buildData.value ?? null)
+
+// A failing request is itself a finding: a backend older than this web-frontend
+// has no endpoint to answer it, so the panel says that instead of showing an
+// empty version block.
+const buildInfoFailed = computed(() => Boolean(buildDataError.value))
+
 const additionalSettingsComponents = computed(() => {
   return Object.values($registry.getAll('plugin'))
     .reduce(
@@ -454,8 +469,6 @@ const additionalSettingsComponents = computed(() => {
     )
     .filter((component) => component !== null)
 })
-
-const baserowVersion = computed(() => $baserowVersion)
 
 function handleCopy() {
   copyToClipboard(instanceId.value)

@@ -644,6 +644,7 @@
   },
   "health": {
     "title": "Baserow health checks",
+    "checksTitle": "Checks",
     "description": "These checks show the current status of your Baserow installation."
   },
   "emailTester": {

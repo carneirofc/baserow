@@ -666,12 +666,25 @@
     "loginText": "Already have account and password?",
     "goBack": "Go back"
   },
+  "buildInfo": {
+    "title": "Version",
+    "applicationVersion": "Application version",
+    "commit": "Commit",
+    "buildDate": "Built on",
+    "baserowCoreVersion": "Baserow core version",
+    "developmentBuild": "Development build",
+    "webFrontendBuild": "Web-frontend build: {build}",
+    "mismatchTitle": "Backend and web-frontend builds differ",
+    "mismatchMessage": "The backend runs {backend} while the web-frontend runs {frontend}. Only part of this deployment was upgraded, which can cause unexpected errors.",
+    "unavailableTitle": "The backend build could not be read",
+    "unavailableMessage": "The request for the backend build failed. A backend older than this web-frontend does not answer it at all, which would mean only part of this deployment was upgraded."
+  },
   "settings": {
     "settingsTitle": "Admin settings",
+    "versionTitle": "Version",
+    "versionDescription": "Which build of the application this instance runs. Quote these values when reporting a problem.",
     "baserowInstanceId": "Instance ID",
     "instanceIdDescription": "The instance ID is the unique identifier of your Baserow copy.",
-    "baserowVersion": "Baserow version",
-    "baserowVersionDescription": "The version number of this instance.",
     "accountRestrictions": "Account restrictions",
     "settingAllowResetPasswordName": "Allow resetting password",
     "settingAllowResetPasswordDescription": "By default, users can request a password reset link.",

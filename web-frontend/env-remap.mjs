@@ -60,6 +60,22 @@ const envMapping = {
   MEDIA_URL: 'NUXT_PUBLIC_MEDIA_URL',
 }
 
+// Build metadata. Already baked into the bundle at image build time; remapped
+// here so a deployment can still correct it at runtime. Only a non-empty value
+// counts: an orchestrator that forwards the variable without setting it would
+// otherwise blank out the version the image was built with.
+const buildInfoMapping = {
+  BASEROW_BUILD_VERSION: 'NUXT_PUBLIC_APP_VERSION',
+  BASEROW_BUILD_COMMIT: 'NUXT_PUBLIC_GIT_COMMIT',
+  BASEROW_BUILD_DATE: 'NUXT_PUBLIC_BUILD_DATE',
+}
+
+for (const [legacyKey, nuxtKey] of Object.entries(buildInfoMapping)) {
+  if (process.env[legacyKey] && process.env[nuxtKey] === undefined) {
+    process.env[nuxtKey] = process.env[legacyKey]
+  }
+}
+
 // Remap env vars: only if legacy var exists AND NUXT_ var is not already set
 for (const [legacyKey, nuxtKey] of Object.entries(envMapping)) {
   if (

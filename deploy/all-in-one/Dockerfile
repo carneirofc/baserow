@@ -163,6 +163,19 @@ COPY --chown=$UID:$GID deploy/all-in-one/supervisor/ /baserow/supervisor
 COPY --chown=$UID:$GID deploy/all-in-one/baserow.sh /baserow.sh
 COPY --chown=$UID:$GID deploy/plugins/*.sh /baserow/plugins/
 
+# Build metadata for the backend running here. The web-frontend carries its
+# own copy baked into the .output it was built with.
+# Declared last on purpose: the build date changes on every release run, so
+# an ENV layer above the layers below would invalidate the build cache on
+# every tag cut.
+ARG BASEROW_BUILD_VERSION=""
+ARG BASEROW_BUILD_COMMIT=""
+ARG BASEROW_BUILD_DATE=""
+
+ENV BASEROW_BUILD_VERSION=${BASEROW_BUILD_VERSION} \
+    BASEROW_BUILD_COMMIT=${BASEROW_BUILD_COMMIT} \
+    BASEROW_BUILD_DATE=${BASEROW_BUILD_DATE}
+
 HEALTHCHECK --interval=60s CMD ["/bin/bash", "/baserow/backend/docker/docker-entrypoint.sh", "backend-healthcheck"]
 ENTRYPOINT ["/baserow.sh"]
 CMD ["start"]
@@ -207,6 +220,19 @@ COPY --chown=$UID:$GID Caddyfile /baserow/caddy/Caddyfile
 COPY --chown=$UID:$GID deploy/all-in-one/supervisor/ /baserow/supervisor
 COPY --chown=$UID:$GID deploy/all-in-one/baserow.sh /baserow.sh
 COPY --chown=$UID:$GID deploy/plugins/*.sh /baserow/plugins/
+
+# Build metadata for the backend running here. The web-frontend carries its
+# own copy baked into the .output it was built with.
+# Declared last on purpose: the build date changes on every release run, so
+# an ENV layer above the layers below would invalidate the build cache on
+# every tag cut.
+ARG BASEROW_BUILD_VERSION=""
+ARG BASEROW_BUILD_COMMIT=""
+ARG BASEROW_BUILD_DATE=""
+
+ENV BASEROW_BUILD_VERSION=${BASEROW_BUILD_VERSION} \
+    BASEROW_BUILD_COMMIT=${BASEROW_BUILD_COMMIT} \
+    BASEROW_BUILD_DATE=${BASEROW_BUILD_DATE}
 
 HEALTHCHECK --interval=60s CMD ["/bin/bash", "/baserow/backend/docker/docker-entrypoint.sh", "backend-healthcheck"]
 ENTRYPOINT ["/baserow.sh"]

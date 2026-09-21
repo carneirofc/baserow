@@ -11,6 +11,13 @@ export BASEROW_PLUGIN_DIR=${BASEROW_PLUGIN_DIR:-$DATA_DIR/plugins}
 # Runtime web-frontend branding (docs/installation/branding.md).
 export BASEROW_BRANDING_DIR=${BASEROW_BRANDING_DIR:-$DATA_DIR/branding}
 
+# Build metadata, baked into the image at build time. Exported here so the
+# backend and the web-frontend both see the same values, and so an operator can
+# correct them without rebuilding.
+export BASEROW_BUILD_VERSION=${BASEROW_BUILD_VERSION:-}
+export BASEROW_BUILD_COMMIT=${BASEROW_BUILD_COMMIT:-}
+export BASEROW_BUILD_DATE=${BASEROW_BUILD_DATE:-}
+
 export BASEROW_AMOUNT_OF_WORKERS=${BASEROW_AMOUNT_OF_WORKERS:-1}
 export BASEROW_AMOUNT_OF_GUNICORN_WORKERS=${BASEROW_AMOUNT_OF_GUNICORN_WORKERS:-3}
 

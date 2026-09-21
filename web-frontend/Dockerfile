@@ -132,6 +132,20 @@ RUN dos2unix /baserow/web-frontend/docker/docker-entrypoint.sh \
     && chmod a+x /baserow/web-frontend/docker/docker-entrypoint.sh \
     && chown $UID:$GID /baserow/web-frontend/docker/docker-entrypoint.sh
 
+# Build metadata. Nuxt reads these while building, so they are baked into
+# .output, which is all the prod stage ships. Empty unless the publishing
+# workflow passes them.
+# Declared last on purpose: the build date changes on every release run, so
+# an ENV layer above the layers below would invalidate the build cache on
+# every tag cut.
+ARG BASEROW_BUILD_VERSION=""
+ARG BASEROW_BUILD_COMMIT=""
+ARG BASEROW_BUILD_DATE=""
+
+ENV BASEROW_BUILD_VERSION=${BASEROW_BUILD_VERSION} \
+    BASEROW_BUILD_COMMIT=${BASEROW_BUILD_COMMIT} \
+    BASEROW_BUILD_DATE=${BASEROW_BUILD_DATE}
+
 USER $UID:$GID
 WORKDIR /baserow/web-frontend
 
@@ -323,6 +337,20 @@ COPY --chown=$UID:$GID --from=builder-prod /baserow/web-frontend/.output /basero
 COPY --chown=$UID:$GID ./web-frontend/env-remap.mjs /baserow/web-frontend/env-remap.mjs
 COPY --chown=$UID:$GID ./web-frontend/docker/docker-entrypoint-prod.sh /baserow/web-frontend/docker/docker-entrypoint.sh
 RUN chmod a+x /baserow/web-frontend/docker/docker-entrypoint.sh
+
+# Repeated from builder-prod: the values are already baked into .output, this
+# keeps them readable from `docker inspect` and lets a deployment correct them
+# at runtime through env-remap.mjs without rebuilding.
+# Declared last on purpose: the build date changes on every release run, so
+# an ENV layer above the layers below would invalidate the build cache on
+# every tag cut.
+ARG BASEROW_BUILD_VERSION=""
+ARG BASEROW_BUILD_COMMIT=""
+ARG BASEROW_BUILD_DATE=""
+
+ENV BASEROW_BUILD_VERSION=${BASEROW_BUILD_VERSION} \
+    BASEROW_BUILD_COMMIT=${BASEROW_BUILD_COMMIT} \
+    BASEROW_BUILD_DATE=${BASEROW_BUILD_DATE}
 
 HEALTHCHECK --interval=10s CMD wget -q -O /dev/null http://localhost:3000/_health/ || exit 1
 

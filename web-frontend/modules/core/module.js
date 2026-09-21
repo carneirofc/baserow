@@ -53,8 +53,12 @@ export default defineNuxtModule({
     nuxt.options.runtimeConfig.public = _.defaultsDeep(
       nuxt.options.runtimeConfig.public,
       {
-        buildDate: new Date().toISOString(),
-        gitCommit: process.env.GITHUB_SHA?.slice(0, 7),
+        // Build metadata, baked in as docker build args when an image is
+        // published. Empty means a development build, which every consumer has
+        // to render as "no version to show" rather than an empty row.
+        appVersion: process.env.BASEROW_BUILD_VERSION || '',
+        gitCommit: process.env.BASEROW_BUILD_COMMIT || '',
+        buildDate: process.env.BASEROW_BUILD_DATE || '',
         downloadFileViaXhr: '0',
         baserowDisablePublicUrlCheck: false,
         publicBackendUrl: 'http://localhost:8000',
