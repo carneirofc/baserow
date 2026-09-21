@@ -15,9 +15,9 @@ keywords:
   - database
   - openshift
   - eks
-version: 0.7.0
+version: 0.7.1
 # Tracks the application version shipped by this fork's images.
-appVersion: "0.13.0"
+appVersion: "0.14.0"
 home: https://github.com/carneirofc/baserow
 sources:
   - https://github.com/carneirofc/baserow
@@ -27,12 +27,12 @@ maintainers:
 
 annotations:
   artifacthub.io/changes: |
-    - kind: changed
+    - kind: added
       description: >-
-        appVersion 0.13.0: the admin settings page lists the instance's
-        operational limits, retention and expiry values are stated next to the
-        data they govern, running jobs show how long they have been going, and
-        the interface now ships English and Brazilian Portuguese only.
+        appVersion 0.14.0: the interface reports which build it is running - the
+        release version and commit on the login screen and in the user menu, and
+        the backend build, its build date and a mismatch warning on the admin
+        settings and health pages.
 
 dependencies:
   - name: postgresql

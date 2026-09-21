@@ -379,7 +379,7 @@ pass a real value instead.
 
 | Name                       | Description                                                                          | Defaults |
 | -------------------------- | ------------------------------------------------------------------------------------ | -------- |
-| BASEROW\_BUILD\_VERSION    | The release tag the instance was built from, for example `v0.13.0`.                  |          |
+| BASEROW\_BUILD\_VERSION    | The release tag the instance was built from, for example `v0.14.0`.                  |          |
 | BASEROW\_BUILD\_COMMIT     | The full git commit hash the instance was built from.                                |          |
 | BASEROW\_BUILD\_DATE       | When the image was built, as an ISO 8601 timestamp, for example `2026-09-18T10:34:30Z`. |          |
 
