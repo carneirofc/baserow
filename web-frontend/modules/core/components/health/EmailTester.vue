@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>
+    <h2 class="admin-health__group-title">
       {{ $t('emailTester.title') }}
 
       <a :href="$branding.docsUrl" target="_blank"

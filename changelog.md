@@ -1,5 +1,11 @@
 # Changelog
 
+## Released 0.14.0
+
+### New features
+* [Core] The interface now shows which build of the application is running: the release version and commit appear on the login screen and in the user menu, and the admin settings and health pages list the backend build, its build date and a warning when the backend and web-frontend come from different builds.
+
+
 ## Released 0.13.0
 
 ### New features

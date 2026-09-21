@@ -49,6 +49,13 @@ jobs:
           echo "backend=${REGISTRY}/${IMAGE_REPO}/backend:build-${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
           echo "webfrontend=${REGISTRY}/${IMAGE_REPO}/web-frontend:build-${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
 
+      # Baked into every image below and reported by the UI, so a running
+      # instance states the exact source it was built from.
+      - name: Compute build metadata
+        id: buildmeta
+        run: |
+          echo "date=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_OUTPUT"
+
       - name: Docker metadata for all-in-one image
         id: meta
         uses: docker/metadata-action@v6
@@ -109,6 +116,10 @@ jobs:
           # Re-resolve the base images (ubuntu:26.04, golang) on every release build so
           # a tag cut picks up upstream security rebuilds instead of a stale cache hit.
           pull: true
+          build-args: |
+            BASEROW_BUILD_VERSION=${{ github.ref_name }}
+            BASEROW_BUILD_COMMIT=${{ github.sha }}
+            BASEROW_BUILD_DATE=${{ steps.buildmeta.outputs.date }}
           # Intermediate pinned tag (consumed by the all-in-one build) plus the
           # stable semver/latest tags used by the Helm chart.
           tags: |
@@ -127,6 +138,10 @@ jobs:
           platforms: linux/amd64
           push: true
           pull: true
+          build-args: |
+            BASEROW_BUILD_VERSION=${{ github.ref_name }}
+            BASEROW_BUILD_COMMIT=${{ github.sha }}
+            BASEROW_BUILD_DATE=${{ steps.buildmeta.outputs.date }}
           tags: |
             ${{ steps.refs.outputs.webfrontend }}
             ${{ steps.meta-webfrontend.outputs.tags }}
@@ -158,6 +173,9 @@ jobs:
           build-args: |
             BACKEND_IMAGE=${{ steps.refs.outputs.backend }}
             WEBFRONTEND_IMAGE=${{ steps.refs.outputs.webfrontend }}
+            BASEROW_BUILD_VERSION=${{ github.ref_name }}
+            BASEROW_BUILD_COMMIT=${{ github.sha }}
+            BASEROW_BUILD_DATE=${{ steps.buildmeta.outputs.date }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha,scope=all-in-one

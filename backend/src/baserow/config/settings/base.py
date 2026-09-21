@@ -27,6 +27,14 @@ from baserow.core.telemetry.utils import otel_is_enabled
 from baserow.throttling.types import RateLimit
 from baserow.version import VERSION
 
+# Build metadata, injected as docker build args when an image is published. They
+# identify the exact source the running instance was built from, which the version
+# number alone cannot: VERSION tracks the upstream Baserow codebase, while these
+# track this fork's release tag and commit. Empty in a development checkout.
+BASEROW_BUILD_VERSION = os.getenv("BASEROW_BUILD_VERSION", "")
+BASEROW_BUILD_COMMIT = os.getenv("BASEROW_BUILD_COMMIT", "")
+BASEROW_BUILD_DATE = os.getenv("BASEROW_BUILD_DATE", "")
+
 # A comma separated list of feature flags used to enable in-progress or not ready
 # features for developers. See docs/development/feature-flags.md for more info.
 FEATURE_FLAGS = [

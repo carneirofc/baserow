@@ -384,6 +384,19 @@ RUN rm -rf /baserow/backend/tests /baserow/backend/email_compiler
 
 COPY --chown=$UID:$GID deploy/plugins/*.sh /baserow/plugins/
 
+# Build metadata, so a running instance can state which source it came from.
+# Empty unless the publishing workflow passes them.
+# Declared last on purpose: the build date changes on every release run, so
+# an ENV layer above the layers below would invalidate the build cache on
+# every tag cut.
+ARG BASEROW_BUILD_VERSION=""
+ARG BASEROW_BUILD_COMMIT=""
+ARG BASEROW_BUILD_DATE=""
+
+ENV BASEROW_BUILD_VERSION=${BASEROW_BUILD_VERSION} \
+    BASEROW_BUILD_COMMIT=${BASEROW_BUILD_COMMIT} \
+    BASEROW_BUILD_DATE=${BASEROW_BUILD_DATE}
+
 USER $UID:$GID
 WORKDIR /baserow/backend
 

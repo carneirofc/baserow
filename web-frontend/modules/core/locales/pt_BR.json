@@ -255,8 +255,23 @@
     "disabled": "Esqueci a senha está desabilitado",
     "disabledMessage": "Não é possível recuperar a senha porque ela foi desativada."
   },
+  "buildInfo": {
+    "title": "Versão",
+    "applicationVersion": "Versão da aplicação",
+    "commit": "Commit",
+    "buildDate": "Compilado em",
+    "baserowCoreVersion": "Versão do núcleo Baserow",
+    "developmentBuild": "Compilação de desenvolvimento",
+    "webFrontendBuild": "Compilação do web-frontend: {build}",
+    "mismatchTitle": "As compilações do backend e do web-frontend são diferentes",
+    "mismatchMessage": "O backend executa {backend} e o web-frontend executa {frontend}. Apenas parte desta instalação foi atualizada, o que pode causar erros inesperados.",
+    "unavailableTitle": "Não foi possível ler a compilação do backend",
+    "unavailableMessage": "A requisição da compilação do backend falhou. Um backend mais antigo que este web-frontend não a responde, o que indicaria que apenas parte desta instalação foi atualizada."
+  },
   "settings": {
     "settingsTitle": "Configurações administrativas",
+    "versionTitle": "Versão",
+    "versionDescription": "Qual compilação da aplicação esta instância executa. Informe estes valores ao relatar um problema.",
     "baserowInstanceId": "Instância ID",
     "instanceIdDescription": "A instância ID é uma identificação única da cópia do seu Baserow.",
     "accountRestrictions": "Restrições ao conta",
