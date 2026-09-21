@@ -76,6 +76,8 @@ Baserow provides various APIs detailed below:
   redo technically.
 * [Permissions handling Guide](technical/permissions-guide.md): How Baserow implements
   permission checking technically.
+* [Table file imports](technical/table-file-imports.md): The append/upsert/replace
+  import modes, the strict column contract, and the trail every import leaves behind.
 
 ## Development
 

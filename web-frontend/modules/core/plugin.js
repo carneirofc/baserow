@@ -39,6 +39,7 @@ import {
 import {
   BasicPermissionManagerType,
   CorePermissionManagerType,
+  GranularRolePermissionManagerType,
   StaffPermissionManagerType,
   WorkspaceMemberPermissionManagerType,
   StaffOnlySettingOperationPermissionManagerType,
@@ -184,6 +185,10 @@ export default defineNuxtPlugin({
     registry.register(
       'permissionManager',
       new BasicPermissionManagerType(context)
+    )
+    registry.register(
+      'permissionManager',
+      new GranularRolePermissionManagerType(context)
     )
     registry.register(
       'permissionManager',

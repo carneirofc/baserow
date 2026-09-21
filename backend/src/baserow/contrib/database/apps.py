@@ -86,13 +86,17 @@ class DatabaseConfig(AppConfig):
             DeleteRowsActionType,
             ImportRowsActionType,
             MoveRowActionType,
+            ReplaceRowsFromFileActionType,
             UpdateRowActionType,
             UpdateRowsActionType,
+            UpsertRowsFromFileActionType,
         )
 
         action_type_registry.register(CreateRowActionType())
         action_type_registry.register(CreateRowsActionType())
         action_type_registry.register(ImportRowsActionType())
+        action_type_registry.register(UpsertRowsFromFileActionType())
+        action_type_registry.register(ReplaceRowsFromFileActionType())
         action_type_registry.register(DeleteRowActionType())
         action_type_registry.register(DeleteRowsActionType())
         action_type_registry.register(MoveRowActionType())
@@ -755,7 +759,10 @@ class DatabaseConfig(AppConfig):
 
         from baserow.core.jobs.registries import job_type_registry
 
+        # The durable table import records live in their own module that nothing
+        # else imports eagerly. Import them so Django registers the model.
         from .airtable.job_types import AirtableImportJobType
+        from .data_import import models as data_import_models  # noqa: F401
         from .data_sync.job_types import SyncDataSyncTableJobType
         from .fields.job_types import DuplicateFieldJobType
         from .file_import.job_types import FileImportJobType
@@ -844,7 +851,9 @@ class DatabaseConfig(AppConfig):
             ListRowNamesDatabaseTableOperationType,
             ListRowsDatabaseTableOperationType,
             ReadDatabaseTableOperationType,
+            ReplaceRowsDatabaseTableOperationType,
             UpdateDatabaseTableOperationType,
+            UpsertRowsDatabaseTableOperationType,
         )
         from .tokens.operations import (
             CreateTokenOperationType,
@@ -938,6 +947,8 @@ class DatabaseConfig(AppConfig):
         operation_type_registry.register(OrderTablesDatabaseTableOperationType())
         operation_type_registry.register(CreateRowDatabaseTableOperationType())
         operation_type_registry.register(ImportRowsDatabaseTableOperationType())
+        operation_type_registry.register(UpsertRowsDatabaseTableOperationType())
+        operation_type_registry.register(ReplaceRowsDatabaseTableOperationType())
         operation_type_registry.register(DeleteDatabaseTableOperationType())
         operation_type_registry.register(DuplicateDatabaseTableOperationType())
         operation_type_registry.register(ListRowsDatabaseTableOperationType())
@@ -1131,8 +1142,10 @@ class DatabaseConfig(AppConfig):
             CreateRowsHistoryProvider,
             DeleteRowHistoryProvider,
             DeleteRowsHistoryProvider,
+            ReplaceRowsFromFileHistoryProvider,
             RestoreFromTrashHistoryProvider,
             UpdateRowsHistoryProvider,
+            UpsertRowsFromFileHistoryProvider,
         )
         from baserow.contrib.database.rows.registries import (
             row_history_provider_registry,
@@ -1144,6 +1157,8 @@ class DatabaseConfig(AppConfig):
         row_history_provider_registry.register(DeleteRowHistoryProvider())
         row_history_provider_registry.register(UpdateRowsHistoryProvider())
         row_history_provider_registry.register(RestoreFromTrashHistoryProvider())
+        row_history_provider_registry.register(UpsertRowsFromFileHistoryProvider())
+        row_history_provider_registry.register(ReplaceRowsFromFileHistoryProvider())
 
         from baserow.core.search.registries import workspace_search_registry
 
@@ -1204,6 +1219,7 @@ class DatabaseConfig(AppConfig):
         post_migrate.connect(safely_update_formula_versions, sender=self)
         pre_migrate.connect(clear_generated_model_cache_receiver, sender=self)
 
+        import baserow.contrib.database.data_import.tasks  # noqa: F401
         import baserow.contrib.database.field_rules.receivers  # noqa: F401
         import baserow.contrib.database.field_rules.signals  # noqa: F401
         import baserow.contrib.database.fields.receivers  # noqa: F401

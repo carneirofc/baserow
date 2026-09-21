@@ -19,6 +19,57 @@
         <div class="modal__actions"></div>
       </div>
 
+      <div v-if="table" class="control margin-bottom-2">
+        <FormGroup
+          :label="$t('importFileModal.modeLabel')"
+          :helper-text="$t('importFileModal.modeDescription')"
+          small-label
+          required
+        >
+          <ul class="choice-items margin-top-1">
+            <li v-for="option in modeOptions" :key="option.value">
+              <a
+                class="choice-items__link"
+                :class="{
+                  active: mode === option.value,
+                  disabled:
+                    importInProgress || restoredFromStore || !option.allowed,
+                }"
+                @click="onModeClick(option)"
+              >
+                <i class="choice-items__icon" :class="option.iconClass"></i>
+                <span>{{ option.name }}</span>
+                <HelpIcon
+                  v-if="!option.allowed"
+                  :icon="'lock'"
+                  :tooltip="$t('importFileModal.modeNotAllowed')"
+                />
+                <i
+                  v-else-if="mode === option.value"
+                  class="choice-items__icon-active iconoir-check-circle"
+                ></i>
+              </a>
+            </li>
+          </ul>
+        </FormGroup>
+      </div>
+
+      <Alert v-if="isReplace" type="error" class="margin-bottom-2">
+        <template #title>{{
+          $t('importFileModal.replaceWarningTitle')
+        }}</template>
+        <p>
+          {{
+            $t('importFileModal.replaceWarningDescription', {
+              table: table.name,
+            })
+          }}
+        </p>
+        <Checkbox v-model="replaceConfirmed" :disabled="importInProgress">
+          {{ $t('importFileModal.replaceConfirm') }}
+        </Checkbox>
+      </Alert>
+
       <div class="control margin-bottom-2">
         <FormGroup
           :label="$t('importFileModal.importLabel')"
@@ -72,25 +123,18 @@
           @get-data="onGetData($event)"
         >
           <template #upsertMapping>
-            <div class="control margin-top-1">
+            <div v-if="isUpsert" class="control margin-top-1">
               <label class="control__label control__label--small">
-                {{ $t('importFileModal.useUpsertField') }}
+                {{ $t('importFileModal.upsertFieldLabel') }}
                 <HelpIcon
                   :icon="'info-empty'"
                   :tooltip="$t('importFileModal.upsertTooltip')"
                 />
               </label>
-              <div class="control__elements">
-                <Checkbox
-                  v-model="useUpsertField"
-                  :disabled="!mappingNotEmpty"
-                  >{{ $t('common.yes') }}</Checkbox
-                >
-              </div>
 
               <Dropdown
                 v-model="upsertField"
-                :disabled="!useUpsertField"
+                :disabled="availableUpsertFields.length === 0"
                 class="margin-top-1"
               >
                 <DropdownItem
@@ -104,6 +148,21 @@
           </template>
         </component>
       </div>
+
+      <Alert
+        v-if="strictMappingProblems.length > 0"
+        type="warning"
+        class="margin-bottom-2"
+      >
+        <template #title>{{
+          $t('importFileModal.strictMappingTitle')
+        }}</template>
+        <ul>
+          <li v-for="problem in strictMappingProblems" :key="problem">
+            {{ problem }}
+          </li>
+        </ul>
+      </Alert>
 
       <ImportErrorReport :job="job" :error="error"></ImportErrorReport>
 
@@ -185,7 +244,12 @@
             class="margin-bottom-2"
           >
             <Dropdown v-model="mapping[index]">
-              <DropdownItem name="Skip" :value="0" icon="ban" />
+              <DropdownItem
+                v-if="!isStrictMode"
+                name="Skip"
+                :value="0"
+                icon="ban"
+              />
               <DropdownItem
                 v-for="field in availableFields"
                 :key="field.id"
@@ -233,6 +297,12 @@ import { ResponseErrorMessage } from '@baserow/modules/core/plugins/clientHandle
 import ImportErrorReport from '@baserow/modules/database/components/table/ImportErrorReport.vue'
 import { FileImportJobType } from '@baserow/modules/database/jobTypes'
 import { pageFinished } from '@baserow/modules/core/utils/routing'
+import {
+  IMPORT_MODE_APPEND,
+  IMPORT_MODE_REPLACE,
+  IMPORT_MODE_UPSERT,
+  STRICT_IMPORT_MODES,
+} from '@baserow/modules/database/constants'
 import { nextTick, useNuxtApp } from '#imports'
 
 export default {
@@ -272,7 +342,8 @@ export default {
       getData: null,
       previewData: [],
       dataLoaded: false,
-      useUpsertField: false,
+      mode: IMPORT_MODE_APPEND,
+      replaceConfirmed: false,
       upsertField: undefined,
     }
   },
@@ -300,15 +371,104 @@ export default {
         (value) => this.fieldIndexMap[value] !== undefined
       )
     },
+    isUpsert() {
+      return this.mode === IMPORT_MODE_UPSERT
+    },
+    isReplace() {
+      return this.mode === IMPORT_MODE_REPLACE
+    },
+    isStrictMode() {
+      return STRICT_IMPORT_MODES.includes(this.mode)
+    },
+    modeOptions() {
+      const workspaceId = this.database.workspace.id
+      return [
+        {
+          value: IMPORT_MODE_APPEND,
+          name: this.$t('importFileModal.modeAppend'),
+          iconClass: 'iconoir-plus',
+          allowed: this.$hasPermission(
+            'database.table.import_rows',
+            this.table,
+            workspaceId
+          ),
+        },
+        {
+          value: IMPORT_MODE_UPSERT,
+          name: this.$t('importFileModal.modeUpsert'),
+          iconClass: 'iconoir-refresh-double',
+          allowed: this.$hasPermission(
+            'database.table.upsert_rows',
+            this.table,
+            workspaceId
+          ),
+        },
+        {
+          value: IMPORT_MODE_REPLACE,
+          name: this.$t('importFileModal.modeReplace'),
+          iconClass: 'iconoir-repeat',
+          allowed: this.$hasPermission(
+            'database.table.replace_rows',
+            this.table,
+            workspaceId
+          ),
+        },
+      ]
+    },
+    /**
+     * The file columns the user has not assigned a field to. In a strict mode this
+     * is what stops the import: a column the table has no home for would be dropped
+     * silently otherwise.
+     */
+    unmappedFileColumns() {
+      return this.header.filter((name, index) => !this.mapping[index])
+    },
+    /**
+     * The importable fields no file column maps onto. In a strict mode these would
+     * be blanked (replace) or left stale (upsert) without the user noticing.
+     */
+    uncoveredFields() {
+      const mapped = Object.values(this.mapping)
+      return this.availableFields.filter((field) => !mapped.includes(field.id))
+    },
+    strictMappingProblems() {
+      if (!this.isStrictMode || !this.dataLoaded) {
+        return []
+      }
+      const problems = []
+      if (this.unmappedFileColumns.length > 0) {
+        problems.push(
+          this.$t('importFileModal.strictUnmappedColumns', {
+            columns: this.unmappedFileColumns.join(', '),
+          })
+        )
+      }
+      if (this.uncoveredFields.length > 0) {
+        problems.push(
+          this.$t('importFileModal.strictUncoveredFields', {
+            fields: this.uncoveredFields.map((field) => field.name).join(', '),
+          })
+        )
+      }
+      return problems
+    },
     canBeSubmitted() {
-      return (
-        this.importer &&
-        Object.values(this.mapping).some(
-          (value) => this.fieldIndexMap[value] !== undefined
-        ) &&
-        (!this.useUpsertField ||
-          Object.values(this.mapping).includes(this.upsertField))
-      )
+      if (!this.importer || !this.mappingNotEmpty) {
+        return false
+      }
+      if (this.isStrictMode && this.strictMappingProblems.length > 0) {
+        return false
+      }
+      if (this.isReplace && !this.replaceConfirmed) {
+        return false
+      }
+      if (
+        this.isUpsert &&
+        !Object.values(this.mapping).includes(this.upsertField)
+      ) {
+        return false
+      }
+      return true
     },
     fieldTypes() {
       return this.$registry.getAll('field')
@@ -486,6 +646,7 @@ export default {
       this.job = null
       this.restoredFromStore = false
       this.uploadProgressPercentage = 0
+      this.replaceConfirmed = false
       if (full) {
         this.header = []
         this.importState = null
@@ -495,6 +656,13 @@ export default {
         this.dataLoaded = false
       }
       this.hideError()
+    },
+    onModeClick(option) {
+      if (!option.allowed || this.importInProgress || this.restoredFromStore) {
+        return
+      }
+      this.mode = option.value
+      this.replaceConfirmed = false
     },
     onImporterClick(type) {
       // Don't let the user change the importer while a job is in progress
@@ -543,11 +711,20 @@ export default {
       let data = null
       const importConfiguration = {}
 
-      if (this.upsertField) {
+      if (this.isUpsert && this.upsertField) {
         // at the moment we use only one field, but the key may be composed of several
         // fields.
         importConfiguration.upsert_fields = [this.upsertField]
         importConfiguration.upsert_values = []
+      }
+
+      if (this.isStrictMode) {
+        // The backend re-checks this mapping against the table before it writes
+        // anything, so the file can never reshape the table's data format.
+        importConfiguration.file_header = [...this.header]
+        importConfiguration.field_mapping = this.header.map(
+          (name, index) => this.mapping[index] || 0
+        )
       }
 
       const mappedFieldIds = Object.values(this.mapping).filter(
@@ -668,8 +845,11 @@ export default {
           {
             onUploadProgress,
           },
-          importConfiguration.upsert_fields ? importConfiguration : null,
+          Object.keys(importConfiguration).length > 0
+            ? importConfiguration
+            : null,
           {
+            mode: this.mode,
             importer_type: this.importer,
             original_file_name: this.$refs.importerRef?.values?.filename || '',
           }
@@ -681,6 +861,10 @@ export default {
             this.$t('job.errorJobAlreadyRunningTitle'),
             this.$t('job.errorJobAlreadyRunningDescription')
           ),
+          ERROR_TABLE_IMPORT_SCHEMA_MISMATCH: new ResponseErrorMessage(
+            this.$t('importFileModal.strictMappingTitle'),
+            this.$t('importFileModal.strictMappingServerDescription')
+          ),
         })
       }
     },
@@ -688,6 +872,7 @@ export default {
       const translations = {
         'row-import-creation': this.$t('importFileModal.stateRowCreation'),
         'row-import-validation': this.$t('importFileModal.statePreValidation'),
+        'row-import-deletion': this.$t('importFileModal.stateRowDeletion'),
         'import-create-table': this.$t('importFileModal.stateCreateTable'),
       }
       return translations[jobState]
@@ -727,6 +912,8 @@ export default {
     },
     onShow() {
       this.importer = ''
+      this.mode = IMPORT_MODE_APPEND
+      this.upsertField = undefined
       this.reset()
       this.loadRunningJob()
     },
@@ -740,6 +927,9 @@ export default {
         this.job = runningJob
         this.restoredFromStore = true
         this.showProgressBar = true
+        if (runningJob.mode) {
+          this.mode = runningJob.mode
+        }
         // Restore the importer type if it's still registered; otherwise the
         // modal shows just the progress bar + file name.
         if (

@@ -37,8 +37,11 @@ from baserow.contrib.database.rows.operations import (
 from baserow.contrib.database.table.operations import (
     CreateRowDatabaseTableOperationType,
     DeleteDatabaseTableOperationType,
+    ImportRowsDatabaseTableOperationType,
     ReadDatabaseTableOperationType,
+    ReplaceRowsDatabaseTableOperationType,
     UpdateDatabaseTableOperationType,
+    UpsertRowsDatabaseTableOperationType,
 )
 from baserow.contrib.database.views.operations import (
     CreateViewOperationType,
@@ -73,6 +76,11 @@ CONTROLLABLE_OPERATIONS = {
         "read": ReadDatabaseRowOperationType.type,
         "update": UpdateDatabaseRowOperationType.type,
         "delete": DeleteDatabaseRowOperationType.type,
+    },
+    "database_import": {
+        "append": ImportRowsDatabaseTableOperationType.type,
+        "upsert": UpsertRowsDatabaseTableOperationType.type,
+        "replace": ReplaceRowsDatabaseTableOperationType.type,
     },
     "view": {
         "create": CreateViewOperationType.type,

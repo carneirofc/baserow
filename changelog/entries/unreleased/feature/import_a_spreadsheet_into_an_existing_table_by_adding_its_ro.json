@@ -1,0 +1,9 @@
+{
+    "type": "feature",
+    "message": "Import a spreadsheet into an existing table by adding its rows, updating the rows that already exist, or replacing the table's contents. The upload can never change the table's fields.",
+    "issue_origin": "github",
+    "issue_number": null,
+    "domain": "database",
+    "bullet_points": [],
+    "created_at": "2026-09-08"
+}

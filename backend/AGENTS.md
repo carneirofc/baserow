@@ -25,6 +25,8 @@ Owns everything under `backend/`: `src/baserow/` (source), `tests/` (pytest suit
 - `core/sso/oidc/config.py` and `core/roles/config.py` are imported from `config/settings/base.py` while settings are still evaluating. Keep them import-light (stdlib + `django.core.exceptions`); never import models or third-party clients there.
 - `BASEROW_ROLES` declares workspace roles; they are reconciled into `core.Role` rows by `sync_declared_roles` on `post_migrate` and by the `sync_roles` management command. Roles no longer declared are left alone, since members may still be assigned to them.
 - Keep `SsoErrorCode` (`core/sso/utils.py`) in sync with the `loginError` keys in `web-frontend/modules/core/locales/en.json`.
+- A file import writes cell values only; it must never change a table's fields. `contrib/database/data_import/` owns that contract: the import modes, the strict column check for `upsert`/`replace`, and the durable `TableImportRecord` every row-affecting import leaves behind. See `docs/technical/table-file-imports.md`.
+- `FieldType.can_import` must stay in sync with `getCanImport()` on the matching frontend field type — a strict import requires the file to cover exactly the importable fields. `tests/baserow/contrib/database/data_import/test_importable_field_types.py` pins the backend set.
 
 ## Work Guidance
 

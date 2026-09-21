@@ -116,6 +116,7 @@ from .types import (
     FieldsMetadata,
     FileImportConfiguration,
     GeneratedTableModelForUpdate,
+    ImportChangeCollector,
     RowId,
     RowsForUpdate,
     UpdatedRowsData,
@@ -1971,6 +1972,7 @@ class RowHandler(metaclass=baserow_trace_methods(tracer)):
         model: Optional[Type[GeneratedTableModel]] = None,
         signal_params: Optional[Dict] = None,
         skip_search_update: bool = True,
+        change_collector: Optional[ImportChangeCollector] = None,
     ) -> Tuple[List[Dict[str, Any] | None], Dict[str, Dict[str, Any]]]:
         """
         Updates rows by batch and generates an error report instead of failing on first
@@ -1984,6 +1986,8 @@ class RowHandler(metaclass=baserow_trace_methods(tracer)):
         :param signal_params: Additional parameters that are added to the signal.
         :param skip_search_update: When True, skip search updates. The caller is
             responsible for managing search updates.
+        :param change_collector: Optionally collects the before/after values of the
+            updated rows so the caller can write row history for them.
         :return: The updated rows and the error report.
         """
 
@@ -2018,6 +2022,8 @@ class RowHandler(metaclass=baserow_trace_methods(tracer)):
                     )
                     report.update(result.errors)
                     all_updated_rows.extend(result.updated_rows)
+                    if change_collector is not None:
+                        change_collector.collect_updated(result)
             except Exception as exc:
                 if is_unique_violation_error(exc):
                     for index, _ in enumerate(chunk):
@@ -2043,6 +2049,8 @@ class RowHandler(metaclass=baserow_trace_methods(tracer)):
         validate: bool = True,
         progress: Optional[Progress] = None,
         send_realtime_update: bool = True,
+        change_collector: Optional[ImportChangeCollector] = None,
+        check_permissions: bool = True,
     ) -> Tuple[List[GeneratedTableModel], Dict[str, Dict[str, Any]]]:
         """
         Creates new rows for a given table if the user belongs to the related
@@ -2061,6 +2069,10 @@ class RowHandler(metaclass=baserow_trace_methods(tracer)):
             import.
         :param send_realtime_update: The parameter passed to the rows_created
             signal indicating if a realtime update should be send.
+        :param change_collector: Optionally collects the before/after values of the
+            created and updated rows, so the caller can write row history for them.
+        :param check_permissions: Set to False when the caller has already checked a
+            more specific operation, such as an upsert or a replace.
 
         :raises InvalidRowLength:
 
@@ -2068,12 +2080,13 @@ class RowHandler(metaclass=baserow_trace_methods(tracer)):
         """
 
         workspace = table.database.workspace
-        CoreHandler().check_permissions(
-            user,
-            ImportRowsDatabaseTableOperationType.type,
-            workspace=workspace,
-            context=table,
-        )
+        if check_permissions:
+            CoreHandler().check_permissions(
+                user,
+                ImportRowsDatabaseTableOperationType.type,
+                workspace=workspace,
+                context=table,
+            )
         model = table.get_model()
 
         error_report = RowErrorReport(data)
@@ -2211,6 +2224,11 @@ class RowHandler(metaclass=baserow_trace_methods(tracer)):
             skip_search_update=full_field_search_update,
         )
 
+        if change_collector is not None and created_rows:
+            self._collect_created_rows_for_history(
+                change_collector, created_rows, model
+            )
+
         if rows_values_to_update:
             updated_rows, updated_report = self.force_update_rows_by_batch(
                 user,
@@ -2219,6 +2237,7 @@ class RowHandler(metaclass=baserow_trace_methods(tracer)):
                 progress=creation_sub_progress,
                 model=model,
                 skip_search_update=full_field_search_update,
+                change_collector=change_collector,
             )
 
         # Add errors to global report
@@ -2244,6 +2263,43 @@ class RowHandler(metaclass=baserow_trace_methods(tracer)):
             SearchHandler.schedule_update_search_data(table)
 
         return created_rows, error_report.to_dict()
+
+    def _collect_created_rows_for_history(
+        self,
+        change_collector: ImportChangeCollector,
+        created_rows: List[GeneratedTableModel],
+        model: Type[GeneratedTableModel],
+    ) -> None:
+        """
+        Feeds the rows an import created into the change collector, gathering the
+        values and metadata only for the rows that still fit within its budget.
+        """
+
+        if not change_collector.enabled:
+            return
+
+        budget = change_collector.remaining
+        if len(created_rows) > budget:
+            change_collector.truncated = True
+        rows = created_rows[:budget]
+        if not rows:
+            return
+
+        field_objects = [
+            field_object
+            for field_object in model.get_field_objects()
+            if field_object["name"] != "id" and not field_object["type"].read_only
+        ]
+        fields = [field_object["field"] for field_object in field_objects]
+        field_ids = [field.id for field in fields]
+        fields_metadata = self.get_fields_metadata_for_rows(rows, fields)
+        rows_values = [
+            {"id": row.id, **self.get_internal_values_for_fields(row, field_ids)}
+            for row in rows
+        ]
+        change_collector.collect_created(
+            [row.id for row in rows], rows_values, fields_metadata
+        )
 
     def get_fields_metadata_for_row_history(
         self,

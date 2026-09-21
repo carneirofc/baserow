@@ -1277,6 +1277,20 @@ BASEROW_ROW_HISTORY_RETENTION_DAYS = int(
 BASEROW_MAX_ROW_REPORT_ERROR_COUNT = int(
     os.getenv("BASEROW_MAX_ROW_REPORT_ERROR_COUNT", 30)
 )
+# Caps how many rows of an import get per-cell row history. A large import would
+# otherwise write one history entry per changed row; beyond this cap only the
+# summary TableImportRecord is kept and it is flagged as truncated.
+BASEROW_MAX_ROW_HISTORY_ENTRIES_PER_IMPORT = int(
+    os.getenv("BASEROW_MAX_ROW_HISTORY_ENTRIES_PER_IMPORT", 10000)
+)
+# How long a TableImportRecord is kept. 0 (the default) keeps them forever, because
+# a compliance trail that expires on its own is worse than no trail at all.
+BASEROW_TABLE_IMPORT_RECORD_RETENTION_DAYS = int(
+    os.getenv("BASEROW_TABLE_IMPORT_RECORD_RETENTION_DAYS", 0)
+)
+BASEROW_TABLE_IMPORT_RECONCILE_INTERVAL_MINUTES = int(
+    os.getenv("BASEROW_TABLE_IMPORT_RECONCILE_INTERVAL_MINUTES", 10)  # 10 minutes
+)
 BASEROW_MAX_SNAPSHOTS_PER_GROUP = int(os.getenv("BASEROW_MAX_SNAPSHOTS_PER_GROUP", 50))
 BASEROW_SNAPSHOT_EXPIRATION_TIME_DAYS = int(
     os.getenv("BASEROW_SNAPSHOT_EXPIRATION_TIME_DAYS", 360)  # 360 days

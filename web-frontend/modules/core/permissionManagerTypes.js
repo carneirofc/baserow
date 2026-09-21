@@ -105,6 +105,33 @@ export class BasicPermissionManagerType extends PermissionManagerType {
   }
 }
 
+export class GranularRolePermissionManagerType extends PermissionManagerType {
+  static getType() {
+    return 'granular_role'
+  }
+
+  /**
+   * Mirrors the backend `granular_role` manager: only the curated
+   * `controllable_operations` are gated, and only for a member who has a custom role
+   * assigned. `allowed_operations` is null for an admin or a member without a role,
+   * who keep the access the other managers decide.
+   */
+  hasPermission(permissions, operation, context, workspaceId) {
+    const {
+      controllable_operations: controllable,
+      allowed_operations: allowed,
+    } = permissions
+
+    if (allowed === null || allowed === undefined) {
+      return
+    }
+    if (!controllable.includes(operation)) {
+      return
+    }
+    return allowed.includes(operation)
+  }
+}
+
 export class StaffOnlySettingOperationPermissionManagerType extends PermissionManagerType {
   static getType() {
     return 'setting_operation'

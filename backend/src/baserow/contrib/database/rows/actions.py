@@ -1,9 +1,12 @@
 import dataclasses
+import json
 from collections.abc import Iterable
 from copy import deepcopy
 from decimal import Decimal
+from functools import cached_property
 from typing import Any, Dict, List, Optional, Tuple, Type
 
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 
@@ -13,6 +16,7 @@ from baserow.contrib.database.action.scopes import (
     TABLE_ACTION_CONTEXT,
     TableActionScopeType,
 )
+from baserow.contrib.database.data_import.constants import ROW_IMPORT_DELETION
 from baserow.contrib.database.rows.exceptions import (
     CannotCreateRowsInTable,
     CannotDeleteRowsInTable,
@@ -21,21 +25,33 @@ from baserow.contrib.database.rows.handler import (
     GeneratedTableModelForUpdate,
     RowHandler,
 )
-from baserow.contrib.database.rows.types import FileImportDict, UpdatedRowsData
+from baserow.contrib.database.rows.types import (
+    FileImportDict,
+    ImportChangeCollector,
+    UpdatedRowsData,
+)
 from baserow.contrib.database.table.handler import TableHandler
 from baserow.contrib.database.table.models import (
     FieldObject,
     GeneratedTableModel,
     Table,
 )
+from baserow.contrib.database.table.operations import (
+    ReplaceRowsDatabaseTableOperationType,
+    UpsertRowsDatabaseTableOperationType,
+)
 from baserow.contrib.database.views.handler import ViewHandler
 from baserow.contrib.database.views.models import View
 from baserow.core.action.models import Action
 from baserow.core.action.registries import (
     ActionScopeStr,
+    ActionType,
     ActionTypeDescription,
     UndoableActionType,
 )
+from baserow.core.encoders import JSONEncoderSupportingDataClasses
+from baserow.core.handler import CoreHandler
+from baserow.core.models import Workspace
 from baserow.core.trash.handler import TrashHandler
 from baserow.core.utils import Progress
 
@@ -424,6 +440,365 @@ class ImportRowsActionType(UndoableActionType):
             params.trashed_rows_entry_id,
             parent_trash_item_id=params.table_id,
         )
+
+
+class FileImportActionType(ActionType):
+    """
+    Base for the file import actions that touch rows which already exist in the
+    table.
+
+    These are deliberately not `UndoableActionType`s: undoing a replace of a large
+    table would mean carrying every removed row's values in the action's params.
+    Recovery goes through the trash entry a replace leaves behind and through the row
+    history these actions produce, both of which are recorded on the import's
+    `TableImportRecord`.
+    """
+
+    @classmethod
+    def scope(cls, table_id) -> ActionScopeStr:
+        return TableActionScopeType.value(table_id)
+
+    @classmethod
+    def register_action(
+        cls,
+        user: AbstractUser,
+        params: Any,
+        scope: ActionScopeStr,
+        workspace: Optional[Workspace] = None,
+    ) -> None:
+        """
+        Sends `action_done` with JSON-serializable params.
+
+        The undoable actions get this for free because they round-trip their params
+        through the `Action` table before sending the signal. These actions are not
+        stored, so the round-trip has to happen here; without it the row values still
+        carry `Decimal`s and `date`s straight from the ORM and the realtime layer
+        fails to serialize them.
+        """
+
+        serialized = json.loads(
+            json.dumps(
+                dataclasses.asdict(cls.params_to_serializable(params)),
+                cls=JSONEncoderSupportingDataClasses,
+            )
+        )
+        cls.send_action_done_signal(user, serialized, scope, workspace)
+
+    @classmethod
+    def make_change_collector(cls) -> ImportChangeCollector:
+        """
+        Builds the collector that bounds how much per-row history an import writes.
+        """
+
+        if settings.BASEROW_ROW_HISTORY_RETENTION_DAYS == 0:
+            return ImportChangeCollector(max_entries=0)
+        return ImportChangeCollector(
+            max_entries=max(settings.BASEROW_MAX_ROW_HISTORY_ENTRIES_PER_IMPORT, 0)
+        )
+
+    @classmethod
+    def serialized_to_params(cls, serialized_params: Any) -> Any:
+        """
+        Dictionary keys are stored as strings, so the row ids keying the before/after
+        maps come back as strings. Convert them to integers again so the row history
+        providers can look rows up by id.
+        """
+
+        params = super().serialized_to_params(serialized_params)
+        for attribute in (
+            "original_rows_values_by_id",
+            "updated_fields_metadata_by_row_id",
+            "created_fields_metadata_by_row_id",
+            "deleted_fields_metadata_by_row_id",
+        ):
+            values = getattr(params, attribute, None)
+            if values:
+                setattr(params, attribute, {int(k): v for k, v in values.items()})
+        return params
+
+
+class UpsertRowsFromFileActionType(FileImportActionType):
+    type = "upsert_rows_from_file"
+    description = ActionTypeDescription(
+        _("Upsert rows from file"),
+        _(
+            "Rows imported from a file, updating (%(updated_row_ids)s) and creating "
+            "(%(created_row_ids)s)"
+        ),
+        TABLE_ACTION_CONTEXT,
+    )
+    analytics_params = ["table_id", "database_id", "import_record_id"]
+
+    @dataclasses.dataclass
+    class Params:
+        table_id: int
+        table_name: str
+        database_id: int
+        database_name: str
+        created_row_ids: List[int]
+        created_rows_values: List[Dict[str, Any]]
+        created_fields_metadata_by_row_id: Dict[int, Dict[str, Any]]
+        updated_row_ids: List[int]
+        updated_rows_values: List[Dict[str, Any]]
+        original_rows_values_by_id: Dict[int, Dict[str, Any]]
+        updated_fields_metadata_by_row_id: Dict[int, Dict[str, Any]]
+        import_record_id: Optional[int] = None
+        history_truncated: bool = False
+
+        @cached_property
+        def created_row_id_set(self) -> set:
+            return set(self.created_row_ids)
+
+    @classmethod
+    def do(
+        cls,
+        user: AbstractUser,
+        table: Table,
+        data: FileImportDict,
+        progress: Optional[Progress] = None,
+        import_record_id: Optional[int] = None,
+    ) -> Tuple[List[GeneratedTableModel], Dict[str, Any], ImportChangeCollector]:
+        """
+        Imports the file's rows into the table, updating the rows whose upsert values
+        match an existing row and creating the rest. The table's fields are never
+        touched.
+
+        :param user: The user on whose behalf the rows are imported.
+        :param table: The table to import into.
+        :param data: The row values and the upsert configuration.
+        :param progress: An optional progress object to track the task progress.
+        :param import_record_id: The `TableImportRecord` this import is recorded on.
+        :return: The created rows, the error report and the collected changes.
+        """
+
+        if table.is_read_only_data_synced_table:
+            raise CannotCreateRowsInTable(
+                "Can't upsert rows because the table has a data sync."
+            )
+
+        workspace = table.database.workspace
+        CoreHandler().check_permissions(
+            user,
+            UpsertRowsDatabaseTableOperationType.type,
+            workspace=workspace,
+            context=table,
+        )
+
+        collector = cls.make_change_collector()
+        created_rows, error_report = RowHandler().import_rows(
+            user,
+            table,
+            data=data["data"],
+            configuration=data.get("configuration") or {},
+            progress=progress,
+            change_collector=collector,
+            check_permissions=False,
+        )
+        if error_report:
+            logger.warning(f"Errors during rows upsert: {error_report}")
+
+        params = cls.Params(
+            table.id,
+            table.name,
+            table.database.id,
+            table.database.name,
+            created_row_ids=collector.created_row_ids,
+            created_rows_values=collector.created_rows_values,
+            created_fields_metadata_by_row_id=(
+                collector.created_fields_metadata_by_row_id
+            ),
+            updated_row_ids=collector.updated_row_ids,
+            updated_rows_values=collector.updated_rows_values,
+            original_rows_values_by_id=collector.original_rows_values_by_id,
+            updated_fields_metadata_by_row_id=(
+                collector.updated_fields_metadata_by_row_id
+            ),
+            import_record_id=import_record_id,
+            history_truncated=collector.truncated,
+        )
+        cls.register_action(
+            user, params, scope=cls.scope(table.id), workspace=workspace
+        )
+
+        return created_rows, error_report, collector
+
+
+class ReplaceRowsFromFileActionType(FileImportActionType):
+    type = "replace_rows_from_file"
+    description = ActionTypeDescription(
+        _("Replace rows from file"),
+        _(
+            "Table contents replaced from a file, removing (%(deleted_row_ids)s) and "
+            "creating (%(created_row_ids)s)"
+        ),
+        TABLE_ACTION_CONTEXT,
+    )
+    analytics_params = [
+        "table_id",
+        "database_id",
+        "import_record_id",
+        "trashed_rows_entry_id",
+    ]
+
+    @dataclasses.dataclass
+    class Params:
+        table_id: int
+        table_name: str
+        database_id: int
+        database_name: str
+        created_row_ids: List[int]
+        created_rows_values: List[Dict[str, Any]]
+        created_fields_metadata_by_row_id: Dict[int, Dict[str, Any]]
+        deleted_row_ids: List[int]
+        deleted_rows_values: List[Dict[str, Any]]
+        deleted_fields_metadata_by_row_id: Dict[int, Dict[str, Any]]
+        deleted_row_count: int = 0
+        trashed_rows_entry_id: Optional[int] = None
+        import_record_id: Optional[int] = None
+        history_truncated: bool = False
+
+        @cached_property
+        def created_row_id_set(self) -> set:
+            return set(self.created_row_ids)
+
+    @classmethod
+    def do(
+        cls,
+        user: AbstractUser,
+        table: Table,
+        data: FileImportDict,
+        progress: Optional[Progress] = None,
+        import_record_id: Optional[int] = None,
+    ) -> Tuple[List[GeneratedTableModel], Dict[str, Any], ImportChangeCollector]:
+        """
+        Replaces the contents of the table with the file's rows: every existing row is
+        trashed, then the file's rows are created. The table's fields are never
+        touched, and the removed rows stay restorable from the trash.
+
+        :param user: The user on whose behalf the contents are replaced.
+        :param table: The table whose contents are replaced.
+        :param data: The row values to import.
+        :param progress: An optional progress object to track the task progress.
+        :param import_record_id: The `TableImportRecord` this import is recorded on.
+        :return: The created rows, the error report and the collected changes.
+        """
+
+        if table.is_read_only_data_synced_table:
+            raise CannotCreateRowsInTable(
+                "Can't replace rows because the table has a data sync."
+            )
+
+        workspace = table.database.workspace
+        CoreHandler().check_permissions(
+            user,
+            ReplaceRowsDatabaseTableOperationType.type,
+            workspace=workspace,
+            context=table,
+        )
+
+        collector = cls.make_change_collector()
+        row_handler = RowHandler()
+        model = table.get_model()
+
+        existing_row_ids = list(
+            model.objects.all().order_by("id").values_list("id", flat=True)
+        )
+        trashed_rows_entry_id = None
+
+        if existing_row_ids:
+            if progress:
+                progress.increment(by=0, state=ROW_IMPORT_DELETION)
+            cls._collect_rows_to_delete(row_handler, model, existing_row_ids, collector)
+            trashed_rows_entry = row_handler.force_delete_rows(
+                user,
+                table,
+                existing_row_ids,
+                model=model,
+                send_realtime_update=False,
+            )
+            trashed_rows_entry_id = trashed_rows_entry.id
+
+        collector.deleted_row_count = len(existing_row_ids)
+        collector.trashed_rows_entry_id = trashed_rows_entry_id
+
+        created_rows, error_report = row_handler.import_rows(
+            user,
+            table,
+            data=data["data"],
+            configuration=data.get("configuration") or {},
+            progress=progress,
+            change_collector=collector,
+            check_permissions=False,
+        )
+        if error_report:
+            logger.warning(f"Errors during rows replace: {error_report}")
+
+        params = cls.Params(
+            table.id,
+            table.name,
+            table.database.id,
+            table.database.name,
+            created_row_ids=collector.created_row_ids,
+            created_rows_values=collector.created_rows_values,
+            created_fields_metadata_by_row_id=(
+                collector.created_fields_metadata_by_row_id
+            ),
+            deleted_row_ids=collector.deleted_row_ids,
+            deleted_rows_values=collector.deleted_rows_values,
+            deleted_fields_metadata_by_row_id=(
+                collector.deleted_fields_metadata_by_row_id
+            ),
+            deleted_row_count=len(existing_row_ids),
+            trashed_rows_entry_id=trashed_rows_entry_id,
+            import_record_id=import_record_id,
+            history_truncated=collector.truncated,
+        )
+        cls.register_action(
+            user, params, scope=cls.scope(table.id), workspace=workspace
+        )
+
+        return created_rows, error_report, collector
+
+    @classmethod
+    def _collect_rows_to_delete(
+        cls,
+        row_handler: RowHandler,
+        model: Type[GeneratedTableModel],
+        row_ids: List[int],
+        collector: ImportChangeCollector,
+    ) -> None:
+        """
+        Captures the values of the rows a replace is about to remove, so their row
+        history keeps a `before` value. Bounded by the collector's budget.
+        """
+
+        if not collector.enabled:
+            return
+
+        budget = collector.remaining
+        if len(row_ids) > budget:
+            collector.truncated = True
+        wanted_ids = row_ids[:budget]
+        if not wanted_ids:
+            return
+
+        field_objects = [
+            field_object
+            for field_object in model.get_field_objects()
+            if field_object["name"] != "id" and not field_object["type"].read_only
+        ]
+        fields = [field_object["field"] for field_object in field_objects]
+        field_ids = [field.id for field in fields]
+
+        rows = list(
+            model.objects.filter(id__in=wanted_ids).enhance_by_fields().order_by("id")
+        )
+        fields_metadata = row_handler.get_fields_metadata_for_rows(rows, fields)
+        values = [
+            {"id": row.id, **row_handler.get_internal_values_for_fields(row, field_ids)}
+            for row in rows
+        ]
+        collector.collect_deleted([row.id for row in rows], values, fields_metadata)
 
 
 class DeleteRowActionType(UndoableActionType):

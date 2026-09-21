@@ -19,6 +19,15 @@ from baserow.contrib.database.api.tables.errors import (
     ERROR_INITIAL_TABLE_DATA_LIMIT_EXCEEDED,
     ERROR_INVALID_INITIAL_TABLE_DATA,
 )
+from baserow.contrib.database.data_import.constants import (
+    IMPORT_MODE_REPLACE,
+    IMPORT_MODE_UPSERT,
+)
+from baserow.contrib.database.data_import.exceptions import ImportSchemaMismatch
+from baserow.contrib.database.data_import.handler import (
+    TableImportRecordHandler,
+    validate_strict_mapping,
+)
 from baserow.contrib.database.db.atomic import read_committed_single_table_transaction
 from baserow.contrib.database.fields.exceptions import (
     FieldNotInTable,
@@ -28,7 +37,11 @@ from baserow.contrib.database.fields.exceptions import (
     ReservedBaserowFieldNameException,
     SelectOptionDoesNotBelongToField,
 )
-from baserow.contrib.database.rows.actions import ImportRowsActionType
+from baserow.contrib.database.rows.actions import (
+    ImportRowsActionType,
+    ReplaceRowsFromFileActionType,
+    UpsertRowsFromFileActionType,
+)
 from baserow.contrib.database.rows.exceptions import ReportMaxErrorCountExceeded
 from baserow.contrib.database.rows.types import FileImportDict
 from baserow.contrib.database.table.actions import CreateTableActionType
@@ -57,6 +70,9 @@ class FileImportJobType(JobType):
 
     job_exceptions_map = {
         ReportMaxErrorCountExceeded: "This file import has raised too many errors.",
+        # The runner runs `.format(e=e)` on this, and the message embeds field and
+        # column names, so any braces in them have to be escaped first.
+        ImportSchemaMismatch: lambda e: str(e).replace("{", "{{").replace("}", "}}"),
         InvalidInitialTableData: ERROR_INVALID_INITIAL_TABLE_DATA[2],
         InitialTableDataLimitExceeded: ERROR_INITIAL_TABLE_DATA_LIMIT_EXCEEDED[2],
         MaxFieldLimitExceeded: ERROR_MAX_FIELD_COUNT_EXCEEDED,
@@ -75,6 +91,7 @@ class FileImportJobType(JobType):
         "name",
         "table_id",
         "first_row_header",
+        "mode",
         "importer_type",
         "original_file_name",
         "report",
@@ -93,6 +110,11 @@ class FileImportJobType(JobType):
             max_length=255, required=False, help_text="The name of the new table."
         ),
         "first_row_header": serializers.BooleanField(required=False, default=False),
+        "mode": serializers.CharField(
+            required=False,
+            help_text="Whether the data is appended to the table, upserted into it "
+            "or used to replace its contents.",
+        ),
         "importer_type": serializers.CharField(
             max_length=32,
             required=False,
@@ -154,7 +176,15 @@ class FileImportJobType(JobType):
 
     def after_job_creation(self, job, values):
         """
-        Save the data file for the newly created job.
+        Save the data file for the newly created job, and open the compliance record
+        for imports that touch an existing table.
+
+        The record is created here, in the request's transaction, rather than in
+        `run`: the job runs inside its own transaction, so a failing import rolls back
+        everything it wrote and could not leave a trace of itself. Opening it up front
+        means an attempt is always recorded, and
+        `TableImportRecordHandler.reconcile_stale_records` gives it a final status if
+        the job never gets to.
         """
 
         data_file = ContentFile(
@@ -164,6 +194,16 @@ class FileImportJobType(JobType):
             ).encode("utf8")
         )
         job.data_file.save(None, data_file)
+
+        if job.table_id is not None:
+            TableImportRecordHandler().create_record(
+                job.user,
+                job.table,
+                job.mode,
+                values["data"],
+                job=job,
+                configuration=values.get("configuration"),
+            )
 
     def before_delete(self, job):
         """
@@ -217,6 +257,12 @@ class FileImportJobType(JobType):
 
         with job.data_file.open("r") as fin:
             data: FileImportDict = json.load(fin)
+
+        record = job.import_records.first() if job.table_id is not None else None
+        change_collector = None
+        rows_deleted = 0
+        trashed_rows_entry_id = None
+
         try:
             if job.table is None:
                 new_table, error_report = action_type_registry.get_by_type(
@@ -232,15 +278,59 @@ class FileImportJobType(JobType):
 
                 job.table = new_table
                 job.save(update_fields=("table",))
+                created_rows = []
             else:
-                _, error_report = action_type_registry.get_by_type(
-                    ImportRowsActionType
-                ).do(
-                    job.user,
-                    table=job.table,
-                    data=data,
-                    progress=progress,
+                configuration = data.get("configuration") or {}
+                # Re-check here as well as in the API view: the job runs later and
+                # against a table locked by `transaction_atomic_context`, so this is
+                # the check that actually guards the write.
+                validate_strict_mapping(
+                    job.table,
+                    job.mode,
+                    configuration.get("file_header"),
+                    configuration.get("field_mapping"),
                 )
+
+                if job.mode == IMPORT_MODE_UPSERT:
+                    (
+                        created_rows,
+                        error_report,
+                        change_collector,
+                    ) = action_type_registry.get_by_type(
+                        UpsertRowsFromFileActionType
+                    ).do(
+                        job.user,
+                        table=job.table,
+                        data=data,
+                        progress=progress,
+                        import_record_id=record.id if record else None,
+                    )
+                elif job.mode == IMPORT_MODE_REPLACE:
+                    action = action_type_registry.get_by_type(
+                        ReplaceRowsFromFileActionType
+                    )
+                    (
+                        created_rows,
+                        error_report,
+                        change_collector,
+                    ) = action.do(
+                        job.user,
+                        table=job.table,
+                        data=data,
+                        progress=progress,
+                        import_record_id=record.id if record else None,
+                    )
+                    rows_deleted = change_collector.deleted_row_count
+                    trashed_rows_entry_id = change_collector.trashed_rows_entry_id
+                else:
+                    created_rows, error_report = action_type_registry.get_by_type(
+                        ImportRowsActionType
+                    ).do(
+                        job.user,
+                        table=job.table,
+                        data=data,
+                        progress=progress,
+                    )
         # when a job handler fails, celery worker will not commit and `after_commit`
         # won't be called. That's why we need to catch this specific error and
         # perform a bit of cleanup on the job.
@@ -249,6 +339,21 @@ class FileImportJobType(JobType):
             raise
         except Exception:
             raise
+
+        if record is not None:
+            TableImportRecordHandler().finish_record(
+                record,
+                rows_created=len(created_rows),
+                rows_updated=(
+                    change_collector.updated_row_count if change_collector else 0
+                ),
+                rows_deleted=rows_deleted,
+                report={"failing_rows": error_report},
+                trashed_rows_entry_id=trashed_rows_entry_id,
+                row_history_truncated=(
+                    change_collector.truncated if change_collector else False
+                ),
+            )
 
         def after_commit():
             """

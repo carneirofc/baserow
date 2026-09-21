@@ -45,3 +45,11 @@ class CreateRowDatabaseTableOperationType(DatabaseTableOperationType):
 
 class ImportRowsDatabaseTableOperationType(DatabaseTableOperationType):
     type = "database.table.import_rows"
+
+
+class UpsertRowsDatabaseTableOperationType(DatabaseTableOperationType):
+    type = "database.table.upsert_rows"
+
+
+class ReplaceRowsDatabaseTableOperationType(DatabaseTableOperationType):
+    type = "database.table.replace_rows"

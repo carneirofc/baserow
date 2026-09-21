@@ -26,6 +26,13 @@ from baserow.contrib.database.api.fields.errors import (
     ERROR_RESERVED_BASEROW_FIELD_NAME,
 )
 from baserow.contrib.database.api.tokens.authentications import TokenAuthentication
+from baserow.contrib.database.data_import.constants import (
+    IMPORT_MODE_APPEND,
+    IMPORT_MODE_REPLACE,
+    IMPORT_MODE_UPSERT,
+)
+from baserow.contrib.database.data_import.exceptions import ImportSchemaMismatch
+from baserow.contrib.database.data_import.handler import validate_strict_mapping
 from baserow.contrib.database.fields.exceptions import (
     InvalidBaserowFieldName,
     MaxFieldLimitExceeded,
@@ -58,6 +65,8 @@ from baserow.contrib.database.table.models import Table
 from baserow.contrib.database.table.operations import (
     ImportRowsDatabaseTableOperationType,
     ReadDatabaseTableOperationType,
+    ReplaceRowsDatabaseTableOperationType,
+    UpsertRowsDatabaseTableOperationType,
 )
 from baserow.contrib.database.tokens.handler import TokenHandler
 from baserow.core.action.registries import action_type_registry
@@ -74,6 +83,7 @@ from .errors import (
     ERROR_INITIAL_TABLE_DATA_LIMIT_EXCEEDED,
     ERROR_INVALID_INITIAL_TABLE_DATA,
     ERROR_TABLE_DOES_NOT_EXIST,
+    ERROR_TABLE_IMPORT_SCHEMA_MISMATCH,
     ERROR_TABLE_NOT_IN_DATABASE,
 )
 from .serializers import (
@@ -84,6 +94,14 @@ from .serializers import (
     TableUpdateSerializer,
     TableWithoutDataSyncSerializer,
 )
+
+# Each import mode is gated by its own operation type, so a role can grant a plain
+# append without also granting the destructive replace.
+IMPORT_MODE_OPERATION_TYPES = {
+    IMPORT_MODE_APPEND: ImportRowsDatabaseTableOperationType.type,
+    IMPORT_MODE_UPSERT: UpsertRowsDatabaseTableOperationType.type,
+    IMPORT_MODE_REPLACE: ReplaceRowsDatabaseTableOperationType.type,
+}
 
 
 class AllTablesView(APIView):
@@ -535,7 +553,12 @@ class AsyncTableImportView(APIView):
         request=TableImportSerializer,
         responses={
             202: FileImportJobType().response_serializer_class,
-            400: get_error_schema(["ERROR_USER_NOT_IN_GROUP"]),
+            400: get_error_schema(
+                [
+                    "ERROR_USER_NOT_IN_GROUP",
+                    "ERROR_TABLE_IMPORT_SCHEMA_MISMATCH",
+                ]
+            ),
             404: get_error_schema(["ERROR_TABLE_DOES_NOT_EXIST"]),
         },
     )
@@ -544,6 +567,7 @@ class AsyncTableImportView(APIView):
             TableDoesNotExist: ERROR_TABLE_DOES_NOT_EXIST,
             UserNotInWorkspace: ERROR_USER_NOT_IN_GROUP,
             MaxJobCountExceeded: ERROR_MAX_JOB_COUNT_EXCEEDED,
+            ImportSchemaMismatch: ERROR_TABLE_IMPORT_SCHEMA_MISMATCH,
         }
     )
     @validate_body(TableImportSerializer)
@@ -553,13 +577,23 @@ class AsyncTableImportView(APIView):
         table_handler = TableHandler()
         table = table_handler.get_table(table_id)
 
+        mode = data.get("mode", IMPORT_MODE_APPEND)
         CoreHandler().check_permissions(
             request.user,
-            ImportRowsDatabaseTableOperationType.type,
+            IMPORT_MODE_OPERATION_TYPES[mode],
             workspace=table.database.workspace,
             context=table,
         )
         configuration = data.get("configuration")
+        # Fail fast with a precise error instead of letting the user wait for a job
+        # that is going to be rejected. The job re-checks this against the locked
+        # table before it writes anything.
+        validate_strict_mapping(
+            table,
+            mode,
+            (configuration or {}).get("file_header"),
+            (configuration or {}).get("field_mapping"),
+        )
         importer_type = data.get("importer_type", "")
         original_file_name = data.get("original_file_name", "")
         data = data["data"]
@@ -569,6 +603,7 @@ class AsyncTableImportView(APIView):
             data=data,
             table=table,
             database=table.database,
+            mode=mode,
             configuration=configuration,
             importer_type=importer_type,
             original_file_name=original_file_name,

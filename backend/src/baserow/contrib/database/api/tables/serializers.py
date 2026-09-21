@@ -4,6 +4,11 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from baserow.contrib.database.api.data_sync.serializers import DataSyncSerializer
+from baserow.contrib.database.data_import.constants import (
+    IMPORT_MODE_APPEND,
+    IMPORT_MODES,
+    STRICT_IMPORT_MODES,
+)
 from baserow.contrib.database.fields.registries import field_type_registry
 from baserow.contrib.database.table.models import Table
 
@@ -59,8 +64,45 @@ class TableImportConfiguration(serializers.Serializer):
         default=None,
         help_text="A list of field IDs that should not be overwritten during upsert operations.",
     )
+    file_header = serializers.ListField(
+        child=serializers.CharField(allow_blank=True),
+        allow_null=True,
+        allow_empty=True,
+        default=None,
+        help_text=(
+            "The column headers as they were read from the imported file, in file "
+            "order. Required for the `upsert` and `replace` modes, which check that "
+            "the file's columns line up exactly with the table's fields."
+        ),
+    )
+    field_mapping = serializers.ListField(
+        child=serializers.IntegerField(min_value=0),
+        allow_null=True,
+        allow_empty=True,
+        default=None,
+        help_text=(
+            "One target field ID per column of `file_header`, in the same order. "
+            "`0` marks a column that is not imported, which the `upsert` and "
+            "`replace` modes reject."
+        ),
+    )
 
     def validate(self, attrs):
+        file_header = attrs.get("file_header")
+        field_mapping = attrs.get("field_mapping")
+        if (
+            file_header is not None
+            and field_mapping is not None
+            and len(file_header) != len(field_mapping)
+        ):
+            raise ValidationError(
+                {
+                    "field_mapping": (
+                        "field_mapping must have exactly one entry per column of "
+                        "file_header."
+                    )
+                }
+            )
         if attrs.get("upsert_fields") and not len(attrs.get("upsert_values") or []):
             raise ValidationError(
                 {
@@ -166,6 +208,19 @@ class TableImportSerializer(serializers.Serializer):
         ),
     )
     configuration = TableImportConfiguration(required=False, default=None)
+    mode = serializers.ChoiceField(
+        choices=IMPORT_MODES,
+        required=False,
+        default=IMPORT_MODE_APPEND,
+        help_text=(
+            "How the data is written into the table. `append` adds the rows to the "
+            "existing ones. `upsert` updates the rows matched by the configured "
+            "`upsert_fields` and adds the rest. `replace` trashes every existing row "
+            "and then adds the imported ones. None of these change the table's "
+            "fields; `upsert` and `replace` additionally require the file's columns "
+            "to cover the table's importable fields exactly."
+        ),
+    )
     importer_type = serializers.CharField(
         max_length=32,
         required=False,
@@ -182,9 +237,23 @@ class TableImportSerializer(serializers.Serializer):
     )
 
     class Meta:
-        fields = ("data", "importer_type", "original_file_name")
+        fields = ("data", "mode", "importer_type", "original_file_name")
 
     def validate(self, attrs):
+        if attrs.get("mode") in STRICT_IMPORT_MODES:
+            configuration = attrs.get("configuration") or {}
+            if not configuration.get("file_header") or not configuration.get(
+                "field_mapping"
+            ):
+                raise ValidationError(
+                    {
+                        "configuration": (
+                            "`configuration.file_header` and "
+                            "`configuration.field_mapping` are required for the "
+                            f"`{attrs['mode']}` mode."
+                        )
+                    }
+                )
         if attrs.get("configuration"):
             if attrs["configuration"].get("upsert_values"):
                 if len(attrs["configuration"].get("upsert_values")) != len(

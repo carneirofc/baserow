@@ -225,6 +225,14 @@ class FieldType(
     allows to update existing rows with imported data instead of adding them.
     """
 
+    can_import = True
+    """
+    Indicates whether a file import can write values into a field of this type. Must
+    stay in sync with `getCanImport()` on the matching frontend field type, because a
+    strict import requires the file to cover every importable field of the table.
+    Read-only types are never importable.
+    """
+
     def get_default_options_field_name(self):
         """
         Returns the name of the field that stores the default value for the field type.
@@ -2183,6 +2191,7 @@ class FieldType(
 
 class ReadOnlyFieldType(FieldType):
     read_only = True
+    can_import = False
     keep_data_on_duplication = False
 
     def get_internal_value_from_db(

@@ -7691,6 +7691,8 @@ class PasswordFieldType(FieldType):
     type = "password"
     model_class = PasswordField
     can_be_in_form_view = True
+    # A password field stores a hash, so a spreadsheet can never round-trip it.
+    can_import = False
     keep_data_on_duplication = True
     _can_order_by_types = []
     _can_be_primary_field = False
