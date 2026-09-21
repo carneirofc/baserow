@@ -852,5 +852,15 @@
     "activeUsers7days": "Usuários ativos nos últimos 7 dias",
     "activeUsers30days": "Usuários ativos nos últimos 30 dias",
     "viewAll": "Visualizar tudo"
+  },
+  "downloadLink": {
+    "expiredTitle": "Exportação não está mais disponível",
+    "expiredMessage": "Este arquivo foi removido após o período de retenção. Gere-o novamente.",
+    "storageTitle": "O armazenamento de arquivos do servidor está indisponível",
+    "storageMessage": "O arquivo foi criado, mas o servidor não consegue lê-lo de volta do seu armazenamento. Esse é um problema de configuração do servidor, não algo que você possa resolver aqui. Entre em contato com um administrador; a página de saúde da instância e os logs do servidor têm os detalhes.",
+    "linkExpiredTitle": "Link de download expirado",
+    "linkExpiredMessage": "Este link de download não é mais válido. Reabra a lista para obter um novo.",
+    "failedTitle": "Falha no download",
+    "failedMessage": "Não foi possível baixar o arquivo. Tente novamente."
   }
 }

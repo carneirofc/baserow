@@ -55,9 +55,11 @@ data:
   AWS_DEFAULT_ACL: {{ .Values.objectStorage.defaultACL | quote }}
   AWS_QUERYSTRING_AUTH: {{ .Values.objectStorage.querystringAuth | quote }}
   {{- else }}
-  # --- Media via a persistent volume; serve uploads through the backend ---
+  # --- Media via a persistent volume ---
+  # Exports and backups are downloaded through /api/, so they work here. User file
+  # attachments are still served from MEDIA_URL, which nothing in this chart serves:
+  # use objectStorage for a deployment that relies on file fields.
   MEDIA_ROOT: "/baserow/media"
-  BASEROW_SERVE_FILES_THROUGH_BACKEND: "true"
   {{- end }}
 
   {{- with .Values.aws.region }}

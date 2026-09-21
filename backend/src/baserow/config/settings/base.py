@@ -1003,7 +1003,31 @@ EXPORT_CLEANUP_INTERVAL_MINUTES = 5
 # export stays downloadable.
 EXPORT_FILE_EXPIRE_MINUTES = int(os.getenv("EXPORT_FILE_EXPIRE_MINUTES", 60))
 
+# Exported files and backups are downloaded through the API, streamed straight out of
+# the storage, so that a download works regardless of whether the storage is a shared
+# volume or an object store the browser cannot reach. The link handed to the browser
+# carries a signed token instead of a JWT, because a plain anchor cannot send an
+# Authorization header. It is short lived: it is minted when the list is rendered and
+# clicked seconds later, and an expired one is reported as such.
+BASEROW_EXPORT_DOWNLOAD_TOKEN_MAX_AGE_SECONDS = int(
+    os.getenv("BASEROW_EXPORT_DOWNLOAD_TOKEN_MAX_AGE_SECONDS", "") or 600
+)
+# How much is read from the storage per chunk while streaming a download. Django's
+# FileResponse default of 4096 bytes turns a multi gigabyte backup into hundreds of
+# thousands of chunks.
+BASEROW_EXPORT_DOWNLOAD_BLOCK_SIZE = int(
+    os.getenv("BASEROW_EXPORT_DOWNLOAD_BLOCK_SIZE", "") or 64 * 1024
+)
+
 IMPORT_FILES_DIRECTORY = "import_files"
+
+# How often a worker writes a probe file into the export directory so the web process
+# can confirm it is looking at the same storage. Without this an export produced by a
+# worker on one volume and served by a web process on another finishes successfully
+# and then cannot be downloaded, with nothing anywhere saying why.
+BASEROW_SHARED_STORAGE_PROBE_INTERVAL_MINUTES = int(
+    os.getenv("BASEROW_SHARED_STORAGE_PROBE_INTERVAL_MINUTES", "") or 5
+)
 
 # The interval in minutes that the mentions cleanup job should run. This job will
 # remove mentions that are no longer used.

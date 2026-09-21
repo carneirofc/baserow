@@ -15,8 +15,9 @@ from baserow.api.backups.errors import (
     ERROR_REMOTE_BACKUP_DOES_NOT_EXIST,
     ERROR_REMOTE_BACKUP_TRUST_NOT_ALLOWED,
 )
-from baserow.api.backups.views import COMMON_EXCEPTIONS
+from baserow.api.backups.views import COMMON_EXCEPTIONS, BackupDownloadView
 from baserow.api.decorators import map_exceptions, validate_body
+from baserow.api.download.handler import DOWNLOAD_EXCEPTIONS
 from baserow.api.jobs.errors import ERROR_MAX_JOB_COUNT_EXCEEDED
 from baserow.api.jobs.serializers import JobSerializer
 from baserow.api.schemas import get_error_schema
@@ -36,6 +37,7 @@ from baserow.core.jobs.registries import job_type_registry
 
 from .serializers import (
     BackupScheduleSerializer,
+    BackupSerializer,
     CreateBackupScheduleSerializer,
     CreateBackupSerializer,
     ListBackupsSerializer,
@@ -164,8 +166,10 @@ class BackupAdminView(APIView):
     @map_exceptions(COMMON_EXCEPTIONS)
     def get(self, request, workspace_id: int, resource_id: int):
         backup = BackupHandler().get_backup(request.user, workspace_id, resource_id)
-        serializer = job_type_registry.get_serializer(backup, JobSerializer)
-        return Response(serializer.data)
+        # The list endpoint answers with `BackupSerializer`, so the item endpoint uses
+        # it too: otherwise it would omit the resource id, destination and download
+        # url its own description promises.
+        return Response(BackupSerializer(backup).data)
 
     @extend_schema(
         parameters=[
@@ -479,3 +483,57 @@ class RestoreRemoteBackupAdminView(APIView):
         )
         serializer = job_type_registry.get_serializer(job, JobSerializer)
         return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+
+
+class BackupDownloadAdminView(BackupDownloadView):
+    """
+    Staff counterpart of `baserow.api.backups.views.BackupDownloadView`. It resolves
+    the backup the same way, which succeeds for staff on any workspace thanks to
+    `StaffBypassPermissionManagerType`, and it is not reachable with an API client
+    key: a machine credential uses the regular endpoint with its own scope.
+    """
+
+    authentication_classes = APIView.authentication_classes
+    permission_classes = (IsAdminUser,)
+    api_client_scopes = {}
+
+    @extend_schema(
+        parameters=[
+            WORKSPACE_ID_PARAMETER,
+            OpenApiParameter(
+                name="resource_id",
+                location=OpenApiParameter.PATH,
+                type=OpenApiTypes.INT,
+                description="The id of the backup resource to download.",
+                required=True,
+            ),
+        ],
+        tags=["Admin"],
+        operation_id="admin_download_backup",
+        description=(
+            "Downloads the archive of a backup as staff, streamed from the server's "
+            "file storage."
+        ),
+        request=None,
+        responses={
+            200: OpenApiTypes.BINARY,
+            404: get_error_schema(
+                ["ERROR_GROUP_DOES_NOT_EXIST", "ERROR_RESOURCE_DOES_NOT_EXIST"]
+            ),
+            410: get_error_schema(["ERROR_EXPORT_FILE_EXPIRED"]),
+            500: get_error_schema(["ERROR_EXPORT_FILE_MISSING_FROM_STORAGE"]),
+            503: get_error_schema(["ERROR_STORAGE_UNAVAILABLE"]),
+        },
+    )
+    @map_exceptions({**ADMIN_EXCEPTIONS, **DOWNLOAD_EXCEPTIONS})
+    def get(self, request, workspace_id: int, resource_id: int):
+        return self.serve(request, workspace_id=workspace_id, resource_id=resource_id)
+
+    @map_exceptions({**ADMIN_EXCEPTIONS, **DOWNLOAD_EXCEPTIONS})
+    def head(self, request, workspace_id: int, resource_id: int):
+        return self.serve(
+            request,
+            head_only=True,
+            workspace_id=workspace_id,
+            resource_id=resource_id,
+        )

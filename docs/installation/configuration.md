@@ -253,8 +253,30 @@ back any user uploaded files which are stored in the data/media volume.
 
 If you do not wish to use our default Caddy proxy, place your own reverse proxy in front
 of the backend and web-frontend services and have it serve user files from the media
-volume. On OpenShift/Kubernetes the [Helm chart](../../deploy/helm/README.md) does this
-via path-based Routes and S3 object storage instead.
+volume. Django itself only serves `MEDIA_URL` when `DEBUG` is on, so in production
+something in front has to.
+
+Exported files and backups are the exception: they are downloaded through the API,
+streamed out of the storage by the backend, so they need no media route and work the
+same whether the files sit on a volume or in a bucket the browser cannot reach. The
+link is short lived and signed; `BASEROW_EXPORT_DOWNLOAD_TOKEN_MAX_AGE_SECONDS`
+(default 600) controls how long, and `BASEROW_EXPORT_DOWNLOAD_BLOCK_SIZE` (default
+65536) how much is read per chunk while streaming.
+
+On OpenShift/Kubernetes the [Helm chart](../../deploy/helm/README.md) routes by path
+and has no media route at all, so a deployment that relies on file fields needs object
+storage.
+
+#### When the workers and the web process disagree about the storage
+
+When exports are written by a Celery worker in one container and downloaded through a
+web process in another, the two must share the storage. If they do not, the export
+finishes perfectly and the download then fails — which is why the download reports a
+misconfigured file storage rather than a missing file, and why a worker writes a probe
+file that the web process reads back. The result is on the instance health page
+(`/api/_health/full/`, **Admin → Health**), so the split is visible before anyone runs
+an export. `BASEROW_SHARED_STORAGE_PROBE_INTERVAL_MINUTES` (default 5) controls how
+often the probe is written; the check allows three intervals before it complains.
 
 
 #### File Service alternatives

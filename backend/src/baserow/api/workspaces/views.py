@@ -13,6 +13,8 @@ from rest_framework.views import APIView
 
 from baserow.api.applications.errors import ERROR_APPLICATION_DOES_NOT_EXIST
 from baserow.api.decorators import map_exceptions, validate_body
+from baserow.api.download.handler import DOWNLOAD_EXCEPTIONS
+from baserow.api.download.views import BaseArchiveDownloadView
 from baserow.api.errors import (
     ERROR_GROUP_DOES_NOT_EXIST,
     ERROR_USER_INVALID_GROUP_PERMISSIONS,
@@ -668,3 +670,87 @@ class AsyncImportApplicationsView(APIView):
 
         serializer = job_type_registry.get_serializer(job, JobSerializer)
         return Response(serializer.data, status=HTTP_202_ACCEPTED)
+
+
+class DownloadExportWorkspaceApplicationsView(BaseArchiveDownloadView):
+    def get_job(self, request, workspace_id=None, job_id=None, **kwargs):
+        return ImportExportHandler().get_export(request.user, workspace_id, job_id)
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="workspace_id",
+                location=OpenApiParameter.PATH,
+                type=OpenApiTypes.INT,
+                description="The id of the workspace the export belongs to.",
+            ),
+            OpenApiParameter(
+                name="job_id",
+                location=OpenApiParameter.PATH,
+                type=OpenApiTypes.INT,
+                description="The id of the export job to download the archive of.",
+            ),
+            OpenApiParameter(
+                name="token",
+                location=OpenApiParameter.QUERY,
+                type=OpenApiTypes.STR,
+                description=(
+                    "A signed download token, as returned in `download_url`. Lets a "
+                    "browser download through a plain link, which cannot carry an "
+                    "Authorization header. A regular JWT works as well."
+                ),
+            ),
+        ],
+        tags=["Workspaces"],
+        operation_id="download_workspace_export",
+        description=(
+            "Downloads the archive of a finished workspace export, streamed from the "
+            "server's file storage. Returns `ERROR_EXPORT_FILE_EXPIRED` when the "
+            "archive is past its retention, and "
+            "`ERROR_EXPORT_FILE_MISSING_FROM_STORAGE` or `ERROR_STORAGE_UNAVAILABLE` "
+            "when the server cannot reach its own file storage."
+        ),
+        request=None,
+        responses={
+            200: OpenApiTypes.BINARY,
+            400: get_error_schema(["ERROR_USER_NOT_IN_GROUP"]),
+            401: get_error_schema(
+                ["ERROR_DOWNLOAD_TOKEN_INVALID", "ERROR_DOWNLOAD_TOKEN_EXPIRED"]
+            ),
+            404: get_error_schema(
+                ["ERROR_GROUP_DOES_NOT_EXIST", "ERROR_RESOURCE_DOES_NOT_EXIST"]
+            ),
+            410: get_error_schema(["ERROR_EXPORT_FILE_EXPIRED"]),
+            500: get_error_schema(["ERROR_EXPORT_FILE_MISSING_FROM_STORAGE"]),
+            503: get_error_schema(["ERROR_STORAGE_UNAVAILABLE"]),
+        },
+    )
+    @map_exceptions(
+        {
+            WorkspaceDoesNotExist: ERROR_GROUP_DOES_NOT_EXIST,
+            UserNotInWorkspace: ERROR_USER_NOT_IN_GROUP,
+            ImportExportResourceDoesNotExist: ERROR_RESOURCE_DOES_NOT_EXIST,
+            **DOWNLOAD_EXCEPTIONS,
+        }
+    )
+    def get(self, request, workspace_id, job_id):
+        return self.serve(request, workspace_id=workspace_id, job_id=job_id)
+
+    @map_exceptions(
+        {
+            WorkspaceDoesNotExist: ERROR_GROUP_DOES_NOT_EXIST,
+            UserNotInWorkspace: ERROR_USER_NOT_IN_GROUP,
+            ImportExportResourceDoesNotExist: ERROR_RESOURCE_DOES_NOT_EXIST,
+            **DOWNLOAD_EXCEPTIONS,
+        }
+    )
+    def head(self, request, workspace_id, job_id):
+        """
+        Answers the client's preflight: the same checks, without the body, so a
+        download that cannot work is reported as a message instead of dumping an
+        error page where the archive was supposed to be.
+        """
+
+        return self.serve(
+            request, head_only=True, workspace_id=workspace_id, job_id=job_id
+        )

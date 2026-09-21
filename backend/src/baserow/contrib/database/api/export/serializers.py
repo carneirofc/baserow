@@ -4,6 +4,7 @@ from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import fields, serializers
 
+from baserow.api.download.tokens import TABLE_EXPORT_DOWNLOAD
 from baserow.api.serializers import FileURLSerializerMixin
 from baserow.contrib.database.api.constants import get_filters_object_description
 from baserow.contrib.database.api.views.serializers import PublicViewFiltersSerializer
@@ -63,12 +64,21 @@ SUPPORTED_CSV_COLUMN_SEPARATORS = [
 
 class ExportedFileURLSerializerMixin(FileURLSerializerMixin):
     """
-    When mixed in to a model serializer for an ExportJob this will add an url field
-    with the actual usable url of the export job's file (if it has one).
+    When mixed in to a model serializer for an ExportJob this will add the url fields
+    pointing at the export job's file (if it has one).
     """
 
     def get_handler(self):
         return ExportHandler()
+
+    def get_download_url_name(self):
+        return "api:database:export:download"
+
+    def get_download_url_kwargs(self, instance):
+        return {"job_id": instance.id}
+
+    def get_download_token_scope(self, instance):
+        return TABLE_EXPORT_DOWNLOAD, instance.id
 
 
 class ExportJobSerializer(ExportedFileURLSerializerMixin, serializers.ModelSerializer):
@@ -93,6 +103,10 @@ class ExportJobSerializer(ExportedFileURLSerializerMixin, serializers.ModelSeria
             "created_at",
             "progress_percentage",
             "url",
+            "download_url",
+            # Exposed so a failed export can say why it failed, instead of the UI
+            # having to show a generic message for every cause.
+            "error",
         ]
 
 

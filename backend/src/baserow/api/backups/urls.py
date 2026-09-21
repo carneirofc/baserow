@@ -1,6 +1,7 @@
 from django.urls import re_path
 
 from .views import (
+    BackupDownloadView,
     BackupSchedulesView,
     BackupScheduleView,
     BackupsView,
@@ -46,6 +47,11 @@ urlpatterns = [
         r"^workspace/(?P<workspace_id>[0-9]+)/restore/$",
         RestoreBackupView.as_view(),
         name="restore",
+    ),
+    re_path(
+        r"^workspace/(?P<workspace_id>[0-9]+)/(?P<resource_id>[0-9]+)/download/$",
+        BackupDownloadView.as_view(),
+        name="download",
     ),
     re_path(
         r"^workspace/(?P<workspace_id>[0-9]+)/(?P<resource_id>[0-9]+)/$",

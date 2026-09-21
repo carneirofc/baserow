@@ -272,7 +272,13 @@ class ExportApplicationsJobType(JobType):
     }
 
     serializer_mixins = [ExportWorkspaceExportedFileURLSerializerMixin]
-    serializer_field_names = ["exported_file_name", "url", "created_on", "workspace_id"]
+    serializer_field_names = [
+        "exported_file_name",
+        "url",
+        "download_url",
+        "created_on",
+        "workspace_id",
+    ]
 
     def transaction_atomic_context(self, job: "DuplicateApplicationJob"):
         """

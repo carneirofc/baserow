@@ -256,7 +256,9 @@
     "exportingTableState": "Exporting: {table}",
     "exportingCreateArchiveState": "Creating archive",
     "noExports": "No exports for this workspace yet.",
-    "created": "created"
+    "created": "created",
+    "successTitle": "Export finished",
+    "successMessage": "The export is ready and can be downloaded from the list below."
   },
   "exportWorkspaceForm": {
     "exportSettingsLabel": "Export settings",
@@ -1344,5 +1346,15 @@
   },
   "memberAccessField": {
     "fullAccess": "Full access"
+  },
+  "downloadLink": {
+    "expiredTitle": "Export no longer available",
+    "expiredMessage": "This file was removed after its retention period. Please generate it again.",
+    "storageTitle": "The server's file storage is unavailable",
+    "storageMessage": "The file was created, but the server cannot read it back from its file storage. This is a server side configuration problem, not something you can fix here. Please contact an administrator; the instance health page and the server logs have the details.",
+    "linkExpiredTitle": "Download link expired",
+    "linkExpiredMessage": "This download link is no longer valid. Reopen the list to get a fresh one.",
+    "failedTitle": "Download failed",
+    "failedMessage": "The file could not be downloaded. Please try again."
   }
 }

@@ -166,6 +166,12 @@ export default {
         this.exportJobs.unshift(this.job)
         this.exportJobs = this.exportJobs.splice(0, WORKSPACE_EXPORTS_LIMIT)
       }
+      // A failure is announced, so a success has to be as well; otherwise a new row
+      // quietly appearing in the list is the only sign the export worked.
+      this.$store.dispatch('toast/info', {
+        title: this.$t('exportWorkspaceModal.successTitle'),
+        message: this.$t('exportWorkspaceModal.successMessage'),
+      })
     },
 
     async onJobFailed() {

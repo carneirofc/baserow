@@ -509,6 +509,7 @@ class CoreConfig(AppConfig):
         from .health.custom_health_checks import (
             DebugModeHealthCheck,
             HerokuExternalFileStorageConfiguredHealthCheck,
+            SharedFileStorageHealthCheck,
         )
 
         object_scope_type_registry.register(IntegrationObjectScopeType())
@@ -610,7 +611,15 @@ class CoreConfig(AppConfig):
             plugin_dir.register(HerokuExternalFileStorageConfiguredHealthCheck)
         plugin_dir.register(DefaultFileStorageHealthCheck)
 
+        from .health.tasks import is_shared_storage_probe_relevant
+
+        # Object storage is shared by construction, so only a filesystem storage can
+        # end up split between the web process and the workers.
+        if is_shared_storage_probe_relevant():
+            plugin_dir.register(SharedFileStorageHealthCheck)
+
         import baserow.core.backups.tasks  # noqa: F403, F401
+        import baserow.core.health.tasks  # noqa: F403, F401
         import baserow.core.import_export.tasks  # noqa: F403, F401
         import baserow.core.integrations.receivers  # noqa: F403, F401
 

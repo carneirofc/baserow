@@ -20,7 +20,7 @@
       <DownloadLink
         v-else
         class="button button--large button--full-width modal-progress__export-button"
-        :url="job.url"
+        :url="job.download_url"
         :filename="filename"
         :loading-class="'button--loading'"
       >

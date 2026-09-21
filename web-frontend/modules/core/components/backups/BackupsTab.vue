@@ -92,7 +92,7 @@
         </div>
         <div class="export-workspace__actions">
           <DownloadLink
-            :url="backup.url"
+            :url="backup.download_url"
             :filename="backup.exported_file_name"
             :loading-class="'button--loading'"
           >

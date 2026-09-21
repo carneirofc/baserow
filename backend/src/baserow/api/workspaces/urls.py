@@ -6,6 +6,7 @@ from .views import (
     AsyncExportWorkspaceApplicationsView,
     AsyncImportApplicationsView,
     CreateInitialWorkspaceView,
+    DownloadExportWorkspaceApplicationsView,
     ImportExportResourceUploadFileView,
     ImportExportResourceView,
     ListExportWorkspaceApplicationsView,
@@ -41,6 +42,11 @@ urlpatterns = [
         r"(?P<workspace_id>[0-9]+)/export/async/$",
         AsyncExportWorkspaceApplicationsView.as_view(),
         name="export_workspace_async",
+    ),
+    re_path(
+        r"(?P<workspace_id>[0-9]+)/export/(?P<job_id>[0-9]+)/download/$",
+        DownloadExportWorkspaceApplicationsView.as_view(),
+        name="export_workspace_download",
     ),
     re_path(
         r"(?P<workspace_id>[0-9]+)/export/$",

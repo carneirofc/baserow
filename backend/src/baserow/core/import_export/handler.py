@@ -552,6 +552,73 @@ class ImportExportHandler(metaclass=baserow_trace_methods(tracer)):
             .order_by("-updated_on", "-id")[:WORKSPACE_EXPORTS_LIMIT]
         )
 
+    def get_export(
+        self, performed_by: AbstractUser, workspace_id: int, job_id: int
+    ) -> ExportApplicationsJob:
+        """
+        Fetches a single finished workspace export of the given user.
+
+        Unlike `list_exports` this deliberately does not filter on the resource being
+        valid, so that a caller can tell an export whose archive aged out apart from
+        one that was never theirs. Use `is_export_expired` to make that distinction.
+
+        :param performed_by: The user on whose behalf the export is fetched.
+        :param workspace_id: The workspace the export belongs to.
+        :param job_id: The id of the export job.
+        :raises ImportExportResourceDoesNotExist: When there is no such export for
+            this user and workspace.
+        :return: The export job.
+        """
+
+        self.get_workspace_or_raise(performed_by, workspace_id)
+
+        job = (
+            ExportApplicationsJob.objects.filter(
+                id=job_id,
+                workspace_id=workspace_id,
+                state=JOB_FINISHED,
+                user=performed_by,
+            )
+            .select_related("resource")
+            .first()
+        )
+
+        if job is None:
+            raise ImportExportResourceDoesNotExist(
+                f"The export with job id {job_id} does not exist."
+            )
+
+        return job
+
+    @staticmethod
+    def is_export_expired(
+        job: ExportApplicationsJob,
+        delete_resources_after_days: int = (
+            settings.BASEROW_IMPORT_EXPORT_RESOURCE_REMOVAL_AFTER_DAYS
+        ),
+    ) -> bool:
+        """
+        Whether the archive behind an export is gone because it aged out, rather than
+        because something went wrong. Mirrors what
+        `mark_import_export_resources_for_deletion` acts on, so the answer stays true
+        even in the window between the resource becoming eligible and the periodic
+        task getting to it.
+
+        :param job: The export job to check.
+        :param delete_resources_after_days: How long an archive is kept.
+        :return: True when the archive is expected to be gone.
+        """
+
+        resource = job.resource
+
+        if resource is None or not resource.is_valid or resource.marked_for_deletion:
+            return True
+
+        cutoff_time = datetime.now(timezone.utc) - timedelta(
+            days=delete_resources_after_days
+        )
+        return resource.created_on <= cutoff_time
+
     def get_import_storage_path(self, *args) -> str:
         return str(join(settings.IMPORT_FILES_DIRECTORY, *args))
 

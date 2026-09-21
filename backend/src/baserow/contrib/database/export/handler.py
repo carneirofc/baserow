@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from os.path import join
 from typing import Any, Dict, Optional
 
@@ -25,14 +25,17 @@ from baserow.contrib.database.views.exceptions import ViewNotInTable
 from baserow.contrib.database.views.filters import AdHocFilters
 from baserow.contrib.database.views.models import View
 from baserow.contrib.database.views.registries import view_type_registry
+from baserow.core import storage as core_storage
 from baserow.core.handler import CoreHandler
 from baserow.core.storage import (
     _create_storage_dir_if_missing_and_open,
     get_default_storage,
+    get_storage_backend_description,
 )
 
 from .exceptions import (
     ExportJobCanceledException,
+    ExportJobFileNotWrittenException,
     TableOnlyExportUnsupported,
     ViewUnsupportedForExporterType,
 )
@@ -175,6 +178,33 @@ class ExportHandler:
         """
 
         return join(settings.EXPORT_FILES_DIRECTORY, exported_file_name)
+
+    @staticmethod
+    def is_export_expired(
+        job: ExportJob,
+        expire_minutes: int = None,
+    ) -> bool:
+        """
+        Whether the file of an export is gone because it aged out, rather than because
+        something went wrong. Mirrors what `clean_up_old_jobs` acts on, so the answer
+        stays true in the window between a job becoming eligible for cleanup and the
+        periodic task getting to it.
+
+        :param job: The export job to check.
+        :param expire_minutes: How long an export stays downloadable.
+        :return: True when the file is expected to be gone.
+        """
+
+        if expire_minutes is None:
+            expire_minutes = settings.EXPORT_FILE_EXPIRE_MINUTES
+
+        if job.is_cancelled_or_expired():
+            return True
+
+        expired_job_time = datetime.now(tz=timezone.utc) - timedelta(
+            minutes=expire_minutes
+        )
+        return job.created_at <= expired_job_time
 
     @staticmethod
     def clean_up_old_jobs():
@@ -390,7 +420,58 @@ def _open_file_and_run_export(job: ExportJob) -> ExportJob:
             PaginatedExportJobFileWriter(file, job), **job.export_options
         )
 
+    _raise_if_export_file_cannot_be_read_back(storage_location)
+
     return job
+
+
+def _raise_if_export_file_cannot_be_read_back(storage_location: str):
+    """
+    Confirms the export really landed in the storage before the job is allowed to
+    report success, so a storage problem is reported as a failed export instead of a
+    finished one whose download turns out to be broken minutes later.
+
+    This runs in the worker, so it catches a storage that refuses or loses the write
+    (no permission, a full disk, an unreachable bucket). It cannot catch a worker and
+    a web process that write to different filesystems, because from here the file is
+    plainly there -- that split is caught by the shared storage health check and by
+    the download endpoints themselves.
+
+    :param storage_location: The path the export was written to.
+    :raises ExportJobFileNotWrittenException: When the file cannot be read back.
+    """
+
+    # Resolved through the module rather than the name imported above, so this reads
+    # back whatever storage the write went to: `_create_storage_dir_if_missing_and_open`
+    # picks the default storage from there too.
+    storage = core_storage.get_default_storage()
+
+    try:
+        written = storage.exists(storage_location)
+    except Exception as exc:
+        logger.error(
+            "Could not read back the export at {} from the storage, where {}.",
+            storage_location,
+            get_storage_backend_description(),
+        )
+        raise ExportJobFileNotWrittenException(
+            "The exported file could not be read back from the server's file "
+            "storage. This usually means the file storage is misconfigured; please "
+            "contact an administrator."
+        ) from exc
+
+    if not written:
+        logger.error(
+            "The export at {} is missing from the storage right after being written, "
+            "where {}.",
+            storage_location,
+            get_storage_backend_description(),
+        )
+        raise ExportJobFileNotWrittenException(
+            "The export produced no file in the server's file storage. This usually "
+            "means the file storage is misconfigured; please contact an "
+            "administrator."
+        )
 
 
 def _generate_random_file_name_with_extension(file_extension):

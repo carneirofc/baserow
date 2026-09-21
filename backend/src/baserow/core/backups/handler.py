@@ -7,6 +7,7 @@ from django.db.models import QuerySet
 from baserow.core.import_export.exceptions import ImportExportResourceDoesNotExist
 from baserow.core.import_export.handler import ImportExportHandler
 from baserow.core.job_types import ExportApplicationsJobType, ImportApplicationsJobType
+from baserow.core.jobs.constants import JOB_FINISHED
 from baserow.core.jobs.handler import JobHandler
 from baserow.core.models import (
     ExportApplicationsJob,
@@ -117,6 +118,46 @@ class BackupHandler:
                 if candidate.resource_id == int(resource_id)
             ),
             None,
+        )
+
+        if backup is None:
+            raise ImportExportResourceDoesNotExist(
+                f"The backup with resource id {resource_id} does not exist."
+            )
+
+        return backup
+
+    def get_backup_for_download(
+        self, user: AbstractUser, workspace_id: int, resource_id: int
+    ) -> ExportApplicationsJob:
+        """
+        Fetches a backup for downloading.
+
+        Unlike `get_backup` this does not require the archive to still be valid, so
+        the download endpoint can tell a backup whose archive aged out apart from one
+        that was never the user's. Use `ImportExportHandler.is_export_expired` to make
+        that distinction.
+
+        :param user: The user on whose behalf the backup is requested.
+        :param workspace_id: The workspace the backup belongs to.
+        :param resource_id: The id of the resource holding the archive.
+        :raises ImportExportResourceDoesNotExist: When there is no such backup for
+            this user and workspace.
+        :return: The export job describing the backup.
+        """
+
+        handler = ImportExportHandler()
+        handler.get_workspace_or_raise(user, workspace_id)
+
+        backup = (
+            ExportApplicationsJob.objects.filter(
+                workspace_id=workspace_id,
+                user=user,
+                state=JOB_FINISHED,
+                resource_id=resource_id,
+            )
+            .select_related("resource")
+            .first()
         )
 
         if backup is None:

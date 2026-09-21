@@ -217,10 +217,15 @@ objectStorage:
   existingSecret: ""
 
 # PVC used only when objectStorage.enabled=false.
+# The backend and the Celery worker Deployments both mount this claim, and the worker
+# is what writes exports and backups. ReadWriteOnce appears to work for as long as the
+# two pods happen to land on the same node, then fails with a Multi-Attach error after
+# a reschedule, so it defaults to ReadWriteMany. Set it back to ReadWriteOnce only
+# when something pins both pods to one node.
 mediaPersistence:
   size: 10Gi
   storageClassName: ""
-  accessMode: ReadWriteOnce
+  accessMode: ReadWriteMany
 
 # ---------------------------------------------------------------------------
 # AWS / EKS integration (entirely opt-in; ignored on every other platform)

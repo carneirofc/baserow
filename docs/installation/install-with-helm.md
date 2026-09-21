@@ -197,14 +197,27 @@ objectStorage:
 mediaPersistence:
   size: 50Gi
   storageClassName: gp3
-  accessMode: ReadWriteOnce
+  accessMode: ReadWriteMany
 replicaCount:
-  backend: 1        # RWO: one writer only
+  backend: 1
 ```
 
-Uploads are then served through the backend. Outside OpenShift nothing assigns an
-`fsGroup`, so add `podSecurityContext.fsGroup: 1000` if the backend cannot write to
-`/baserow/media`.
+The backend and the Celery worker both mount this claim, and the worker is what writes
+exports and backups, so it needs `ReadWriteMany`. `ReadWriteOnce` appears to work for as
+long as the two pods happen to land on the same node, and then fails with a Multi-Attach
+error after a reschedule. Outside OpenShift nothing assigns an `fsGroup`, so add
+`podSecurityContext.fsGroup: 1000` if the backend cannot write to `/baserow/media`.
+
+**Attachments need object storage.** Exported files and backups are downloaded through
+`/api/`, streamed out of the storage by the backend, so they work in this mode. User file
+attachments and their thumbnails are still served from `MEDIA_URL`, and nothing in this
+chart serves `/media/` — Django only serves it with `DEBUG=True`, and `/media` is not one
+of the `backendPaths`. A deployment that relies on file fields therefore needs
+`objectStorage.enabled: true`.
+
+If a download reports that the file storage is unavailable, check
+**Admin → Health** first: the instance runs a probe from a worker and reads it back from
+the web process, so a split between the two is reported there by name.
 
 ## Secrets
 
@@ -325,6 +338,9 @@ helm template baserow deploy/helm/baserow -f my-values.yaml | less
 | WebSockets drop about every 60s | The Ingress/load balancer idle timeout is too low for `/ws`. |
 | `helm upgrade` changed config but nothing restarted | Chart older than 0.2.0; upgrade for the config checksums. |
 | Backend cannot write to `/baserow/media` | PVC mode outside OpenShift; set `podSecurityContext.fsGroup`. |
+| Download says the file storage is unavailable | The worker wrote the file where the backend cannot read it. Check **Admin → Health**; in PVC mode set `mediaPersistence.accessMode: ReadWriteMany`, or switch to `objectStorage`. |
+| An export finishes but the download 404s | Chart older than 0.8.0, where downloads still pointed at `MEDIA_URL`. Upgrade. |
+| Image attachments do not load in PVC mode | Expected: the chart does not serve `/media/`. Set `objectStorage.enabled: true`. |
 
 ## Related
 

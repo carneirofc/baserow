@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from baserow.api.download.tokens import BACKUP_DOWNLOAD
 from baserow.core.backups.models import BackupSchedule
 from baserow.core.job_types import ExportApplicationsJobType
 
@@ -29,6 +30,20 @@ class BackupSerializer(_ExportJobSerializer):
             "destination",
             "remote_key",
         )
+
+    def get_download_url_name(self):
+        return "api:backups:download"
+
+    def get_download_url_kwargs(self, instance):
+        return {
+            "workspace_id": instance.workspace_id,
+            "resource_id": instance.resource_id,
+        }
+
+    def get_download_token_scope(self, instance):
+        # A backup is addressed by its resource id everywhere else in this API, so the
+        # link is bound to that rather than to the job id.
+        return BACKUP_DOWNLOAD, instance.resource_id
 
     def _destination_job(self, instance):
         # Backups uploaded to a destination are a multi-table child of the export.

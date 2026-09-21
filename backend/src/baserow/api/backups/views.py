@@ -25,6 +25,9 @@ from baserow.api.data_destinations.errors import (
     ERROR_INVALID_DATA_DESTINATION_KEY,
 )
 from baserow.api.decorators import map_exceptions, validate_body
+from baserow.api.download.handler import DOWNLOAD_EXCEPTIONS
+from baserow.api.download.tokens import BACKUP_DOWNLOAD
+from baserow.api.download.views import BaseArchiveDownloadView
 from baserow.api.errors import ERROR_GROUP_DOES_NOT_EXIST, ERROR_USER_NOT_IN_GROUP
 from baserow.api.import_export.errors import (
     ERROR_APPLICATION_IDS_NOT_FOUND,
@@ -69,6 +72,7 @@ from baserow.core.jobs.registries import job_type_registry
 
 from .serializers import (
     BackupScheduleSerializer,
+    BackupSerializer,
     CreateBackupScheduleSerializer,
     CreateBackupSerializer,
     ListBackupsSerializer,
@@ -207,8 +211,10 @@ class BackupView(APIView):
     @map_exceptions(COMMON_EXCEPTIONS)
     def get(self, request, workspace_id: int, resource_id: int):
         backup = BackupHandler().get_backup(request.user, workspace_id, resource_id)
-        serializer = job_type_registry.get_serializer(backup, JobSerializer)
-        return Response(serializer.data)
+        # The list endpoint answers with `BackupSerializer`, so the item endpoint uses
+        # it too: otherwise it would omit the resource id, destination and download
+        # url its own description promises.
+        return Response(BackupSerializer(backup).data)
 
     @extend_schema(
         parameters=[
@@ -585,3 +591,91 @@ class RestoreRemoteBackupView(APIView):
         )
         serializer = job_type_registry.get_serializer(job, JobSerializer)
         return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+
+
+class BackupDownloadView(BaseArchiveDownloadView):
+    """
+    Streams the archive of a backup, for a browser through a signed link and for a
+    machine through an API client key.
+    """
+
+    authentication_classes = BaseArchiveDownloadView.authentication_classes + [
+        ApiClientAuthentication
+    ]
+    permission_classes = (IsAuthenticated, HasApiClientScope)
+    api_client_scopes = {"GET": "backup.read", "HEAD": "backup.read"}
+    download_type = BACKUP_DOWNLOAD
+
+    def get_job(self, request, workspace_id=None, resource_id=None, **kwargs):
+        return BackupHandler().get_backup_for_download(
+            request.user, workspace_id, resource_id
+        )
+
+    def get_token_object_id(self, job, resource_id=None, **kwargs) -> int:
+        # A backup is addressed by its resource id everywhere else in this API, so the
+        # download link is bound to that rather than to the job id.
+        return int(resource_id)
+
+    @extend_schema(
+        parameters=[
+            WORKSPACE_ID_PARAMETER,
+            OpenApiParameter(
+                name="resource_id",
+                location=OpenApiParameter.PATH,
+                type=OpenApiTypes.INT,
+                description="The id of the backup resource to download.",
+                required=True,
+            ),
+            OpenApiParameter(
+                name="token",
+                location=OpenApiParameter.QUERY,
+                type=OpenApiTypes.STR,
+                description=(
+                    "A signed download token, as returned in `download_url`. Lets a "
+                    "browser download through a plain link, which cannot carry an "
+                    "Authorization header. A JWT or an API client key works as well."
+                ),
+            ),
+        ],
+        tags=["Backups"],
+        operation_id="download_backup",
+        description=(
+            "Downloads the archive of a backup, streamed from the server's file "
+            "storage. Returns `ERROR_EXPORT_FILE_EXPIRED` when the archive is past "
+            "its retention, and `ERROR_EXPORT_FILE_MISSING_FROM_STORAGE` or "
+            "`ERROR_STORAGE_UNAVAILABLE` when the server cannot reach its own file "
+            "storage."
+        ),
+        request=None,
+        responses={
+            200: OpenApiTypes.BINARY,
+            400: get_error_schema(["ERROR_USER_NOT_IN_GROUP"]),
+            401: get_error_schema(
+                ["ERROR_DOWNLOAD_TOKEN_INVALID", "ERROR_DOWNLOAD_TOKEN_EXPIRED"]
+            ),
+            404: get_error_schema(
+                ["ERROR_GROUP_DOES_NOT_EXIST", "ERROR_RESOURCE_DOES_NOT_EXIST"]
+            ),
+            410: get_error_schema(["ERROR_EXPORT_FILE_EXPIRED"]),
+            500: get_error_schema(["ERROR_EXPORT_FILE_MISSING_FROM_STORAGE"]),
+            503: get_error_schema(["ERROR_STORAGE_UNAVAILABLE"]),
+        },
+    )
+    @map_exceptions({**COMMON_EXCEPTIONS, **DOWNLOAD_EXCEPTIONS})
+    def get(self, request, workspace_id: int, resource_id: int):
+        return self.serve(request, workspace_id=workspace_id, resource_id=resource_id)
+
+    @map_exceptions({**COMMON_EXCEPTIONS, **DOWNLOAD_EXCEPTIONS})
+    def head(self, request, workspace_id: int, resource_id: int):
+        """
+        Answers the client's preflight: the same checks, without the body, so a
+        download that cannot work is reported as a message instead of dumping an
+        error page where the archive was supposed to be.
+        """
+
+        return self.serve(
+            request,
+            head_only=True,
+            workspace_id=workspace_id,
+            resource_id=resource_id,
+        )

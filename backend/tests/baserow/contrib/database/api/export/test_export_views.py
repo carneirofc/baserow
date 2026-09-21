@@ -269,6 +269,8 @@ def test_exporting_csv_writes_file_to_storage(
                 "table": table.id,
                 "view": grid_view.id,
                 "url": None,
+                "download_url": None,
+                "error": None,
             }
             response = api_client.get(
                 reverse("api:database:export:get", kwargs={"job_id": job_id}),
@@ -277,6 +279,9 @@ def test_exporting_csv_writes_file_to_storage(
             )
             json = response.json()
             filename = json["exported_file_name"]
+            # The download url carries a freshly signed token, so only its shape is
+            # asserted; the rest of the payload is compared exactly.
+            download_url = json.pop("download_url")
             assert json == {
                 "id": job_id,
                 "created_at": expected_created_at,
@@ -288,7 +293,11 @@ def test_exporting_csv_writes_file_to_storage(
                 "table": table.id,
                 "view": grid_view.id,
                 "url": f"http://localhost:8000/media/export_files/{filename}",
+                "error": None,
             }
+            assert download_url.startswith(
+                f"http://localhost:8000/api/database/export/{job_id}/download/?token="
+            )
 
             file_path = tmpdir.join(settings.EXPORT_FILES_DIRECTORY, filename)
             assert file_path.isfile()
@@ -390,6 +399,8 @@ def test_exporting_csv_table_writes_file_to_storage(
                 "table": table.id,
                 "view": None,
                 "url": None,
+                "download_url": None,
+                "error": None,
             }
             response = api_client.get(
                 reverse("api:database:export:get", kwargs={"job_id": job_id}),
@@ -398,6 +409,9 @@ def test_exporting_csv_table_writes_file_to_storage(
             )
             json = response.json()
             filename = json["exported_file_name"]
+            # The download url carries a freshly signed token, so only its shape is
+            # asserted; the rest of the payload is compared exactly.
+            download_url = json.pop("download_url")
             assert json == {
                 "id": job_id,
                 "created_at": expected_created_at,
@@ -409,7 +423,11 @@ def test_exporting_csv_table_writes_file_to_storage(
                 "table": table.id,
                 "view": None,
                 "url": f"http://localhost:8000/media/export_files/{filename}",
+                "error": None,
             }
+            assert download_url.startswith(
+                f"http://localhost:8000/api/database/export/{job_id}/download/?token="
+            )
 
             file_path = tmpdir.join(settings.EXPORT_FILES_DIRECTORY, filename)
             assert file_path.isfile()
@@ -519,6 +537,8 @@ def test_exporting_csv_with_formatted_number_field(
                 "table": table.id,
                 "view": grid_view.id,
                 "url": None,
+                "download_url": None,
+                "error": None,
             }
             response = api_client.get(
                 reverse("api:database:export:get", kwargs={"job_id": job_id}),
@@ -527,6 +547,9 @@ def test_exporting_csv_with_formatted_number_field(
             )
             json = response.json()
             filename = json["exported_file_name"]
+            # The download url carries a freshly signed token, so only its shape is
+            # asserted; the rest of the payload is compared exactly.
+            download_url = json.pop("download_url")
             assert json == {
                 "id": job_id,
                 "created_at": expected_created_at,
@@ -538,7 +561,11 @@ def test_exporting_csv_with_formatted_number_field(
                 "table": table.id,
                 "view": grid_view.id,
                 "url": f"http://localhost:8000/media/export_files/{filename}",
+                "error": None,
             }
+            assert download_url.startswith(
+                f"http://localhost:8000/api/database/export/{job_id}/download/?token="
+            )
 
             file_path = tmpdir.join(settings.EXPORT_FILES_DIRECTORY, filename)
             assert file_path.isfile()
