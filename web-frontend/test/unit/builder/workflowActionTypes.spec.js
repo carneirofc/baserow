@@ -140,7 +140,7 @@ describe('Builder workflow action types', () => {
     ).toBe('workflowActionTypes.errorNavigationUrlMissing')
 
     // Once a custom URL formula is provided, the action is no longer in error.
-    workflowAction.navigate_to_url = { formula: "'https://baserow.io'" }
+    workflowAction.navigate_to_url = { formula: "'https://example.com'" }
 
     expect(
       workflowActionType.isInError(workflowAction, {

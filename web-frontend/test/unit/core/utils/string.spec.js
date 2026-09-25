@@ -101,13 +101,13 @@ describe('test string utils', () => {
 
   test('isValidURL', () => {
     const validURLs = [
-      'baserow.io',
-      'ftp://baserow.io',
+      'example.com',
+      'ftp://example.com',
       'git://example.com/',
-      'ws://baserow.io',
-      'http://baserow.io',
-      'https://baserow.io',
-      'https://www.baserow.io',
+      'ws://example.com',
+      'http://example.com',
+      'https://example.com',
+      'https://www.example.com',
       'HTTP://BASEROW.IO',
       'https://test.nl/test',
       'https://test.nl/test',
@@ -121,13 +121,13 @@ describe('test string utils', () => {
       'http://142.42.1.1/',
       'http://userid:password@example.com:65535/',
       'http://su--b.valid-----hyphens.com/',
-      '//baserow.io/test',
+      '//example.com/test',
       '127.0.0.1',
       'https://test.nl#test',
-      'http://baserow.io/hrscywv4p/image/upload/c_fill,g_faces:center,h_128,w_128/yflwk7vffgwyyenftkr7.png',
+      'http://example.com/hrscywv4p/image/upload/c_fill,g_faces:center,h_128,w_128/yflwk7vffgwyyenftkr7.png',
       'https://gitlab.com/baserow/baserow/-/issues?row=nice/route',
-      'https://web.archive.org/web/20210313191012/https://baserow.io/',
-      'mailto:bram@baserow.io?test=test',
+      'https://web.archive.org/web/20210313191012/https://example.com/',
+      'mailto:bram@example.com?test=test',
     ]
 
     const invalidURLs = [

@@ -102,7 +102,7 @@ exports[`User Admin Component Tests > A users attributes will be displayed 1`] =
                   <!--v-if-->
                   <!--v-if--><span class="avatar__initials">UN</span>
                 </div>
-                <div class="user-admin-username__name" title="user@baserow.io">user@baserow.io</div><i class="user-admin-username__icon iconoir-user-crown"></i>
+                <div class="user-admin-username__name" title="user@example.com">user@example.com</div><i class="user-admin-username__icon iconoir-user-crown"></i>
               </div>
             </div>
           </td>

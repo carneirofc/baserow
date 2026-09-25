@@ -135,7 +135,7 @@ const mockedFields = {
     primary: false,
     table_id: 42,
     type: 'url',
-    testing_row_data: ['', 'https://baserow.io'],
+    testing_row_data: ['', 'https://example.com'],
   },
   email: {
     id: 10,
@@ -144,7 +144,7 @@ const mockedFields = {
     primary: false,
     table_id: 42,
     type: 'email',
-    testing_row_data: ['', 'bram@baserow.io'],
+    testing_row_data: ['', 'bram@example.com'],
   },
   file: {
     id: 11,
@@ -243,7 +243,7 @@ const mockedFields = {
     table_id: 42,
     type: 'form_view_edit_row',
     form_view_id: 1,
-    testing_row_data: [null, 'https://baserow.io/form/slug/?edit_token=abc'],
+    testing_row_data: [null, 'https://example.com/form/slug/?edit_token=abc'],
   },
   formula: {
     id: 15,

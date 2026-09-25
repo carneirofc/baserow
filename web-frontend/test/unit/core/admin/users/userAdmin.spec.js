@@ -24,7 +24,7 @@ describe('User Admin Component Tests', () => {
   test('A users attributes will be displayed', async () => {
     const userSetup = {
       id: 1,
-      username: 'user@baserow.io',
+      username: 'user@example.com',
       name: 'user name',
       workspaces: [
         {
