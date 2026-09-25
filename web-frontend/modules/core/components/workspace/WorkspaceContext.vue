@@ -43,7 +43,7 @@
       </li>
       <li class="context__menu-item">
         <a class="context__menu-item-link" @click="openApiClients">
-          <i class="context__menu-item-icon iconoir-key-alt-plus"></i>
+          <i class="context__menu-item-icon iconoir-key-plus"></i>
           {{ $t('workspaceContext.apiClients') }}
         </a>
       </li>

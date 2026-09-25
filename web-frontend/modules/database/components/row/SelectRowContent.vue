@@ -19,7 +19,7 @@
           ref="fieldsButton"
           size="tiny"
           type="secondary"
-          icon="iconoir-eye-off"
+          icon="iconoir-eye-closed"
           @click="toggleFieldsContext"
         >
           {{ $t('selectRowContent.hideFields') }}

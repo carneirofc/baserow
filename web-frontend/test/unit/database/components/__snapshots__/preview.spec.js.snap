@@ -89,7 +89,7 @@ exports[`Preview component > Office preview 1`] = `
         class="button button--regular button--secondary"
       >
         <i
-          class="button__icon iconoir-lock-open"
+          class="button__icon iconoir-lock-slash"
         />
         <span
           class="button__label"
@@ -163,7 +163,7 @@ exports[`Preview component > PDF preview component 1`] = `
         class="button button--regular button--secondary"
       >
         <i
-          class="button__icon iconoir-lock-open"
+          class="button__icon iconoir-lock-slash"
         />
         <span
           class="button__label"
@@ -234,7 +234,7 @@ exports[`Preview component > PDF preview component 3`] = `
         class="button button--regular button--secondary"
       >
         <i
-          class="button__icon iconoir-lock-open"
+          class="button__icon iconoir-lock-slash"
         />
         <span
           class="button__label"

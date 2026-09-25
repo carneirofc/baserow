@@ -2050,7 +2050,12 @@ export class NumberFieldType extends FieldType {
   }
 }
 
-BigNumber.config({ EXPONENTIAL_AT: NumberFieldType.getMaxNumberLength() })
+// STRICT: false keeps the pre-v10 behaviour of returning NaN on invalid input
+// (instead of throwing), which the number field parsing relies on.
+BigNumber.config({
+  EXPONENTIAL_AT: NumberFieldType.getMaxNumberLength(),
+  STRICT: false,
+})
 
 export class RatingFieldType extends FieldType {
   static getMaxNumberLength() {

@@ -61,7 +61,7 @@ exports[`Table Component Tests > Adding a row to a table increases the row count
       </ul>
       <ul class="header__filter header__filter--full-width" table="[object Object]">
         <li class="header__filter-item">
-          <div><a class="header__filter-link active active--error"><i class="header__filter-icon iconoir-eye-off"></i><span class="header__filter-name">gridViewHide.hideField - 1</span></a>
+          <div><a class="header__filter-link active active--error"><i class="header__filter-icon iconoir-eye-closed"></i><span class="header__filter-name">gridViewHide.hideField - 1</span></a>
             <teleport-stub to="body">
               <div class="hidings context visibility-hidden">
                 <!--v-if-->
@@ -112,7 +112,7 @@ exports[`Table Component Tests > Adding a row to a table increases the row count
         </li>
         <!--v-if-->
         <li class="header__filter-item">
-          <div class="header__search"><a class="header__filter-link"><i class="header__search-icon iconoir-search"></i> </a><a class="header__search-clear" aria-label="viewSearch.clearSearch" style="display: none;"><i class="iconoir-cancel"></i></a>
+          <div class="header__search"><a class="header__filter-link"><i class="header__search-icon iconoir-search"></i> </a><a class="header__search-clear" aria-label="viewSearch.clearSearch" style="display: none;"><i class="iconoir-xmark"></i></a>
             <teleport-stub to="body">
               <div class="context visibility-hidden context--overflow-scroll">
                 <!--v-if-->
@@ -395,7 +395,7 @@ exports[`Table Component Tests > Adding a row to a table increases the row count
       </ul>
       <ul class="header__filter header__filter--full-width" table="[object Object]">
         <li class="header__filter-item">
-          <div><a class="header__filter-link active active--error"><i class="header__filter-icon iconoir-eye-off"></i><span class="header__filter-name">gridViewHide.hideField - 1</span></a>
+          <div><a class="header__filter-link active active--error"><i class="header__filter-icon iconoir-eye-closed"></i><span class="header__filter-name">gridViewHide.hideField - 1</span></a>
             <teleport-stub to="body">
               <div class="hidings context visibility-hidden">
                 <!--v-if-->
@@ -446,7 +446,7 @@ exports[`Table Component Tests > Adding a row to a table increases the row count
         </li>
         <!--v-if-->
         <li class="header__filter-item">
-          <div class="header__search"><a class="header__filter-link"><i class="header__search-icon iconoir-search"></i> </a><a class="header__search-clear" aria-label="viewSearch.clearSearch" style="display: none;"><i class="iconoir-cancel"></i></a>
+          <div class="header__search"><a class="header__filter-link"><i class="header__search-icon iconoir-search"></i> </a><a class="header__search-clear" aria-label="viewSearch.clearSearch" style="display: none;"><i class="iconoir-xmark"></i></a>
             <teleport-stub to="body">
               <div class="context visibility-hidden context--overflow-scroll">
                 <!--v-if-->

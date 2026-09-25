@@ -304,7 +304,7 @@
       </div>
       <div v-if="!uploadingBeforeJobCreated" class="modal__actions">
         <a class="modal__close" @click="hide()">
-          <i class="iconoir-cancel"></i>
+          <i class="iconoir-xmark"></i>
         </a>
       </div>
 

@@ -55,7 +55,7 @@
         class="add-members__chip"
       >
         {{ user.name || user.email }}
-        <a @click="toggle(user)"><i class="iconoir-cancel"></i></a>
+        <a @click="toggle(user)"><i class="iconoir-xmark"></i></a>
       </span>
     </p>
 

@@ -34,7 +34,7 @@
                 :class="
                   status === 'working'
                     ? 'iconoir-check admin-health__icon--success'
-                    : 'iconoir-cancel admin-health__icon--fail'
+                    : 'iconoir-xmark admin-health__icon--fail'
                 "
               ></i>
               <div

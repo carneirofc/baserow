@@ -112,7 +112,7 @@
           </div>
         </ClientOnly>
         <Button
-          :icon="testRunEnabled ? 'iconoir-cancel' : 'iconoir-play'"
+          :icon="testRunEnabled ? 'iconoir-xmark' : 'iconoir-play'"
           type="secondary"
           data-highlight="automation-test-run"
           :disabled="testRunDisabled"

@@ -204,7 +204,7 @@ export class DeleteAccountSettingsType extends SettingsType {
   }
 
   getIconClass() {
-    return 'iconoir-cancel'
+    return 'iconoir-xmark'
   }
 
   getName() {

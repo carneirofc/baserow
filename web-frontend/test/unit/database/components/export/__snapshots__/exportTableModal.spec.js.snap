@@ -1892,7 +1892,7 @@ exports[`Preview exportTableModal > Modal with no view 1`] = `
           class="modal__close"
         >
           <i
-            class="iconoir-cancel"
+            class="iconoir-xmark"
           />
         </a>
         
@@ -3798,7 +3798,7 @@ exports[`Preview exportTableModal > Modal with view 1`] = `
           class="modal__close"
         >
           <i
-            class="iconoir-cancel"
+            class="iconoir-xmark"
           />
         </a>
         

@@ -236,7 +236,7 @@ describe('User Admin Component Tests', () => {
 
     const cells = ui.findCells()
     const { isActiveCell } = ui.getRow(cells, 0)
-    expect(isActiveCell.find('.iconoir-cancel').exists()).toBe(true)
+    expect(isActiveCell.find('.iconoir-xmark').exists()).toBe(true)
   })
 
   test('A deactivated user can be activated', async () => {
@@ -698,7 +698,7 @@ describe('User Admin Component Tests', () => {
     const { isActiveCell } = ui.getRow(cells, 0)
     expect(
       isActiveCell
-        .find(startingIsActive ? '.iconoir-check' : '.iconoir-cancel')
+        .find(startingIsActive ? '.iconoir-check' : '.iconoir-xmark')
         .exists()
     ).toBe(true)
 
@@ -718,7 +718,7 @@ describe('User Admin Component Tests', () => {
     const { isActiveCell: updatedIsActiveCell } = ui.getRow(cells, 0)
     expect(
       updatedIsActiveCell
-        .find(startingIsActive ? '.iconoir-cancel' : '.iconoir-check')
+        .find(startingIsActive ? '.iconoir-xmark' : '.iconoir-check')
         .exists()
     ).toBe(true)
   }

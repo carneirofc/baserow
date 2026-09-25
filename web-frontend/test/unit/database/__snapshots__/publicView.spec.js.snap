@@ -193,7 +193,7 @@ exports[`Public View Page Tests > Can see a publicly shared grid view 1`] = `
                 class="header__filter-link active active--error"
               >
                 <i
-                  class="header__filter-icon iconoir-eye-off"
+                  class="header__filter-icon iconoir-eye-closed"
                 />
                 <span
                   class="header__filter-name"
@@ -363,7 +363,7 @@ exports[`Public View Page Tests > Can see a publicly shared grid view 1`] = `
                 style="display: none;"
               >
                 <i
-                  class="iconoir-cancel"
+                  class="iconoir-xmark"
                 />
               </a>
               <teleport-stub
