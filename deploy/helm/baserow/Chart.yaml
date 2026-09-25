@@ -17,7 +17,7 @@ keywords:
   - eks
 version: 0.8.1
 # Tracks the application version shipped by this fork's images.
-appVersion: "0.14.0"
+appVersion: "0.15.0"
 home: https://github.com/carneirofc/baserow
 sources:
   - https://github.com/carneirofc/baserow
@@ -27,6 +27,11 @@ maintainers:
 
 annotations:
   artifacthub.io/changes: |
+    - kind: added
+      description: >-
+        appVersion 0.15.0: importing into an existing table previews its changes
+        and asks for confirmation, and exports and backups download through the
+        API, so they work when media lives on a shared volume or object store.
     - kind: changed
       description: >-
         Bump the bundled Bitnami subcharts: PostgreSQL 18.12 and Redis 28.2.

@@ -1,5 +1,22 @@
 # Changelog
 
+## Released 0.15.0
+
+### New features
+* [Database] Import modes that move existing rows to the trash now require the new replace rows permission, so an editor can import without being able to wipe a table.
+* [Database] Importing a file into an existing table now shows the changes it will make and asks you to accept them first.
+* [Core] The instance health page now reports when the web and worker processes no longer share a file storage, which would otherwise only show up as a broken download.
+
+### Bug fixes
+* [Core] A download that cannot be served now says which of the two happened: the file expired, or the server cannot read back its own file storage. A misconfigured storage is no longer reported as a missing file.
+* [Database] A table export whose file cannot be read back from the storage now fails with that reason, instead of finishing and handing you a download that does not work.
+* [Core] Exported files and backups are now downloaded through the API, streamed straight from the server's storage, so downloads work when files are on a shared volume or in an object store the browser cannot reach.
+* [Core] Retention notices (row history, audit log) and snapshot limits and expiry now show their number of days, and several icons that rendered blank are visible again.
+
+### Refactors
+* [Core] Remaining hard-coded interface colors now use the theme palette, so they follow custom branding.
+
+
 ## Released 0.14.0
 
 ### New features
