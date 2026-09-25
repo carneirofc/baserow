@@ -56,7 +56,7 @@
           </div>
         </div>
         <div v-if="retentionDays" class="row-history__retention">
-          {{ $t('rowHistorySidebar.retention', { count: retentionDays }) }}
+          {{ $t('rowHistorySidebar.retention', retentionDays) }}
         </div>
       </div>
     </template>

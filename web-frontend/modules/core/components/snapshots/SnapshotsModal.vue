@@ -10,7 +10,7 @@
         })
       }}
       <span v-if="maxSnapshots >= 0">{{
-        $t('snapshotsModal.descriptionLimits', { count: maxSnapshots })
+        $t('snapshotsModal.descriptionLimits', maxSnapshots)
       }}</span>
     </p>
     <component

@@ -9,7 +9,7 @@
           {{ snapshot.created_by ? `${snapshot.created_by.username} - ` : '' }}
           {{ $t('snapshotListItem.created') }} {{ timeAgo }}
           <template v-if="expiresInDays !== null">
-            - {{ $t('snapshotListItem.expiresIn', { count: expiresInDays }) }}
+            - {{ $t('snapshotListItem.expiresIn', expiresInDays) }}
           </template>
         </div>
       </div>

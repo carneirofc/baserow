@@ -11,7 +11,7 @@
     </template>
     <template #header-right-side>
       <span v-if="retentionDays" class="audit-log__retention">
-        {{ $t('auditLogAdminTable.retention', { count: retentionDays }) }}
+        {{ $t('auditLogAdminTable.retention', retentionDays) }}
       </span>
       <a class="button button--ghost" @click="exportCsv">
         {{ $t('auditLogAdminTable.export') }}

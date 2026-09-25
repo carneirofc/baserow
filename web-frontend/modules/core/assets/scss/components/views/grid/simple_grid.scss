@@ -183,10 +183,10 @@
 
 .simple-grid__right-wrapper-footer {
   position: absolute;
-  background: #fafafa;
+  background: $palette-neutral-25;
   height: 44px;
   bottom: 0;
-  border-top: solid 1px #d9dbde;
+  border-top: solid 1px $color-neutral-200;
   width: 100%;
 }
 

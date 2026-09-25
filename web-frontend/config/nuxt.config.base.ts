@@ -81,15 +81,10 @@ export default defineNuxtConfig({
       preprocessorOptions: {
         scss: {
           // TODO: Migrate all @import rules to @use/@forward (Dart Sass 3.0 will remove @import).
-          //  Also fix global-builtin (unquote → string.unquote in colors.module.scss)
-          //  and if-function (old if() syntax in abstracts/_helpers.scss).
-          //  See https://sass-lang.com/d/import for the migration guide and automated migrator.
-          silenceDeprecations: [
-            'import',
-            'global-builtin',
-            'if-function',
-            'color-functions',
-          ],
+          //  `sass-migrator module --migrate-deps` alone is not enough: under @use the
+          //  ~220 `@extend %placeholder` rules need explicit module wiring, and the
+          //  emitted CSS order (and so the cascade) changes. See https://sass-lang.com/d/import.
+          silenceDeprecations: ['import'],
         },
       },
     },
