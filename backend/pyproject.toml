@@ -25,7 +25,7 @@ dependencies = [
     "psycopg2-binary==2.9.13",
     "Faker==40.39.0",
     "gunicorn==26.2.0",
-    "uvicorn[standard]==0.53.0",
+    "uvicorn[standard]==0.54.0",
     # gunicorn worker class for the ASGI server (moved out of uvicorn core).
     "uvicorn-worker==0.4.0",
     "websockets==17.1",
@@ -45,14 +45,14 @@ dependencies = [
     "unicodecsv==0.14.1",
     "django-celery-beat==2.9.0",
     "celery-redbeat==2.4.2",
-    "flower==2.1.0",
+    "flower==2.2.0",
     "service-identity==26.1.0",
     "regex==2026.9.10",
     # Held: must match the ANTLR version the checked-in formula parser was
     # generated with (web-frontend pins antlr4 4.9.3 for the same reason).
     "antlr4-python3-runtime==4.9.3",
     "tqdm==4.70.1",
-    "boto3==1.43.99",
+    "boto3==1.43.102",
     "django-storages==1.14.6",
     "django-storages[azure]==1.14.6",
     "django-storages[google]==1.14.6",
