@@ -23,9 +23,9 @@ dependencies = [
     "djangorestframework==3.17.1",
     "djangorestframework-simplejwt==5.5.1",
     "psycopg2-binary==2.9.13",
-    "Faker==40.38.0",
+    "Faker==40.39.0",
     "gunicorn==26.2.0",
-    "uvicorn[standard]==0.52.4",
+    "uvicorn[standard]==0.53.0",
     # gunicorn worker class for the ASGI server (moved out of uvicorn core).
     "uvicorn-worker==0.4.0",
     "websockets==17.1",
@@ -52,7 +52,7 @@ dependencies = [
     # generated with (web-frontend pins antlr4 4.9.3 for the same reason).
     "antlr4-python3-runtime==4.9.3",
     "tqdm==4.70.1",
-    "boto3==1.43.93",
+    "boto3==1.43.99",
     "django-storages==1.14.6",
     "django-storages[azure]==1.14.6",
     "django-storages[google]==1.14.6",
@@ -94,7 +94,7 @@ dependencies = [
     "typing_extensions>=4.14.1",
     "icalendar==7.3.0",
     "jira2markdown==0.5.1",
-    "atlassian-python-api==5.0.4",
+    "atlassian-python-api==5.0.5",
     "openpyxl==3.1.5",
     "zipstream-ng==1.9.3",
     # Held: 2.x reworks the lowlevel Server API used by core/mcp (#26).
@@ -145,15 +145,18 @@ dev = [
     "snoop==0.6.1",
     "openapi-spec-validator==0.9.0",
     "pytest-html==4.2.0",
-    "coverage==7.16.0",
+    "coverage==7.16.1",
     "pytest-split==0.11.0",
     "pytest-unordered==0.8.0",
-    "debugpy==1.8.21",
+    "debugpy==1.8.22",
     "backports.cached-property==1.0.2",
     "graphviz==0.21",
     "pytest-cov==7.1.0",
-    "django-stubs==5.2.8",
-    "django-stubs-ext==6.1.0",
+    "django-stubs==6.1.1",
+    "django-stubs-ext==6.1.1",
+    # django-stubs 6.x split the DRF mypy plugin out of the package; mypy.ini
+    # loads mypy_drf_plugin, which now lives here.
+    "djangorestframework-stubs==3.18.1",
     "mypy==2.3.1",
     "mypy-extensions==1.1.0",
     "ipython",
@@ -163,7 +166,7 @@ dev = [
     "ipdb",
     "build",
     "rust-just>=1.57.0",
-    "syrupy==6.0.0",
+    "syrupy==6.1.1",
     "moto[s3]==5.2.3",
 ]
 changelog = [

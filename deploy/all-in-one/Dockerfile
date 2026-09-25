@@ -4,7 +4,7 @@ ARG GID="9999"
 ARG BACKEND_IMAGE=ghcr.io/carneirofc/baserow/backend
 ARG WEBFRONTEND_IMAGE=ghcr.io/carneirofc/baserow/web-frontend
 ARG CADDY_VERSION=2.11.4
-ARG GO_VERSION=1.26.8
+ARG GO_VERSION=1.27.1
 # hadolint ignore=DL3006
 FROM ${BACKEND_IMAGE} AS backend_image
 # hadolint ignore=DL3006

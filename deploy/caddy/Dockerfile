@@ -20,7 +20,7 @@
 # deploy/all-in-one/Dockerfile.
 # =============================================================================
 ARG CADDY_VERSION=2.11.4
-ARG GO_VERSION=1.26.8
+ARG GO_VERSION=1.27.1
 
 FROM golang:${GO_VERSION} AS caddy_builder
 ARG CADDY_VERSION
