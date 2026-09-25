@@ -24,7 +24,7 @@ FROM ${WEBFRONTEND_IMAGE} AS web_frontend_image
 # =============================================================================
 FROM golang:${GO_VERSION} AS caddy_image
 ARG CADDY_VERSION
-ARG CADDY_MODULE_UPGRADES="golang.org/x/crypto@v0.57.0 golang.org/x/net@v0.59.0 golang.org/x/text@v0.42.0 google.golang.org/grpc@v1.83.2"
+ARG CADDY_MODULE_UPGRADES="golang.org/x/crypto@v0.57.0 golang.org/x/net@v0.59.0 golang.org/x/text@v0.42.0 google.golang.org/grpc@v1.84.0"
 ENV CGO_ENABLED=0 \
     GOTOOLCHAIN=local
 WORKDIR /src/caddy
@@ -105,7 +105,7 @@ COPY --from=caddy_image /usr/bin/caddy /usr/bin/caddy
 ENV NODE_VERSION=v24.21.0 \
     NODE_SHA256_amd64=fd8e59d5a511510f6a298afb548f18c7d2b1be404d8b4a27d94fbe49f56cb2d6 \
     NODE_SHA256_arm64=6ad1325edbdb5649c379b75a237147a666c95d4f9ae8d340fef2d1575d289ad2 \
-    NPM_VERSION=11.19.1 \
+    NPM_VERSION=12.1.0 \
     YARN_VERSION=1.22.22
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \

@@ -14,8 +14,8 @@ FROM ubuntu:26.04 AS tool-builder
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-ENV SU_EXEC_VERSION=212b75144bbc06722fbd7661f651390dc47a43d1 \
-    SU_EXEC_SHA256=d6c40440609a23483f12eb6295b5191e94baf08298a856bab6e15b10c3b82891
+ENV SU_EXEC_VERSION=89c016e6e08749d583efdeda04b9f73e1218e253 \
+    SU_EXEC_SHA256=0c90fe15804f2670037b90e72eb496579fe00d2c15765e5fe2ddec0f5afa35fa
 
 # Drop Ubuntu's unowned pebble binary (see the ci stage)
 # hadolint ignore=DL3008
@@ -66,7 +66,7 @@ ENV UV_PYTHON_DOWNLOADS=0 \
     PYTHONPATH="/baserow/backend/src"
 
 # hadolint ignore=DL3022
-COPY --from=ghcr.io/astral-sh/uv:0.12.0 /uv /uvx /bin/
+COPY --from=ghcr.io/astral-sh/uv:0.12.19 /uv /uvx /bin/
 
 # Create baserow directory structure (including subdirs for COPY targets)
 RUN mkdir -p /baserow/ && chown -R $UID:$GID /baserow/
@@ -208,7 +208,7 @@ RUN groupadd --system --gid $GID ${DOCKER_USER} && \
 COPY --from=tool-builder /usr/local/bin/su-exec /usr/local/bin/su-exec
 COPY --from=tool-builder /usr/bin/tini /usr/bin/tini
 # hadolint ignore=DL3022
-COPY --from=ghcr.io/astral-sh/uv:0.12.0 /uv /uvx /bin/
+COPY --from=ghcr.io/astral-sh/uv:0.12.19 /uv /uvx /bin/
 
 # Create baserow directory structure (including subdirs for COPY targets)
 RUN mkdir -p /baserow/backend/reports /baserow/media && \
@@ -286,7 +286,7 @@ COPY --from=tool-builder /usr/local/bin/su-exec /usr/local/bin/su-exec
 COPY --from=tool-builder /usr/bin/tini /usr/bin/tini
 COPY --from=tool-builder /usr/bin/dos2unix /usr/local/bin/dos2unix
 # hadolint ignore=DL3022
-COPY --from=ghcr.io/astral-sh/uv:0.12.0 /uv /uvx /bin/
+COPY --from=ghcr.io/astral-sh/uv:0.12.19 /uv /uvx /bin/
 
 # Create directory structure to install dependencies
 RUN mkdir -p /baserow/backend/docker /baserow/media && \

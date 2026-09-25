@@ -61,7 +61,7 @@ services:
       start_period: 10s
 
   redis:
-    image: redis:6
+    image: redis:8
     ports:
       - "${BASEROW_HOST_PUBLISH_IP:-127.0.0.1}:${E2E_REDIS_PORT:-6470}:6379"
     healthcheck:

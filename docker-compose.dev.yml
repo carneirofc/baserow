@@ -221,7 +221,7 @@ services:
   # owned by different users. Ensure that we chown them to the user appropriate for the
   # environment here.
   volume-permissions-fixer:
-    image: bash:4.4
+    image: bash:5.3
     command: chown ${UID:-9999}:${GID:-9999}  -R /baserow/media
     volumes:
       - media:/baserow/media

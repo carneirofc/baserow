@@ -15,7 +15,7 @@ keywords:
   - database
   - openshift
   - eks
-version: 0.8.0
+version: 0.8.1
 # Tracks the application version shipped by this fork's images.
 appVersion: "0.14.0"
 home: https://github.com/carneirofc/baserow
@@ -27,19 +27,16 @@ maintainers:
 
 annotations:
   artifacthub.io/changes: |
-    - kind: added
+    - kind: changed
       description: >-
-        appVersion 0.14.0: the interface reports which build it is running - the
-        release version and commit on the login screen and in the user menu, and
-        the backend build, its build date and a mismatch warning on the admin
-        settings and health pages.
+        Bump the bundled Bitnami subcharts: PostgreSQL 18.12 and Redis 28.2.
 
 dependencies:
   - name: postgresql
-    version: "~18.8.0"
+    version: "~18.12.0"
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
   - name: redis
-    version: "~27.0.0"
+    version: "~28.2.0"
     repository: https://charts.bitnami.com/bitnami
     condition: redis.enabled

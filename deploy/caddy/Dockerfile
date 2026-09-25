@@ -24,7 +24,7 @@ ARG GO_VERSION=1.27.1
 
 FROM golang:${GO_VERSION} AS caddy_builder
 ARG CADDY_VERSION
-ARG CADDY_MODULE_UPGRADES="golang.org/x/crypto@v0.57.0 golang.org/x/net@v0.59.0 golang.org/x/text@v0.42.0 google.golang.org/grpc@v1.83.2"
+ARG CADDY_MODULE_UPGRADES="golang.org/x/crypto@v0.57.0 golang.org/x/net@v0.59.0 golang.org/x/text@v0.42.0 google.golang.org/grpc@v1.84.0"
 ENV CGO_ENABLED=0 \
     GOTOOLCHAIN=local
 WORKDIR /src/caddy

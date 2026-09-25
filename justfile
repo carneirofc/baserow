@@ -1333,7 +1333,7 @@ ci cmd="" target="":
 
         echo "Starting Redis..."
         docker run -d --name ci-test-redis --network "$NETWORK" \
-            redis:7 redis-server --requirepass baserow
+            redis:8 redis-server --requirepass baserow
 
         # Wait for postgres to be ready
         echo "Waiting for PostgreSQL to be ready..."
