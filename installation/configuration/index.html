@@ -4011,6 +4011,11 @@ doing.</p>
 <td></td>
 </tr>
 <tr>
+<td>BASEROW_MAX_REQUEST_BODY_SIZE_MB</td>
+<td>The largest request body, in MB, the backend accepts (Django's <code>DATA_UPLOAD_MAX_MEMORY_SIZE</code>). JSON payloads count too, including table imports, which send the parsed file as JSON, so keep it well above <code>BASEROW_MAX_IMPORT_FILE_SIZE_MB</code>. Bodies are read into memory, so this also bounds per-request memory use.</td>
+<td>1024</td>
+</tr>
+<tr>
 <td>HOURS_UNTIL_TRASH_PERMANENTLY_DELETED</td>
 <td>Items from the trash will be permanently deleted after this number of hours.</td>
 <td></td>
