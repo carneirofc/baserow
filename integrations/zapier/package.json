@@ -14,7 +14,7 @@
   },
   "private": true,
   "resolutions": {
-    "cipher-base": "^1.0.5",
+    "cipher-base": "^1.0.7",
     "sha.js": "^2.4.12",
     "form-data": "^4.0.6",
     "js-yaml": "^3.15.2",
