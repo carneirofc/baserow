@@ -10,6 +10,7 @@ from rest_framework.status import HTTP_200_OK, HTTP_404_NOT_FOUND
 from baserow.core.backups.destination import BackupDestinationHandler
 from baserow.core.backups.exceptions import (
     RemoteBackupCorrupted,
+    RemoteBackupRestoreNotAllowed,
     RemoteBackupTrustNotAllowed,
 )
 from baserow.core.backups.handler import BackupHandler
@@ -150,7 +151,15 @@ def test_tampered_remote_backup_is_refused(
 
 @pytest.mark.django_db
 @pytest.mark.parametrize(
-    "key", ["backups/../../etc/passwd.zip", "elsewhere/archive.zip", "backups/a.json"]
+    "key",
+    [
+        "backups/../../etc/passwd.zip",
+        "elsewhere/archive.zip",
+        "backups/a.json",
+        "backups/archive.zip",
+        "backups/workspace=x/archive.zip",
+        "backups/workspace=1/nested/archive.zip",
+    ],
 )
 def test_restore_only_accepts_backup_archive_keys(
     data_fixture, backup_destination, key
@@ -162,6 +171,89 @@ def test_restore_only_accepts_backup_archive_keys(
         BackupDestinationHandler().restore_remote_backup(
             user, workspace.id, "offsite", key
         )
+
+
+@pytest.mark.import_export_workspace
+@pytest.mark.django_db(transaction=True)
+def test_restore_requires_access_to_the_backed_up_workspace(
+    data_fixture, backup_destination, use_tmp_media_root
+):
+    owner = data_fixture.create_user()
+    _, job = _backup(data_fixture, owner)
+    outsider = data_fixture.create_user()
+    target = data_fixture.create_workspace(user=outsider)
+
+    with pytest.raises(RemoteBackupRestoreNotAllowed):
+        BackupDestinationHandler().restore_remote_backup(
+            outsider, target.id, "offsite", job.remote_key, sync=True
+        )
+    assert not Application.objects.filter(workspace=target).exists()
+
+    staff = data_fixture.create_user(is_staff=True)
+    staff_target = data_fixture.create_workspace(user=staff)
+    import_job = BackupDestinationHandler().restore_remote_backup(
+        staff, staff_target.id, "offsite", job.remote_key, sync=True
+    )
+    assert import_job.state == JOB_FINISHED, import_job.error
+
+
+@pytest.mark.import_export_workspace
+@pytest.mark.django_db(transaction=True)
+def test_only_staff_can_restore_a_backup_of_another_instance(
+    data_fixture, backup_destination, use_tmp_media_root
+):
+    user = data_fixture.create_user()
+    workspace, job = _backup(data_fixture, user)
+    sidecar_path = backup_destination / f"{job.remote_key}.json"
+    sidecar = json.loads(sidecar_path.read_text())
+    sidecar["instance_id"] = "another-instance"
+    sidecar_path.write_text(json.dumps(sidecar))
+
+    with pytest.raises(RemoteBackupRestoreNotAllowed):
+        BackupDestinationHandler().restore_remote_backup(
+            user, workspace.id, "offsite", job.remote_key, sync=True
+        )
+
+
+@pytest.mark.import_export_workspace
+@pytest.mark.django_db(transaction=True)
+def test_remote_retention_ignores_backups_of_another_instance(
+    data_fixture,
+    backup_destination,
+    django_capture_on_commit_callbacks,
+    use_tmp_media_root,
+):
+    user = data_fixture.create_user()
+    workspace = data_fixture.create_workspace(user=user)
+    data_fixture.create_database_application(workspace=workspace)
+    schedule = data_fixture.create_backup_schedule(
+        user=user, workspace=workspace, destination="offsite", keep_last=1
+    )
+    handler = BackupScheduleHandler()
+    destination_handler = BackupDestinationHandler()
+
+    # Another instance sharing the destination, with the same workspace and schedule
+    # ids, already uploaded a backup.
+    with django_capture_on_commit_callbacks(execute=True):
+        handler.run_schedule(schedule)
+    [foreign] = destination_handler.list_backups("offsite", workspace.id)
+    sidecar_path = backup_destination / f"{foreign['key']}.json"
+    sidecar = json.loads(sidecar_path.read_text())
+    sidecar["instance_id"] = "another-instance"
+    sidecar_path.write_text(json.dumps(sidecar))
+
+    for _ in range(2):
+        with django_capture_on_commit_callbacks(execute=True):
+            handler.run_schedule(schedule)
+
+    assert destination_handler.apply_remote_retention(schedule) == 1
+
+    remaining = {
+        backup["key"]
+        for backup in destination_handler.list_backups("offsite", workspace.id)
+    }
+    assert foreign["key"] in remaining
+    assert len(remaining) == 2
 
 
 @pytest.mark.import_export_workspace

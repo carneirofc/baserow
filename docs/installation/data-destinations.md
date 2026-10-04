@@ -126,6 +126,15 @@ POST /api/backups/destinations/<name>/workspace/<workspace_id>/restore/
 Restored applications are installed as new applications. The archive's checksum is
 verified against the sidecar first.
 
+Restoring needs export access to the workspace the backup was made of, the same access
+listing needs. A backup made by another instance (a different `instance_id` in its
+sidecar), such as on a fresh instance after a disaster, can only be restored by staff:
+use the admin API or `restore_from_destination` with a staff `--user-email`.
+
+Several instances may share a destination. Retention only deletes the backups the
+instance itself uploaded, even when another instance has a workspace or schedule with
+the same id.
+
 Archives are signed with a key of the instance that made them. Restoring one made by
 another instance fails with `ERROR_UNTRUSTED_PUBLIC_KEY` until its key is trusted: a staff
 member can pass `"trust_public_key": true` (or `--trust-public-key`) when the destination

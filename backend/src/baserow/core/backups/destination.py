@@ -1,6 +1,7 @@
 import hashlib
 import json
 import os
+import re
 from datetime import datetime, timedelta
 from datetime import timezone as dt_timezone
 from tempfile import SpooledTemporaryFile
@@ -16,6 +17,7 @@ from loguru import logger
 from baserow.core.data_destinations.config import PURPOSE_BACKUP
 from baserow.core.data_destinations.exceptions import InvalidDataDestinationKey
 from baserow.core.data_destinations.handler import DataDestinationHandler
+from baserow.core.exceptions import PermissionException, WorkspaceDoesNotExist
 from baserow.core.handler import CoreHandler
 from baserow.core.import_export.handler import (
     MANIFEST_NAME,
@@ -33,6 +35,7 @@ from baserow.version import VERSION
 from .exceptions import (
     RemoteBackupCorrupted,
     RemoteBackupDoesNotExist,
+    RemoteBackupRestoreNotAllowed,
     RemoteBackupTrustNotAllowed,
 )
 from .models import BackupSchedule, ExportApplicationsToDestinationJob
@@ -44,6 +47,9 @@ SIDECAR_FORMAT_VERSION = 1
 COPY_CHUNK_SIZE = 1024 * 1024
 # Archives up to this size are restored in memory, larger ones spill to disk.
 RESTORE_MEMORY_LIMIT = 64 * 1024 * 1024
+ARCHIVE_KEY_PATTERN = re.compile(
+    rf"^{BACKUPS_PREFIX}/workspace=(?P<workspace_id>\d+)/[^/]+{re.escape(ARCHIVE_SUFFIX)}$"
+)
 
 
 def _sha256_of(handle: IO[bytes]) -> str:
@@ -62,6 +68,9 @@ class BackupDestinationHandler:
     an incomplete upload and is ignored. The sidecar carries everything needed to list
     and restore the backup on a fresh instance, where the originating database is
     gone.
+
+    Several instances may share a destination: retention only ever deletes the backups
+    this instance made, and only staff may restore a backup made by another instance.
     """
 
     def __init__(self):
@@ -241,7 +250,9 @@ class BackupDestinationHandler:
     def apply_remote_retention(self, schedule: BackupSchedule) -> int:
         """
         Deletes the uploaded backups of a schedule that fall outside its retention
-        window. Only backups this schedule made are considered.
+        window. Only backups this schedule made are considered. Schedule ids are only
+        unique per instance, so backups of another instance sharing the destination
+        are never touched.
 
         :param schedule: The schedule whose retention rules are applied.
         :return: The number of remote backups deleted.
@@ -252,10 +263,12 @@ class BackupDestinationHandler:
         ):
             return 0
 
+        instance_id = CoreHandler().get_settings().instance_id
         backups = [
             backup
             for backup in self.list_backups(schedule.destination, schedule.workspace_id)
             if backup.get("schedule_id") == schedule.id
+            and backup.get("instance_id") == instance_id
         ]
 
         to_delete = {}
@@ -310,6 +323,8 @@ class BackupDestinationHandler:
         :raises RemoteBackupDoesNotExist: When the archive or its sidecar is missing.
         :raises RemoteBackupCorrupted: When the archive does not match its sidecar.
         :raises RemoteBackupTrustNotAllowed: When trusting the key is not permitted.
+        :raises RemoteBackupRestoreNotAllowed: When a non-staff user restores a backup
+            of another instance, or of a workspace they cannot export.
         :param sync: Run the import in the current process instead of a worker.
         :return: The started import job.
         """
@@ -326,7 +341,8 @@ class BackupDestinationHandler:
             destination_name, purpose=PURPOSE_BACKUP
         )
         key = self.destinations.normalize_key(key)
-        if not key.startswith(f"{BACKUPS_PREFIX}/") or not key.endswith(ARCHIVE_SUFFIX):
+        key_match = ARCHIVE_KEY_PATTERN.match(key)
+        if key_match is None:
             raise InvalidDataDestinationKey(f"The key '{key}' is not a backup archive.")
 
         if trust_public_key and (
@@ -342,6 +358,11 @@ class BackupDestinationHandler:
         if not storage.exists(key) or not storage.exists(sidecar_key):
             raise RemoteBackupDoesNotExist(f"The backup '{key}' is not available.")
         sidecar = self.destinations.read_json(storage, sidecar_key)
+
+        if not user.is_staff:
+            self._check_can_read_backup(
+                user, int(key_match.group("workspace_id")), sidecar
+            )
 
         with SpooledTemporaryFile(max_size=RESTORE_MEMORY_LIMIT) as archive:
             with storage.open(key, "rb") as source:
@@ -372,6 +393,33 @@ class BackupDestinationHandler:
             application_ids=application_ids,
             sync=sync,
         )
+
+    def _check_can_read_backup(
+        self, user: AbstractUser, source_workspace_id: int, sidecar: Dict[str, Any]
+    ):
+        """
+        Checks that a non-staff user may read the data of a backup: it must have been
+        made by this instance, of a workspace the user can export. Listing requires the
+        same, so a user cannot restore a backup they could not have listed.
+        """
+
+        if sidecar.get("instance_id") != CoreHandler().get_settings().instance_id:
+            raise RemoteBackupRestoreNotAllowed(
+                "Only staff can restore a backup made by another instance."
+            )
+
+        try:
+            source_workspace = CoreHandler().get_workspace(source_workspace_id)
+            CoreHandler().check_permissions(
+                user,
+                ExportWorkspaceOperationType.type,
+                workspace=source_workspace,
+                context=source_workspace,
+            )
+        except WorkspaceDoesNotExist, PermissionException:
+            raise RemoteBackupRestoreNotAllowed(
+                "You can only restore backups of workspaces you can export."
+            )
 
     def _trust_archive_key(
         self,

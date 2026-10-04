@@ -22,3 +22,10 @@ class RemoteBackupTrustNotAllowed(Exception):
     Raised when trusting the signing key of a remote backup is requested by a
     non-staff user, or for a destination that does not allow it.
     """
+
+
+class RemoteBackupRestoreNotAllowed(Exception):
+    """
+    Raised when a non-staff user restores a remote backup they may not read: one made
+    by another instance, or of a workspace they cannot export.
+    """

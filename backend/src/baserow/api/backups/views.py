@@ -17,6 +17,7 @@ from baserow.api.backups.errors import (
     ERROR_INVALID_BACKUP_SCHEDULE_CRON,
     ERROR_REMOTE_BACKUP_CORRUPTED,
     ERROR_REMOTE_BACKUP_DOES_NOT_EXIST,
+    ERROR_REMOTE_BACKUP_RESTORE_NOT_ALLOWED,
     ERROR_REMOTE_BACKUP_TRUST_NOT_ALLOWED,
 )
 from baserow.api.data_destinations.errors import (
@@ -45,6 +46,7 @@ from baserow.core.backups.exceptions import (
     InvalidBackupScheduleCron,
     RemoteBackupCorrupted,
     RemoteBackupDoesNotExist,
+    RemoteBackupRestoreNotAllowed,
     RemoteBackupTrustNotAllowed,
 )
 from baserow.core.backups.handler import BackupHandler
@@ -98,6 +100,7 @@ COMMON_EXCEPTIONS = {
     RemoteBackupDoesNotExist: ERROR_REMOTE_BACKUP_DOES_NOT_EXIST,
     RemoteBackupCorrupted: ERROR_REMOTE_BACKUP_CORRUPTED,
     RemoteBackupTrustNotAllowed: ERROR_REMOTE_BACKUP_TRUST_NOT_ALLOWED,
+    RemoteBackupRestoreNotAllowed: ERROR_REMOTE_BACKUP_RESTORE_NOT_ALLOWED,
     ImportExportResourceUntrustedSignature: ERROR_UNTRUSTED_PUBLIC_KEY,
 }
 
@@ -565,7 +568,12 @@ class RestoreRemoteBackupView(APIView):
                     "ERROR_MAX_JOB_COUNT_EXCEEDED",
                 ]
             ),
-            403: get_error_schema(["ERROR_REMOTE_BACKUP_TRUST_NOT_ALLOWED"]),
+            403: get_error_schema(
+                [
+                    "ERROR_REMOTE_BACKUP_TRUST_NOT_ALLOWED",
+                    "ERROR_REMOTE_BACKUP_RESTORE_NOT_ALLOWED",
+                ]
+            ),
             404: get_error_schema(
                 [
                     "ERROR_GROUP_DOES_NOT_EXIST",
