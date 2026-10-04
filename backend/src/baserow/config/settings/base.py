@@ -613,6 +613,15 @@ BASEROW_FILE_UPLOAD_SIZE_LIMIT_MB = int(
     Decimal(os.getenv("BASEROW_FILE_UPLOAD_SIZE_LIMIT_MB", 1024 * 1024)) * 1024 * 1024
 )  # ~1TB by default
 
+# Django rejects any request body above this size. Since DRF 3.17.2 the JSON parser
+# reads the body through `request.body`, so this also caps JSON payloads. Table
+# imports send the parsed file as JSON, and the web-frontend accepts import files up
+# to BASEROW_MAX_IMPORT_FILE_SIZE_MB (512 by default), so this must stay well above
+# that once JSON overhead is added. Django's own 2.5MB default breaks imports.
+DATA_UPLOAD_MAX_MEMORY_SIZE = int(
+    Decimal(os.getenv("BASEROW_MAX_REQUEST_BODY_SIZE_MB", 1024)) * 1024 * 1024
+)
+
 FILE_UPLOAD_ACTIVE_CONTENT_POLICY = os.getenv(
     "BASEROW_FILE_UPLOAD_ACTIVE_CONTENT_POLICY", "download"
 ).lower()

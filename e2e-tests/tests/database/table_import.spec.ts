@@ -240,6 +240,16 @@ test.describe("Table import job restore after reload", () => {
     // Click Import
     await modal.getByRole("button", { name: "Import" }).click();
 
+    // Imports into an existing table ask for confirmation of the previewed
+    // changes before the job is started.
+    const confirmModal = page
+      .locator(".modal__box", {
+        has: page.getByRole("heading", { name: "Apply this import?" }),
+      })
+      .last();
+    await expect(confirmModal).toBeVisible({ timeout: 30000 });
+    await confirmModal.getByRole("button", { name: "Import" }).click();
+
     // Wait for the backend job to be created (not just the frontend upload phase)
     await page.waitForFunction(
       () => {

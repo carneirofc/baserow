@@ -1231,3 +1231,50 @@ def test_import_table_with_invalid_data_shape(api_client, data_fixture, invalid_
 
     assert response.status_code == HTTP_400_BAD_REQUEST
     assert response.json()["error"] == "ERROR_REQUEST_BODY_VALIDATION"
+
+
+@pytest.mark.django_db(transaction=True)
+@patch("baserow.core.jobs.handler.run_async_job")
+def test_create_table_with_data_larger_than_django_default_body_limit(
+    mock_run_async_job, api_client, data_fixture, patch_filefield_storage
+):
+    # DRF reads JSON bodies through `request.body`, which Django caps at
+    # DATA_UPLOAD_MAX_MEMORY_SIZE (2.5MB unless configured). Imports send the
+    # parsed file as JSON, so a few MB of rows must still be accepted.
+    user, token = data_fixture.create_user_and_token()
+    database = data_fixture.create_database_application(user=user)
+    url = reverse(
+        "api:database:tables:async_create", kwargs={"database_id": database.id}
+    )
+    row = ["x" * 100, "y" * 100]
+    data = [["A", "B"]] + [row] * 20000  # ~4MB once encoded
+
+    with patch_filefield_storage():
+        response = api_client.post(
+            url,
+            {"name": "Large", "data": data, "first_row_header": True},
+            format="json",
+            HTTP_AUTHORIZATION=f"JWT {token}",
+        )
+
+    assert response.status_code == HTTP_200_OK, response.content[:200]
+    mock_run_async_job.delay.assert_called_with(response.json()["id"])
+
+
+@pytest.mark.django_db
+@override_settings(DATA_UPLOAD_MAX_MEMORY_SIZE=1024)
+def test_request_body_limit_is_configurable(api_client, data_fixture):
+    user, token = data_fixture.create_user_and_token()
+    database = data_fixture.create_database_application(user=user)
+    url = reverse(
+        "api:database:tables:async_create", kwargs={"database_id": database.id}
+    )
+
+    response = api_client.post(
+        url,
+        {"name": "Too big", "data": [["x" * 2048]]},
+        format="json",
+        HTTP_AUTHORIZATION=f"JWT {token}",
+    )
+
+    assert response.status_code == HTTP_400_BAD_REQUEST
