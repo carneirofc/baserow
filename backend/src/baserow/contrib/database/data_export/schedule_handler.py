@@ -11,8 +11,10 @@ from baserow.contrib.database.export.operations import ExportTableOperationType
 from baserow.contrib.database.table.models import Table
 from baserow.core.data_destinations.config import PURPOSE_DATALAKE
 from baserow.core.data_destinations.handler import DataDestinationHandler
+from baserow.core.exceptions import PermissionDenied
 from baserow.core.handler import CoreHandler
 from baserow.core.scheduling import cron as cron_utils
+from baserow.core.scheduling.ownership import can_manage_schedule
 
 from .exceptions import (
     InvalidTableExportScheduleCron,
@@ -244,6 +246,8 @@ class TableExportScheduleHandler:
             workspace=schedule.workspace,
             context=schedule,
         )
+        if not can_manage_schedule(user, schedule):
+            raise PermissionDenied()
 
         schedule_id = schedule.id
         transaction.on_commit(

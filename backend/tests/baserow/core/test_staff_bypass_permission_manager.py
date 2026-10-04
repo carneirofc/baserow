@@ -59,3 +59,26 @@ def test_regular_member_export_permission_is_unaffected(data_fixture):
         )
         is True
     )
+
+
+@pytest.mark.django_db
+def test_staff_sees_every_application_of_a_workspace_they_are_not_in(data_fixture):
+    from baserow.core.models import Application
+    from baserow.core.operations import ListApplicationsWorkspaceOperationType
+
+    staff_user = data_fixture.create_user(is_staff=True)
+    user = data_fixture.create_user()
+    workspace = data_fixture.create_workspace()
+    data_fixture.create_database_application(workspace=workspace)
+    data_fixture.create_database_application(workspace=workspace)
+
+    def visible(actor):
+        return CoreHandler().filter_queryset(
+            actor,
+            ListApplicationsWorkspaceOperationType.type,
+            Application.objects.filter(workspace=workspace),
+            workspace=workspace,
+        )
+
+    assert visible(staff_user).count() == 2
+    assert visible(user).count() == 0

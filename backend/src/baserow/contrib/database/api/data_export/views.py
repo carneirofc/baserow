@@ -28,6 +28,7 @@ from baserow.contrib.database.data_export.exceptions import (
     TableExportScheduleDoesNotExist,
     TableExportTablesNotInDatabase,
 )
+from baserow.contrib.database.data_export.models import TableExportSchedule
 from baserow.contrib.database.data_export.schedule_handler import (
     TableExportScheduleHandler,
 )
@@ -88,6 +89,19 @@ SCHEDULE_ID_PARAMETER = OpenApiParameter(
     required=True,
 )
 TAGS = ["Database table export schedules"]
+
+
+class TableExportScheduleWorkspaceMixin:
+    """
+    Binds an API client to the workspace of the schedule in the url.
+    """
+
+    def get_api_client_workspace_id(self, request, schedule_id=None, **kwargs):
+        return (
+            TableExportSchedule.objects.filter(id=schedule_id)
+            .values_list("workspace_id", flat=True)
+            .first()
+        )
 
 
 class TableExportSchedulesView(APIView):
@@ -176,7 +190,7 @@ class TableExportSchedulesView(APIView):
         return Response(TableExportScheduleSerializer(schedule).data)
 
 
-class TableExportScheduleView(APIView):
+class TableExportScheduleView(TableExportScheduleWorkspaceMixin, APIView):
     authentication_classes = APIView.authentication_classes + [ApiClientAuthentication]
     permission_classes = (IsAuthenticated, HasApiClientScope)
     api_client_scopes = {
@@ -263,7 +277,7 @@ class TableExportScheduleView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class RunTableExportScheduleView(APIView):
+class RunTableExportScheduleView(TableExportScheduleWorkspaceMixin, APIView):
     authentication_classes = APIView.authentication_classes + [ApiClientAuthentication]
     permission_classes = (IsAuthenticated, HasApiClientScope)
     api_client_scopes = {"POST": "schedule.write"}
@@ -299,7 +313,7 @@ class RunTableExportScheduleView(APIView):
         )
 
 
-class TableExportRunsView(APIView):
+class TableExportRunsView(TableExportScheduleWorkspaceMixin, APIView):
     authentication_classes = APIView.authentication_classes + [ApiClientAuthentication]
     permission_classes = (IsAuthenticated, HasApiClientScope)
     api_client_scopes = {"GET": "schedule.read"}
@@ -326,7 +340,7 @@ class TableExportRunsView(APIView):
         return Response(TableExportRunSerializer(runs, many=True).data)
 
 
-class ResetTableExportStateView(APIView):
+class ResetTableExportStateView(TableExportScheduleWorkspaceMixin, APIView):
     authentication_classes = APIView.authentication_classes + [ApiClientAuthentication]
     permission_classes = (IsAuthenticated, HasApiClientScope)
     api_client_scopes = {"POST": "schedule.write"}

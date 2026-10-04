@@ -131,6 +131,18 @@ listing needs. A backup made by another instance (a different `instance_id` in i
 sidecar), such as on a fresh instance after a disaster, can only be restored by staff:
 use the admin API or `restore_from_destination` with a staff `--user-email`.
 
+Who sees which remote backup: staff see everything on the destination. Anyone else only
+sees backups made by this instance (matching `instance_id`). A workspace admin sees all
+of those for the workspace; a regular member only sees, and can only restore, the
+backups they made themselves (matched on the sidecar's `created_by_id`, or on
+`created_by` for older sidecars).
+
+Backup schedules (and manual runs of table export schedules) can only be changed,
+deleted or run by their owner, a workspace admin or staff, because they run with the
+owner's permissions. A schedule whose owner is deactivated or pending deletion is
+disabled by the periodic task. API client keys only work in the workspace they were
+created in.
+
 Several instances may share a destination. Retention only deletes the backups the
 instance itself uploaded, even when another instance has a workspace or schedule with
 the same id.

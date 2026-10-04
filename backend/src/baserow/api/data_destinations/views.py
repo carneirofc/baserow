@@ -16,6 +16,8 @@ class DataDestinationsView(APIView):
     authentication_classes = APIView.authentication_classes + [ApiClientAuthentication]
     permission_classes = (IsAuthenticated, HasApiClientScope)
     api_client_scopes = {"GET": "backup.read"}
+    # Destinations are declared by the operator for the whole instance.
+    api_client_workspace_independent = True
 
     @extend_schema(
         tags=["Data destinations"],

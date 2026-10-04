@@ -24,7 +24,11 @@ from baserow.core.import_export.handler import (
     SIGNATURE_NAME,
     ImportExportHandler,
 )
-from baserow.core.models import ImportApplicationsJob
+from baserow.core.models import (
+    WORKSPACE_USER_PERMISSION_ADMIN,
+    ImportApplicationsJob,
+    WorkspaceUser,
+)
 from baserow.core.operations import (
     CreateApplicationsWorkspaceOperationType,
     ExportWorkspaceOperationType,
@@ -70,7 +74,8 @@ class BackupDestinationHandler:
     gone.
 
     Several instances may share a destination: retention only ever deletes the backups
-    this instance made, and only staff may restore a backup made by another instance.
+    this instance made, and only staff may restore a backup made by another instance, and a member only
+    sees and restores their own backups unless they are a workspace admin.
     """
 
     def __init__(self):
@@ -170,6 +175,7 @@ class BackupDestinationHandler:
             "schedule_id": job.backup_schedule_id,
             "created_on": timezone.now().isoformat(),
             "created_by": job.user.email if job.user_id else None,
+            "created_by_id": job.user_id,
             "size": resource.size,
             "sha256": sha256,
             **metadata,
@@ -231,6 +237,10 @@ class BackupDestinationHandler:
         """
         Lists the backups of a workspace that are available on a destination.
 
+        Staff see everything on the destination. Anyone else only sees the backups this
+        instance made, and a member who is not a workspace admin only the ones they
+        made themselves.
+
         :param user: The user on whose behalf the backups are listed.
         :param workspace_id: The workspace the backups were made of.
         :param destination_name: The name of the data destination.
@@ -245,7 +255,39 @@ class BackupDestinationHandler:
             context=workspace,
         )
 
-        return self.list_backups(destination_name, workspace_id)
+        backups = self.list_backups(destination_name, workspace_id)
+
+        if user.is_staff:
+            return backups
+
+        instance_id = CoreHandler().get_settings().instance_id
+        is_admin = self._is_workspace_admin(user, workspace_id)
+        return [
+            backup
+            for backup in backups
+            if backup.get("instance_id") == instance_id
+            and (is_admin or self._is_made_by(user, backup))
+        ]
+
+    def _is_workspace_admin(self, user: AbstractUser, workspace_id: int) -> bool:
+        return WorkspaceUser.objects.filter(
+            user_id=user.id,
+            workspace_id=workspace_id,
+            permissions=WORKSPACE_USER_PERMISSION_ADMIN,
+        ).exists()
+
+    def _is_made_by(self, user: AbstractUser, sidecar: Dict[str, Any]) -> bool:
+        """
+        Whether the user made the backup. Sidecars written before `created_by_id`
+        existed are matched on the email they recorded.
+        """
+
+        created_by_id = sidecar.get("created_by_id")
+        if created_by_id is not None:
+            return created_by_id == user.id
+
+        created_by = sidecar.get("created_by")
+        return bool(created_by) and created_by == user.email
 
     def apply_remote_retention(self, schedule: BackupSchedule) -> int:
         """
@@ -324,7 +366,8 @@ class BackupDestinationHandler:
         :raises RemoteBackupCorrupted: When the archive does not match its sidecar.
         :raises RemoteBackupTrustNotAllowed: When trusting the key is not permitted.
         :raises RemoteBackupRestoreNotAllowed: When a non-staff user restores a backup
-            of another instance, or of a workspace they cannot export.
+            of another instance, of a workspace they cannot export, or, unless they
+            are a workspace admin, one made by somebody else.
         :param sync: Run the import in the current process instead of a worker.
         :return: The started import job.
         """
@@ -399,7 +442,8 @@ class BackupDestinationHandler:
     ):
         """
         Checks that a non-staff user may read the data of a backup: it must have been
-        made by this instance, of a workspace the user can export. Listing requires the
+        made by this instance, of a workspace the user can export, and by the user
+        themselves unless they are an admin of that workspace. Listing requires the
         same, so a user cannot restore a backup they could not have listed.
         """
 
@@ -419,6 +463,14 @@ class BackupDestinationHandler:
         except WorkspaceDoesNotExist, PermissionException:
             raise RemoteBackupRestoreNotAllowed(
                 "You can only restore backups of workspaces you can export."
+            )
+
+        if not self._is_workspace_admin(
+            user, source_workspace_id
+        ) and not self._is_made_by(user, sidecar):
+            raise RemoteBackupRestoreNotAllowed(
+                "You can only restore the backups you made, unless you are an admin "
+                "of the workspace."
             )
 
     def _trust_archive_key(

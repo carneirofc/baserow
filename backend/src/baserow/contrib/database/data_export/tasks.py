@@ -34,10 +34,22 @@ def run_due_table_export_schedules(self):
                     skip_locked=True, of=("self",)
                 )
                 .filter(id=schedule_id, is_active=True, next_run_on__lte=now)
+                .select_related("user")
                 .first()
             )
 
             if schedule is None:
+                continue
+
+            owner = schedule.user
+            profile = getattr(owner, "profile", None)
+            if not owner.is_active or (profile and profile.to_be_deleted):
+                # The export would run as a user who can no longer sign in.
+                schedule.is_active = False
+                schedule.last_error = (
+                    "Disabled because the owner of the schedule is no longer active."
+                )
+                schedule.save(update_fields=["is_active", "last_error", "updated_on"])
                 continue
 
             try:

@@ -14,6 +14,7 @@ from baserow.api.api_clients.authentication import (
 )
 from baserow.api.backups.errors import (
     ERROR_BACKUP_SCHEDULE_DOES_NOT_EXIST,
+    ERROR_BACKUP_SCHEDULE_NOT_OWNED,
     ERROR_INVALID_BACKUP_SCHEDULE_CRON,
     ERROR_REMOTE_BACKUP_CORRUPTED,
     ERROR_REMOTE_BACKUP_DOES_NOT_EXIST,
@@ -43,6 +44,7 @@ from baserow.api.schemas import get_error_schema
 from baserow.core.backups.destination import BackupDestinationHandler
 from baserow.core.backups.exceptions import (
     BackupScheduleDoesNotExist,
+    BackupScheduleNotOwned,
     InvalidBackupScheduleCron,
     RemoteBackupCorrupted,
     RemoteBackupDoesNotExist,
@@ -50,6 +52,7 @@ from baserow.core.backups.exceptions import (
     RemoteBackupTrustNotAllowed,
 )
 from baserow.core.backups.handler import BackupHandler
+from baserow.core.backups.models import BackupSchedule
 from baserow.core.backups.schedule_handler import BackupScheduleHandler
 from baserow.core.data_destinations.exceptions import (
     DataDestinationDoesNotExist,
@@ -93,6 +96,7 @@ COMMON_EXCEPTIONS = {
     ImportExportResourceInBeingImported: ERROR_RESOURCE_IS_BEING_IMPORTED,
     ImportExportApplicationIdsNotFound: ERROR_APPLICATION_IDS_NOT_FOUND,
     BackupScheduleDoesNotExist: ERROR_BACKUP_SCHEDULE_DOES_NOT_EXIST,
+    BackupScheduleNotOwned: ERROR_BACKUP_SCHEDULE_NOT_OWNED,
     InvalidBackupScheduleCron: ERROR_INVALID_BACKUP_SCHEDULE_CRON,
     DataDestinationDoesNotExist: ERROR_DATA_DESTINATION_DOES_NOT_EXIST,
     DataDestinationPurposeNotAllowed: ERROR_DATA_DESTINATION_PURPOSE_NOT_ALLOWED,
@@ -111,6 +115,19 @@ WORKSPACE_ID_PARAMETER = OpenApiParameter(
     description="The id of the workspace.",
     required=True,
 )
+
+
+class BackupScheduleWorkspaceMixin:
+    """
+    Binds an API client to the workspace of the schedule in the url.
+    """
+
+    def get_api_client_workspace_id(self, request, schedule_id=None, **kwargs):
+        return (
+            BackupSchedule.objects.filter(id=schedule_id)
+            .values_list("workspace_id", flat=True)
+            .first()
+        )
 
 
 class BackupsView(APIView):
@@ -381,7 +398,7 @@ SCHEDULE_ID_PARAMETER = OpenApiParameter(
 )
 
 
-class BackupScheduleView(APIView):
+class BackupScheduleView(BackupScheduleWorkspaceMixin, APIView):
     authentication_classes = APIView.authentication_classes + [ApiClientAuthentication]
     permission_classes = (IsAuthenticated, HasApiClientScope)
     api_client_scopes = {
@@ -458,10 +475,11 @@ class BackupScheduleView(APIView):
         return Response(status=HTTP_204_NO_CONTENT)
 
 
-class RunBackupScheduleView(APIView):
+class RunBackupScheduleView(BackupScheduleWorkspaceMixin, APIView):
     authentication_classes = APIView.authentication_classes + [ApiClientAuthentication]
     permission_classes = (IsAuthenticated, HasApiClientScope)
-    api_client_scopes = {"POST": "schedule.write"}
+    # A manual run starts a backup as the schedule's user, so it needs both.
+    api_client_scopes = {"POST": ("schedule.write", "backup.write")}
 
     @extend_schema(
         parameters=[SCHEDULE_ID_PARAMETER],

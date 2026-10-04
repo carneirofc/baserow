@@ -10,12 +10,19 @@ from celery.schedules import crontab
 
 from baserow.core.data_destinations.config import PURPOSE_BACKUP
 from baserow.core.data_destinations.handler import DataDestinationHandler
+from baserow.core.exceptions import ApplicationDoesNotExist
 from baserow.core.handler import CoreHandler
 from baserow.core.import_export.handler import ImportExportHandler
-from baserow.core.models import ExportApplicationsJob, Workspace
+from baserow.core.models import Application, ExportApplicationsJob, Workspace
+from baserow.core.operations import ListApplicationsWorkspaceOperationType
 from baserow.core.scheduling import cron as cron_utils
+from baserow.core.scheduling.ownership import can_manage_schedule
 
-from .exceptions import BackupScheduleDoesNotExist, InvalidBackupScheduleCron
+from .exceptions import (
+    BackupScheduleDoesNotExist,
+    BackupScheduleNotOwned,
+    InvalidBackupScheduleCron,
+)
 from .handler import BackupHandler
 from .models import BackupSchedule, ExportApplicationsToDestinationJob
 from .operations import (
@@ -183,6 +190,7 @@ class BackupScheduleHandler:
 
         tz_name = self.validate_timezone(tz_name)
         self._validate_destination(destination)
+        self._validate_application_ids(user, workspace, application_ids)
 
         return BackupSchedule.objects.create(
             name=name,
@@ -217,6 +225,7 @@ class BackupScheduleHandler:
             workspace=schedule.workspace,
             context=schedule,
         )
+        self._check_owner_or_admin(user, schedule)
 
         allowed = [
             "name",
@@ -235,6 +244,11 @@ class BackupScheduleHandler:
                 setattr(schedule, field, values[field])
 
         schedule.timezone = self.validate_timezone(schedule.timezone)
+        if "application_ids" in values:
+            # The backups run as the owner, who must be able to see every application.
+            self._validate_application_ids(
+                schedule.user, schedule.workspace, schedule.application_ids
+            )
         if "destination" in values:
             self._validate_destination(schedule.destination)
 
@@ -260,6 +274,7 @@ class BackupScheduleHandler:
             workspace=schedule.workspace,
             context=schedule,
         )
+        self._check_owner_or_admin(user, schedule)
 
         schedule.delete()
 
@@ -275,7 +290,7 @@ class BackupScheduleHandler:
         :param requested_by: The user asking for the run, when it is triggered
             manually. Because the backup itself runs as the schedule's own user,
             triggering one requires permission to change the schedule, not merely to
-            read it. Leave it out for the periodic task.
+            read it: the owner, a workspace admin or staff. Leave it out for the periodic task.
         :return: The started export job.
         """
 
@@ -286,6 +301,7 @@ class BackupScheduleHandler:
                 workspace=schedule.workspace,
                 context=schedule,
             )
+            self._check_owner_or_admin(requested_by, schedule)
 
         return BackupHandler().start_backup(
             schedule.user,
@@ -295,6 +311,48 @@ class BackupScheduleHandler:
             destination=schedule.destination or None,
             backup_schedule=schedule,
         )
+
+    def _check_owner_or_admin(self, user: AbstractUser, schedule: BackupSchedule):
+        """
+        :raises BackupScheduleNotOwned: When the user is neither the owner of the
+            schedule, an admin of its workspace nor staff.
+        """
+
+        if not can_manage_schedule(user, schedule):
+            raise BackupScheduleNotOwned()
+
+    def _validate_application_ids(
+        self,
+        user: AbstractUser,
+        workspace: Workspace,
+        application_ids: Optional[List[int]],
+    ):
+        """
+        Checks that every application belongs to the workspace and is visible to the
+        user the backups run as.
+
+        :raises ApplicationDoesNotExist: When one of them is not.
+        """
+
+        if not application_ids:
+            return
+
+        requested = set(application_ids)
+        applications = Application.objects.filter(
+            workspace=workspace, workspace__trashed=False, id__in=requested
+        )
+        applications = CoreHandler().filter_queryset(
+            user,
+            ListApplicationsWorkspaceOperationType.type,
+            applications,
+            workspace=workspace,
+        )
+
+        if applications.count() != len(requested):
+            raise ApplicationDoesNotExist(
+                "Some of the applications do not exist in the workspace or the owner "
+                "of the schedule cannot access them."
+            )
 
     def _validate_destination(self, destination: str):
         """

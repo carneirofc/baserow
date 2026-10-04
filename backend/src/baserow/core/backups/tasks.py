@@ -53,6 +53,17 @@ def run_due_backup_schedules(self):
                 # Another worker picked it up, or it stopped being due.
                 continue
 
+            owner = schedule.user
+            profile = getattr(owner, "profile", None)
+            if not owner.is_active or (profile and profile.to_be_deleted):
+                # The backup would run as a user who can no longer sign in.
+                schedule.is_active = False
+                schedule.last_error = (
+                    "Disabled because the owner of the schedule is no longer active."
+                )
+                schedule.save(update_fields=["is_active", "last_error", "updated_on"])
+                continue
+
             next_run_on = handler.compute_next_run_on(
                 schedule.cron, schedule.timezone, after=now
             )

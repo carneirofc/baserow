@@ -22,6 +22,7 @@ from baserow.core.exceptions import (
     UserNotInWorkspace,
     WorkspaceDoesNotExist,
 )
+from baserow.core.models import Application
 
 from .errors import ERROR_CONTENTS_TOO_LARGE
 
@@ -114,6 +115,13 @@ class ApplicationContentsView(APIView):
     authentication_classes = APIView.authentication_classes + [ApiClientAuthentication]
     permission_classes = (IsAuthenticated, HasApiClientScope)
     api_client_scopes = {"GET": "contents.read"}
+
+    def get_api_client_workspace_id(self, request, application_id=None, **kwargs):
+        return (
+            Application.objects.filter(id=application_id)
+            .values_list("workspace_id", flat=True)
+            .first()
+        )
 
     @extend_schema(
         parameters=[

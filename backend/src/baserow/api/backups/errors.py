@@ -34,3 +34,8 @@ ERROR_REMOTE_BACKUP_RESTORE_NOT_ALLOWED = (
     HTTP_403_FORBIDDEN,
     "{e}",
 )
+ERROR_BACKUP_SCHEDULE_NOT_OWNED = (
+    "ERROR_BACKUP_SCHEDULE_NOT_OWNED",
+    HTTP_403_FORBIDDEN,
+    "Only the owner of a backup schedule or a workspace admin can do this.",
+)

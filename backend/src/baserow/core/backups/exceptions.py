@@ -1,3 +1,4 @@
+from baserow.core.exceptions import PermissionDenied
 from baserow.core.scheduling.cron import InvalidCron
 
 
@@ -29,3 +30,16 @@ class RemoteBackupRestoreNotAllowed(Exception):
     Raised when a non-staff user restores a remote backup they may not read: one made
     by another instance, or of a workspace they cannot export.
     """
+
+
+class BackupScheduleNotOwned(PermissionDenied):
+    """
+    Raised when a user changes, deletes or runs a backup schedule that belongs to
+    another member, without being an admin of its workspace.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.args = (
+            "Only the owner of a backup schedule or a workspace admin can do this.",
+        )

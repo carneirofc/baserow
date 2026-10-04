@@ -156,6 +156,28 @@ class StaffBypassPermissionManagerType(PermissionManagerType):
                 result[check] = True
         return result
 
+    def filter_queryset(self, actor, operation_name, queryset, workspace=None):
+        """
+        A staff member exporting a workspace they are not a member of must see every
+        application in it. Without this the `member` manager empties the queryset
+        and the backup would contain nothing. For workspaces the staff member belongs
+        to, the regular managers keep deciding.
+        """
+
+        if (
+            operation_name != ListApplicationsWorkspaceOperationType.type
+            or workspace is None
+            or not getattr(actor, "is_staff", False)
+        ):
+            return None
+
+        if WorkspaceUser.objects.filter(
+            user_id=actor.id, workspace_id=workspace.id
+        ).exists():
+            return None
+
+        return queryset, True
+
 
 class AllowIfTemplatePermissionManagerType(PermissionManagerType):
     """

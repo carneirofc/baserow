@@ -83,7 +83,14 @@ class HasApiClientScope(BasePermission):
             api_client_scopes = {"GET": "backup.read", "DELETE": "backup.write"}
 
     A method that is not in the mapping is refused for API clients, so forgetting to
-    declare a scope fails closed.
+    declare a scope fails closed. A scope value may also be a tuple of scopes, in which
+    case the client needs every one of them.
+
+    An API client is bound to the workspace it was created in. The workspace of the
+    request is taken from `view.get_api_client_workspace_id(request, **view.kwargs)`
+    when the view defines it, otherwise from the `workspace_id` url kwarg. A request
+    whose workspace cannot be resolved, or differs from the client's, is refused. A view
+    that is not about a workspace at all sets `api_client_workspace_independent = True`.
     """
 
     message = "The API client does not have the scope required for this endpoint."
@@ -96,7 +103,7 @@ class HasApiClientScope(BasePermission):
 
         required = getattr(view, "api_client_scopes", None)
 
-        if isinstance(required, str):
+        if isinstance(required, (str, tuple)):
             scope = required
         elif isinstance(required, dict):
             scope = required.get(request.method)
@@ -106,7 +113,28 @@ class HasApiClientScope(BasePermission):
         if scope is None:
             return False
 
-        return scope in api_client.scopes
+        scopes = (scope,) if isinstance(scope, str) else tuple(scope)
+        if not all(item in api_client.scopes for item in scopes):
+            return False
+
+        if getattr(view, "api_client_workspace_independent", False):
+            return True
+
+        return self._get_workspace_id(request, view) == api_client.workspace_id
+
+    @staticmethod
+    def _get_workspace_id(request, view):
+        kwargs = getattr(view, "kwargs", None) or {}
+        resolver = getattr(view, "get_api_client_workspace_id", None)
+
+        try:
+            if resolver is not None:
+                workspace_id = resolver(request, **kwargs)
+            else:
+                workspace_id = kwargs.get("workspace_id")
+            return None if workspace_id is None else int(workspace_id)
+        except TypeError, ValueError:
+            return None
 
 
 class ApiClientAuthenticationExtension(OpenApiAuthenticationExtension):
