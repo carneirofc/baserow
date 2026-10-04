@@ -25,21 +25,10 @@
       :error="fieldHasErrors('scopes')"
       class="margin-bottom-2"
     >
-      <div
-        v-for="scope in scopes"
-        :key="scope"
-        class="api-client__scope margin-bottom-1"
-      >
-        <Checkbox
-          :model-value="values.scopes.includes(scope)"
-          @update:model-value="toggleScope(scope, $event)"
-        >
-          {{ $t(`apiClientScopes.${translationKey(scope)}`) }}
-        </Checkbox>
-        <div class="api-client__scope-description">
-          {{ $t(`apiClientScopes.${translationKey(scope)}Description`) }}
-        </div>
-      </div>
+      <ApiClientScopes
+        :model-value="values.scopes"
+        @update:model-value="setScopes"
+      />
       <template #error>{{ getFirstErrorMessage('scopes') }}</template>
     </FormGroup>
 
@@ -52,20 +41,18 @@ import { useVuelidate } from '@vuelidate/core'
 import { helpers, required } from '@vuelidate/validators'
 
 import form from '@baserow/modules/core/mixins/form'
-import {
-  API_CLIENT_SCOPES,
-  scopeTranslationKey,
-} from '@baserow/modules/core/apiClients/scopes'
+import ApiClientScopes from '@baserow/modules/core/components/apiClients/ApiClientScopes'
+import { toggleScopeSelection } from '@baserow/modules/core/apiClients/scopes'
 
 export default {
   name: 'ApiClientForm',
+  components: { ApiClientScopes },
   mixins: [form],
   setup() {
     return { v$: useVuelidate({ $lazy: true }) }
   },
   data() {
     return {
-      scopes: API_CLIENT_SCOPES,
       values: {
         name: '',
         scopes: [],
@@ -76,17 +63,10 @@ export default {
     this.$refs.name.focus()
   },
   methods: {
-    translationKey(scope) {
-      return scopeTranslationKey(scope)
-    },
     toggleScope(scope, selected) {
-      const scopes = this.values.scopes.filter((s) => s !== scope)
-      if (selected) {
-        // Keep the backend's order so the stored list is stable regardless of the
-        // order the boxes were ticked in.
-        scopes.push(scope)
-        scopes.sort((a, b) => this.scopes.indexOf(a) - this.scopes.indexOf(b))
-      }
+      this.setScopes(toggleScopeSelection(this.values.scopes, scope, selected))
+    },
+    setScopes(scopes) {
       this.values.scopes = scopes
       this.v$.values.scopes.$touch()
     },

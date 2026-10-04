@@ -146,6 +146,48 @@ describe('api clients UI', () => {
     expect(wrapper.vm.client.is_active).toBe(true)
   })
 
+  test('editing the scopes of a client patches only the scopes', async () => {
+    mock
+      .onPatch('/api-clients/8/')
+      .reply(200, client({ scopes: ['backup.read', 'schedule.read'] }))
+
+    wrapper = await mountSuspended(ApiClient, { props: { client: client() } })
+
+    wrapper.vm.startEditScopes()
+    expect(wrapper.vm.scopeDraft).toEqual(['backup.read'])
+    wrapper.vm.scopeDraft = ['backup.read', 'schedule.read']
+    await wrapper.vm.saveScopes()
+    await flushPromises()
+
+    expect(JSON.parse(mock.history.patch[0].data)).toEqual({
+      scopes: ['backup.read', 'schedule.read'],
+    })
+    expect(wrapper.vm.client.scopes).toEqual(['backup.read', 'schedule.read'])
+    expect(wrapper.vm.editingScopes).toBe(false)
+  })
+
+  test('a failed scope edit keeps the stored scopes and the editor open', async () => {
+    mock.onPatch('/api-clients/8/').reply(500)
+
+    wrapper = await mountSuspended(ApiClient, { props: { client: client() } })
+    wrapper.vm.startEditScopes()
+    wrapper.vm.scopeDraft = ['schedule.read']
+    await wrapper.vm.saveScopes()
+    await flushPromises()
+
+    expect(wrapper.vm.client.scopes).toEqual(['backup.read'])
+    expect(wrapper.vm.editingScopes).toBe(true)
+  })
+
+  test('a client cannot be left without any scope', async () => {
+    wrapper = await mountSuspended(ApiClient, { props: { client: client() } })
+    wrapper.vm.startEditScopes()
+    wrapper.vm.scopeDraft = []
+    await wrapper.vm.saveScopes()
+
+    expect(mock.history.patch).toHaveLength(0)
+  })
+
   test('the modal lists the clients of the workspace it was opened for', async () => {
     mock
       .onGet('/api-clients/workspace/1/')

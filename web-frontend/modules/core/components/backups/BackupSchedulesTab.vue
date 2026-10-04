@@ -14,52 +14,72 @@
       <Button v-if="canCreate" icon="iconoir-plus" @click="edit(null)">
         {{ $t('backupsModal.newSchedule') }}
       </Button>
-      <div v-if="loading" class="loading margin-top-3"></div>
-      <p v-else-if="schedules.length === 0" class="margin-top-3">
-        {{ $t('backupsModal.noSchedules') }}
-      </p>
-      <div v-else class="export-workspace__list margin-top-3">
-        <div
+      <BackupList
+        :loading="loading"
+        :empty="schedules.length === 0"
+        :empty-text="$t('backupsModal.noSchedules')"
+      >
+        <BackupListItem
           v-for="schedule in schedules"
           :key="schedule.id"
-          class="export-workspace__export"
+          :title="schedule.name"
         >
-          <div class="export-workspace__info">
-            <div>
-              <div class="export-workspace__name">
-                {{ schedule.name }}
-                <template v-if="!schedule.is_active">
-                  ({{ $t('backupsModal.inactive') }})
-                </template>
-              </div>
-              <div class="export-workspace__detail">
-                <code>{{ schedule.cron }}</code> {{ schedule.timezone }}
-                <template v-if="schedule.destination">
-                  ·
-                  {{
-                    $t('backupsModal.uploadedTo', {
-                      name: schedule.destination,
-                    })
-                  }}
-                </template>
-                <template v-if="schedule.is_active">
-                  ·
-                  {{
-                    $t('backupsModal.nextRunOn', {
-                      date: formatDate(schedule.next_run_on),
-                    })
-                  }}
-                </template>
-              </div>
-              <div
-                v-if="schedule.last_error"
-                class="export-workspace__detail color-error"
-              >
-                {{ schedule.last_error }}
-              </div>
-            </div>
-          </div>
-          <div class="export-workspace__actions">
+          <template #title-extra>
+            <template v-if="!schedule.is_active">
+              ({{ $t('backupsModal.inactive') }})
+            </template>
+          </template>
+          <template #detail>
+            <code>{{ schedule.cron }}</code> {{ schedule.timezone }}
+            <template v-if="schedule.destination">
+              ·
+              {{
+                $t('backupsModal.uploadedTo', { name: schedule.destination })
+              }}
+            </template>
+            <template v-if="schedule.is_active">
+              ·
+              {{
+                $t('backupsModal.nextRunOn', {
+                  date: formatDate(schedule.next_run_on),
+                })
+              }}
+            </template>
+            <template v-if="schedule.last_run_on">
+              ·
+              {{
+                $t('backupsModal.lastRunOn', {
+                  date: formatDate(schedule.last_run_on),
+                })
+              }}
+            </template>
+          </template>
+          <template #badges>
+            <Badge v-if="schedule.only_structure" color="purple" size="small">
+              {{ $t('backupsModal.structureOnly') }}
+            </Badge>
+            <Badge color="neutral" size="small">
+              {{
+                schedule.application_ids === null ||
+                schedule.application_ids === undefined
+                  ? $t('backupsModal.allApplications')
+                  : $t(
+                      'backupsModal.applicationCount',
+                      schedule.application_ids.length
+                    )
+              }}
+            </Badge>
+            <Badge v-if="schedule.keep_last" color="cyan" size="small">
+              {{ $t('backupsModal.keepLastBadge', schedule.keep_last) }}
+            </Badge>
+            <Badge v-if="schedule.keep_days" color="cyan" size="small">
+              {{ $t('backupsModal.keepDaysBadge', schedule.keep_days) }}
+            </Badge>
+          </template>
+          <template v-if="schedule.last_error" #error>
+            <div class="backups__error">{{ schedule.last_error }}</div>
+          </template>
+          <template #actions>
             <Button
               v-if="canManage(schedule)"
               type="secondary"
@@ -81,16 +101,16 @@
             ></Button>
             <Button
               v-if="canManage(schedule) && canDelete"
-              type="secondary"
+              type="danger"
               size="small"
               icon="iconoir-bin"
               :title="$t('backupsModal.delete')"
               :aria-label="$t('backupsModal.delete')"
               @click="remove(schedule)"
             ></Button>
-          </div>
-        </div>
-      </div>
+          </template>
+        </BackupListItem>
+      </BackupList>
     </template>
     <ConfirmModal ref="confirmModal" />
   </div>
@@ -98,14 +118,16 @@
 
 <script>
 import error from '@baserow/modules/core/mixins/error'
-import moment from '@baserow/modules/core/moment'
 import BackupService from '@baserow/modules/core/services/backup'
 import BackupScheduleForm from '@baserow/modules/core/components/backups/BackupScheduleForm'
+import BackupList from '@baserow/modules/core/components/backups/BackupList'
+import BackupListItem from '@baserow/modules/core/components/backups/BackupListItem'
+import { formatDate } from '@baserow/modules/core/utils/backups'
 import ConfirmModal from '@baserow/modules/core/components/modals/ConfirmModal'
 
 export default {
   name: 'BackupSchedulesTab',
-  components: { BackupScheduleForm, ConfirmModal },
+  components: { BackupScheduleForm, ConfirmModal, BackupList, BackupListItem },
   mixins: [error],
   props: {
     workspace: {
@@ -181,9 +203,7 @@ export default {
     this.load()
   },
   methods: {
-    formatDate(value) {
-      return value ? moment(value).format('L LT') : ''
-    },
+    formatDate,
     /**
      * Only the owner of a schedule or a workspace admin (staff included) may edit,
      * delete or run it, which is what the backend enforces with a 403.

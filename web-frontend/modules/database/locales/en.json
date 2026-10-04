@@ -67,6 +67,21 @@
     "noSchedules": "This database has no export schedules yet.",
     "inactive": "inactive",
     "nextRunOn": "next run {date}",
+    "lastRunOn": "last run {date}",
+    "tableCount": "{n} table | {n} tables",
+    "columnNamingBadge": "Columns: {naming}",
+    "more": "More actions",
+    "status": "Status",
+    "runModes": {
+      "auto": "Auto",
+      "full": "Full",
+      "incremental": "Incremental"
+    },
+    "runStates": {
+      "running": "Running",
+      "finished": "Finished",
+      "failed": "Failed"
+    },
     "allTables": "All tables",
     "selectTables": "Select at least one table.",
     "runNow": "Run now",

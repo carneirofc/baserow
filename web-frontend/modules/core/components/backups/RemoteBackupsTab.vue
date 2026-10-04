@@ -24,13 +24,13 @@
               <DropdownItem
                 v-for="item in destinations"
                 :key="item.name"
-                :name="item.name"
+                :name="`${item.name} (${item.type})`"
                 :value="item.name"
               ></DropdownItem>
             </Dropdown>
           </FormGroup>
         </div>
-        <div v-if="isStaff" class="col col-6">
+        <div v-if="canTrustPublicKey" class="col col-6">
           <FormGroup
             small-label
             :label="$t('backupsModal.signingKey')"
@@ -50,35 +50,59 @@
         />
         <JobDuration :job="job" class="margin-bottom-2" />
       </template>
-      <div v-if="loading" class="loading margin-top-2"></div>
-      <p v-else-if="backups.length === 0" class="margin-top-2">
-        {{ $t('backupsModal.noRemoteBackups') }}
-      </p>
-      <div v-else class="export-workspace__list margin-top-2">
-        <div
+      <BackupList
+        :loading="loading"
+        :empty="backups.length === 0"
+        :empty-text="$t('backupsModal.noRemoteBackups')"
+      >
+        <BackupListItem
           v-for="backup in backups"
           :key="backup.key"
-          class="export-workspace__export"
+          :title="`${formatDate(backup.created_on)} · ${applicationNames(backup)}`"
         >
-          <div class="export-workspace__info">
-            <div>
-              <div class="export-workspace__name">
-                {{ formatDate(backup.created_on) }} ·
-                {{ applicationNames(backup) }}
-              </div>
-              <div class="export-workspace__detail">
-                {{ formatSize(backup.size) }}
-                <template v-if="backup.only_structure">
-                  · {{ $t('backupsModal.structureOnly') }}
-                </template>
-                <template v-if="backup.schedule_id">
-                  · {{ $t('backupsModal.scheduled') }}
-                </template>
-                · {{ $t('backupsModal.instance', { id: backup.instance_id }) }}
-              </div>
-            </div>
-          </div>
-          <div class="export-workspace__actions">
+          <template #detail>
+            {{ formatSize(backup.size) }}
+            <template v-if="backup.baserow_version">
+              ·
+              {{
+                $t('backupsModal.version', { version: backup.baserow_version })
+              }}
+            </template>
+            <template v-if="backup.sha256">
+              ·
+              <code :title="backup.sha256">{{
+                backup.sha256.slice(0, 8)
+              }}</code>
+            </template>
+            <template v-if="backup.created_by">
+              · {{ $t('backupsModal.createdBy', { name: backup.created_by }) }}
+            </template>
+            <template v-if="scheduleName(backup)">
+              ·
+              {{
+                $t('backupsModal.fromSchedule', { name: scheduleName(backup) })
+              }}
+            </template>
+            <template v-if="backup.is_this_instance === false">
+              · {{ $t('backupsModal.instance', { id: backup.instance_id }) }}
+            </template>
+          </template>
+          <template #badges>
+            <Badge v-if="backup.only_structure" color="purple" size="small">
+              {{ $t('backupsModal.structureOnly') }}
+            </Badge>
+            <Badge v-if="backup.schedule_id" color="cyan" size="small">
+              {{ $t('backupsModal.scheduled') }}
+            </Badge>
+            <Badge
+              v-if="backup.is_this_instance === false"
+              color="yellow"
+              size="small"
+            >
+              {{ $t('backupsModal.otherInstance') }}
+            </Badge>
+          </template>
+          <template #actions>
             <Button
               type="secondary"
               size="small"
@@ -88,9 +112,9 @@
             >
               {{ $t('backupsModal.restore') }}
             </Button>
-          </div>
-        </div>
-      </div>
+          </template>
+        </BackupListItem>
+      </BackupList>
     </template>
     <ConfirmModal ref="confirmModal" />
   </div>
@@ -100,9 +124,13 @@
 import error from '@baserow/modules/core/mixins/error'
 import job from '@baserow/modules/core/mixins/job'
 import backupJobMemory from '@baserow/modules/core/mixins/backupJobMemory'
-import moment from '@baserow/modules/core/moment'
 import BackupService from '@baserow/modules/core/services/backup'
-import { restoredApplicationsFinished } from '@baserow/modules/core/utils/backups'
+import BackupList from '@baserow/modules/core/components/backups/BackupList'
+import BackupListItem from '@baserow/modules/core/components/backups/BackupListItem'
+import {
+  formatDate,
+  restoredApplicationsFinished,
+} from '@baserow/modules/core/utils/backups'
 import { formatFileSize } from '@baserow/modules/core/utils/file'
 import JobDuration from '@baserow/modules/core/components/job/JobDuration'
 import ConfirmModal from '@baserow/modules/core/components/modals/ConfirmModal'
@@ -110,7 +138,7 @@ import { ResponseErrorMessage } from '@baserow/modules/core/plugins/clientHandle
 
 export default {
   name: 'RemoteBackupsTab',
-  components: { JobDuration, ConfirmModal },
+  components: { JobDuration, ConfirmModal, BackupList, BackupListItem },
   mixins: [error, job, backupJobMemory],
   props: {
     workspace: {
@@ -135,6 +163,7 @@ export default {
       loadedDestination: null,
       loadRequest: 0,
       trustPublicKey: false,
+      scheduleNames: {},
       restoringKey: null,
       backups: [],
     }
@@ -149,6 +178,16 @@ export default {
     isStaff() {
       return this.$store.getters['auth/isStaff']
     },
+    selectedDestination() {
+      return this.destinations.find((item) => item.name === this.destination)
+    },
+    // Trusting a foreign signing key is for staff, and only when the storage allows
+    // it, otherwise the backend would refuse it anyway.
+    canTrustPublicKey() {
+      return !!(
+        this.isStaff && this.selectedDestination?.allow_trust_public_key
+      )
+    },
   },
   mounted() {
     const remembered = this.resumeJob('remote')
@@ -156,10 +195,12 @@ export default {
       this.restoringKey = remembered.restoringKey
     }
     this.load()
+    this.loadScheduleNames()
   },
   methods: {
-    formatDate(value) {
-      return moment(value).format('L LT')
+    formatDate,
+    scheduleName(backup) {
+      return backup.schedule_id ? this.scheduleNames[backup.schedule_id] : null
     },
     formatSize(bytes) {
       return formatFileSize(this.$t, this.$i18n.locale, bytes || 0)
@@ -168,6 +209,22 @@ export default {
       return (backup.applications || [])
         .map((application) => application.name)
         .join(', ')
+    },
+    // Names the schedules the backups came from. A user who cannot list the
+    // schedules simply gets none, the row then only says it was scheduled.
+    async loadScheduleNames() {
+      try {
+        const { data } = await this.resolvedService.listSchedules(
+          this.workspace.id
+        )
+        const names = {}
+        for (const schedule of data || []) {
+          names[schedule.id] = schedule.name
+        }
+        this.scheduleNames = names
+      } catch {
+        this.scheduleNames = {}
+      }
     },
     selectDestination(value) {
       this.destination = value
@@ -229,7 +286,7 @@ export default {
       this.hideError()
       try {
         const values = { key: backup.key }
-        if (this.isStaff && this.trustPublicKey) {
+        if (this.canTrustPublicKey && this.trustPublicKey) {
           values.trust_public_key = true
         }
         const { data } = await this.resolvedService.restoreRemoteBackup(

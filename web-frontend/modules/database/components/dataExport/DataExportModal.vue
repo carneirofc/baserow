@@ -29,98 +29,142 @@
         <Button v-else icon="iconoir-plus" @click="edit(null)">
           {{ $t('dataExportModal.newSchedule') }}
         </Button>
-        <p v-if="schedules.length === 0" class="margin-top-3">
-          {{ $t('dataExportModal.noSchedules') }}
-        </p>
-        <div v-else class="export-workspace__list margin-top-3">
-          <div v-for="schedule in schedules" :key="schedule.id">
-            <div class="export-workspace__export">
-              <div class="export-workspace__info">
-                <div>
-                  <div class="export-workspace__name">
-                    {{ schedule.name }}
-                    <template v-if="!schedule.is_active">
-                      ({{ $t('dataExportModal.inactive') }})
-                    </template>
-                  </div>
-                  <div class="export-workspace__detail">
-                    <code>{{ schedule.cron }}</code> {{ schedule.timezone }} ·
-                    {{ schedule.destination }} ·
-                    {{ tablesLabel(schedule) }}
-                    <template v-if="schedule.is_active">
-                      ·
-                      {{
-                        $t('dataExportModal.nextRunOn', {
-                          date: formatDate(schedule.next_run_on),
-                        })
-                      }}
-                    </template>
-                  </div>
-                  <div
-                    v-for="warning in schedule.warnings"
-                    :key="warning"
-                    class="export-workspace__detail color-warning"
-                  >
-                    {{ warning }}
-                  </div>
-                  <div
-                    v-if="schedule.last_error"
-                    class="export-workspace__detail color-error"
-                  >
-                    {{ schedule.last_error }}
-                  </div>
-                </div>
+        <BackupList
+          :empty="schedules.length === 0"
+          :empty-text="$t('dataExportModal.noSchedules')"
+        >
+          <BackupListItem
+            v-for="schedule in schedules"
+            :key="schedule.id"
+            :title="schedule.name"
+          >
+            <template #title-extra>
+              <template v-if="!schedule.is_active">
+                ({{ $t('dataExportModal.inactive') }})
+              </template>
+            </template>
+            <template #detail>
+              <code>{{ schedule.cron }}</code> {{ schedule.timezone }} ·
+              {{ schedule.destination }} ·
+              {{ tablesLabel(schedule) }}
+              <template v-if="schedule.is_active">
+                ·
+                {{
+                  $t('dataExportModal.nextRunOn', {
+                    date: formatDate(schedule.next_run_on),
+                  })
+                }}
+              </template>
+              <template v-if="schedule.last_run_on">
+                ·
+                {{
+                  $t('dataExportModal.lastRunOn', {
+                    date: formatDate(schedule.last_run_on),
+                  })
+                }}
+              </template>
+            </template>
+            <template #badges>
+              <Badge color="neutral" size="small">
+                {{
+                  schedule.table_ids === null
+                    ? $t('dataExportModal.allTables')
+                    : $t(
+                        'dataExportModal.tableCount',
+                        schedule.table_ids.length
+                      )
+                }}
+              </Badge>
+              <Badge color="cyan" size="small">
+                {{
+                  $t('dataExportModal.columnNamingBadge', {
+                    naming:
+                      schedule.column_naming === 'field_name'
+                        ? $t('dataExportModal.columnNamingFieldName')
+                        : $t('dataExportModal.columnNamingFieldId'),
+                  })
+                }}
+              </Badge>
+            </template>
+            <template #error>
+              <div
+                v-for="warning in schedule.warnings"
+                :key="warning"
+                class="backups__detail color-warning"
+              >
+                {{ warning }}
               </div>
-              <div class="export-workspace__actions">
-                <Button
-                  v-if="canRun(schedule)"
-                  type="secondary"
-                  size="small"
-                  :loading="busyId === schedule.id"
-                  :disabled="busyId !== null"
-                  @click="run(schedule, 'auto')"
-                >
-                  {{ $t('dataExportModal.runNow') }}
-                </Button>
-                <Button
-                  v-if="canRun(schedule)"
-                  type="secondary"
-                  size="small"
-                  :disabled="busyId !== null"
-                  @click="run(schedule, 'full')"
-                >
-                  {{ $t('dataExportModal.runFull') }}
-                </Button>
-                <Button
-                  type="secondary"
-                  size="small"
-                  icon="iconoir-list"
-                  :title="$t('dataExportModal.runs')"
-                  :aria-label="$t('dataExportModal.runs')"
-                  @click="toggleRuns(schedule)"
-                ></Button>
-                <Button
-                  type="secondary"
-                  size="small"
-                  icon="iconoir-edit-pencil"
-                  :title="$t('dataExportModal.edit')"
-                  :aria-label="$t('dataExportModal.edit')"
-                  @click="edit(schedule)"
-                ></Button>
-                <Button
-                  type="secondary"
-                  size="small"
-                  icon="iconoir-bin"
-                  :title="$t('dataExportModal.delete')"
-                  :aria-label="$t('dataExportModal.delete')"
-                  @click="remove(schedule)"
-                ></Button>
+              <div v-if="schedule.last_error" class="backups__error">
+                {{ schedule.last_error }}
               </div>
-            </div>
-            <div
-              v-if="openRunsId === schedule.id"
-              class="margin-bottom-2 margin-left-2"
-            >
+            </template>
+            <template #actions>
+              <Button
+                v-if="canRun(schedule)"
+                type="secondary"
+                size="small"
+                :loading="busyId === schedule.id"
+                :disabled="busyId !== null"
+                @click="run(schedule, 'auto')"
+              >
+                {{ $t('dataExportModal.runNow') }}
+              </Button>
+              <Button
+                type="secondary"
+                size="small"
+                icon="iconoir-list"
+                :title="$t('dataExportModal.runs')"
+                :aria-label="$t('dataExportModal.runs')"
+                @click="toggleRuns(schedule)"
+              ></Button>
+              <Button
+                :ref="`more-${schedule.id}`"
+                type="secondary"
+                size="small"
+                icon="iconoir-more-horiz"
+                :title="$t('dataExportModal.more')"
+                :aria-label="$t('dataExportModal.more')"
+                @click="toggleMore(schedule)"
+              ></Button>
+              <Context
+                :ref="`moreContext-${schedule.id}`"
+                overflow-scroll
+                max-height-if-outside-viewport
+              >
+                <ul class="context__menu">
+                  <li v-if="canRun(schedule)" class="context__menu-item">
+                    <a
+                      class="context__menu-item-link"
+                      @click.prevent="runFromMenu(schedule)"
+                    >
+                      <i class="context__menu-item-icon iconoir-refresh"></i>
+                      {{ $t('dataExportModal.runFull') }}
+                    </a>
+                  </li>
+                  <li class="context__menu-item">
+                    <a
+                      class="context__menu-item-link"
+                      @click.prevent="editFromMenu(schedule)"
+                    >
+                      <i
+                        class="context__menu-item-icon iconoir-edit-pencil"
+                      ></i>
+                      {{ $t('dataExportModal.edit') }}
+                    </a>
+                  </li>
+                  <li class="context__menu-item">
+                    <a
+                      class="context__menu-item-link context__menu-item-link--delete"
+                      @click.prevent="removeFromMenu(schedule)"
+                    >
+                      <i class="context__menu-item-icon iconoir-bin"></i>
+                      {{ $t('dataExportModal.delete') }}
+                    </a>
+                  </li>
+                </ul>
+              </Context>
+            </template>
+            <div v-if="openRunsId === schedule.id" class="margin-top-2">
               <div v-if="runsLoading" class="loading"></div>
               <p v-else-if="runs.length === 0">
                 {{ $t('dataExportModal.noRuns') }}
@@ -137,37 +181,52 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="exportRun in runs" :key="exportRun.id">
-                    <td>{{ formatDate(exportRun.started_on) }}</td>
-                    <td>
-                      <span v-if="exportRun.finished_on">{{
-                        runDuration(exportRun)
-                      }}</span>
-                      <span v-else class="job-duration">{{
-                        $t('dataExportModal.runInProgress')
-                      }}</span>
-                    </td>
-                    <td>{{ tableName(exportRun.table_id) }}</td>
-                    <td>{{ exportRun.mode }}</td>
-                    <td :title="exportRun.error || exportRun.object_prefix">
-                      {{ exportRun.state }}
-                    </td>
-                    <td>{{ exportRun.row_count }}</td>
-                  </tr>
+                  <template v-for="exportRun in runs" :key="exportRun.id">
+                    <tr>
+                      <td>{{ formatDate(exportRun.started_on) }}</td>
+                      <td>
+                        <span v-if="exportRun.finished_on">{{
+                          runDuration(exportRun)
+                        }}</span>
+                        <span v-else class="job-duration">{{
+                          $t('dataExportModal.runInProgress')
+                        }}</span>
+                      </td>
+                      <td>{{ tableName(exportRun.table_id) }}</td>
+                      <td>
+                        <Badge color="neutral" size="small">
+                          {{ runModeLabel(exportRun.mode) }}
+                        </Badge>
+                      </td>
+                      <td>
+                        <Badge
+                          :color="runStateColor(exportRun.state)"
+                          size="small"
+                        >
+                          {{ runStateLabel(exportRun.state) }}
+                        </Badge>
+                      </td>
+                      <td>{{ exportRun.row_count }}</td>
+                    </tr>
+                    <tr v-if="exportRun.error">
+                      <td colspan="6" class="data-export__runs-error">
+                        {{ exportRun.error }}
+                      </td>
+                    </tr>
+                  </template>
                 </tbody>
               </table>
               <Button
                 type="secondary"
                 size="small"
-                class="margin-top-1"
                 :loading="resetting"
                 @click="resetState(schedule)"
               >
                 {{ $t('dataExportModal.resetState') }}
               </Button>
             </div>
-          </div>
-        </div>
+          </BackupListItem>
+        </BackupList>
       </template>
     </template>
     <ConfirmModal ref="confirmModal" />
@@ -177,16 +236,23 @@
 <script>
 import modal from '@baserow/modules/core/mixins/modal'
 import error from '@baserow/modules/core/mixins/error'
-import moment from '@baserow/modules/core/moment'
 import { elapsedMs, formatElapsedMs } from '@baserow/modules/core/utils/job'
 import BackupService from '@baserow/modules/core/services/backup'
 import DataExportService from '@baserow/modules/database/services/dataExport'
 import DataExportScheduleForm from '@baserow/modules/database/components/dataExport/DataExportScheduleForm'
+import BackupList from '@baserow/modules/core/components/backups/BackupList'
+import BackupListItem from '@baserow/modules/core/components/backups/BackupListItem'
+import { formatDate } from '@baserow/modules/core/utils/backups'
 import ConfirmModal from '@baserow/modules/core/components/modals/ConfirmModal'
 
 export default {
   name: 'DataExportModal',
-  components: { DataExportScheduleForm, ConfirmModal },
+  components: {
+    DataExportScheduleForm,
+    ConfirmModal,
+    BackupList,
+    BackupListItem,
+  },
   mixins: [modal, error],
   props: {
     database: {
@@ -234,8 +300,42 @@ export default {
       this.hideError()
       this.load()
     },
-    formatDate(value) {
-      return value ? moment(value).format('L LT') : ''
+    formatDate,
+    toggleMore(schedule) {
+      const button = this.$refs[`more-${schedule.id}`]
+      const context = this.$refs[`moreContext-${schedule.id}`]
+      const target = (Array.isArray(button) ? button[0] : button)?.$el
+      const menu = Array.isArray(context) ? context[0] : context
+      menu?.toggle(target, 'bottom', 'right', 4)
+    },
+    hideMore(schedule) {
+      const context = this.$refs[`moreContext-${schedule.id}`]
+      ;(Array.isArray(context) ? context[0] : context)?.hide()
+    },
+    runFromMenu(schedule) {
+      this.hideMore(schedule)
+      return this.run(schedule, 'full')
+    },
+    editFromMenu(schedule) {
+      this.hideMore(schedule)
+      this.edit(schedule)
+    },
+    removeFromMenu(schedule) {
+      this.hideMore(schedule)
+      this.remove(schedule)
+    },
+    runModeLabel(mode) {
+      return ['auto', 'full', 'incremental'].includes(mode)
+        ? this.$t(`dataExportModal.runModes.${mode}`)
+        : mode
+    },
+    runStateLabel(state) {
+      return ['running', 'finished', 'failed'].includes(state)
+        ? this.$t(`dataExportModal.runStates.${state}`)
+        : state
+    },
+    runStateColor(state) {
+      return { running: 'yellow', finished: 'green', failed: 'red' }[state]
     },
     /**
      * Only the owner of a schedule or a workspace admin (staff included) may run

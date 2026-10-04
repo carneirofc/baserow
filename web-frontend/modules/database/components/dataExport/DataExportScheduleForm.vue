@@ -25,7 +25,7 @@
             <DropdownItem
               v-for="item in destinations"
               :key="item.name"
-              :name="item.name"
+              :name="`${item.name} (${item.type})`"
               :value="item.name"
             ></DropdownItem>
             <DropdownItem
@@ -145,10 +145,16 @@
           <template #error>{{ $t('dataExportModal.selectTables') }}</template>
         </FormGroup>
       </div>
-      <div class="col col-12 margin-bottom-2">
-        <Checkbox v-model="values.is_active">
-          {{ $t('dataExportModal.active') }}
-        </Checkbox>
+      <div class="col col-12">
+        <FormGroup
+          small-label
+          :label="$t('dataExportModal.status')"
+          class="margin-bottom-2"
+        >
+          <Checkbox v-model="values.is_active">
+            {{ $t('dataExportModal.active') }}
+          </Checkbox>
+        </FormGroup>
       </div>
     </div>
     <div class="flex justify-content-end">
@@ -159,7 +165,7 @@
       >
         {{ $t('dataExportModal.cancel') }}
       </Button>
-      <Button :loading="loading" :disabled="loading" @click.prevent="submit">
+      <Button :loading="loading" :disabled="loading">
         {{ $t('dataExportModal.save') }}
       </Button>
     </div>

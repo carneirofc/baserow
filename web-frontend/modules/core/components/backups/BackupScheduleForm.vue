@@ -28,7 +28,7 @@
             <DropdownItem
               v-for="item in destinations"
               :key="item.name"
-              :name="item.name"
+              :name="`${item.name} (${item.type})`"
               :value="item.name"
             ></DropdownItem>
             <DropdownItem
@@ -118,25 +118,37 @@
           <template #error>{{ $t('backupsModal.retentionInvalid') }}</template>
         </FormGroup>
       </div>
-      <div v-if="applications.length > 0" class="col col-12 margin-bottom-2">
-        <Checkbox v-model="onlySelectedApplications">
-          {{ $t('backupsModal.onlySelectedApplications') }}
-        </Checkbox>
-        <ApplicationSelector
-          v-if="onlySelectedApplications"
-          class="margin-top-1"
-          :workspace="workspace"
-          :selected-application-ids="selectedApplicationIds"
-          @update="selectedApplicationIds = $event"
-        />
+      <div v-if="applications.length > 0" class="col col-12">
+        <FormGroup
+          small-label
+          :label="$t('backupsModal.scope')"
+          class="margin-bottom-2"
+        >
+          <Checkbox v-model="onlySelectedApplications">
+            {{ $t('backupsModal.onlySelectedApplications') }}
+          </Checkbox>
+          <ApplicationSelector
+            v-if="onlySelectedApplications"
+            class="margin-top-1"
+            :workspace="workspace"
+            :selected-application-ids="selectedApplicationIds"
+            @update="selectedApplicationIds = $event"
+          />
+        </FormGroup>
       </div>
-      <div class="col col-12 margin-bottom-2">
-        <Checkbox v-model="values.only_structure">
-          {{ $t('backupsModal.onlyStructure') }}
-        </Checkbox>
-        <Checkbox v-model="values.is_active">
-          {{ $t('backupsModal.active') }}
-        </Checkbox>
+      <div class="col col-12">
+        <FormGroup
+          small-label
+          :label="$t('backupsModal.content')"
+          class="margin-bottom-2"
+        >
+          <Checkbox v-model="values.only_structure">
+            {{ $t('backupsModal.onlyStructure') }}
+          </Checkbox>
+          <Checkbox v-model="values.is_active">
+            {{ $t('backupsModal.active') }}
+          </Checkbox>
+        </FormGroup>
       </div>
     </div>
     <div class="flex justify-content-end">
@@ -147,7 +159,7 @@
       >
         {{ $t('backupsModal.cancel') }}
       </Button>
-      <Button :loading="loading" :disabled="loading" @click.prevent="submit">
+      <Button :loading="loading" :disabled="loading">
         {{ $t('backupsModal.save') }}
       </Button>
     </div>

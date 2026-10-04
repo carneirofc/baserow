@@ -7,6 +7,7 @@ import RemoteBackupsTab from '@baserow/modules/core/components/backups/RemoteBac
 import BackupsTab from '@baserow/modules/core/components/backups/BackupsTab'
 import BackupSchedulesTab from '@baserow/modules/core/components/backups/BackupSchedulesTab'
 import BackupsModal from '@baserow/modules/core/components/backups/BackupsModal'
+import BackupDestinationsCard from '@baserow/modules/core/components/admin/backups/BackupDestinationsCard'
 import ConfirmModal from '@baserow/modules/core/components/modals/ConfirmModal'
 import { restoredApplicationsFinished } from '@baserow/modules/core/utils/backups'
 import DataExportScheduleForm from '@baserow/modules/database/components/dataExport/DataExportScheduleForm'
@@ -387,7 +388,9 @@ describe('backups and datalake export UI', () => {
 
     wrapper.vm.selectDestination('a')
     await flushPromises()
-    expect(mock.history.get).toHaveLength(2)
+    expect(
+      mock.history.get.filter((request) => request.url === url)
+    ).toHaveLength(2)
     expect(wrapper.vm.backups.map((backup) => backup.key)).toEqual(['a-key'])
   })
 
@@ -498,7 +501,7 @@ describe('backups and datalake export UI', () => {
         global: { mocks: { $hasPermission: () => hasPermission } },
       })
     const actions = () =>
-      wrapper.findAll('.export-workspace__actions').map((row) => row.text())
+      wrapper.findAll('.backups__actions').map((row) => row.text())
 
     // A member sees the actions of their own schedule only.
     wrapper = await mountTab({ id: 1, name: 'Acme', permissions: 'MEMBER' })
@@ -576,6 +579,9 @@ describe('backups and datalake export UI', () => {
     await flushPromises()
 
     // Start a job from the tab, then close and reopen the modal.
+    await vi.waitFor(() =>
+      expect(wrapper.findComponent(BackupsTab).exists()).toBe(true)
+    )
     let tab = wrapper.findComponent(BackupsTab)
     await tab.vm.run('backup', () => service.startBackup(1, {}))
     expect(tab.vm.job.id).toBe(77)
@@ -589,6 +595,9 @@ describe('backups and datalake export UI', () => {
     wrapper.vm.show()
     await flushPromises()
 
+    await vi.waitFor(() =>
+      expect(wrapper.findComponent(BackupsTab).exists()).toBe(true)
+    )
     tab = wrapper.findComponent(BackupsTab)
     expect(tab.vm.job.id).toBe(77)
     expect(tab.vm.busy).toBe(true)
@@ -775,5 +784,171 @@ describe('backups and datalake export UI', () => {
     expect(wrapper.vm.runs).toEqual([])
     expect(wrapper.vm.openRunsId).toBeNull()
     expect(wrapper.vm.loaded).toBe(false)
+  })
+
+  test('a schedule row shows its last run and what it covers', async () => {
+    setUser({ id: 5, is_staff: true })
+    const schedules = [
+      {
+        id: 1,
+        name: 'Nightly',
+        cron: '0 3 * * *',
+        is_active: true,
+        user_id: 5,
+        last_run_on: '2026-02-01T03:00:00+00:00',
+        only_structure: true,
+        application_ids: [1, 2],
+        keep_last: 7,
+        keep_days: 30,
+      },
+      { id: 2, name: 'Plain', cron: '0 4 * * *', user_id: 5 },
+    ]
+    wrapper = await mountSuspended(BackupSchedulesTab, {
+      props: {
+        workspace: { id: 1, name: 'Acme' },
+        destinations: [],
+        service: () => ({
+          listSchedules: vi.fn().mockResolvedValue({ data: schedules }),
+        }),
+      },
+    })
+    await flushPromises()
+
+    const [first, second] = wrapper.findAll('.backups__item')
+    expect(first.text()).toContain('backupsModal.lastRunOn')
+    expect(first.text()).toContain('backupsModal.structureOnly')
+    expect(first.text()).toContain('backupsModal.applicationCount')
+    expect(first.text()).toContain('backupsModal.keepLastBadge')
+    expect(first.text()).toContain('backupsModal.keepDaysBadge')
+    expect(second.text()).not.toContain('backupsModal.lastRunOn')
+    expect(second.text()).toContain('backupsModal.allApplications')
+  })
+
+  test('a remote backup row shows who made it, where and from which schedule', async () => {
+    const service = {
+      listRemoteBackups: vi.fn().mockResolvedValue({
+        data: {
+          results: [
+            {
+              ...remoteBackup('k1'),
+              sha256: 'abcdef0123456789',
+              baserow_version: '1.2.3',
+              created_by: 'ada@example.com',
+              is_this_instance: false,
+              schedule_id: 3,
+            },
+          ],
+        },
+      }),
+      listSchedules: vi
+        .fn()
+        .mockResolvedValue({ data: [{ id: 3, name: 'Nightly' }] }),
+    }
+    wrapper = await mountSuspended(RemoteBackupsTab, {
+      props: {
+        workspace: { id: 1, name: 'Acme' },
+        destinations: [{ name: 'a', type: 's3', purposes: ['backup'] }],
+        service: () => service,
+      },
+    })
+    await flushPromises()
+
+    const text = wrapper.text()
+    expect(text).toContain('backupsModal.version')
+    expect(text).toContain('abcdef01')
+    expect(text).not.toContain('abcdef0123')
+    expect(text).toContain('backupsModal.createdBy')
+    expect(text).toContain('backupsModal.otherInstance')
+    expect(text).toContain('backupsModal.fromSchedule')
+    expect(wrapper.vm.scheduleName(wrapper.vm.backups[0])).toBe('Nightly')
+  })
+
+  test('the trust checkbox needs a staff user and a destination that allows it', async () => {
+    const mountTab = (allow) =>
+      mountSuspended(RemoteBackupsTab, {
+        props: {
+          workspace: { id: 1, name: 'Acme' },
+          destinations: [
+            {
+              name: 'a',
+              type: 's3',
+              purposes: ['backup'],
+              allow_trust_public_key: allow,
+            },
+          ],
+          service: () => ({
+            listRemoteBackups: vi.fn().mockResolvedValue({ data: {} }),
+          }),
+        },
+      })
+
+    setUser({ id: 5, is_staff: true })
+    wrapper = await mountTab(false)
+    expect(wrapper.text()).not.toContain('backupsModal.trustPublicKey')
+    wrapper.unmount()
+
+    wrapper = await mountTab(true)
+    expect(wrapper.text()).toContain('backupsModal.trustPublicKey')
+    wrapper.unmount()
+
+    setUser({ id: 5, is_staff: false })
+    wrapper = await mountTab(true)
+    expect(wrapper.text()).not.toContain('backupsModal.trustPublicKey')
+  })
+
+  test('datalake runs show their state, mode and error as text', async () => {
+    setUser({ id: 5, is_staff: true })
+    mock.onGet('/data-destinations/').reply(200, [])
+    mock.onGet('/database/data-export/schedules/workspace/1/').reply(200, [
+      {
+        id: 3,
+        name: 'A',
+        database: 2,
+        user_id: 5,
+        table_ids: [1],
+        column_naming: 'field_id',
+        last_run_on: '2026-02-01T03:00:00+00:00',
+      },
+    ])
+    mock.onGet('/database/data-export/schedules/3/runs/').reply(200, [
+      {
+        id: 1,
+        state: 'failed',
+        mode: 'full',
+        table_id: 1,
+        error: 'bucket is gone',
+      },
+    ])
+    wrapper = await mountSuspended(DataExportModal, {
+      props: {
+        database: { id: 2, name: 'Sales', tables: [] },
+        workspace: { id: 1, name: 'Acme' },
+      },
+      global: { stubs: { teleport: true } },
+    })
+    wrapper.vm.show()
+    await flushPromises()
+    expect(wrapper.text()).toContain('dataExportModal.lastRunOn')
+    expect(wrapper.text()).toContain('dataExportModal.tableCount')
+
+    await wrapper.vm.toggleRuns(wrapper.vm.schedules[0])
+    const table = wrapper.find('.data-export__runs')
+    expect(table.text()).toContain('dataExportModal.runStates.failed')
+    expect(table.text()).toContain('dataExportModal.runModes.full')
+    expect(table.text()).toContain('bucket is gone')
+  })
+
+  test('the admin panel lists the configured destinations read only', async () => {
+    mock
+      .onGet('/data-destinations/')
+      .reply(200, [
+        { name: 'offsite', type: 's3', purposes: ['backup', 'datalake'] },
+      ])
+    wrapper = await mountSuspended(BackupDestinationsCard)
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('offsite')
+    expect(wrapper.text()).toContain('s3')
+    expect(wrapper.text()).toContain('backupsAdminPanel.purposes.datalake')
   })
 })

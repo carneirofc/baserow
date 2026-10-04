@@ -1,4 +1,13 @@
+import moment from '@baserow/modules/core/moment'
 import { notifyIf } from '@baserow/modules/core/utils/error'
+
+/**
+ * Locale-aware date and time, the same format everywhere in the backup and datalake
+ * export screens. Empty for a missing value.
+ */
+export function formatDate(value) {
+  return value ? moment(value).format('L LT') : ''
+}
 
 /**
  * Adds the applications installed by a finished restore job to the sidebar and tells

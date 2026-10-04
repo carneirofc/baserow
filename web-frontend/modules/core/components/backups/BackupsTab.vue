@@ -16,7 +16,7 @@
             <DropdownItem
               v-for="item in destinations"
               :key="item.name"
-              :name="item.name"
+              :name="`${item.name} (${item.type})`"
               :value="item.name"
             ></DropdownItem>
           </Dropdown>
@@ -64,36 +64,28 @@
       {{ $t('backupsModal.backupNow') }}
     </Button>
 
-    <div v-if="loading" class="loading margin-top-3"></div>
-    <p v-else-if="backups.length === 0" class="margin-top-3">
-      {{ $t('backupsModal.noBackups') }}
-    </p>
-    <div v-else class="export-workspace__list margin-top-3">
-      <div
+    <BackupList
+      :loading="loading"
+      :empty="backups.length === 0"
+      :empty-text="$t('backupsModal.noBackups')"
+    >
+      <BackupListItem
         v-for="backup in backups"
         :key="backup.id"
-        class="export-workspace__export"
+        :title="formatDate(backup.created_on)"
       >
-        <div class="export-workspace__info">
-          <div>
-            <div class="export-workspace__name">
-              {{ formatDate(backup.created_on) }}
-            </div>
-            <div class="export-workspace__detail">
-              {{ backup.exported_file_name }}
-              <template v-if="backup.destination">
-                ·
-                {{
-                  $t('backupsModal.uploadedTo', { name: backup.destination })
-                }}
-              </template>
-            </div>
-          </div>
-        </div>
-        <div class="export-workspace__actions">
+        <template #detail>
+          {{ backup.exported_file_name }}
+          <template v-if="backup.destination">
+            ·
+            {{ $t('backupsModal.uploadedTo', { name: backup.destination }) }}
+          </template>
+        </template>
+        <template #actions>
           <DownloadLink
             :url="backup.download_url"
             :filename="backup.exported_file_name"
+            class="button button--small button--secondary"
             :loading-class="'button--loading'"
           >
             {{ $t('backupsModal.download') }}
@@ -107,7 +99,7 @@
             {{ $t('backupsModal.restore') }}
           </Button>
           <Button
-            type="secondary"
+            type="danger"
             size="small"
             icon="iconoir-bin"
             :disabled="busy"
@@ -115,9 +107,9 @@
             :aria-label="$t('backupsModal.delete')"
             @click="remove(backup)"
           ></Button>
-        </div>
-      </div>
-    </div>
+        </template>
+      </BackupListItem>
+    </BackupList>
     <ConfirmModal ref="confirmModal" />
   </div>
 </template>
@@ -126,16 +118,26 @@
 import error from '@baserow/modules/core/mixins/error'
 import job from '@baserow/modules/core/mixins/job'
 import backupJobMemory from '@baserow/modules/core/mixins/backupJobMemory'
-import moment from '@baserow/modules/core/moment'
 import BackupService from '@baserow/modules/core/services/backup'
 import ApplicationSelector from '@baserow/modules/core/components/export/ApplicationSelector'
 import JobDuration from '@baserow/modules/core/components/job/JobDuration'
 import ConfirmModal from '@baserow/modules/core/components/modals/ConfirmModal'
-import { restoredApplicationsFinished } from '@baserow/modules/core/utils/backups'
+import BackupList from '@baserow/modules/core/components/backups/BackupList'
+import BackupListItem from '@baserow/modules/core/components/backups/BackupListItem'
+import {
+  formatDate,
+  restoredApplicationsFinished,
+} from '@baserow/modules/core/utils/backups'
 
 export default {
   name: 'BackupsTab',
-  components: { ApplicationSelector, JobDuration, ConfirmModal },
+  components: {
+    ApplicationSelector,
+    JobDuration,
+    ConfirmModal,
+    BackupList,
+    BackupListItem,
+  },
   mixins: [error, job, backupJobMemory],
   props: {
     workspace: {
@@ -191,9 +193,7 @@ export default {
     this.load()
   },
   methods: {
-    formatDate(value) {
-      return moment(value).format('L LT')
-    },
+    formatDate,
     async load() {
       this.loading = true
       try {

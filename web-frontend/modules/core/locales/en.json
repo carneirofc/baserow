@@ -347,6 +347,11 @@
     "noSchedules": "This workspace has no backup schedules yet.",
     "inactive": "inactive",
     "nextRunOn": "next run {date}",
+    "lastRunOn": "last run {date}",
+    "allApplications": "All applications",
+    "applicationCount": "{n} application | {n} applications",
+    "keepLastBadge": "keep last {n}",
+    "keepDaysBadge": "keep {n} day | keep {n} days",
     "runNow": "Run now",
     "runStartedTitle": "Backup started",
     "runStartedMessage": "The scheduled backup is running in the background.",
@@ -367,6 +372,10 @@
     "structureOnly": "structure only",
     "scheduled": "scheduled",
     "instance": "made by instance {id}",
+    "otherInstance": "Other instance",
+    "version": "version {version}",
+    "createdBy": "by {name}",
+    "fromSchedule": "schedule {name}",
     "signingKey": "Signing key",
     "trustPublicKey": "Trust the signing key of the backup",
     "trustPublicKeyHelp": "Needed to restore a backup made by another instance. Only allowed when the storage permits it.",
@@ -1075,7 +1084,14 @@
     "workspace": "Workspace",
     "loadErrorTitle": "Could not load the external storage",
     "loadErrorMessage": "The configured backup storage could not be read, so the backups of this workspace cannot be shown.",
-    "retry": "Try again"
+    "retry": "Try again",
+    "destinationsTitle": "Configured storage",
+    "destinationsDescription": "External storage declared with BASEROW_DATA_DESTINATIONS. Read only, change it in the environment of the backend.",
+    "noDestinations": "No external storage is configured.",
+    "purposes": {
+      "backup": "Backups",
+      "datalake": "Datalake exports"
+    }
   },
   "auditLogAdminTable": {
     "title": "Audit log",
@@ -1324,6 +1340,8 @@
   },
   "apiClient": {
     "noScopes": "No scopes",
+    "editScopes": "Edit scopes",
+    "saveScopes": "Save scopes",
     "keysLabel": "Keys ({count})",
     "activeLabel": "Status",
     "activeHelp": "Deactivating stops every key of this client from working, without deleting anything.",

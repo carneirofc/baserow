@@ -1,63 +1,70 @@
 <template>
-  <div class="backups-admin">
-    <h1>{{ $t('adminType.backups') }}</h1>
-    <FormGroup :label="$t('backupsAdminPanel.workspace')" small-label>
-      <PaginatedDropdown
-        :model-value="workspaceId"
-        :fetch-page="fetchWorkspaces"
-        id-name="id"
-        value-name="value"
-        size="large"
-        :include-display-name-in-selected-event="true"
-        @input="workspaceSelected"
-      ></PaginatedDropdown>
-    </FormGroup>
+  <div class="layout__col-2-scroll">
+    <div class="admin-settings">
+      <h1>{{ $t('adminType.backups') }}</h1>
+      <BackupDestinationsCard />
+      <FormGroup :label="$t('backupsAdminPanel.workspace')" small-label>
+        <PaginatedDropdown
+          :model-value="workspaceId"
+          :fetch-page="fetchWorkspaces"
+          id-name="id"
+          value-name="value"
+          size="large"
+          :include-display-name-in-selected-event="true"
+          @input="workspaceSelected"
+        ></PaginatedDropdown>
+      </FormGroup>
 
-    <div v-if="loading" class="loading margin-top-2"></div>
-    <div v-else-if="workspace && destinationsError" class="margin-top-2">
-      <Alert type="error">
-        <template #title>{{ $t('backupsAdminPanel.loadErrorTitle') }}</template>
-        <p>{{ $t('backupsAdminPanel.loadErrorMessage') }}</p>
-      </Alert>
-      <Button type="secondary" class="margin-top-2" @click="loadDestinations">
-        {{ $t('backupsAdminPanel.retry') }}
-      </Button>
+      <div v-if="loading" class="loading margin-top-2"></div>
+      <div v-else-if="workspace && destinationsError" class="margin-top-2">
+        <Alert type="error">
+          <template #title>{{
+            $t('backupsAdminPanel.loadErrorTitle')
+          }}</template>
+          <p>{{ $t('backupsAdminPanel.loadErrorMessage') }}</p>
+        </Alert>
+        <Button type="secondary" class="margin-top-2" @click="loadDestinations">
+          {{ $t('backupsAdminPanel.retry') }}
+        </Button>
+      </div>
+      <Tabs
+        v-else-if="workspace"
+        :key="workspaceId"
+        header-no-padding
+        content-no-x-padding
+        class="margin-top-2"
+      >
+        <Tab :title="$t('backupsModal.tabBackups')">
+          <BackupsTab
+            :workspace="workspace"
+            :destinations="destinations"
+            :service="adminBackupService"
+          />
+        </Tab>
+        <Tab :title="$t('backupsModal.tabSchedules')">
+          <BackupSchedulesTab
+            :workspace="workspace"
+            :destinations="destinations"
+            :service="adminBackupService"
+            admin
+          />
+        </Tab>
+        <Tab :title="$t('backupsModal.tabRemote')">
+          <RemoteBackupsTab
+            :workspace="workspace"
+            :destinations="destinations"
+            :service="adminBackupService"
+          />
+        </Tab>
+      </Tabs>
     </div>
-    <Tabs
-      v-else-if="workspace"
-      header-no-padding
-      content-no-x-padding
-      class="margin-top-2"
-    >
-      <Tab :title="$t('backupsModal.tabBackups')">
-        <BackupsTab
-          :workspace="workspace"
-          :destinations="destinations"
-          :service="adminBackupService"
-        />
-      </Tab>
-      <Tab :title="$t('backupsModal.tabSchedules')">
-        <BackupSchedulesTab
-          :workspace="workspace"
-          :destinations="destinations"
-          :service="adminBackupService"
-          admin
-        />
-      </Tab>
-      <Tab :title="$t('backupsModal.tabRemote')">
-        <RemoteBackupsTab
-          :workspace="workspace"
-          :destinations="destinations"
-          :service="adminBackupService"
-        />
-      </Tab>
-    </Tabs>
   </div>
 </template>
 
 <script>
 import BackupsAdminService from '@baserow/modules/core/services/admin/backups'
 import PaginatedDropdown from '@baserow/modules/core/components/PaginatedDropdown'
+import BackupDestinationsCard from '@baserow/modules/core/components/admin/backups/BackupDestinationsCard'
 import BackupsTab from '@baserow/modules/core/components/backups/BackupsTab'
 import BackupSchedulesTab from '@baserow/modules/core/components/backups/BackupSchedulesTab'
 import RemoteBackupsTab from '@baserow/modules/core/components/backups/RemoteBackupsTab'
@@ -67,6 +74,7 @@ export default {
   name: 'BackupsAdminPanel',
   components: {
     PaginatedDropdown,
+    BackupDestinationsCard,
     BackupsTab,
     BackupSchedulesTab,
     RemoteBackupsTab,

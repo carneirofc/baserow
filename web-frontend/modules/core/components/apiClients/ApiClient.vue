@@ -28,6 +28,15 @@
             </li>
             <li class="context__menu-item">
               <a
+                class="context__menu-item-link"
+                @click.prevent="startEditScopes"
+              >
+                <i class="context__menu-item-icon iconoir-lock"></i>
+                {{ $t('apiClient.editScopes') }}
+              </a>
+            </li>
+            <li class="context__menu-item">
+              <a
                 class="context__menu-item-link context__menu-item-link--delete"
                 :class="{ 'context__menu-item-link--loading': deleteLoading }"
                 @click.prevent="remove()"
@@ -39,7 +48,32 @@
           </ul>
         </Context>
       </div>
-      <div class="api-client__meta">
+      <div v-if="editingScopes" class="api-client__scopes-editor">
+        <ApiClientScopes v-model="scopeDraft" />
+        <p v-if="scopeDraft.length === 0" class="color-error">
+          {{ $t('apiClientForm.scopeRequired') }}
+        </p>
+        <div class="flex margin-top-1">
+          <Button
+            size="small"
+            :loading="scopesLoading"
+            :disabled="scopeDraft.length === 0"
+            @click.prevent="saveScopes"
+          >
+            {{ $t('apiClient.saveScopes') }}
+          </Button>
+          <Button
+            type="secondary"
+            size="small"
+            class="margin-left-1"
+            :disabled="scopesLoading"
+            @click.prevent="editingScopes = false"
+          >
+            {{ $t('action.cancel') }}
+          </Button>
+        </div>
+      </div>
+      <div v-else class="api-client__meta">
         <div class="api-client__scopes">
           <Badge
             v-for="scope in client.scopes"
@@ -143,12 +177,13 @@
 
 <script>
 import ApiClientsService from '@baserow/modules/core/services/apiClients'
+import ApiClientScopes from '@baserow/modules/core/components/apiClients/ApiClientScopes'
 import ApiClientKeyForm from '@baserow/modules/core/components/apiClients/ApiClientKeyForm'
 import { notifyIf } from '@baserow/modules/core/utils/error'
 
 export default {
   name: 'ApiClient',
-  components: { ApiClientKeyForm },
+  components: { ApiClientKeyForm, ApiClientScopes },
   props: {
     client: {
       type: Object,
@@ -159,6 +194,9 @@ export default {
   data() {
     return {
       deleteLoading: false,
+      editingScopes: false,
+      scopeDraft: [],
+      scopesLoading: false,
       creatingKey: false,
       keyLoading: false,
       revoking: null,
@@ -168,6 +206,30 @@ export default {
     enableRename() {
       this.$refs.context.hide()
       this.$refs.rename.edit()
+    },
+    startEditScopes() {
+      this.$refs.context.hide()
+      this.scopeDraft = [...this.client.scopes]
+      this.editingScopes = true
+    },
+    async saveScopes() {
+      if (this.scopeDraft.length === 0) {
+        return
+      }
+      this.scopesLoading = true
+      try {
+        const scopes = [...this.scopeDraft]
+        const { data } = await ApiClientsService(this.$client).update(
+          this.client.id,
+          { scopes }
+        )
+        this.client.scopes = data?.scopes || scopes
+        this.editingScopes = false
+      } catch (error) {
+        notifyIf(error)
+      } finally {
+        this.scopesLoading = false
+      }
     },
     formatDate(value) {
       return value ? new Date(value).toLocaleString() : '-'

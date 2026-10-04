@@ -20,3 +20,18 @@ export const scopeTranslationKey = (scope) => {
   const [group, action] = scope.split('.')
   return `${group}${action.charAt(0).toUpperCase()}${action.slice(1)}`
 }
+
+/**
+ * Returns `selected` with `scope` added or removed. The result keeps the backend's
+ * order so the stored list is stable regardless of the order the boxes were ticked in.
+ */
+export const toggleScopeSelection = (selected, scope, on) => {
+  const scopes = selected.filter((s) => s !== scope)
+  if (on) {
+    scopes.push(scope)
+    scopes.sort(
+      (a, b) => API_CLIENT_SCOPES.indexOf(a) - API_CLIENT_SCOPES.indexOf(b)
+    )
+  }
+  return scopes
+}
