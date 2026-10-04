@@ -3180,6 +3180,20 @@ POST<span class="w"> </span>/api/backups/destinations/&lt;name&gt;/workspace/&lt
 </code></pre></div>
 <p>Restored applications are installed as new applications. The archive's checksum is
 verified against the sidecar first.</p>
+<p>Restoring needs export access to the workspace the backup was made of, the same access
+listing needs. A backup made by another instance (a different <code>instance_id</code> in its
+sidecar), such as on a fresh instance after a disaster, can only be restored by staff:
+use the admin API or <code>restore_from_destination</code> with a staff <code>--user-email</code>.</p>
+<p>Several instances may share a destination. Retention only deletes the backups the
+instance itself uploaded, even when another instance has a workspace or schedule with
+the same id.</p>
+<p>A schedule's retention only ever considers the backups that schedule made: manual
+backups and the backups of other schedules are never removed by it. Schedules are
+evaluated in their own timezone; a time repeated when the clocks go back runs once,
+and a time skipped when they go forward runs right after the jump. When a schedule is
+due while its user still has a backup running, it is retried five minutes later
+rather than skipped until its next cron match, and <code>last_run_on</code> only moves when a
+backup actually started.</p>
 <p>Archives are signed with a key of the instance that made them. Restoring one made by
 another instance fails with <code>ERROR_UNTRUSTED_PUBLIC_KEY</code> until its key is trusted: a staff
 member can pass <code>"trust_public_key": true</code> (or <code>--trust-public-key</code>) when the destination
