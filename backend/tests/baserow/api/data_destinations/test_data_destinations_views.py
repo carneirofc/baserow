@@ -32,7 +32,14 @@ def test_list_data_destinations_hides_credentials(api_client, data_fixture, sett
     )
 
     assert response.status_code == HTTP_200_OK
-    assert response.json() == [{"name": "lake", "type": "s3", "purposes": ["datalake"]}]
+    assert response.json() == [
+        {
+            "name": "lake",
+            "type": "s3",
+            "purposes": ["datalake"],
+            "allow_trust_public_key": False,
+        }
+    ]
     assert "top-secret" not in response.content.decode()
     assert "private-bucket" not in response.content.decode()
 

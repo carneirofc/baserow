@@ -12,3 +12,9 @@ class DataDestinationSerializer(serializers.Serializer):
         child=serializers.ChoiceField(choices=ALL_PURPOSES),
         help_text="What the destination may be used for.",
     )
+    allow_trust_public_key = serializers.BooleanField(
+        help_text=(
+            "Whether staff may trust the signing key of a backup made by another "
+            "instance when restoring from this destination."
+        ),
+    )

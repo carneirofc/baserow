@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from baserow.api.download.tokens import BACKUP_DOWNLOAD
 from baserow.core.backups.models import BackupSchedule
+from baserow.core.handler import CoreHandler
 from baserow.core.job_types import ExportApplicationsJobType
 
 _ExportJobSerializer = ExportApplicationsJobType().response_serializer_class
@@ -102,9 +103,24 @@ class RemoteBackupSerializer(serializers.Serializer):
         help_text="The instance that made the backup.",
     )
     baserow_version = serializers.CharField(default=None, allow_null=True)
+    created_by = serializers.CharField(
+        default=None,
+        allow_null=True,
+        help_text="The email of the user who made the backup.",
+    )
+    is_this_instance = serializers.SerializerMethodField(
+        help_text="Whether the backup was made by this instance."
+    )
     schedule_id = serializers.IntegerField(default=None, allow_null=True)
     workspace = serializers.DictField(default=dict)
     applications = serializers.ListField(child=serializers.DictField(), default=list)
+
+    def get_is_this_instance(self, backup) -> bool:
+        # Fetched once per request, the serializer is used for a whole listing.
+        root = self.root
+        if not hasattr(root, "_this_instance_id"):
+            root._this_instance_id = CoreHandler().get_settings().instance_id
+        return backup.get("instance_id") == root._this_instance_id
 
 
 class ListRemoteBackupsSerializer(serializers.Serializer):
@@ -154,12 +170,18 @@ class RestoreBackupSerializer(serializers.Serializer):
 
 
 class BackupScheduleSerializer(serializers.ModelSerializer):
+    user_id = serializers.IntegerField(
+        read_only=True,
+        help_text="The user the schedule runs as, who can manage it.",
+    )
+
     class Meta:
         model = BackupSchedule
         fields = (
             "id",
             "name",
             "workspace",
+            "user_id",
             "cron",
             "timezone",
             "application_ids",

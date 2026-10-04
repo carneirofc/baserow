@@ -70,6 +70,8 @@ def test_create_list_update_and_delete_a_schedule(api_client, data_fixture, lake
     assert response.status_code == HTTP_200_OK, response.json()
     created = response.json()
     assert created["table_ids"] == [table.id]
+    assert created["user_id"] == user.id
+    assert "last_run_on" in created
     assert created["column_naming"] == "field_id"
     assert created["next_run_on"] is not None
     assert created["warnings"] == []

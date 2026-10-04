@@ -25,6 +25,10 @@ CRON_HELP = (
 
 
 class TableExportScheduleSerializer(serializers.ModelSerializer):
+    user_id = serializers.IntegerField(
+        read_only=True,
+        help_text="The user the schedule runs as, who can manage it.",
+    )
     warnings = serializers.SerializerMethodField(
         help_text="Configuration problems worth knowing about, for example a cron "
         "expression that runs less often than trashed rows are deleted."
@@ -36,6 +40,7 @@ class TableExportScheduleSerializer(serializers.ModelSerializer):
             "id",
             "name",
             "workspace",
+            "user_id",
             "database",
             "table_ids",
             "destination",
