@@ -3118,6 +3118,10 @@ unreadable secret file stop the instance at startup with an explanatory error.</
 <code>addressing_style</code>, <code>signature_version</code>, <code>use_ssl</code>, <code>verify</code>, <code>access_key_id</code>,
 <code>secret_access_key</code>, <code>session_token</code>. Without static keys, the standard AWS credential
 chain is used (IRSA, Pod Identity, instance profile).</p>
+<p>To have every object encrypted at rest by S3, set <code>server_side_encryption</code> to <code>AES256</code>
+(SSE-S3) or <code>aws:kms</code> (SSE-KMS); with <code>aws:kms</code>, <code>sse_kms_key_id</code> optionally names the
+key (omit it for the bucket's default KMS key). <code>sse_kms_key_id</code> is refused without
+<code>aws:kms</code>.</p>
 <div class="highlight"><pre><span></span><code><span class="p">[</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"lake"</span><span class="p">,</span>
@@ -3134,7 +3138,9 @@ chain is used (IRSA, Pod Identity, instance profile).</p>
 <h3 id="azure-blob-storage">Azure Blob Storage<a class="headerlink" href="#azure-blob-storage" title="Permanent link">&para;</a></h3>
 <p>Requires <code>container</code> and one of <code>account_key</code>, <code>connection_string</code> or <code>sas_token</code>, plus
 <code>account_name</code> unless a connection string is given. Optional: <code>endpoint_suffix</code>,
-<code>custom_domain</code>.</p>
+<code>custom_domain</code>. Blob encryption is not configurable per destination: the storage
+account's (or container's) default encryption, including an encryption scope set as the
+container default, applies.</p>
 <div class="highlight"><pre><span></span><code><span class="p">[</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"offsite"</span><span class="p">,</span>
@@ -3165,6 +3171,15 @@ it. For Helm, see <a href="../install-with-helm/#data-destinations">Install with
 (workspace, applications, checksum, signing key, schedule). The sidecar is written last:
 an archive without one is an incomplete upload and is ignored. A schedule's <code>keep_last</code>
 and <code>keep_days</code> apply to the backups it uploaded too.</p>
+<p>If the sidecar cannot be written, the archive is deleted again. Retention also sweeps
+archives that have no sidecar and are more than 24 hours old, the leftovers of uploads
+that died halfway. The sweep cannot tell which instance made such an archive, so the
+age threshold is what protects an upload still in progress on a shared destination.</p>
+<p>Retention runs when a schedule is due (the tick is
+<code>BASEROW_BACKUP_SCHEDULE_TICK_CRONTAB</code>, every minute by default), usually before the
+new backup has been uploaded, so <code>keep_last</code> of N briefly leaves N+1 backups. Changing a schedule's
+destination leaves the backups on the old destination outside its retention. Sidecars
+contain the workspace name and the email of the user who made the backup.</p>
 <p>Listing and restoring work from the destination alone, so they also work on a fresh
 instance whose database is gone:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># The API</span>
@@ -3179,11 +3194,24 @@ POST<span class="w"> </span>/api/backups/destinations/&lt;name&gt;/workspace/&lt
 ./baserow<span class="w"> </span>backup_to_destination<span class="w"> </span><span class="m">1</span><span class="w"> </span>--destination<span class="w"> </span>offsite<span class="w"> </span>--user-email<span class="w"> </span>admin@example.com
 </code></pre></div>
 <p>Restored applications are installed as new applications. The archive's checksum is
-verified against the sidecar first.</p>
+verified against the sidecar first. The download and verification happen before the
+import job is created, and a restore is refused up front when the user already has the
+maximum number of import jobs running; if the job cannot be started, the downloaded
+copy is removed again. Sidecars that are not JSON objects are skipped when listing.</p>
 <p>Restoring needs export access to the workspace the backup was made of, the same access
 listing needs. A backup made by another instance (a different <code>instance_id</code> in its
 sidecar), such as on a fresh instance after a disaster, can only be restored by staff:
 use the admin API or <code>restore_from_destination</code> with a staff <code>--user-email</code>.</p>
+<p>Who sees which remote backup: staff see everything on the destination. Anyone else only
+sees backups made by this instance (matching <code>instance_id</code>). A workspace admin sees all
+of those for the workspace; a regular member only sees, and can only restore, the
+backups they made themselves (matched on the sidecar's <code>created_by_id</code>, or on
+<code>created_by</code> for older sidecars).</p>
+<p>Backup schedules (and manual runs of table export schedules) can only be changed,
+deleted or run by their owner, a workspace admin or staff, because they run with the
+owner's permissions. A schedule whose owner is deactivated or pending deletion is
+disabled by the periodic task. API client keys only work in the workspace they were
+created in.</p>
 <p>Several instances may share a destination. Retention only deletes the backups the
 instance itself uploaded, even when another instance has a workspace or schedule with
 the same id.</p>
