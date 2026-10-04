@@ -50,9 +50,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     # Ubuntu's default python3 is 3.14; uv builds the venv against it
     python3 \
     python3-dev \
-    python3-venv \
-    # uv needs the git CLI to fetch git-sourced dependencies (pysaml2 fork)
-    git && \
+    python3-venv && \
     rm -f /usr/bin/pebble && rm -rf /var/lib/pebble
 
 ENV UV_PYTHON_DOWNLOADS=0 \
@@ -254,7 +252,6 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     gettext \
     xmlsec1 \
     curl \
-    # uv needs the git CLI to fetch git-sourced dependencies (pysaml2 fork)
     git \
     graphviz \
     procps \
