@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django.conf import settings
 from django.db import transaction
 from django.utils import timezone
@@ -5,6 +7,9 @@ from django.utils import timezone
 from loguru import logger
 
 from baserow.config.celery import app
+
+# How soon a schedule is retried when its user still has a backup running.
+BUSY_RETRY_DELAY = timedelta(minutes=5)
 
 
 @app.task(bind=True, queue="export")
@@ -16,10 +21,15 @@ def run_due_backup_schedules(self):
     Each schedule is locked individually with `skip_locked`, so a schedule is never
     started twice when several workers tick at the same time and a slow schedule does
     not hold up the others.
+
+    A run that cannot start because the user still has a backup running, for example
+    the previous run of a frequent schedule, is retried after `BUSY_RETRY_DELAY`
+    instead of being skipped until the next cron match.
     """
 
     from baserow.core.backups.models import BackupSchedule
     from baserow.core.backups.schedule_handler import BackupScheduleHandler
+    from baserow.core.jobs.exceptions import MaxJobCountExceeded
 
     handler = BackupScheduleHandler()
     now = timezone.now()
@@ -43,9 +53,27 @@ def run_due_backup_schedules(self):
                 # Another worker picked it up, or it stopped being due.
                 continue
 
+            next_run_on = handler.compute_next_run_on(
+                schedule.cron, schedule.timezone, after=now
+            )
+
             try:
-                handler.run_schedule(schedule)
+                # A savepoint, so a database error in the run leaves the transaction
+                # holding the lock usable for recording the failure.
+                with transaction.atomic():
+                    handler.run_schedule(schedule)
                 schedule.last_error = ""
+                schedule.last_run_on = now
+            except MaxJobCountExceeded:
+                logger.info(
+                    "Backup schedule {schedule_id} postponed, its user still has a "
+                    "backup running.",
+                    schedule_id=schedule.id,
+                )
+                schedule.last_error = (
+                    "Postponed because a backup of this user was still running."
+                )
+                next_run_on = min(next_run_on, now + BUSY_RETRY_DELAY)
             except Exception as exc:  # noqa: BLE001 - recorded, never fatal
                 logger.error(
                     "Backup schedule {schedule_id} failed: {error}",
@@ -54,10 +82,7 @@ def run_due_backup_schedules(self):
                 )
                 schedule.last_error = str(exc)
 
-            schedule.last_run_on = now
-            schedule.next_run_on = handler.compute_next_run_on(
-                schedule.cron, schedule.timezone, after=now
-            )
+            schedule.next_run_on = next_run_on
             schedule.save(
                 update_fields=["last_error", "last_run_on", "next_run_on", "updated_on"]
             )

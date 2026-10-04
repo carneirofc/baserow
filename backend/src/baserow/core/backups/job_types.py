@@ -28,6 +28,10 @@ class ExportApplicationsToDestinationJobType(ExportApplicationsJobType):
     Exports applications exactly like `ExportApplicationsJobType`, then uploads the
     archive to a data destination. A failed upload fails the job, while the archive
     stays available on the instance storage.
+
+    Scheduled backups always use this job type, so they remember the schedule that
+    made them and its retention only ever considers its own backups. Without a
+    destination such a backup stays on the instance storage only.
     """
 
     type = "export_applications_to_destination"
@@ -67,7 +71,10 @@ class ExportApplicationsToDestinationJobType(ExportApplicationsJobType):
         self, values: Dict[str, Any], user: AbstractUser
     ) -> Dict[str, Any]:
         destination = values.get("destination") or ""
-        DataDestinationHandler().get_destination(destination, purpose=PURPOSE_BACKUP)
+        if destination or values.get("backup_schedule") is None:
+            DataDestinationHandler().get_destination(
+                destination, purpose=PURPOSE_BACKUP
+            )
 
         prepared = super().prepare_values(values, user)
         prepared["destination"] = destination
@@ -88,5 +95,6 @@ class ExportApplicationsToDestinationJobType(ExportApplicationsJobType):
         )
         super().run(job, export_progress)
 
-        BackupDestinationHandler().upload_archive(job)
+        if job.destination:
+            BackupDestinationHandler().upload_archive(job)
         progress.set_progress(progress.total)

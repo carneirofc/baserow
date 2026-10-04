@@ -90,14 +90,17 @@ def compute_next_run_on(
 
     schedule = parse_cron(cron)
     tz = ZoneInfo(validate_timezone(tz_name))
-    after = (after or timezone.now()).astimezone(tz)
+    utc = ZoneInfo("UTC")
+    after = (after or timezone.now()).astimezone(utc)
 
     hours = sorted(schedule.hour)
     minutes = sorted(schedule.minute)
 
     # Start looking from the next whole minute so the result is never the moment we
     # were asked to look after.
-    candidate = after.replace(second=0, microsecond=0) + timedelta(minutes=1)
+    candidate = after.astimezone(tz).replace(second=0, microsecond=0) + timedelta(
+        minutes=1
+    )
 
     for day in range(MAX_DAYS_LOOKAHEAD):
         if _day_matches(schedule, candidate):
@@ -107,8 +110,15 @@ def compute_next_run_on(
                 for minute in minutes:
                     if hour == candidate.hour and minute < candidate.minute:
                         continue
-                    found = candidate.replace(hour=hour, minute=minute)
-                    return found.astimezone(ZoneInfo("UTC"))
+                    # Wall-clock times are matched on their first occurrence: a time
+                    # repeated when the clocks go back is due once, and a time skipped
+                    # when they go forward resolves to the moment just after the jump.
+                    # Comparing in UTC keeps the result strictly after `after`, also
+                    # when `after` falls in the repeated hour.
+                    found = candidate.replace(hour=hour, minute=minute, fold=0)
+                    found = found.astimezone(utc)
+                    if found > after:
+                        return found
 
         candidate = (candidate + timedelta(days=1)).replace(hour=0, minute=0)
 

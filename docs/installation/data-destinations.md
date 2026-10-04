@@ -135,6 +135,14 @@ Several instances may share a destination. Retention only deletes the backups th
 instance itself uploaded, even when another instance has a workspace or schedule with
 the same id.
 
+A schedule's retention only ever considers the backups that schedule made: manual
+backups and the backups of other schedules are never removed by it. Schedules are
+evaluated in their own timezone; a time repeated when the clocks go back runs once,
+and a time skipped when they go forward runs right after the jump. When a schedule is
+due while its user still has a backup running, it is retried five minutes later
+rather than skipped until its next cron match, and `last_run_on` only moves when a
+backup actually started.
+
 Archives are signed with a key of the instance that made them. Restoring one made by
 another instance fails with `ERROR_UNTRUSTED_PUBLIC_KEY` until its key is trusted: a staff
 member can pass `"trust_public_key": true` (or `--trust-public-key`) when the destination

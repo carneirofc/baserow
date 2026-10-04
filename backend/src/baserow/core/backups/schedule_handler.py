@@ -17,7 +17,7 @@ from baserow.core.scheduling import cron as cron_utils
 
 from .exceptions import BackupScheduleDoesNotExist, InvalidBackupScheduleCron
 from .handler import BackupHandler
-from .models import BackupSchedule
+from .models import BackupSchedule, ExportApplicationsToDestinationJob
 from .operations import (
     CreateBackupScheduleOperationType,
     DeleteBackupScheduleOperationType,
@@ -311,12 +311,12 @@ class BackupScheduleHandler:
 
     def apply_retention(self, schedule: BackupSchedule) -> int:
         """
-        Marks the backups of a schedule's workspace that fall outside its retention
-        window for deletion.
+        Marks the backups made by a schedule that fall outside its retention window
+        for deletion.
 
-        Retention only ever considers backups owned by the schedule's user in the
-        schedule's workspace, so a manual backup made by another member is never
-        removed by somebody else's schedule.
+        Retention only ever considers the backups the schedule itself started, so
+        manual backups and the backups of other schedules are never removed by it.
+        Backups made before scheduled backups recorded their schedule are left alone.
 
         :param schedule: The schedule whose retention rules are applied.
         :return: The number of backups marked for deletion.
@@ -326,14 +326,16 @@ class BackupScheduleHandler:
             return 0
 
         backups = list(
-            ExportApplicationsJob.objects.filter(
+            ExportApplicationsToDestinationJob.objects.filter(
+                backup_schedule=schedule,
                 workspace_id=schedule.workspace_id,
                 user_id=schedule.user_id,
                 resource__is_valid=True,
                 resource__marked_for_deletion=False,
             )
             .select_related("resource")
-            .order_by("-updated_on", "-id")
+            # Ids follow creation order, `updated_on` moves whenever a job is touched.
+            .order_by("-id")
         )
 
         to_delete = []

@@ -63,7 +63,7 @@ class BackupHandler:
         :return: The started job.
         """
 
-        if destination:
+        if destination or backup_schedule is not None:
             return JobHandler().create_and_start_job(
                 user,
                 ExportApplicationsToDestinationJobType.type,

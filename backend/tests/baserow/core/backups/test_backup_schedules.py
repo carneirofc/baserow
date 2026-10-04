@@ -12,9 +12,11 @@ from rest_framework.status import (
 )
 
 from baserow.core.backups.exceptions import InvalidBackupScheduleCron
+from baserow.core.backups.handler import BackupHandler
 from baserow.core.backups.models import BackupSchedule
 from baserow.core.backups.schedule_handler import BackupScheduleHandler
-from baserow.core.backups.tasks import run_due_backup_schedules
+from baserow.core.backups.tasks import BUSY_RETRY_DELAY, run_due_backup_schedules
+from baserow.core.jobs.exceptions import MaxJobCountExceeded
 from baserow.core.models import ExportApplicationsJob, ImportExportResource
 
 
@@ -214,6 +216,85 @@ def test_periodic_task_only_runs_due_active_schedules(
     assert due.next_run_on > datetime.now(dt_timezone.utc)
     assert not_due.last_run_on is None
     assert inactive.last_run_on is None
+
+
+@pytest.mark.django_db(transaction=True)
+def test_periodic_task_retries_a_schedule_whose_user_is_busy(data_fixture, monkeypatch):
+    user = data_fixture.create_user()
+    workspace = data_fixture.create_workspace(user=user)
+    schedule = data_fixture.create_backup_schedule(
+        user=user,
+        workspace=workspace,
+        next_run_on=datetime.now(dt_timezone.utc) - timedelta(minutes=1),
+    )
+
+    def busy(*args, **kwargs):
+        raise MaxJobCountExceeded()
+
+    monkeypatch.setattr(BackupScheduleHandler, "run_schedule", busy)
+    before = datetime.now(dt_timezone.utc)
+    run_due_backup_schedules()
+
+    schedule.refresh_from_db()
+    # Not skipped until tomorrow's 03:00, and not recorded as a run.
+    assert schedule.next_run_on <= before + BUSY_RETRY_DELAY + timedelta(seconds=5)
+    assert schedule.last_run_on is None
+    assert schedule.last_error
+
+
+@pytest.mark.django_db(transaction=True)
+def test_periodic_task_records_a_failed_run_without_marking_it_run(
+    data_fixture, monkeypatch
+):
+    user = data_fixture.create_user()
+    workspace = data_fixture.create_workspace(user=user)
+    failing = data_fixture.create_backup_schedule(
+        user=user,
+        workspace=workspace,
+        next_run_on=datetime.now(dt_timezone.utc) - timedelta(minutes=1),
+    )
+
+    def fail(*args, **kwargs):
+        raise RuntimeError("boom")
+
+    monkeypatch.setattr(BackupScheduleHandler, "run_schedule", fail)
+    run_due_backup_schedules()
+
+    failing.refresh_from_db()
+    assert failing.last_error == "boom"
+    assert failing.last_run_on is None
+    assert failing.next_run_on > datetime.now(dt_timezone.utc)
+
+
+@pytest.mark.import_export_workspace
+@pytest.mark.django_db(transaction=True)
+def test_retention_only_considers_the_backups_of_its_schedule(
+    data_fixture, django_capture_on_commit_callbacks, use_tmp_media_root
+):
+    user = data_fixture.create_user()
+    workspace = data_fixture.create_workspace(user=user)
+    data_fixture.create_database_application(workspace=workspace)
+    schedule = data_fixture.create_backup_schedule(
+        user=user, workspace=workspace, keep_last=1
+    )
+    other_schedule = data_fixture.create_backup_schedule(user=user, workspace=workspace)
+    handler = BackupScheduleHandler()
+
+    with django_capture_on_commit_callbacks(execute=True):
+        manual = BackupHandler().start_backup(user, workspace.id)
+        other = handler.run_schedule(other_schedule)
+        handler.run_schedule(schedule)
+        newest = handler.run_schedule(schedule)
+
+    assert handler.apply_retention(schedule) == 1
+
+    for job in (manual, other, newest):
+        job.refresh_from_db()
+    surviving = set(ImportExportResource.objects.values_list("id", flat=True))
+    assert manual.resource_id in surviving
+    assert other.resource_id in surviving
+    assert newest.resource_id in surviving
+    assert len(surviving) == 3
 
 
 @pytest.mark.import_export_workspace

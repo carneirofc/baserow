@@ -44,6 +44,26 @@ def test_compute_next_run_on_respects_the_timezone():
     ) == utc(2026, 1, 1, 6, 0)
 
 
+@pytest.mark.parametrize(
+    "cron,after,expected",
+    [
+        # New York goes back from 02:00 EDT to 01:00 EST at 06:00 UTC on 2026-11-01,
+        # so the wall-clock hour 01:00-02:00 happens twice (05:00-07:00 UTC).
+        ("*/5 * * * *", utc(2026, 11, 1, 5, 30), utc(2026, 11, 1, 5, 35)),
+        # Inside the repeated hour the next run must still be in the future.
+        ("*/5 * * * *", utc(2026, 11, 1, 6, 30), utc(2026, 11, 1, 7, 0)),
+        # A fixed time inside the repeated hour runs once, not twice.
+        ("30 1 * * *", utc(2026, 11, 1, 5, 0), utc(2026, 11, 1, 5, 30)),
+        ("30 1 * * *", utc(2026, 11, 1, 5, 30), utc(2026, 11, 2, 6, 30)),
+        # New York skips 02:00-03:00 EST on 2026-03-08, a time in the gap runs just
+        # after the jump.
+        ("30 2 * * *", utc(2026, 3, 8, 6, 50), utc(2026, 3, 8, 7, 30)),
+    ],
+)
+def test_compute_next_run_on_across_daylight_saving_changes(cron, after, expected):
+    assert compute_next_run_on(cron, "America/New_York", after) == expected
+
+
 def test_compute_next_run_on_is_always_in_the_future():
     moment = utc(2026, 1, 1, 3, 0)
 
