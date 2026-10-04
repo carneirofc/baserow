@@ -66,7 +66,7 @@ ENV UV_PYTHON_DOWNLOADS=0 \
     PYTHONPATH="/baserow/backend/src"
 
 # hadolint ignore=DL3022
-COPY --from=ghcr.io/astral-sh/uv:0.12.19 /uv /uvx /bin/
+COPY --from=ghcr.io/astral-sh/uv:0.12.23 /uv /uvx /bin/
 
 # Create baserow directory structure (including subdirs for COPY targets)
 RUN mkdir -p /baserow/ && chown -R $UID:$GID /baserow/
@@ -208,7 +208,7 @@ RUN groupadd --system --gid $GID ${DOCKER_USER} && \
 COPY --from=tool-builder /usr/local/bin/su-exec /usr/local/bin/su-exec
 COPY --from=tool-builder /usr/bin/tini /usr/bin/tini
 # hadolint ignore=DL3022
-COPY --from=ghcr.io/astral-sh/uv:0.12.19 /uv /uvx /bin/
+COPY --from=ghcr.io/astral-sh/uv:0.12.23 /uv /uvx /bin/
 
 # Create baserow directory structure (including subdirs for COPY targets)
 RUN mkdir -p /baserow/backend/reports /baserow/media && \
@@ -286,7 +286,7 @@ COPY --from=tool-builder /usr/local/bin/su-exec /usr/local/bin/su-exec
 COPY --from=tool-builder /usr/bin/tini /usr/bin/tini
 COPY --from=tool-builder /usr/bin/dos2unix /usr/local/bin/dos2unix
 # hadolint ignore=DL3022
-COPY --from=ghcr.io/astral-sh/uv:0.12.19 /uv /uvx /bin/
+COPY --from=ghcr.io/astral-sh/uv:0.12.23 /uv /uvx /bin/
 
 # Create directory structure to install dependencies
 RUN mkdir -p /baserow/backend/docker /baserow/media && \

@@ -209,7 +209,7 @@ jobs:
       # TRIVY_IMAGE identical to ci.yml and the root justfile.
       - name: Scan published images for CVEs
         env:
-          TRIVY_IMAGE: docker.io/aquasec/trivy:0.74.0
+          TRIVY_IMAGE: docker.io/aquasec/trivy:0.75.0
         run: |
           set -euo pipefail
           allinone=$(printf '%s\n' "${{ steps.meta.outputs.tags }}" | head -n1)

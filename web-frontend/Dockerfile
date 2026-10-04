@@ -15,8 +15,8 @@ FROM ubuntu:26.04 AS tool-builder
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-ENV SU_EXEC_VERSION=212b75144bbc06722fbd7661f651390dc47a43d1 \
-    SU_EXEC_SHA256=d6c40440609a23483f12eb6295b5191e94baf08298a856bab6e15b10c3b82891
+ENV SU_EXEC_VERSION=89c016e6e08749d583efdeda04b9f73e1218e253 \
+    SU_EXEC_SHA256=0c90fe15804f2670037b90e72eb496579fe00d2c15765e5fe2ddec0f5afa35fa
 
 # Ubuntu drops /usr/bin/pebble into the base layer without a dpkg package
 # owning it, so apt can neither patch nor purge the CVEs vendored into it
@@ -49,7 +49,7 @@ ARG TARGETARCH
 ENV NODE_VERSION=v24.21.0 \
     NODE_SHA256_amd64=fd8e59d5a511510f6a298afb548f18c7d2b1be404d8b4a27d94fbe49f56cb2d6 \
     NODE_SHA256_arm64=6ad1325edbdb5649c379b75a237147a666c95d4f9ae8d340fef2d1575d289ad2 \
-    NPM_VERSION=12.1.0 \
+    NPM_VERSION=12.2.0 \
     YARN_VERSION=1.22.22
 
 # Ubuntu drops /usr/bin/pebble into the base layer without a dpkg package

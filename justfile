@@ -1184,7 +1184,7 @@ changelog-test *args:
 
 # Trivy runs from its pinned container image so no local install is needed.
 # Keep this version identical to TRIVY_IMAGE in .github/workflows/*.yml.
-trivy_image := "docker.io/aquasec/trivy:0.74.0"
+trivy_image := "docker.io/aquasec/trivy:0.75.0"
 trivy_cache := env("TRIVY_CACHE_DIR", env("HOME", "/tmp") / ".cache/trivy")
 
 # The gate: HIGH/CRITICAL findings that have a fixed version available.

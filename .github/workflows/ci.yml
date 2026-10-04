@@ -28,7 +28,7 @@ env:
   CI_IMAGE_TAG_PREFIX: ci-
   REAL_GITHUB_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
   # CVE gate: keep TRIVY_IMAGE identical to `trivy_image` in the root justfile.
-  TRIVY_IMAGE: docker.io/aquasec/trivy:0.74.0
+  TRIVY_IMAGE: docker.io/aquasec/trivy:0.75.0
   TRIVY_GATE: --scanners vuln --severity HIGH,CRITICAL --ignore-unfixed --ignorefile .trivyignore.yaml --exit-code 1
 
 jobs:
@@ -230,7 +230,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v10.2.0
         with:
-          version: "0.12.19"
+          version: "0.12.23"
 
       - name: Run ruff
         working-directory: backend
