@@ -43,6 +43,11 @@ Requires `bucket`. Optional: `region`, `endpoint_url` (MinIO, Ceph RGW, …),
 `secret_access_key`, `session_token`. Without static keys, the standard AWS credential
 chain is used (IRSA, Pod Identity, instance profile).
 
+To have every object encrypted at rest by S3, set `server_side_encryption` to `AES256`
+(SSE-S3) or `aws:kms` (SSE-KMS); with `aws:kms`, `sse_kms_key_id` optionally names the
+key (omit it for the bucket's default KMS key). `sse_kms_key_id` is refused without
+`aws:kms`.
+
 ```json
 [
   {
@@ -62,7 +67,9 @@ chain is used (IRSA, Pod Identity, instance profile).
 
 Requires `container` and one of `account_key`, `connection_string` or `sas_token`, plus
 `account_name` unless a connection string is given. Optional: `endpoint_suffix`,
-`custom_domain`.
+`custom_domain`. Blob encryption is not configurable per destination: the storage
+account's (or container's) default encryption, including an encryption scope set as the
+container default, applies.
 
 ```json
 [
@@ -107,6 +114,17 @@ The archive is made as usual, then uploaded to
 an archive without one is an incomplete upload and is ignored. A schedule's `keep_last`
 and `keep_days` apply to the backups it uploaded too.
 
+If the sidecar cannot be written, the archive is deleted again. Retention also sweeps
+archives that have no sidecar and are more than 24 hours old, the leftovers of uploads
+that died halfway. The sweep cannot tell which instance made such an archive, so the
+age threshold is what protects an upload still in progress on a shared destination.
+
+Retention runs when a schedule is due (the tick is
+`BASEROW_BACKUP_SCHEDULE_TICK_CRONTAB`, every minute by default), usually before the
+new backup has been uploaded, so `keep_last` of N briefly leaves N+1 backups. Changing a schedule's
+destination leaves the backups on the old destination outside its retention. Sidecars
+contain the workspace name and the email of the user who made the backup.
+
 Listing and restoring work from the destination alone, so they also work on a fresh
 instance whose database is gone:
 
@@ -124,7 +142,10 @@ POST /api/backups/destinations/<name>/workspace/<workspace_id>/restore/
 ```
 
 Restored applications are installed as new applications. The archive's checksum is
-verified against the sidecar first.
+verified against the sidecar first. The download and verification happen before the
+import job is created, and a restore is refused up front when the user already has the
+maximum number of import jobs running; if the job cannot be started, the downloaded
+copy is removed again. Sidecars that are not JSON objects are skipped when listing.
 
 Restoring needs export access to the workspace the backup was made of, the same access
 listing needs. A backup made by another instance (a different `instance_id` in its

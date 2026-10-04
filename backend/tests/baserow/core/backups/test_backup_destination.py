@@ -1,11 +1,18 @@
 import hashlib
 import json
+import os
+import time
+import uuid
+from unittest.mock import patch
 
+from django.conf import settings
 from django.core.management import call_command
+from django.db import connection
 from django.urls import reverse
+from django.utils import timezone
 
 import pytest
-from rest_framework.status import HTTP_200_OK, HTTP_404_NOT_FOUND
+from rest_framework.status import HTTP_200_OK, HTTP_202_ACCEPTED, HTTP_404_NOT_FOUND
 
 from baserow.core.backups.destination import BackupDestinationHandler
 from baserow.core.backups.exceptions import (
@@ -14,15 +21,25 @@ from baserow.core.backups.exceptions import (
     RemoteBackupTrustNotAllowed,
 )
 from baserow.core.backups.handler import BackupHandler
+from baserow.core.backups.models import ExportApplicationsToDestinationJob
 from baserow.core.backups.schedule_handler import BackupScheduleHandler
 from baserow.core.data_destinations.config import parse_data_destinations_env
 from baserow.core.data_destinations.exceptions import InvalidDataDestinationKey
+from baserow.core.data_destinations.handler import DataDestinationHandler
 from baserow.core.handler import CoreHandler
 from baserow.core.import_export.exceptions import (
     ImportExportResourceUntrustedSignature,
 )
+from baserow.core.import_export.handler import ImportExportHandler
 from baserow.core.jobs.constants import JOB_FINISHED
-from baserow.core.models import Application, ImportExportTrustedSource
+from baserow.core.jobs.exceptions import MaxJobCountExceeded
+from baserow.core.jobs.handler import JobHandler
+from baserow.core.models import (
+    Application,
+    ImportApplicationsJob,
+    ImportExportResource,
+    ImportExportTrustedSource,
+)
 
 
 @pytest.fixture
@@ -366,3 +383,254 @@ def test_backup_and_restore_management_commands(
     )
 
     assert Application.objects.filter(workspace=target, name="Stock").exists()
+
+
+def _archive_and_sidecar_keys(destination_root):
+    files = sorted(
+        str(path.relative_to(destination_root))
+        for path in destination_root.rglob("*")
+        if path.is_file()
+    )
+    return files
+
+
+@pytest.mark.import_export_workspace
+@pytest.mark.django_db(transaction=True)
+def test_archive_is_deleted_when_its_sidecar_cannot_be_written(
+    data_fixture, backup_destination, use_tmp_media_root
+):
+    user = data_fixture.create_user()
+    workspace = data_fixture.create_workspace(user=user)
+    data_fixture.create_database_application(workspace=workspace)
+
+    with (
+        patch.object(
+            DataDestinationHandler, "write_json", side_effect=OSError("disk full")
+        ),
+        pytest.raises(OSError, match="disk full"),
+    ):
+        BackupHandler().start_backup(
+            user, workspace.id, destination="offsite", sync=True
+        )
+
+    assert _archive_and_sidecar_keys(backup_destination) == []
+
+
+@pytest.mark.import_export_workspace
+@pytest.mark.django_db(transaction=True)
+def test_remote_retention_sweeps_only_old_orphan_archives(
+    data_fixture,
+    backup_destination,
+    django_capture_on_commit_callbacks,
+    use_tmp_media_root,
+):
+    user = data_fixture.create_user()
+    workspace = data_fixture.create_workspace(user=user)
+    data_fixture.create_database_application(workspace=workspace)
+    schedule = data_fixture.create_backup_schedule(
+        user=user, workspace=workspace, destination="offsite"
+    )
+    with django_capture_on_commit_callbacks(execute=True):
+        BackupScheduleHandler().run_schedule(schedule)
+
+    directory = backup_destination / f"backups/workspace={workspace.id}"
+    old = directory / "20200101T000000Z_old.zip"
+    fresh = directory / "20990101T000000Z_fresh.zip"
+    for orphan in (old, fresh):
+        orphan.write_bytes(b"partial")
+    two_days_ago = time.time() - 2 * 24 * 3600
+    os.utime(old, (two_days_ago, two_days_ago))
+
+    # No keep_last / keep_days, the sweep still runs.
+    assert BackupDestinationHandler().apply_remote_retention(schedule) == 0
+
+    assert not old.exists()
+    assert fresh.exists()
+    [backup] = BackupDestinationHandler().list_backups("offsite", workspace.id)
+    assert (backup_destination / backup["key"]).exists()
+
+
+@pytest.mark.import_export_workspace
+@pytest.mark.django_db(transaction=True)
+def test_malformed_sidecars_are_skipped(
+    data_fixture, backup_destination, use_tmp_media_root
+):
+    user = data_fixture.create_user()
+    workspace, job = _backup(data_fixture, user)
+    directory = backup_destination / f"backups/workspace={workspace.id}"
+    (directory / "a.zip").write_bytes(b"zip")
+    (directory / "a.zip.json").write_text("[]")
+    (directory / "b.zip.json").write_text('"x"')
+    (directory / "c.zip.json").write_text(json.dumps({"created_on": 5}))
+    schedule = data_fixture.create_backup_schedule(
+        user=user, workspace=workspace, destination="offsite", keep_days=1
+    )
+
+    handler = BackupDestinationHandler()
+    keys = {backup["key"] for backup in handler.list_backups("offsite", workspace.id)}
+    assert keys == {
+        job.remote_key,
+        f"{directory.relative_to(backup_destination)}/c.zip",
+    }
+    assert handler.apply_remote_retention(schedule) == 0
+
+    with pytest.raises(RemoteBackupCorrupted):
+        handler.restore_remote_backup(
+            user,
+            workspace.id,
+            "offsite",
+            f"backups/workspace={workspace.id}/a.zip",
+        )
+
+
+@pytest.mark.import_export_workspace
+@pytest.mark.django_db(transaction=True)
+def test_listing_endpoint_tolerates_sidecars_with_missing_fields(
+    api_client, data_fixture, backup_destination, use_tmp_media_root
+):
+    user, token = data_fixture.create_user_and_token(is_staff=True)
+    workspace = data_fixture.create_workspace(user=user)
+    directory = backup_destination / f"backups/workspace={workspace.id}"
+    directory.mkdir(parents=True)
+    (directory / "x.zip.json").write_text("{}")
+
+    response = api_client.get(
+        reverse(
+            "api:backups:remote_list",
+            kwargs={"destination": "offsite", "workspace_id": workspace.id},
+        ),
+        HTTP_AUTHORIZATION=f"JWT {token}",
+    )
+
+    assert response.status_code == HTTP_200_OK
+    [backup] = response.json()["results"]
+    assert backup["key"] == f"backups/workspace={workspace.id}/x.zip"
+    assert backup["size"] is None
+    assert backup["sha256"] is None
+    assert backup["created_on"] is None
+    assert backup["only_structure"] is False
+    assert backup["workspace"] == {}
+    assert backup["applications"] == []
+
+
+@pytest.mark.import_export_workspace
+@pytest.mark.django_db(transaction=True)
+def test_restore_is_refused_at_the_job_cap_before_downloading(
+    data_fixture, backup_destination, use_tmp_media_root
+):
+    user = data_fixture.create_user()
+    _, job = _backup(data_fixture, user)
+    target = data_fixture.create_workspace(user=user)
+    resource = data_fixture.create_import_export_resource(created_by=user)
+    ImportApplicationsJob.objects.create(
+        user=user, workspace=target, resource=resource, application_ids=[]
+    )
+    resources_before = ImportExportResource.objects.count()
+
+    with (
+        patch("baserow.core.backups.destination.SpooledTemporaryFile") as spooled,
+        pytest.raises(MaxJobCountExceeded),
+    ):
+        BackupDestinationHandler().restore_remote_backup(
+            user, target.id, "offsite", job.remote_key
+        )
+
+    spooled.assert_not_called()
+    assert ImportExportResource.objects.count() == resources_before
+
+
+@pytest.mark.import_export_workspace
+@pytest.mark.django_db(transaction=True)
+def test_failed_job_start_discards_the_resource_and_the_trusted_key(
+    data_fixture, backup_destination, use_tmp_media_root
+):
+    staff = data_fixture.create_user(is_staff=True)
+    _, job = _backup(data_fixture, staff)
+    target = data_fixture.create_workspace(user=staff)
+    ImportExportTrustedSource.objects.all().delete()
+    resources_before = ImportExportResource.objects.count()
+    import_dir = os.path.join(settings.MEDIA_ROOT, settings.IMPORT_FILES_DIRECTORY)
+
+    with (
+        patch.object(
+            JobHandler, "create_and_start_job", side_effect=RuntimeError("boom")
+        ),
+        pytest.raises(RuntimeError),
+    ):
+        BackupDestinationHandler().restore_remote_backup(
+            staff, target.id, "offsite", job.remote_key, trust_public_key=True
+        )
+
+    assert ImportExportResource.objects.count() == resources_before
+    assert not ImportExportTrustedSource.objects.filter(
+        name__startswith="destination:"
+    ).exists()
+    assert not os.path.isdir(import_dir) or os.listdir(import_dir) == []
+
+
+@pytest.mark.import_export_workspace
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize(
+    "url_name", ["api:backups:remote_restore", "api:admin:backups:remote_restore"]
+)
+def test_remote_restore_downloads_outside_a_transaction(
+    url_name, api_client, data_fixture, backup_destination, use_tmp_media_root
+):
+    user, token = data_fixture.create_user_and_token(is_staff=True)
+    _, job = _backup(data_fixture, user)
+    target = data_fixture.create_workspace(user=user)
+    in_atomic = []
+    original = ImportExportHandler.create_resource_from_file
+
+    def spy(self, *args, **kwargs):
+        in_atomic.append(connection.in_atomic_block)
+        return original(self, *args, **kwargs)
+
+    with patch.object(ImportExportHandler, "create_resource_from_file", spy):
+        response = api_client.post(
+            reverse(
+                url_name,
+                kwargs={"destination": "offsite", "workspace_id": target.id},
+            ),
+            {"key": job.remote_key},
+            format="json",
+            HTTP_AUTHORIZATION=f"JWT {token}",
+        )
+
+    assert response.status_code == HTTP_202_ACCEPTED, response.json()
+    assert in_atomic == [False]
+
+
+@pytest.mark.import_export_workspace
+@pytest.mark.django_db(transaction=True)
+def test_remote_key_excludes_the_prefix_and_fits_its_column(
+    data_fixture, settings, tmp_path, use_tmp_media_root
+):
+    prefix = "/".join(["segment" * 4] * 17)
+    assert len(prefix) >= 470
+    settings.BASEROW_DATA_DESTINATIONS = parse_data_destinations_env(
+        json.dumps(
+            [
+                {
+                    "name": "offsite",
+                    "type": "filesystem",
+                    "root": str(tmp_path),
+                    "prefix": prefix,
+                    "purposes": ["backup"],
+                }
+            ]
+        )
+    )
+    user = data_fixture.create_user()
+    _, job = _backup(data_fixture, user)
+
+    max_length = ExportApplicationsToDestinationJob._meta.get_field(
+        "remote_key"
+    ).max_length
+    assert not job.remote_key.startswith(prefix)
+    assert len(job.remote_key) <= max_length
+
+    long_key = BackupDestinationHandler().get_archive_key(
+        10**18 + 1, timezone.now(), uuid.uuid4()
+    )
+    assert len(long_key) <= max_length

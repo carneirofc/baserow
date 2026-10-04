@@ -48,6 +48,17 @@ class S3DataDestinationType(DataDestinationType):
         kwargs.update(
             {key: value for key, value in optional.items() if value is not None}
         )
+        # Server-side encryption is requested on every upload of this destination.
+        object_parameters = {
+            parameter: options[option]
+            for option, parameter in (
+                ("server_side_encryption", "ServerSideEncryption"),
+                ("sse_kms_key_id", "SSEKMSKeyId"),
+            )
+            if option in options
+        }
+        if object_parameters:
+            kwargs["object_parameters"] = object_parameters
         return S3Storage(**kwargs)
 
 

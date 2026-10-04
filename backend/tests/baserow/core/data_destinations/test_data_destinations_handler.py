@@ -137,3 +137,86 @@ def test_azure_storage_is_built_from_the_config(settings, mocker):
         account_name="account",
         account_key="key",
     )
+
+
+def _storage(*destinations):
+    from baserow.core.data_destinations.registries import (
+        data_destination_type_registry,
+    )
+
+    [config] = parse_data_destinations_env(json.dumps(list(destinations)))
+    return data_destination_type_registry.get(config.type).build_storage(config)
+
+
+def test_s3_storage_is_built_from_the_destination():
+    storage = _storage(
+        {
+            "name": "minio",
+            "type": "s3",
+            "bucket": "lake",
+            "prefix": "exports",
+            "region": "eu-west-1",
+            "endpoint_url": "http://minio:9000",
+            "addressing_style": "path",
+            "access_key_id": "key",
+            "secret_access_key": "secret",
+            "server_side_encryption": "aws:kms",
+            "sse_kms_key_id": "alias/backups",
+        }
+    )
+
+    assert storage.bucket_name == "lake"
+    assert storage.location == "exports"
+    assert storage.region_name == "eu-west-1"
+    assert storage.endpoint_url == "http://minio:9000"
+    assert storage.addressing_style == "path"
+    assert storage.access_key == "key"
+    assert storage.secret_key == "secret"
+    assert storage.object_parameters == {
+        "ServerSideEncryption": "aws:kms",
+        "SSEKMSKeyId": "alias/backups",
+    }
+
+
+def test_s3_storage_without_static_keys_or_encryption():
+    storage = _storage({"name": "plain", "type": "s3", "bucket": "lake"})
+
+    assert not storage.access_key
+    assert not storage.secret_key
+    assert "ServerSideEncryption" not in storage.object_parameters
+
+
+def test_azure_storage_credentials():
+    storage = _storage(
+        {
+            "name": "az",
+            "type": "azure",
+            "container": "backups",
+            "account_name": "acct",
+            "account_key": "k",
+        }
+    )
+    assert storage.azure_container == "backups"
+    assert storage.account_name == "acct"
+    assert storage.account_key == "k"
+
+    storage = _storage(
+        {
+            "name": "az",
+            "type": "azure",
+            "container": "backups",
+            "connection_string": "UseDevelopmentStorage=true",
+        }
+    )
+    assert storage.connection_string == "UseDevelopmentStorage=true"
+
+    storage = _storage(
+        {
+            "name": "az",
+            "type": "azure",
+            "container": "backups",
+            "account_name": "acct",
+            "sas_token": "sv=1",
+        }
+    )
+    assert storage.sas_token == "sv=1"

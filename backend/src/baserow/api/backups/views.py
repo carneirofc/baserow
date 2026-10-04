@@ -605,7 +605,6 @@ class RestoreRemoteBackupView(APIView):
         {**COMMON_EXCEPTIONS, MaxJobCountExceeded: ERROR_MAX_JOB_COUNT_EXCEEDED}
     )
     @validate_body(RestoreRemoteBackupSerializer, return_validated=True)
-    @transaction.atomic
     def post(self, request, data, destination: str, workspace_id: int):
         job = BackupDestinationHandler().restore_remote_backup(
             request.user,

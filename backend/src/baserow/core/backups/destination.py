@@ -2,6 +2,7 @@ import hashlib
 import json
 import os
 import re
+from contextlib import nullcontext
 from datetime import datetime, timedelta
 from datetime import timezone as dt_timezone
 from tempfile import SpooledTemporaryFile
@@ -9,6 +10,8 @@ from typing import IO, Any, Dict, List, Optional
 from zipfile import BadZipFile, ZipFile
 
 from django.contrib.auth.models import AbstractUser
+from django.core.files.storage import Storage
+from django.db import transaction
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 
@@ -24,9 +27,13 @@ from baserow.core.import_export.handler import (
     SIGNATURE_NAME,
     ImportExportHandler,
 )
+from baserow.core.job_types import ImportApplicationsJobType
+from baserow.core.jobs.registries import job_type_registry
 from baserow.core.models import (
     WORKSPACE_USER_PERMISSION_ADMIN,
     ImportApplicationsJob,
+    ImportExportResource,
+    ImportExportTrustedSource,
     WorkspaceUser,
 )
 from baserow.core.operations import (
@@ -48,6 +55,9 @@ BACKUPS_PREFIX = "backups"
 ARCHIVE_SUFFIX = ".zip"
 SIDECAR_SUFFIX = ".zip.json"
 SIDECAR_FORMAT_VERSION = 1
+# An archive without a sidecar is an incomplete upload, but it may also be an upload
+# that is still running. Only the ones older than this are swept by remote retention.
+ORPHAN_ARCHIVE_MIN_AGE = timedelta(hours=24)
 COPY_CHUNK_SIZE = 1024 * 1024
 # Archives up to this size are restored in memory, larger ones spill to disk.
 RESTORE_MEMORY_LIMIT = 64 * 1024 * 1024
@@ -180,9 +190,22 @@ class BackupDestinationHandler:
             "sha256": sha256,
             **metadata,
         }
-        self.destinations.write_json(
-            storage, self.get_sidecar_key(archive_key), sidecar
-        )
+        try:
+            self.destinations.write_json(
+                storage, self.get_sidecar_key(archive_key), sidecar
+            )
+        except Exception:
+            # An archive without a sidecar is invisible garbage, don't leave it.
+            try:
+                self.destinations.delete_keys(storage, [archive_key])
+            except Exception as exc:
+                logger.warning(
+                    "Could not delete the archive {key} after its sidecar failed: "
+                    "{error}",
+                    key=archive_key,
+                    error=exc,
+                )
+            raise
 
         job.remote_key = archive_key
         job.save(update_fields=["remote_key"])
@@ -205,14 +228,20 @@ class BackupDestinationHandler:
             destination_name, purpose=PURPOSE_BACKUP
         )
         storage = self.destinations.get_storage(destination)
+        keys = self._list_keys(storage, workspace_id)
+        return self._read_sidecars(storage, keys)
+
+    def _list_keys(self, storage: Storage, workspace_id: Optional[int]) -> List[str]:
         prefix = (
             f"{BACKUPS_PREFIX}/workspace={workspace_id}"
             if workspace_id is not None
             else BACKUPS_PREFIX
         )
+        return self.destinations.list_keys(storage, prefix)
 
+    def _read_sidecars(self, storage: Storage, keys: List[str]) -> List[Dict[str, Any]]:
         backups = []
-        for key in self.destinations.list_keys(storage, prefix):
+        for key in keys:
             if not key.endswith(SIDECAR_SUFFIX):
                 continue
             try:
@@ -224,12 +253,64 @@ class BackupDestinationHandler:
                     error=exc,
                 )
                 continue
+            if not isinstance(sidecar, dict):
+                logger.warning(
+                    "Skipping backup sidecar {key}: it is not a JSON object.",
+                    key=key,
+                )
+                continue
             # Trust the key the sidecar was found at, not the one it claims.
             sidecar["key"] = key[: -len(".json")]
             backups.append(sidecar)
 
-        backups.sort(key=lambda backup: backup.get("created_on") or "", reverse=True)
+        backups.sort(
+            key=lambda backup: str(backup.get("created_on") or ""), reverse=True
+        )
         return backups
+
+    def _sweep_orphan_archives(self, storage: Storage, keys: List[str]) -> int:
+        """
+        Deletes the archives that have no sidecar and are older than
+        `ORPHAN_ARCHIVE_MIN_AGE`. They are the leftovers of uploads that died before
+        the sidecar was written.
+
+        An orphan carries no instance id, so it cannot be attributed to an instance
+        on a shared destination. The age threshold is what makes the sweep safe: the
+        sidecar is written right after the archive becomes visible (S3 multipart
+        objects only appear once complete), so an archive that is still sidecar-less
+        a day later is abandoned.
+
+        :param storage: The destination storage.
+        :param keys: Every key under the workspace prefix.
+        :return: The number of orphan archives deleted.
+        """
+
+        key_set = set(keys)
+        cutoff = timezone.now() - ORPHAN_ARCHIVE_MIN_AGE
+        deleted = 0
+        for key in keys:
+            if not key.endswith(ARCHIVE_SUFFIX) or self.get_sidecar_key(key) in key_set:
+                continue
+            try:
+                modified = storage.get_modified_time(key)
+            except OSError, NotImplementedError, ValueError:
+                continue
+            if timezone.is_naive(modified):
+                modified = timezone.make_aware(modified, dt_timezone.utc)
+            if modified >= cutoff:
+                continue
+            try:
+                self.destinations.delete_keys(storage, [key])
+            except OSError as exc:
+                logger.warning(
+                    "Could not delete the orphan archive {key}: {error}",
+                    key=key,
+                    error=exc,
+                )
+                continue
+            logger.info("Deleted the orphan backup archive {key}.", key=key)
+            deleted += 1
+        return deleted
 
     def list_remote_backups(
         self, user: AbstractUser, workspace_id: int, destination_name: str
@@ -300,15 +381,23 @@ class BackupDestinationHandler:
         :return: The number of remote backups deleted.
         """
 
-        if not schedule.destination or (
-            schedule.keep_last is None and schedule.keep_days is None
-        ):
+        if not schedule.destination:
+            return 0
+
+        destination = self.destinations.get_destination(
+            schedule.destination, purpose=PURPOSE_BACKUP
+        )
+        storage = self.destinations.get_storage(destination)
+        keys = self._list_keys(storage, schedule.workspace_id)
+        self._sweep_orphan_archives(storage, keys)
+
+        if schedule.keep_last is None and schedule.keep_days is None:
             return 0
 
         instance_id = CoreHandler().get_settings().instance_id
         backups = [
             backup
-            for backup in self.list_backups(schedule.destination, schedule.workspace_id)
+            for backup in self._read_sidecars(storage, keys)
             if backup.get("schedule_id") == schedule.id
             and backup.get("instance_id") == instance_id
         ]
@@ -320,17 +409,16 @@ class BackupDestinationHandler:
         if schedule.keep_days is not None:
             cutoff = timezone.now() - timedelta(days=schedule.keep_days)
             for backup in backups:
-                created_on = parse_datetime(backup.get("created_on") or "")
+                raw = backup.get("created_on")
+                if not isinstance(raw, str):
+                    continue
+                try:
+                    created_on = parse_datetime(raw)
+                except ValueError:
+                    continue
                 if created_on is not None and created_on < cutoff:
                     to_delete[backup["key"]] = backup
 
-        if not to_delete:
-            return 0
-
-        destination = self.destinations.get_destination(
-            schedule.destination, purpose=PURPOSE_BACKUP
-        )
-        storage = self.destinations.get_storage(destination)
         for key in to_delete:
             # The archive goes first: a sidecar without an archive is still listed and
             # would be retried, an archive without a sidecar is invisible garbage.
@@ -400,42 +488,104 @@ class BackupDestinationHandler:
         sidecar_key = self.get_sidecar_key(key)
         if not storage.exists(key) or not storage.exists(sidecar_key):
             raise RemoteBackupDoesNotExist(f"The backup '{key}' is not available.")
-        sidecar = self.destinations.read_json(storage, sidecar_key)
+        try:
+            sidecar = self.destinations.read_json(storage, sidecar_key)
+        except (OSError, ValueError) as exc:
+            raise RemoteBackupCorrupted(f"The sidecar of '{key}' is unreadable: {exc}")
+        if not isinstance(sidecar, dict):
+            raise RemoteBackupCorrupted(f"The sidecar of '{key}' is not an object.")
 
         if not user.is_staff:
             self._check_can_read_backup(
                 user, int(key_match.group("workspace_id")), sidecar
             )
 
-        with SpooledTemporaryFile(max_size=RESTORE_MEMORY_LIMIT) as archive:
-            with storage.open(key, "rb") as source:
-                for chunk in iter(lambda: source.read(COPY_CHUNK_SIZE), b""):
-                    archive.write(chunk)
-
-            archive.seek(0)
-            if _sha256_of(archive) != sidecar.get("sha256"):
-                raise RemoteBackupCorrupted(
-                    f"The archive '{key}' does not match its recorded checksum."
-                )
-
-            if trust_public_key:
-                archive.seek(0)
-                self._trust_archive_key(user, destination.name, archive, sidecar)
-
-            archive.seek(0)
-            resource = ImportExportHandler().create_resource_from_file(
-                user, os.path.basename(key), archive
-            )
+        # Refuse before downloading anything when the user cannot start the import.
+        job_type_registry.get(ImportApplicationsJobType.type).can_schedule_or_raise(
+            ImportApplicationsJob(user=user)
+        )
 
         from .handler import BackupHandler
 
-        return BackupHandler().start_restore(
-            user,
-            workspace_id,
-            resource.id,
-            application_ids=application_ids,
-            sync=sync,
-        )
+        # Everything slow (download, checksum, upload into the import storage) runs
+        # outside a transaction so no database connection is held open meanwhile.
+        resource = None
+        trusted_name = None
+        known_sources: set = set()
+        try:
+            with SpooledTemporaryFile(max_size=RESTORE_MEMORY_LIMIT) as archive:
+                with storage.open(key, "rb") as source:
+                    for chunk in iter(lambda: source.read(COPY_CHUNK_SIZE), b""):
+                        archive.write(chunk)
+
+                archive.seek(0)
+                if _sha256_of(archive) != sidecar.get("sha256"):
+                    raise RemoteBackupCorrupted(
+                        f"The archive '{key}' does not match its recorded checksum."
+                    )
+
+                if trust_public_key:
+                    archive.seek(0)
+                    public_key_pem = self._verify_archive_key(archive, sidecar)
+                    # The signature is checked when the resource is created, so the
+                    # key has to be trusted before that. It is removed again below
+                    # when the restore cannot start.
+                    known_sources = set(
+                        ImportExportTrustedSource.objects.values_list("id", flat=True)
+                    )
+                    trusted_name = self._trust_archive_key(
+                        user, destination.name, public_key_pem, sidecar
+                    )
+
+                archive.seek(0)
+                resource = ImportExportHandler().create_resource_from_file(
+                    user, os.path.basename(key), archive
+                )
+
+            # A synchronous restore keeps the per-application transactions of the
+            # import, so it must not be wrapped in one.
+            with transaction.atomic() if not sync else nullcontext():
+                return BackupHandler().start_restore(
+                    user,
+                    workspace_id,
+                    resource.id,
+                    application_ids=application_ids,
+                    sync=sync,
+                )
+        except Exception:
+            if resource is not None:
+                self._discard_resource(resource)
+            if trusted_name is not None:
+                ImportExportTrustedSource.objects.filter(name=trusted_name).exclude(
+                    id__in=known_sources
+                ).delete()
+            raise
+
+    def _discard_resource(self, resource: ImportExportResource):
+        """
+        Removes the resource of a restore that could not be started, together with its
+        file. Does nothing when an import job already references it.
+        """
+
+        try:
+            if ImportApplicationsJob.objects.filter(resource_id=resource.id).exists():
+                return
+            try:
+                handler = ImportExportHandler()
+                get_default_storage().delete(
+                    handler.get_import_storage_path(resource.get_archive_name())
+                )
+            except Exception as exc:
+                logger.warning(
+                    "Could not delete the file of discarded resource {id}: {error}",
+                    id=resource.id,
+                    error=exc,
+                )
+            ImportExportResource.objects_and_trash.filter(id=resource.id).delete()
+        except Exception as exc:
+            logger.warning(
+                "Could not discard resource {id}: {error}", id=resource.id, error=exc
+            )
 
     def _check_can_read_backup(
         self, user: AbstractUser, source_workspace_id: int, sidecar: Dict[str, Any]
@@ -473,18 +623,10 @@ class BackupDestinationHandler:
                 "of the workspace."
             )
 
-    def _trust_archive_key(
-        self,
-        user: AbstractUser,
-        destination_name: str,
-        archive: IO[bytes],
-        sidecar: Dict[str, Any],
-    ):
+    def _verify_archive_key(self, archive: IO[bytes], sidecar: Dict[str, Any]) -> str:
         """
-        Registers the key an archive was signed with as a trusted import source.
-
-        The key inside the archive must equal the one recorded in the sidecar, so a
-        swapped archive cannot smuggle in a key of its own.
+        Returns the key an archive was signed with, which must equal the one recorded
+        in the sidecar, so a swapped archive cannot smuggle in a key of its own.
         """
 
         public_key_pem = self.read_archive_metadata(archive)["public_key_pem"]
@@ -492,6 +634,20 @@ class BackupDestinationHandler:
             raise RemoteBackupCorrupted(
                 "The signing key of the archive does not match its recorded key."
             )
+        return public_key_pem
+
+    def _trust_archive_key(
+        self,
+        user: AbstractUser,
+        destination_name: str,
+        public_key_pem: str,
+        sidecar: Dict[str, Any],
+    ) -> str:
+        """
+        Registers a verified signing key as a trusted import source.
+
+        :return: The name the key was registered under.
+        """
 
         name = f"destination:{destination_name}:{sidecar.get('instance_id') or ''}"
         ImportExportHandler().add_trusted_public_key(name[:255], public_key_pem)
@@ -500,3 +656,4 @@ class BackupDestinationHandler:
             user_id=user.id,
             name=name,
         )
+        return name[:255]

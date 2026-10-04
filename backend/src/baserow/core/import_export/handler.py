@@ -13,7 +13,7 @@ from zipfile import ZipFile
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import SuspiciousOperation
-from django.core.files.base import ContentFile
+from django.core.files import File
 from django.core.files.storage import Storage
 from django.db import transaction
 from django.db.models import Exists, OuterRef, QuerySet
@@ -1085,8 +1085,8 @@ class ImportExportHandler(metaclass=baserow_trace_methods(tracer)):
             )
 
             with zip_file.open(file_info) as extracted_file:
-                file_content = extracted_file.read()
-                storage.save(extracted_file_path, ContentFile(file_content))
+                # `File.chunks()` streams the member, a zip bomb is never in memory.
+                storage.save(extracted_file_path, File(extracted_file))
 
             progress.increment()
 

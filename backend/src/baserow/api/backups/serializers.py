@@ -92,18 +92,19 @@ class RemoteBackupSerializer(serializers.Serializer):
     key = serializers.CharField(
         help_text="The key of the archive, pass it to the restore endpoint."
     )
-    created_on = serializers.CharField()
-    size = serializers.IntegerField()
-    sha256 = serializers.CharField()
-    only_structure = serializers.BooleanField()
+    created_on = serializers.CharField(default=None, allow_null=True)
+    size = serializers.IntegerField(default=None, allow_null=True)
+    sha256 = serializers.CharField(default=None, allow_null=True)
+    only_structure = serializers.BooleanField(default=False)
     instance_id = serializers.CharField(
+        default=None,
         allow_null=True,
         help_text="The instance that made the backup.",
     )
-    baserow_version = serializers.CharField(allow_null=True)
-    schedule_id = serializers.IntegerField(allow_null=True)
-    workspace = serializers.DictField()
-    applications = serializers.ListField(child=serializers.DictField())
+    baserow_version = serializers.CharField(default=None, allow_null=True)
+    schedule_id = serializers.IntegerField(default=None, allow_null=True)
+    workspace = serializers.DictField(default=dict)
+    applications = serializers.ListField(child=serializers.DictField(), default=list)
 
 
 class ListRemoteBackupsSerializer(serializers.Serializer):

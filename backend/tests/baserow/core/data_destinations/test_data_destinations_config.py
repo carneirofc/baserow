@@ -177,3 +177,43 @@ def test_invalid_json_fails_fast():
 def test_non_list_json_fails_fast():
     with pytest.raises(ImproperlyConfigured, match="JSON list"):
         parse_data_destinations_env(json.dumps(S3_DESTINATION))
+
+
+def test_s3_server_side_encryption_options_are_parsed():
+    [destination] = parse_data_destinations_env(
+        _env(
+            {
+                **S3_DESTINATION,
+                "server_side_encryption": "aws:kms",
+                "sse_kms_key_id": "alias/backups",
+            }
+        )
+    )
+    assert destination.options["server_side_encryption"] == "aws:kms"
+    assert destination.options["sse_kms_key_id"] == "alias/backups"
+
+    [destination] = parse_data_destinations_env(
+        _env({**S3_DESTINATION, "server_side_encryption": "AES256"})
+    )
+    assert destination.options["server_side_encryption"] == "AES256"
+
+
+def test_s3_server_side_encryption_is_validated():
+    with pytest.raises(ImproperlyConfigured, match="server_side_encryption"):
+        parse_data_destinations_env(
+            _env({**S3_DESTINATION, "server_side_encryption": "rot13"})
+        )
+
+    with pytest.raises(ImproperlyConfigured, match="sse_kms_key_id"):
+        parse_data_destinations_env(_env({**S3_DESTINATION, "sse_kms_key_id": "k"}))
+
+    with pytest.raises(ImproperlyConfigured, match="sse_kms_key_id"):
+        parse_data_destinations_env(
+            _env(
+                {
+                    **S3_DESTINATION,
+                    "server_side_encryption": "AES256",
+                    "sse_kms_key_id": "k",
+                }
+            )
+        )

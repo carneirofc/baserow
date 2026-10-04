@@ -42,7 +42,14 @@ COMMON_KEYS = {"name", "type", "prefix", "purposes", "allow_trust_public_key"}
 TYPE_SPECS: Dict[str, Dict[str, Tuple[str, ...]]] = {
     TYPE_S3: {
         "required": ("bucket",),
-        "strings": ("region", "endpoint_url", "addressing_style", "signature_version"),
+        "strings": (
+            "region",
+            "endpoint_url",
+            "addressing_style",
+            "signature_version",
+            "server_side_encryption",
+            "sse_kms_key_id",
+        ),
         "booleans": ("use_ssl", "verify"),
         "secrets": ("access_key_id", "secret_access_key", "session_token"),
     },
@@ -59,6 +66,9 @@ TYPE_SPECS: Dict[str, Dict[str, Tuple[str, ...]]] = {
         "secrets": (),
     },
 }
+
+# The S3 server-side encryption modes a destination may request on every upload.
+S3_SERVER_SIDE_ENCRYPTION_MODES = ("AES256", "aws:kms")
 
 # A destination name is referenced from models and URLs, so keep it a url-safe slug.
 _NAME_RE = re.compile(r"^[a-zA-Z0-9_-]+$")
@@ -265,6 +275,17 @@ def _validate_destination(entry: Any, index: int) -> DataDestinationConfig:
             raise ImproperlyConfigured(
                 f"{_prefix(index)}: 'access_key_id' and 'secret_access_key' must be "
                 f"set together."
+            )
+        encryption = options.get("server_side_encryption")
+        if encryption is not None and encryption not in S3_SERVER_SIDE_ENCRYPTION_MODES:
+            raise ImproperlyConfigured(
+                f"{_prefix(index)}: 'server_side_encryption' must be one of "
+                f"{list(S3_SERVER_SIDE_ENCRYPTION_MODES)}."
+            )
+        if "sse_kms_key_id" in options and encryption != "aws:kms":
+            raise ImproperlyConfigured(
+                f"{_prefix(index)}: 'sse_kms_key_id' requires 'server_side_encryption' "
+                f"to be 'aws:kms'."
             )
     elif destination_type == TYPE_AZURE:
         if not secrets:
