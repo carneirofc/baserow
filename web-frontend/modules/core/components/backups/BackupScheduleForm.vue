@@ -6,14 +6,11 @@
           small-label
           required
           :label="$t('backupsModal.name')"
-          :error="showErrors && !values.name.trim()"
+          :error="showErrors && !nameValid"
           class="margin-bottom-2"
         >
-          <FormInput
-            v-model="values.name"
-            :error="showErrors && !values.name.trim()"
-          />
-          <template #error>{{ $t('error.requiredField') }}</template>
+          <FormInput v-model="values.name" :error="showErrors && !nameValid" />
+          <template #error>{{ nameError }}</template>
         </FormGroup>
       </div>
       <div class="col col-6">
@@ -73,7 +70,17 @@
           :label="$t('backupsModal.timezone')"
           class="margin-bottom-2"
         >
-          <FormInput v-model="values.timezone" placeholder="UTC" />
+          <PaginatedDropdown
+            :value="values.timezone"
+            :fetch-page="fetchTimezonePage"
+            :add-empty-item="false"
+            :initial-display-name="values.timezone"
+            :fetch-on-open="true"
+            :debounce-time="20"
+            :page-size="timezonePageSize"
+            :fixed-items="true"
+            @input="(timezone) => (values.timezone = timezone)"
+          ></PaginatedDropdown>
         </FormGroup>
       </div>
       <div class="col col-6">
@@ -149,6 +156,14 @@
 
 <script>
 import ApplicationSelector from '@baserow/modules/core/components/export/ApplicationSelector'
+import PaginatedDropdown from '@baserow/modules/core/components/PaginatedDropdown'
+import {
+  fetchTimezonePage,
+  TIMEZONE_PAGE_SIZE,
+} from '@baserow/modules/core/utils/date'
+
+// Mirrors `BackupSchedule.name` on the backend.
+const NAME_MAX_LENGTH = 100
 
 function isBlank(value) {
   return value === null || value === undefined || String(value).trim() === ''
@@ -168,7 +183,7 @@ function toRetention(value) {
 
 export default {
   name: 'BackupScheduleForm',
-  components: { ApplicationSelector },
+  components: { ApplicationSelector, PaginatedDropdown },
   props: {
     schedule: {
       type: Object,
@@ -197,6 +212,7 @@ export default {
     const applicationIds = schedule.application_ids ?? null
     return {
       showErrors: false,
+      timezonePageSize: TIMEZONE_PAGE_SIZE,
       onlySelectedApplications: applicationIds !== null,
       selectedApplicationIds: applicationIds || [],
       values: {
@@ -212,6 +228,15 @@ export default {
     }
   },
   computed: {
+    nameValid() {
+      const name = this.values.name.trim()
+      return name !== '' && name.length <= NAME_MAX_LENGTH
+    },
+    nameError() {
+      return this.values.name.trim()
+        ? this.$t('backupsModal.nameTooLong', { max: NAME_MAX_LENGTH })
+        : this.$t('error.requiredField')
+    },
     // An existing schedule can name a destination that has since been removed
     // from the configuration. It is shown as unavailable and must be replaced
     // before saving, rather than silently sent back.
@@ -232,10 +257,11 @@ export default {
   },
   methods: {
     isValidRetention,
+    fetchTimezonePage,
     submit() {
       this.showErrors = true
       if (
-        !this.values.name.trim() ||
+        !this.nameValid ||
         !this.values.cron.trim() ||
         this.destinationUnavailable ||
         !isValidRetention(this.values.keep_last) ||

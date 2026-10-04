@@ -1,7 +1,7 @@
 <template>
   <Modal ref="modal" :full-screen="false" :close-button="true">
     <h2 class="box__title">
-      {{ $t('backupsModal.title') }} {{ workspace.name }}
+      {{ $t('backupsModal.title', { name: workspace.name }) }}
     </h2>
     <p>{{ $t('backupsModal.description') }}</p>
     <Error :error="error"></Error>
@@ -10,7 +10,7 @@
       <Tab :title="$t('backupsModal.tabBackups')">
         <BackupsTab :workspace="workspace" :destinations="destinations" />
       </Tab>
-      <Tab :title="$t('backupsModal.tabSchedules')">
+      <Tab v-if="canListSchedules" :title="$t('backupsModal.tabSchedules')">
         <BackupSchedulesTab
           :workspace="workspace"
           :destinations="destinations"
@@ -35,6 +35,9 @@ export default {
   name: 'BackupsModal',
   components: { BackupsTab, BackupSchedulesTab, RemoteBackupsTab },
   mixins: [modal, error],
+  provide() {
+    return { backupJobs: this.backupJobs }
+  },
   props: {
     workspace: {
       type: Object,
@@ -46,15 +49,30 @@ export default {
       loading: false,
       loaded: false,
       destinations: [],
+      // The tabs are unmounted when the modal closes or another tab is selected, so
+      // the jobs they started are remembered here and re-attached on remount.
+      backupJobs: {},
     }
+  },
+  computed: {
+    canListSchedules() {
+      return this.$hasPermission(
+        'workspace.list_backup_schedules',
+        this.workspace,
+        this.workspace.id
+      )
+    },
   },
   methods: {
     show(...args) {
       modal.methods.show.bind(this)(...args)
-      this.load()
+      // The tabs reload their own data when they mount. Reloading the
+      // destinations on every open would toggle `loaded` and unmount them.
+      if (!this.loaded) {
+        this.load()
+      }
     },
     async load() {
-      // The tabs are re-mounted on every open, so they always show fresh data.
       this.loaded = false
       this.loading = true
       this.hideError()

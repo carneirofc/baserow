@@ -1,7 +1,7 @@
 <template>
   <Modal ref="modal" :full-screen="false" :close-button="true">
     <h2 class="box__title">
-      {{ $t('dataExportModal.title') }} {{ database.name }}
+      {{ $t('dataExportModal.title', { name: database.name }) }}
     </h2>
     <p>{{ $t('dataExportModal.description') }}</p>
     <Error :error="error"></Error>
@@ -20,7 +20,11 @@
         <!-- Existing schedules stay listed without any storage, so they can still
         be inspected, edited or deleted after their storage was removed. -->
         <p v-if="destinations.length === 0">
-          {{ $t('dataExportModal.noDestinations') }}
+          {{
+            isStaff
+              ? $t('dataExportModal.noDestinationsStaff')
+              : $t('dataExportModal.noDestinations')
+          }}
         </p>
         <Button v-else icon="iconoir-plus" @click="edit(null)">
           {{ $t('dataExportModal.newSchedule') }}
@@ -44,8 +48,12 @@
                     {{ schedule.destination }} ·
                     {{ tablesLabel(schedule) }}
                     <template v-if="schedule.is_active">
-                      · {{ $t('dataExportModal.nextRun') }}
-                      {{ formatDate(schedule.next_run_on) }}
+                      ·
+                      {{
+                        $t('dataExportModal.nextRunOn', {
+                          date: formatDate(schedule.next_run_on),
+                        })
+                      }}
                     </template>
                   </div>
                   <div
@@ -65,6 +73,7 @@
               </div>
               <div class="export-workspace__actions">
                 <Button
+                  v-if="canRun(schedule)"
                   type="secondary"
                   size="small"
                   :loading="busyId === schedule.id"
@@ -74,6 +83,7 @@
                   {{ $t('dataExportModal.runNow') }}
                 </Button>
                 <Button
+                  v-if="canRun(schedule)"
                   type="secondary"
                   size="small"
                   :disabled="busyId !== null"
@@ -86,6 +96,7 @@
                   size="small"
                   icon="iconoir-list"
                   :title="$t('dataExportModal.runs')"
+                  :aria-label="$t('dataExportModal.runs')"
                   @click="toggleRuns(schedule)"
                 ></Button>
                 <Button
@@ -93,6 +104,7 @@
                   size="small"
                   icon="iconoir-edit-pencil"
                   :title="$t('dataExportModal.edit')"
+                  :aria-label="$t('dataExportModal.edit')"
                   @click="edit(schedule)"
                 ></Button>
                 <Button
@@ -100,6 +112,7 @@
                   size="small"
                   icon="iconoir-bin"
                   :title="$t('dataExportModal.delete')"
+                  :aria-label="$t('dataExportModal.delete')"
                   @click="remove(schedule)"
                 ></Button>
               </div>
@@ -196,20 +209,44 @@ export default {
       resetting: false,
       openRunsId: null,
       runsLoading: false,
+      runsRequest: 0,
       runs: [],
       destinations: [],
       schedules: [],
     }
   },
+  computed: {
+    isStaff() {
+      return this.$store.getters['auth/isStaff']
+    },
+  },
   methods: {
     show(...args) {
       modal.methods.show.bind(this)(...args)
+      // Start from a clean slate: a previous open can leave an editing form, an
+      // open runs panel, its rows or an error behind.
       this.editing = false
       this.openRunsId = null
+      this.runs = []
+      this.runsLoading = false
+      this.runsRequest++
+      this.loaded = false
+      this.hideError()
       this.load()
     },
     formatDate(value) {
-      return value ? moment(value).format('YYYY-MM-DD HH:mm') : ''
+      return value ? moment(value).format('L LT') : ''
+    },
+    /**
+     * Only the owner of a schedule or a workspace admin (staff included) may run
+     * it, which is what the backend enforces with a 403.
+     */
+    canRun(schedule) {
+      return (
+        this.workspace.permissions === 'ADMIN' ||
+        this.isStaff ||
+        schedule.user_id === this.$store.getters['auth/getUserId']
+      )
     },
     runDuration(exportRun) {
       return formatElapsedMs(
@@ -228,8 +265,10 @@ export default {
       }
       return schedule.table_ids.map((id) => this.tableName(id)).join(', ')
     },
-    async load() {
-      this.loading = true
+    async load({ quiet = false } = {}) {
+      if (!quiet) {
+        this.loading = true
+      }
       this.hideError()
       try {
         const [{ data: destinations }, { data: schedules }] = await Promise.all(
@@ -286,6 +325,8 @@ export default {
           title: this.$t('dataExportModal.runQueuedTitle'),
           message: this.$t('dataExportModal.runQueuedMessage'),
         })
+        // The schedule's last and next run changed.
+        await this.load({ quiet: true })
       } catch (error) {
         this.handleError(error)
       } finally {
@@ -295,19 +336,33 @@ export default {
     async toggleRuns(schedule) {
       if (this.openRunsId === schedule.id) {
         this.openRunsId = null
+        this.runsRequest++
+        this.runsLoading = false
         return
       }
       this.openRunsId = schedule.id
+      this.runs = []
       this.runsLoading = true
+      // Only the answer for the schedule that is still open may fill the table,
+      // a slow one for a previously opened schedule would show the wrong runs.
+      const request = ++this.runsRequest
       try {
         const { data } = await DataExportService(this.$client).listRuns(
           schedule.id
         )
+        if (request !== this.runsRequest) {
+          return
+        }
         this.runs = data
       } catch (error) {
+        if (request !== this.runsRequest) {
+          return
+        }
         this.handleError(error)
       } finally {
-        this.runsLoading = false
+        if (request === this.runsRequest) {
+          this.runsLoading = false
+        }
       }
     },
     resetState(schedule) {

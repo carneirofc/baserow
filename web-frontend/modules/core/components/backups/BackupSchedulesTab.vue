@@ -11,7 +11,7 @@
       @cancel="editing = false"
     />
     <template v-else>
-      <Button icon="iconoir-plus" @click="edit(null)">
+      <Button v-if="canCreate" icon="iconoir-plus" @click="edit(null)">
         {{ $t('backupsModal.newSchedule') }}
       </Button>
       <div v-if="loading" class="loading margin-top-3"></div>
@@ -43,8 +43,12 @@
                   }}
                 </template>
                 <template v-if="schedule.is_active">
-                  · {{ $t('backupsModal.nextRun') }}
-                  {{ formatDate(schedule.next_run_on) }}
+                  ·
+                  {{
+                    $t('backupsModal.nextRunOn', {
+                      date: formatDate(schedule.next_run_on),
+                    })
+                  }}
                 </template>
               </div>
               <div
@@ -57,6 +61,7 @@
           </div>
           <div class="export-workspace__actions">
             <Button
+              v-if="canManage(schedule)"
               type="secondary"
               size="small"
               :loading="runningId === schedule.id"
@@ -66,17 +71,21 @@
               {{ $t('backupsModal.runNow') }}
             </Button>
             <Button
+              v-if="canManage(schedule)"
               type="secondary"
               size="small"
               icon="iconoir-edit-pencil"
               :title="$t('backupsModal.edit')"
+              :aria-label="$t('backupsModal.edit')"
               @click="edit(schedule)"
             ></Button>
             <Button
+              v-if="canManage(schedule) && canDelete"
               type="secondary"
               size="small"
               icon="iconoir-bin"
               :title="$t('backupsModal.delete')"
+              :aria-label="$t('backupsModal.delete')"
               @click="remove(schedule)"
             ></Button>
           </div>
@@ -112,6 +121,13 @@ export default {
       required: false,
       default: null,
     },
+    // The staff admin panel passes `admin`: it manages the schedules of any
+    // workspace and the backend lets staff through, so nothing is gated there.
+    admin: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
@@ -127,16 +143,65 @@ export default {
     resolvedService() {
       return (this.service || BackupService)(this.$client)
     },
+    workspaceAdmin() {
+      return this.admin || this.workspace.permissions === 'ADMIN'
+    },
+    canCreate() {
+      return (
+        this.admin ||
+        this.$hasPermission(
+          'workspace.create_backup_schedule',
+          this.workspace,
+          this.workspace.id
+        )
+      )
+    },
+    canDelete() {
+      return (
+        this.admin ||
+        this.$hasPermission(
+          'workspace.backup_schedule.delete',
+          this.workspace,
+          this.workspace.id
+        )
+      )
+    },
+    canUpdate() {
+      return (
+        this.admin ||
+        this.$hasPermission(
+          'workspace.backup_schedule.update',
+          this.workspace,
+          this.workspace.id
+        )
+      )
+    },
   },
   mounted() {
     this.load()
   },
   methods: {
     formatDate(value) {
-      return value ? moment(value).format('YYYY-MM-DD HH:mm') : ''
+      return value ? moment(value).format('L LT') : ''
     },
-    async load() {
-      this.loading = true
+    /**
+     * Only the owner of a schedule or a workspace admin (staff included) may edit,
+     * delete or run it, which is what the backend enforces with a 403.
+     */
+    isOwnerOrAdmin(schedule) {
+      return (
+        this.workspaceAdmin ||
+        this.$store.getters['auth/isStaff'] ||
+        schedule.user_id === this.$store.getters['auth/getUserId']
+      )
+    },
+    canManage(schedule) {
+      return this.canUpdate && this.isOwnerOrAdmin(schedule)
+    },
+    async load({ quiet = false } = {}) {
+      if (!quiet) {
+        this.loading = true
+      }
       try {
         const { data } = await this.resolvedService.listSchedules(
           this.workspace.id
@@ -183,6 +248,8 @@ export default {
           title: this.$t('backupsModal.runStartedTitle'),
           message: this.$t('backupsModal.runStartedMessage'),
         })
+        // The schedule's last run and next run changed.
+        await this.load({ quiet: true })
       } catch (error) {
         this.handleError(error)
       } finally {

@@ -41,6 +41,7 @@
           :workspace="workspace"
           :destinations="destinations"
           :service="adminBackupService"
+          admin
         />
       </Tab>
       <Tab :title="$t('backupsModal.tabRemote')">
@@ -70,8 +71,14 @@ export default {
     BackupSchedulesTab,
     RemoteBackupsTab,
   },
+  provide() {
+    return { backupJobs: this.backupJobs }
+  },
   data() {
     return {
+      // Remembers the jobs started from the tabs across tab switches, keyed by
+      // tab and workspace.
+      backupJobs: {},
       workspaceId: null,
       workspaceName: null,
       loading: false,

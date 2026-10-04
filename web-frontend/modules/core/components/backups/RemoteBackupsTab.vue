@@ -2,7 +2,11 @@
   <div>
     <Error :error="error"></Error>
     <p v-if="destinations.length === 0">
-      {{ $t('backupsModal.noBackupDestinations') }}
+      {{
+        isStaff
+          ? $t('backupsModal.noBackupDestinationsStaff')
+          : $t('backupsModal.noBackupDestinations')
+      }}
     </p>
     <template v-else>
       <div class="row">
@@ -95,9 +99,11 @@
 <script>
 import error from '@baserow/modules/core/mixins/error'
 import job from '@baserow/modules/core/mixins/job'
+import backupJobMemory from '@baserow/modules/core/mixins/backupJobMemory'
 import moment from '@baserow/modules/core/moment'
 import BackupService from '@baserow/modules/core/services/backup'
-import { restoredApplicationsFinished } from '@baserow/modules/core/components/backups/BackupsTab'
+import { restoredApplicationsFinished } from '@baserow/modules/core/utils/backups'
+import { formatFileSize } from '@baserow/modules/core/utils/file'
 import JobDuration from '@baserow/modules/core/components/job/JobDuration'
 import ConfirmModal from '@baserow/modules/core/components/modals/ConfirmModal'
 import { ResponseErrorMessage } from '@baserow/modules/core/plugins/clientHandler'
@@ -105,7 +111,7 @@ import { ResponseErrorMessage } from '@baserow/modules/core/plugins/clientHandle
 export default {
   name: 'RemoteBackupsTab',
   components: { JobDuration, ConfirmModal },
-  mixins: [error, job],
+  mixins: [error, job, backupJobMemory],
   props: {
     workspace: {
       type: Object,
@@ -145,18 +151,18 @@ export default {
     },
   },
   mounted() {
+    const remembered = this.resumeJob('remote')
+    if (remembered) {
+      this.restoringKey = remembered.restoringKey
+    }
     this.load()
   },
   methods: {
     formatDate(value) {
-      return moment(value).format('YYYY-MM-DD HH:mm')
+      return moment(value).format('L LT')
     },
     formatSize(bytes) {
-      const kilobytes = (bytes || 0) / 1024
-      if (kilobytes < 1024) {
-        return `${kilobytes.toFixed(1)} KB`
-      }
-      return `${(kilobytes / 1024).toFixed(1)} MB`
+      return formatFileSize(this.$t, this.$i18n.locale, bytes || 0)
     },
     applicationNames(backup) {
       return (backup.applications || [])
@@ -232,6 +238,7 @@ export default {
           values
         )
         await this.createAndMonitorJob(data)
+        this.rememberJob('remote', { restoringKey: backup.key })
       } catch (error) {
         this.restoringKey = null
         this.handleError(error, 'backup', {
@@ -246,10 +253,12 @@ export default {
     },
     async onJobFinished() {
       this.restoringKey = null
-      await restoredApplicationsFinished(this, this.job)
+      this.forgetJob('remote')
+      await restoredApplicationsFinished(this, this.job, this.workspace.id)
     },
     onJobFailed() {
       this.restoringKey = null
+      this.forgetJob('remote')
       this.showError(
         this.$t('clientHandler.notCompletedTitle'),
         this.job.human_readable_error

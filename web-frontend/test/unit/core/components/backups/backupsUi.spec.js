@@ -1,11 +1,14 @@
 import MockAdapter from 'axios-mock-adapter'
+import moment from '@baserow/modules/core/moment'
 import { flushPromises } from '@vue/test-utils'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
 import BackupScheduleForm from '@baserow/modules/core/components/backups/BackupScheduleForm'
 import RemoteBackupsTab from '@baserow/modules/core/components/backups/RemoteBackupsTab'
 import BackupsTab from '@baserow/modules/core/components/backups/BackupsTab'
 import BackupSchedulesTab from '@baserow/modules/core/components/backups/BackupSchedulesTab'
+import BackupsModal from '@baserow/modules/core/components/backups/BackupsModal'
 import ConfirmModal from '@baserow/modules/core/components/modals/ConfirmModal'
+import { restoredApplicationsFinished } from '@baserow/modules/core/utils/backups'
 import DataExportScheduleForm from '@baserow/modules/database/components/dataExport/DataExportScheduleForm'
 import DataExportModal from '@baserow/modules/database/components/dataExport/DataExportModal'
 
@@ -46,14 +49,21 @@ function remoteBackup(key) {
 describe('backups and datalake export UI', () => {
   let mock = null
   let wrapper = null
+  let originalUser = null
+
+  const setUser = (user) => {
+    useNuxtApp().$store.state.auth.user = user
+  }
 
   beforeEach(() => {
+    originalUser = useNuxtApp().$store.state.auth.user
     mock = new MockAdapter(useNuxtApp().$client, {
       onNoMatch: 'throwException',
     })
   })
 
   afterEach(() => {
+    useNuxtApp().$store.state.auth.user = originalUser
     if (wrapper) {
       wrapper.unmount()
       wrapper = null
@@ -174,9 +184,11 @@ describe('backups and datalake export UI', () => {
     await flushPromises()
 
     // Translations are not loaded in unit tests, so only assert on the data itself.
-    expect(wrapper.text()).toContain('2026-01-01 03:00')
+    expect(wrapper.text()).toContain(
+      moment('2026-01-01T03:00:00+00:00').format('L LT')
+    )
     expect(wrapper.text()).toContain('Sales')
-    expect(wrapper.text()).toContain('2.0 KB')
+    expect(wrapper.text()).toContain('2 rowEditFieldFile.sizes.1')
   })
 
   test('the backup schedule form rejects invalid retention instead of keeping all', async () => {
@@ -418,5 +430,350 @@ describe('backups and datalake export UI', () => {
     await wrapper.findComponent(ConfirmModal).vm.confirm()
     expect(mock.history.delete).toHaveLength(1)
     expect(wrapper.vm.schedules).toEqual([])
+  })
+
+  test('a finished restore only adds applications of a workspace in the store', async () => {
+    const dispatch = vi.fn()
+    const getters = { 'workspace/get': (id) => (id === 1 ? { id } : undefined) }
+    const component = {
+      $store: { dispatch, getters },
+      $t: (key) => key,
+    }
+    const finishedJob = { installed_applications: [{ id: 9 }] }
+
+    await restoredApplicationsFinished(component, finishedJob, 2)
+    expect(dispatch).not.toHaveBeenCalledWith(
+      'application/forceCreate',
+      expect.anything()
+    )
+    expect(dispatch).toHaveBeenCalledWith('toast/info', expect.anything())
+
+    dispatch.mockClear()
+    await restoredApplicationsFinished(component, finishedJob, 1)
+    expect(dispatch).toHaveBeenCalledWith('application/forceCreate', { id: 9 })
+    expect(dispatch).toHaveBeenCalledWith('toast/info', expect.anything())
+  })
+
+  test('the backups modal hides the schedules tab without permission', async () => {
+    mock.onGet('/data-destinations/').reply(200, [])
+    const mountModal = async (hasPermission) => {
+      const result = await mountSuspended(BackupsModal, {
+        props: { workspace: { id: 1, name: 'Acme' } },
+        global: {
+          stubs: { teleport: true },
+          mocks: { $hasPermission: () => hasPermission },
+        },
+      })
+      result.vm.show()
+      await flushPromises()
+      return result
+    }
+
+    wrapper = await mountModal(false)
+    expect(wrapper.text()).toContain('backupsModal.tabBackups')
+    expect(wrapper.text()).not.toContain('backupsModal.tabSchedules')
+    wrapper.unmount()
+
+    wrapper = await mountModal(true)
+    expect(wrapper.text()).toContain('backupsModal.tabSchedules')
+  })
+
+  test('the schedule actions are limited to the owner and workspace admins', async () => {
+    setUser({ id: 5, is_staff: false })
+    const schedules = [
+      { id: 1, name: 'Mine', cron: '0 3 * * *', user_id: 5 },
+      { id: 2, name: 'Theirs', cron: '0 3 * * *', user_id: 6 },
+    ]
+    const service = {
+      listSchedules: vi.fn().mockResolvedValue({ data: schedules }),
+    }
+    const mountTab = (workspace, props = {}, hasPermission = true) =>
+      mountSuspended(BackupSchedulesTab, {
+        props: {
+          workspace,
+          destinations: [],
+          service: () => service,
+          ...props,
+        },
+        global: { mocks: { $hasPermission: () => hasPermission } },
+      })
+    const actions = () =>
+      wrapper.findAll('.export-workspace__actions').map((row) => row.text())
+
+    // A member sees the actions of their own schedule only.
+    wrapper = await mountTab({ id: 1, name: 'Acme', permissions: 'MEMBER' })
+    await flushPromises()
+    expect(actions()[0]).toContain('backupsModal.runNow')
+    expect(actions()[1]).not.toContain('backupsModal.runNow')
+    expect(wrapper.findAll('[aria-label="backupsModal.edit"]')).toHaveLength(1)
+    wrapper.unmount()
+
+    // A workspace admin sees them on every schedule.
+    wrapper = await mountTab({ id: 1, name: 'Acme', permissions: 'ADMIN' })
+    await flushPromises()
+    expect(wrapper.findAll('[aria-label="backupsModal.edit"]')).toHaveLength(2)
+    wrapper.unmount()
+
+    // So does the admin panel, which passes `admin`.
+    wrapper = await mountTab({ id: 1, name: 'Acme' }, { admin: true })
+    await flushPromises()
+    expect(wrapper.findAll('[aria-label="backupsModal.edit"]')).toHaveLength(2)
+    wrapper.unmount()
+
+    // Without the permission nothing is offered, not even to the owner.
+    wrapper = await mountTab(
+      { id: 1, name: 'Acme', permissions: 'MEMBER' },
+      {},
+      false
+    )
+    await flushPromises()
+    expect(wrapper.findAll('[aria-label="backupsModal.edit"]')).toHaveLength(0)
+    expect(wrapper.text()).not.toContain('backupsModal.newSchedule')
+  })
+
+  test('running a backup schedule reloads the list', async () => {
+    setUser({ id: 5, is_staff: false })
+    const schedule = { id: 1, name: 'Mine', cron: '0 3 * * *', user_id: 5 }
+    const service = {
+      listSchedules: vi.fn().mockResolvedValue({ data: [schedule] }),
+      runSchedule: vi.fn().mockResolvedValue({
+        data: { id: 91, type: 'export_applications_to_destination' },
+      }),
+    }
+    wrapper = await mountSuspended(BackupSchedulesTab, {
+      props: {
+        workspace: { id: 1, name: 'Acme' },
+        destinations: [],
+        service: () => service,
+      },
+    })
+    await flushPromises()
+    expect(service.listSchedules).toHaveBeenCalledTimes(1)
+
+    await wrapper.vm.runNow(schedule)
+    expect(service.runSchedule).toHaveBeenCalledWith(1)
+    expect(service.listSchedules).toHaveBeenCalledTimes(2)
+  })
+
+  test('a reopened backups modal keeps the running job of its tab', async () => {
+    mock.onGet('/backups/workspace/1/').reply(200, { results: [] })
+    const service = {
+      startBackup: vi.fn().mockResolvedValue({
+        data: {
+          id: 77,
+          type: 'export_applications_to_destination',
+          state: 'started',
+          progress_percentage: 10,
+        },
+      }),
+    }
+    mock.onGet('/data-destinations/').reply(200, [])
+    wrapper = await mountSuspended(BackupsModal, {
+      props: { workspace: { id: 1, name: 'Acme' } },
+      global: { stubs: { teleport: true } },
+    })
+    wrapper.vm.show()
+    await flushPromises()
+
+    // Start a job from the tab, then close and reopen the modal.
+    let tab = wrapper.findComponent(BackupsTab)
+    await tab.vm.run('backup', () => service.startBackup(1, {}))
+    expect(tab.vm.job.id).toBe(77)
+    expect(wrapper.vm.backupJobs['backups:1']).toEqual({
+      id: 77,
+      kind: 'backup',
+    })
+
+    wrapper.vm.hide()
+    await flushPromises()
+    wrapper.vm.show()
+    await flushPromises()
+
+    tab = wrapper.findComponent(BackupsTab)
+    expect(tab.vm.job.id).toBe(77)
+    expect(tab.vm.busy).toBe(true)
+    expect(tab.vm.jobKind).toBe('backup')
+  })
+
+  test('a tab remounted after its job ended still reports the outcome', async () => {
+    const store = useNuxtApp().$store
+    await store.dispatch('job/forceCreate', {
+      id: 78,
+      type: 'export_applications_to_destination',
+      state: 'finished',
+    })
+    const service = {
+      listBackups: vi.fn().mockResolvedValue({ data: { results: [] } }),
+    }
+    const dispatch = vi.spyOn(store, 'dispatch')
+    wrapper = await mountSuspended(BackupsTab, {
+      props: {
+        workspace: { id: 1, name: 'Acme' },
+        destinations: [],
+        service: () => service,
+      },
+      global: {
+        provide: { backupJobs: { 'backups:1': { id: 78, kind: 'backup' } } },
+      },
+    })
+    await flushPromises()
+
+    const toasts = dispatch.mock.calls.filter(
+      ([action]) => action === 'toast/info'
+    )
+    expect(toasts).toHaveLength(1)
+    dispatch.mockRestore()
+  })
+
+  test('the external storage tab explains missing storage to members and staff', async () => {
+    const mountTab = () =>
+      mountSuspended(RemoteBackupsTab, {
+        props: {
+          workspace: { id: 1, name: 'Acme' },
+          destinations: [],
+          service: () => ({}),
+        },
+      })
+
+    setUser({ id: 5, is_staff: false })
+    wrapper = await mountTab()
+    expect(wrapper.text()).toContain('backupsModal.noBackupDestinations')
+    expect(wrapper.text()).not.toContain(
+      'backupsModal.noBackupDestinationsStaff'
+    )
+    wrapper.unmount()
+
+    setUser({ id: 5, is_staff: true })
+    wrapper = await mountTab()
+    expect(wrapper.text()).toContain('backupsModal.noBackupDestinationsStaff')
+  })
+
+  test('the schedule forms reject a name longer than the backend allows', async () => {
+    wrapper = await mountSuspended(BackupScheduleForm, {
+      props: { destinations: [] },
+    })
+    wrapper.vm.values.name = 'a'.repeat(101)
+    wrapper.vm.submit()
+    expect(wrapper.emitted('submit')).toBeUndefined()
+    wrapper.vm.values.name = 'a'.repeat(100)
+    wrapper.vm.submit()
+    expect(wrapper.emitted('submit')).toHaveLength(1)
+    wrapper.unmount()
+
+    wrapper = await mountSuspended(DataExportScheduleForm, {
+      props: {
+        database: { id: 1, name: 'Sales', tables: [] },
+        destinations: [{ name: 'lake', type: 's3' }],
+      },
+    })
+    wrapper.vm.values.name = 'a'.repeat(101)
+    wrapper.vm.submit()
+    expect(wrapper.emitted('submit')).toBeUndefined()
+    wrapper.vm.values.name = 'a'.repeat(100)
+    wrapper.vm.submit()
+    expect(wrapper.emitted('submit')).toHaveLength(1)
+  })
+
+  test('the schedule forms offer timezones through a searchable dropdown', async () => {
+    wrapper = await mountSuspended(BackupScheduleForm, {
+      props: { destinations: [] },
+    })
+    const { data } = wrapper.vm.fetchTimezonePage(1, 'europe/ams')
+    expect(data.results).toEqual([
+      { id: 'Europe/Amsterdam', value: 'Europe/Amsterdam' },
+    ])
+    expect(wrapper.vm.fetchTimezonePage(1, '').data.next).toBe(2)
+  })
+
+  test('the confirm modal keeps loading until the action settles', async () => {
+    wrapper = await mountSuspended(ConfirmModal, {
+      global: { stubs: { teleport: true } },
+    })
+    const action = deferred()
+    wrapper.vm.ask({
+      title: 't',
+      message: 'm',
+      onConfirm: () => action.promise,
+    })
+
+    const confirmed = wrapper.vm.confirm()
+    expect(wrapper.vm.loading).toBe(true)
+    // A second click neither runs the action again nor cancels it.
+    wrapper.vm.cancel()
+    expect(wrapper.vm.loading).toBe(true)
+
+    action.resolve()
+    await confirmed
+    expect(wrapper.vm.loading).toBe(false)
+  })
+
+  test('only the owner or a workspace admin can run a datalake schedule', async () => {
+    setUser({ id: 5, is_staff: false })
+    mock.onGet('/data-destinations/').reply(200, [])
+    mock.onGet('/database/data-export/schedules/workspace/1/').reply(200, [
+      { id: 3, name: 'Mine', database: 2, user_id: 5, table_ids: null },
+      { id: 4, name: 'Theirs', database: 2, user_id: 6, table_ids: null },
+    ])
+    const mountModal = async (permissions) => {
+      const result = await mountSuspended(DataExportModal, {
+        props: {
+          database: { id: 2, name: 'Sales', tables: [] },
+          workspace: { id: 1, name: 'Acme', permissions },
+        },
+        global: { stubs: { teleport: true } },
+      })
+      result.vm.show()
+      await flushPromises()
+      return result
+    }
+
+    wrapper = await mountModal('MEMBER')
+    expect(wrapper.text().match(/dataExportModal\.runNow/g)).toHaveLength(1)
+    wrapper.unmount()
+
+    wrapper = await mountModal('ADMIN')
+    expect(wrapper.text().match(/dataExportModal\.runNow/g)).toHaveLength(2)
+  })
+
+  test('the datalake modal ignores stale runs and resets when reopened', async () => {
+    setUser({ id: 5, is_staff: true })
+    mock.onGet('/data-destinations/').reply(200, [])
+    mock.onGet('/database/data-export/schedules/workspace/1/').reply(200, [
+      { id: 3, name: 'A', database: 2, user_id: 5, table_ids: null },
+      { id: 4, name: 'B', database: 2, user_id: 5, table_ids: null },
+    ])
+    const slow = deferred()
+    mock
+      .onGet('/database/data-export/schedules/3/runs/')
+      .reply(() => slow.promise)
+    mock
+      .onGet('/database/data-export/schedules/4/runs/')
+      .reply(200, [{ id: 2, state: 'finished', mode: 'full', table_id: 1 }])
+
+    wrapper = await mountSuspended(DataExportModal, {
+      props: {
+        database: { id: 2, name: 'Sales', tables: [] },
+        workspace: { id: 1, name: 'Acme' },
+      },
+      global: { stubs: { teleport: true } },
+    })
+    wrapper.vm.show()
+    await flushPromises()
+
+    const first = wrapper.vm.toggleRuns(wrapper.vm.schedules[0])
+    await wrapper.vm.toggleRuns(wrapper.vm.schedules[1])
+    expect(wrapper.vm.runs.map((run) => run.id)).toEqual([2])
+
+    // The answer for the first schedule arrives late and must be dropped.
+    slow.resolve([200, [{ id: 1, state: 'failed', mode: 'auto', table_id: 1 }]])
+    await first
+    await flushPromises()
+    expect(wrapper.vm.runs.map((run) => run.id)).toEqual([2])
+    expect(wrapper.vm.runsLoading).toBe(false)
+
+    wrapper.vm.show()
+    expect(wrapper.vm.runs).toEqual([])
+    expect(wrapper.vm.openRunsId).toBeNull()
+    expect(wrapper.vm.loaded).toBe(false)
   })
 })

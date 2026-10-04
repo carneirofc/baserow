@@ -112,6 +112,7 @@
             icon="iconoir-bin"
             :disabled="busy"
             :title="$t('backupsModal.delete')"
+            :aria-label="$t('backupsModal.delete')"
             @click="remove(backup)"
           ></Button>
         </div>
@@ -124,17 +125,18 @@
 <script>
 import error from '@baserow/modules/core/mixins/error'
 import job from '@baserow/modules/core/mixins/job'
+import backupJobMemory from '@baserow/modules/core/mixins/backupJobMemory'
 import moment from '@baserow/modules/core/moment'
 import BackupService from '@baserow/modules/core/services/backup'
 import ApplicationSelector from '@baserow/modules/core/components/export/ApplicationSelector'
 import JobDuration from '@baserow/modules/core/components/job/JobDuration'
 import ConfirmModal from '@baserow/modules/core/components/modals/ConfirmModal'
-import { notifyIf } from '@baserow/modules/core/utils/error'
+import { restoredApplicationsFinished } from '@baserow/modules/core/utils/backups'
 
 export default {
   name: 'BackupsTab',
   components: { ApplicationSelector, JobDuration, ConfirmModal },
-  mixins: [error, job],
+  mixins: [error, job, backupJobMemory],
   props: {
     workspace: {
       type: Object,
@@ -182,11 +184,15 @@ export default {
     },
   },
   mounted() {
+    const remembered = this.resumeJob('backups')
+    if (remembered) {
+      this.jobKind = remembered.kind
+    }
     this.load()
   },
   methods: {
     formatDate(value) {
-      return moment(value).format('YYYY-MM-DD HH:mm')
+      return moment(value).format('L LT')
     },
     async load() {
       this.loading = true
@@ -208,6 +214,7 @@ export default {
         const { data } = await request()
         this.jobKind = kind
         await this.createAndMonitorJob(data)
+        this.rememberJob('backups', { kind })
       } catch (error) {
         this.handleError(error)
       } finally {
@@ -267,8 +274,9 @@ export default {
       }
     },
     async onJobFinished() {
+      this.forgetJob('backups')
       if (this.jobKind === 'restore') {
-        await restoredApplicationsFinished(this, this.job)
+        await restoredApplicationsFinished(this, this.job, this.workspace.id)
       } else {
         this.$store.dispatch('toast/info', {
           title: this.$t('backupsModal.backupFinishedTitle'),
@@ -278,32 +286,12 @@ export default {
       }
     },
     onJobFailed() {
+      this.forgetJob('backups')
       this.showError(
         this.$t('clientHandler.notCompletedTitle'),
         this.job.human_readable_error
       )
     },
   },
-}
-
-/**
- * Adds the applications installed by a finished restore job to the sidebar and tells
- * the user. Shared by the local and remote restore tabs.
- */
-export async function restoredApplicationsFinished(component, finishedJob) {
-  const installed = finishedJob.installed_applications || []
-  try {
-    for (const application of installed) {
-      await component.$store.dispatch('application/forceCreate', application)
-    }
-    component.$store.dispatch('toast/info', {
-      title: component.$t('backupsModal.restoreFinishedTitle'),
-      message: component.$t('backupsModal.restoreFinishedMessage', {
-        count: installed.length,
-      }),
-    })
-  } catch (error) {
-    notifyIf(error, 'application')
-  }
 }
 </script>
