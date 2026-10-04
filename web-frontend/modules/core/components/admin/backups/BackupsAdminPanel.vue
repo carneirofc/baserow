@@ -14,6 +14,15 @@
     </FormGroup>
 
     <div v-if="loading" class="loading margin-top-2"></div>
+    <div v-else-if="workspace && destinationsError" class="margin-top-2">
+      <Alert type="error">
+        <template #title>{{ $t('backupsAdminPanel.loadErrorTitle') }}</template>
+        <p>{{ $t('backupsAdminPanel.loadErrorMessage') }}</p>
+      </Alert>
+      <Button type="secondary" class="margin-top-2" @click="loadDestinations">
+        {{ $t('backupsAdminPanel.retry') }}
+      </Button>
+    </div>
     <Tabs
       v-else-if="workspace"
       header-no-padding
@@ -66,6 +75,8 @@ export default {
       workspaceId: null,
       workspaceName: null,
       loading: false,
+      destinationsError: false,
+      destinationsRequest: 0,
       destinations: [],
     }
   },
@@ -92,18 +103,34 @@ export default {
       await this.loadDestinations()
     },
     async loadDestinations() {
+      // Switching workspaces quickly can leave an older request in flight; only
+      // the latest one may decide what the panel shows.
+      const request = ++this.destinationsRequest
       this.loading = true
+      this.destinationsError = false
       try {
         const { data } = await BackupsAdminService(
           this.$client
         ).listDestinations()
+        if (request !== this.destinationsRequest) {
+          return
+        }
         this.destinations = data.filter((destination) =>
           destination.purposes.includes('backup')
         )
       } catch (error) {
+        if (request !== this.destinationsRequest) {
+          return
+        }
+        // Rendering the tabs with an empty list would claim no external storage
+        // is configured, so show the failure instead.
+        this.destinations = []
+        this.destinationsError = true
         notifyIf(error)
       } finally {
-        this.loading = false
+        if (request === this.destinationsRequest) {
+          this.loading = false
+        }
       }
     },
   },

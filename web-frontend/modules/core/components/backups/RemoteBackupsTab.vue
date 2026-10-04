@@ -13,10 +13,9 @@
             class="margin-bottom-2"
           >
             <Dropdown
-              v-model="destination"
+              :model-value="destination"
               :disabled="busy"
-              @input="load"
-              @update:model-value="load"
+              @update:model-value="selectDestination"
             >
               <DropdownItem
                 v-for="item in destinations"
@@ -89,6 +88,7 @@
         </div>
       </div>
     </template>
+    <ConfirmModal ref="confirmModal" />
   </div>
 </template>
 
@@ -99,11 +99,12 @@ import moment from '@baserow/modules/core/moment'
 import BackupService from '@baserow/modules/core/services/backup'
 import { restoredApplicationsFinished } from '@baserow/modules/core/components/backups/BackupsTab'
 import JobDuration from '@baserow/modules/core/components/job/JobDuration'
+import ConfirmModal from '@baserow/modules/core/components/modals/ConfirmModal'
 import { ResponseErrorMessage } from '@baserow/modules/core/plugins/clientHandler'
 
 export default {
   name: 'RemoteBackupsTab',
-  components: { JobDuration },
+  components: { JobDuration, ConfirmModal },
   mixins: [error, job],
   props: {
     workspace: {
@@ -126,6 +127,7 @@ export default {
       starting: false,
       destination: this.destinations[0]?.name || '',
       loadedDestination: null,
+      loadRequest: 0,
       trustPublicKey: false,
       restoringKey: null,
       backups: [],
@@ -161,28 +163,61 @@ export default {
         .map((application) => application.name)
         .join(', ')
     },
+    selectDestination(value) {
+      this.destination = value
+      this.load()
+    },
     async load() {
-      // The dropdown can report the same selection through two events.
       if (!this.destination || this.loadedDestination === this.destination) {
         return
       }
-      this.loadedDestination = this.destination
+      // Only the response for the destination that is still selected may fill
+      // the list, otherwise a slow answer for a previous destination would show
+      // its backups, and restore their keys, under the current one.
+      const destination = this.destination
+      const request = ++this.loadRequest
+      this.loadedDestination = destination
       this.loading = true
       this.hideError()
       try {
         const { data } = await this.resolvedService.listRemoteBackups(
-          this.destination,
+          destination,
           this.workspace.id
         )
+        if (request !== this.loadRequest) {
+          return
+        }
         this.backups = data.results || []
       } catch (error) {
+        if (request !== this.loadRequest) {
+          return
+        }
         this.backups = []
+        // Selecting the same destination again must retry.
+        this.loadedDestination = null
         this.handleError(error)
       } finally {
-        this.loading = false
+        if (request === this.loadRequest) {
+          this.loading = false
+        }
       }
     },
-    async restore(backup) {
+    restore(backup) {
+      const destination = this.destination
+      this.$refs.confirmModal.ask({
+        title: this.$t('backupsModal.confirmRestoreTitle'),
+        message: this.$t('backupsModal.confirmRestoreMessage', {
+          date: this.formatDate(backup.created_on),
+        }),
+        confirmLabel: this.$t('backupsModal.restore'),
+        onConfirm: () => this.doRestore(backup, destination),
+      })
+    },
+    async doRestore(backup, destination) {
+      // The backup's key only exists on the destination it was listed from.
+      if (destination !== this.destination) {
+        return
+      }
       this.starting = true
       this.restoringKey = backup.key
       this.hideError()
@@ -192,7 +227,7 @@ export default {
           values.trust_public_key = true
         }
         const { data } = await this.resolvedService.restoreRemoteBackup(
-          this.destination,
+          destination,
           this.workspace.id,
           values
         )

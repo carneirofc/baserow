@@ -6,9 +6,6 @@
     <p>{{ $t('dataExportModal.description') }}</p>
     <Error :error="error"></Error>
     <div v-if="loading" class="loading margin-top-2 margin-bottom-2"></div>
-    <p v-else-if="loaded && destinations.length === 0">
-      {{ $t('dataExportModal.noDestinations') }}
-    </p>
     <template v-else-if="loaded">
       <DataExportScheduleForm
         v-if="editing"
@@ -20,7 +17,12 @@
         @cancel="editing = false"
       />
       <template v-else>
-        <Button icon="iconoir-plus" @click="edit(null)">
+        <!-- Existing schedules stay listed without any storage, so they can still
+        be inspected, edited or deleted after their storage was removed. -->
+        <p v-if="destinations.length === 0">
+          {{ $t('dataExportModal.noDestinations') }}
+        </p>
+        <Button v-else icon="iconoir-plus" @click="edit(null)">
           {{ $t('dataExportModal.newSchedule') }}
         </Button>
         <p v-if="schedules.length === 0" class="margin-top-3">
@@ -155,6 +157,7 @@
         </div>
       </template>
     </template>
+    <ConfirmModal ref="confirmModal" />
   </Modal>
 </template>
 
@@ -166,10 +169,11 @@ import { elapsedMs, formatElapsedMs } from '@baserow/modules/core/utils/job'
 import BackupService from '@baserow/modules/core/services/backup'
 import DataExportService from '@baserow/modules/database/services/dataExport'
 import DataExportScheduleForm from '@baserow/modules/database/components/dataExport/DataExportScheduleForm'
+import ConfirmModal from '@baserow/modules/core/components/modals/ConfirmModal'
 
 export default {
   name: 'DataExportModal',
-  components: { DataExportScheduleForm },
+  components: { DataExportScheduleForm, ConfirmModal },
   mixins: [modal, error],
   props: {
     database: {
@@ -306,7 +310,17 @@ export default {
         this.runsLoading = false
       }
     },
-    async resetState(schedule) {
+    resetState(schedule) {
+      this.$refs.confirmModal.ask({
+        title: this.$t('dataExportModal.confirmResetStateTitle'),
+        message: this.$t('dataExportModal.confirmResetStateMessage', {
+          name: schedule.name,
+        }),
+        confirmLabel: this.$t('dataExportModal.resetState'),
+        onConfirm: () => this.doResetState(schedule),
+      })
+    },
+    async doResetState(schedule) {
       this.resetting = true
       this.hideError()
       try {
@@ -321,7 +335,17 @@ export default {
         this.resetting = false
       }
     },
-    async remove(schedule) {
+    remove(schedule) {
+      this.$refs.confirmModal.ask({
+        title: this.$t('dataExportModal.confirmDeleteTitle'),
+        message: this.$t('dataExportModal.confirmDeleteMessage', {
+          name: schedule.name,
+        }),
+        confirmLabel: this.$t('dataExportModal.delete'),
+        onConfirm: () => this.doRemove(schedule),
+      })
+    },
+    async doRemove(schedule) {
       this.hideError()
       try {
         await DataExportService(this.$client).deleteSchedule(schedule.id)

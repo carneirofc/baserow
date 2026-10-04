@@ -117,6 +117,7 @@
         </div>
       </div>
     </div>
+    <ConfirmModal ref="confirmModal" />
   </div>
 </template>
 
@@ -127,11 +128,12 @@ import moment from '@baserow/modules/core/moment'
 import BackupService from '@baserow/modules/core/services/backup'
 import ApplicationSelector from '@baserow/modules/core/components/export/ApplicationSelector'
 import JobDuration from '@baserow/modules/core/components/job/JobDuration'
+import ConfirmModal from '@baserow/modules/core/components/modals/ConfirmModal'
 import { notifyIf } from '@baserow/modules/core/utils/error'
 
 export default {
   name: 'BackupsTab',
-  components: { ApplicationSelector, JobDuration },
+  components: { ApplicationSelector, JobDuration, ConfirmModal },
   mixins: [error, job],
   props: {
     workspace: {
@@ -225,6 +227,16 @@ export default {
       )
     },
     restore(backup) {
+      this.$refs.confirmModal.ask({
+        title: this.$t('backupsModal.confirmRestoreTitle'),
+        message: this.$t('backupsModal.confirmRestoreMessage', {
+          date: this.formatDate(backup.created_on),
+        }),
+        confirmLabel: this.$t('backupsModal.restore'),
+        onConfirm: () => this.doRestore(backup),
+      })
+    },
+    doRestore(backup) {
       return this.run('restore', () =>
         this.resolvedService.restoreBackup(
           this.workspace.id,
@@ -232,7 +244,17 @@ export default {
         )
       )
     },
-    async remove(backup) {
+    remove(backup) {
+      this.$refs.confirmModal.ask({
+        title: this.$t('backupsModal.confirmDeleteTitle'),
+        message: this.$t('backupsModal.confirmDeleteMessage', {
+          date: this.formatDate(backup.created_on),
+        }),
+        confirmLabel: this.$t('backupsModal.delete'),
+        onConfirm: () => this.doRemove(backup),
+      })
+    },
+    async doRemove(backup) {
       this.hideError()
       try {
         await this.resolvedService.deleteBackup(

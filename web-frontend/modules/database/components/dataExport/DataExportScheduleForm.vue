@@ -21,6 +21,7 @@
           small-label
           required
           :label="$t('dataExportModal.destination')"
+          :error="(showErrors && !values.destination) || destinationUnavailable"
           class="margin-bottom-2"
         >
           <Dropdown v-model="values.destination">
@@ -30,7 +31,24 @@
               :name="item.name"
               :value="item.name"
             ></DropdownItem>
+            <DropdownItem
+              v-if="destinationUnavailable"
+              :name="
+                $t('dataExportModal.unavailableDestination', {
+                  name: values.destination,
+                })
+              "
+              :value="values.destination"
+              disabled
+            ></DropdownItem>
           </Dropdown>
+          <template #error>
+            {{
+              destinationUnavailable
+                ? $t('dataExportModal.unavailableDestinationError')
+                : $t('error.requiredField')
+            }}
+          </template>
         </FormGroup>
       </div>
       <div class="col col-6">
@@ -64,9 +82,19 @@
           small-label
           :label="$t('dataExportModal.fullEveryN')"
           :helper-text="$t('dataExportModal.fullEveryNHelp')"
+          :error="showErrors && !fullEveryNValid"
           class="margin-bottom-2"
         >
-          <FormInput v-model="values.full_every_n" type="number" />
+          <FormInput
+            v-model="values.full_every_n"
+            type="number"
+            :min="0"
+            :step="1"
+            :error="showErrors && !fullEveryNValid"
+          />
+          <template #error>{{
+            $t('dataExportModal.fullEveryNInvalid')
+          }}</template>
         </FormGroup>
       </div>
       <div class="col col-6">
@@ -132,6 +160,12 @@
 </template>
 
 <script>
+// The backend accepts any whole number from zero up (zero only exports fully when
+// required) and the field is not nullable.
+function isValidFullEveryN(value) {
+  return /^(0|[1-9][0-9]*)$/.test(String(value ?? '').trim())
+}
+
 export default {
   name: 'DataExportScheduleForm',
   props: {
@@ -178,6 +212,19 @@ export default {
     }
   },
   computed: {
+    // An existing schedule can name a storage that has since been removed from
+    // the configuration. It is shown as unavailable and must be replaced before
+    // saving, rather than silently sent back.
+    destinationUnavailable() {
+      const name = this.values.destination
+      return (
+        !!name &&
+        !this.destinations.some((destination) => destination.name === name)
+      )
+    },
+    fullEveryNValid() {
+      return isValidFullEveryN(this.values.full_every_n)
+    },
     selectedTableIds() {
       return Object.entries(this.tableSelection)
         .filter(([, selected]) => selected)
@@ -190,18 +237,19 @@ export default {
       if (
         !this.values.name.trim() ||
         !this.values.cron.trim() ||
+        !this.values.destination ||
+        this.destinationUnavailable ||
+        !this.fullEveryNValid ||
         (!this.allTables && this.selectedTableIds.length === 0)
       ) {
         return
       }
-      const fullEveryN = parseInt(this.values.full_every_n, 10)
       this.$emit('submit', {
         ...this.values,
         name: this.values.name.trim(),
         cron: this.values.cron.trim(),
         timezone: this.values.timezone.trim() || 'UTC',
-        full_every_n:
-          Number.isNaN(fullEveryN) || fullEveryN < 0 ? 24 : fullEveryN,
+        full_every_n: parseInt(String(this.values.full_every_n).trim(), 10),
         table_ids: this.allTables ? null : this.selectedTableIds,
       })
     },

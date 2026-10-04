@@ -100,7 +100,14 @@
     "tables": "Tables",
     "active": "Active",
     "save": "Save",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "confirmDeleteTitle": "Delete this export schedule?",
+    "confirmDeleteMessage": "The schedule \"{name}\" is permanently deleted. Files it already exported stay on the storage.",
+    "confirmResetStateTitle": "Reset the export state?",
+    "confirmResetStateMessage": "The next export of every table of \"{name}\" will be a full export instead of an incremental one.",
+    "fullEveryNInvalid": "Enter a whole number of 0 or more.",
+    "unavailableDestination": "{name} (unavailable)",
+    "unavailableDestinationError": "This storage is no longer configured. Choose another one."
   },
   "sidebar": {
     "viewAPI": "View API Docs",

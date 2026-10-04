@@ -20,6 +20,7 @@
         <FormGroup
           small-label
           :label="$t('backupsModal.destination')"
+          :error="destinationUnavailable"
           class="margin-bottom-2"
         >
           <Dropdown v-model="values.destination">
@@ -33,7 +34,20 @@
               :name="item.name"
               :value="item.name"
             ></DropdownItem>
+            <DropdownItem
+              v-if="destinationUnavailable"
+              :name="
+                $t('backupsModal.unavailableDestination', {
+                  name: values.destination,
+                })
+              "
+              :value="values.destination"
+              disabled
+            ></DropdownItem>
           </Dropdown>
+          <template #error>
+            {{ $t('backupsModal.unavailableDestinationError') }}
+          </template>
         </FormGroup>
       </div>
       <div class="col col-6">
@@ -67,18 +81,34 @@
           small-label
           :label="$t('backupsModal.keepLast')"
           :helper-text="$t('backupsModal.retentionHelp')"
+          :error="showErrors && !isValidRetention(values.keep_last)"
           class="margin-bottom-2"
         >
-          <FormInput v-model="values.keep_last" type="number" />
+          <FormInput
+            v-model="values.keep_last"
+            type="number"
+            :min="1"
+            :step="1"
+            :error="showErrors && !isValidRetention(values.keep_last)"
+          />
+          <template #error>{{ $t('backupsModal.retentionInvalid') }}</template>
         </FormGroup>
       </div>
       <div class="col col-6">
         <FormGroup
           small-label
           :label="$t('backupsModal.keepDays')"
+          :error="showErrors && !isValidRetention(values.keep_days)"
           class="margin-bottom-2"
         >
-          <FormInput v-model="values.keep_days" type="number" />
+          <FormInput
+            v-model="values.keep_days"
+            type="number"
+            :min="1"
+            :step="1"
+            :error="showErrors && !isValidRetention(values.keep_days)"
+          />
+          <template #error>{{ $t('backupsModal.retentionInvalid') }}</template>
         </FormGroup>
       </div>
       <div v-if="applications.length > 0" class="col col-12 margin-bottom-2">
@@ -120,9 +150,20 @@
 <script>
 import ApplicationSelector from '@baserow/modules/core/components/export/ApplicationSelector'
 
-function toPositiveIntOrNull(value) {
-  const number = parseInt(value, 10)
-  return Number.isNaN(number) || number < 1 ? null : number
+function isBlank(value) {
+  return value === null || value === undefined || String(value).trim() === ''
+}
+
+/**
+ * Empty means "keep every backup" and is sent as null. Anything else must be a
+ * positive whole number, which is what the backend accepts.
+ */
+function isValidRetention(value) {
+  return isBlank(value) || /^[1-9][0-9]*$/.test(String(value).trim())
+}
+
+function toRetention(value) {
+  return isBlank(value) ? null : parseInt(String(value).trim(), 10)
 }
 
 export default {
@@ -171,6 +212,16 @@ export default {
     }
   },
   computed: {
+    // An existing schedule can name a destination that has since been removed
+    // from the configuration. It is shown as unavailable and must be replaced
+    // before saving, rather than silently sent back.
+    destinationUnavailable() {
+      const name = this.values.destination
+      return (
+        !!name &&
+        !this.destinations.some((destination) => destination.name === name)
+      )
+    },
     // The store only holds the applications of the workspace the user has open, so
     // the picker stays hidden on surfaces that target another workspace.
     applications() {
@@ -180,9 +231,16 @@ export default {
     },
   },
   methods: {
+    isValidRetention,
     submit() {
       this.showErrors = true
-      if (!this.values.name.trim() || !this.values.cron.trim()) {
+      if (
+        !this.values.name.trim() ||
+        !this.values.cron.trim() ||
+        this.destinationUnavailable ||
+        !isValidRetention(this.values.keep_last) ||
+        !isValidRetention(this.values.keep_days)
+      ) {
         return
       }
       const applicationIds =
@@ -194,8 +252,8 @@ export default {
         name: this.values.name.trim(),
         cron: this.values.cron.trim(),
         timezone: this.values.timezone.trim() || 'UTC',
-        keep_last: toPositiveIntOrNull(this.values.keep_last),
-        keep_days: toPositiveIntOrNull(this.values.keep_days),
+        keep_last: toRetention(this.values.keep_last),
+        keep_days: toRetention(this.values.keep_days),
         // Sent even when null, so editing a schedule back to covering the whole
         // workspace actually clears the previous selection.
         application_ids: applicationIds,

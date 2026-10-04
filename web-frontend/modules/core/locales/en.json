@@ -371,7 +371,16 @@
     "untrustedKeyTitle": "Untrusted backup",
     "untrustedKeyMessage": "This backup was signed by an instance this one does not trust. A staff member can restore it with the signing key trusted.",
     "scope": "Scope",
-    "onlySelectedApplications": "Only selected applications"
+    "onlySelectedApplications": "Only selected applications",
+    "confirmRestoreTitle": "Restore this backup?",
+    "confirmRestoreMessage": "The applications of the backup made on {date} are installed in this workspace as new applications. The existing applications are not changed.",
+    "confirmDeleteTitle": "Delete this backup?",
+    "confirmDeleteMessage": "The backup made on {date} is permanently deleted. This cannot be undone.",
+    "confirmDeleteScheduleTitle": "Delete this schedule?",
+    "confirmDeleteScheduleMessage": "The schedule \"{name}\" is permanently deleted. Backups it already made are kept.",
+    "retentionInvalid": "Enter a whole number of 1 or more, or leave it empty.",
+    "unavailableDestination": "{name} (unavailable)",
+    "unavailableDestinationError": "This storage is no longer configured. Choose another one or keep the backups on this instance."
   },
   "workspaceContext": {
     "renameWorkspace": "Rename workspace",
@@ -1061,7 +1070,10 @@
     "backups": "Backups"
   },
   "backupsAdminPanel": {
-    "workspace": "Workspace"
+    "workspace": "Workspace",
+    "loadErrorTitle": "Could not load the external storage",
+    "loadErrorMessage": "The configured backup storage could not be read, so the backups of this workspace cannot be shown.",
+    "retry": "Try again"
   },
   "auditLogAdminTable": {
     "title": "Audit log",

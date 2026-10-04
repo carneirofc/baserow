@@ -83,6 +83,7 @@
         </div>
       </div>
     </template>
+    <ConfirmModal ref="confirmModal" />
   </div>
 </template>
 
@@ -91,10 +92,11 @@ import error from '@baserow/modules/core/mixins/error'
 import moment from '@baserow/modules/core/moment'
 import BackupService from '@baserow/modules/core/services/backup'
 import BackupScheduleForm from '@baserow/modules/core/components/backups/BackupScheduleForm'
+import ConfirmModal from '@baserow/modules/core/components/modals/ConfirmModal'
 
 export default {
   name: 'BackupSchedulesTab',
-  components: { BackupScheduleForm },
+  components: { BackupScheduleForm, ConfirmModal },
   mixins: [error],
   props: {
     workspace: {
@@ -187,7 +189,17 @@ export default {
         this.runningId = null
       }
     },
-    async remove(schedule) {
+    remove(schedule) {
+      this.$refs.confirmModal.ask({
+        title: this.$t('backupsModal.confirmDeleteScheduleTitle'),
+        message: this.$t('backupsModal.confirmDeleteScheduleMessage', {
+          name: schedule.name,
+        }),
+        confirmLabel: this.$t('backupsModal.delete'),
+        onConfirm: () => this.doRemove(schedule),
+      })
+    },
+    async doRemove(schedule) {
       this.hideError()
       try {
         await this.resolvedService.deleteSchedule(schedule.id)
