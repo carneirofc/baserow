@@ -91,6 +91,7 @@
             {{ $t('backupsModal.download') }}
           </DownloadLink>
           <Button
+            v-if="canRestore"
             type="secondary"
             size="small"
             :disabled="busy"
@@ -153,6 +154,13 @@ export default {
       required: false,
       default: null,
     },
+    // The staff admin panel passes `admin`: the backend lets staff restore into any
+    // workspace, so the restore action is not gated there.
+    admin: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
@@ -172,6 +180,18 @@ export default {
     },
     busy() {
       return this.starting || this.jobIsRunning
+    },
+    // Restoring creates applications, which the backend checks separately from
+    // exporting the workspace, which is what opens the backups modal.
+    canRestore() {
+      return (
+        this.admin ||
+        this.$hasPermission(
+          'workspace.create_application',
+          this.workspace,
+          this.workspace.id
+        )
+      )
     },
     /**
      * `ApplicationSelector` reads the applications out of the store, which only

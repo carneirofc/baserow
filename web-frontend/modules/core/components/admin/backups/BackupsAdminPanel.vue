@@ -39,6 +39,7 @@
             :workspace="workspace"
             :destinations="destinations"
             :service="adminBackupService"
+            admin
           />
         </Tab>
         <Tab :title="$t('backupsModal.tabSchedules')">
@@ -54,6 +55,7 @@
             :workspace="workspace"
             :destinations="destinations"
             :service="adminBackupService"
+            admin
           />
         </Tab>
       </Tabs>

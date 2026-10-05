@@ -104,6 +104,7 @@
           </template>
           <template #actions>
             <Button
+              v-if="canRestore"
               type="secondary"
               size="small"
               :loading="busy && restoringKey === backup.key"
@@ -154,6 +155,13 @@ export default {
       required: false,
       default: null,
     },
+    // The staff admin panel passes `admin`: the backend lets staff restore into any
+    // workspace, so the restore action is not gated there.
+    admin: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
@@ -174,6 +182,18 @@ export default {
     },
     busy() {
       return this.starting || this.jobIsRunning
+    },
+    // Restoring creates applications, which the backend checks separately from
+    // exporting the workspace, which is what opens the backups modal.
+    canRestore() {
+      return (
+        this.admin ||
+        this.$hasPermission(
+          'workspace.create_application',
+          this.workspace,
+          this.workspace.id
+        )
+      )
     },
     isStaff() {
       return this.$store.getters['auth/isStaff']
@@ -211,7 +231,7 @@ export default {
         .join(', ')
     },
     // Names the schedules the backups came from. A user who cannot list the
-    // schedules simply gets none, the row then only says it was scheduled.
+    // schedules gets none, the row then only says it was scheduled.
     async loadScheduleNames() {
       try {
         const { data } = await this.resolvedService.listSchedules(
@@ -222,12 +242,24 @@ export default {
           names[schedule.id] = schedule.name
         }
         this.scheduleNames = names
-      } catch {
+      } catch (error) {
         this.scheduleNames = {}
+        // Without the permission the names are simply left out, anything else is a
+        // real failure the user should hear about.
+        const status = error.response?.status
+        const denied =
+          status === 401 ||
+          status === 403 ||
+          error.handler?.code === 'ERROR_PERMISSION_DENIED'
+        if (!denied && error.handler) {
+          error.handler.notifyIf()
+        }
       }
     },
     selectDestination(value) {
       this.destination = value
+      // The trust is given to the signing key of one storage, not carried over.
+      this.trustPublicKey = false
       this.load()
     },
     async load() {

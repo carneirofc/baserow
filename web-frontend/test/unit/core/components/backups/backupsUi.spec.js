@@ -896,6 +896,115 @@ describe('backups and datalake export UI', () => {
     expect(wrapper.text()).not.toContain('backupsModal.trustPublicKey')
   })
 
+  test('switching storage drops the trust given to the previous one', async () => {
+    setUser({ id: 5, is_staff: true })
+    const destination = (name) => ({
+      name,
+      type: 's3',
+      purposes: ['backup'],
+      allow_trust_public_key: true,
+    })
+    wrapper = await mountSuspended(RemoteBackupsTab, {
+      props: {
+        workspace: { id: 1, name: 'Acme' },
+        destinations: [destination('a'), destination('b')],
+        service: () => ({
+          listRemoteBackups: vi.fn().mockResolvedValue({ data: {} }),
+          listSchedules: vi.fn().mockResolvedValue({ data: [] }),
+        }),
+      },
+    })
+    await flushPromises()
+
+    wrapper.vm.trustPublicKey = true
+    wrapper.vm.selectDestination('b')
+    await flushPromises()
+    expect(wrapper.vm.trustPublicKey).toBe(false)
+  })
+
+  test('the restore action needs the permission to create applications', async () => {
+    const remoteService = {
+      listRemoteBackups: vi
+        .fn()
+        .mockResolvedValue({ data: { results: [remoteBackup('a-key')] } }),
+      listSchedules: vi.fn().mockResolvedValue({ data: [] }),
+    }
+    const localService = {
+      listBackups: vi.fn().mockResolvedValue({ data: { results: [BACKUP] } }),
+    }
+    const mountTab = async (component, service, props, permissions) => {
+      const tab = await mountSuspended(component, {
+        props: {
+          workspace: { id: 1, name: 'Acme' },
+          destinations: [{ name: 'a', type: 's3', purposes: ['backup'] }],
+          service: () => service,
+          ...props,
+        },
+        global: {
+          mocks: {
+            $hasPermission: (operation) => permissions.includes(operation),
+          },
+        },
+      })
+      await flushPromises()
+      return tab
+    }
+
+    for (const [component, service] of [
+      [BackupsTab, localService],
+      [RemoteBackupsTab, remoteService],
+    ]) {
+      wrapper = await mountTab(component, service, {}, ['workspace.export'])
+      expect(wrapper.text()).not.toContain('backupsModal.restore')
+      wrapper.unmount()
+
+      wrapper = await mountTab(component, service, {}, [
+        'workspace.create_application',
+      ])
+      expect(wrapper.text()).toContain('backupsModal.restore')
+      wrapper.unmount()
+
+      // Staff in the admin panel are let through by the backend.
+      wrapper = await mountTab(component, service, { admin: true }, [])
+      expect(wrapper.text()).toContain('backupsModal.restore')
+      wrapper.unmount()
+      wrapper = null
+    }
+  })
+
+  test('only a failure other than a missing permission is reported for schedule names', async () => {
+    const failure = (status, code) => {
+      const error = new Error(code)
+      error.response = { status }
+      error.handler = { code, notifyIf: vi.fn() }
+      return error
+    }
+    const mountTab = async (error) => {
+      wrapper = await mountSuspended(RemoteBackupsTab, {
+        props: {
+          workspace: { id: 1, name: 'Acme' },
+          destinations: [{ name: 'a', type: 's3', purposes: ['backup'] }],
+          service: () => ({
+            listRemoteBackups: vi.fn().mockResolvedValue({ data: {} }),
+            listSchedules: vi.fn().mockRejectedValue(error),
+          }),
+        },
+      })
+      await flushPromises()
+      expect(wrapper.vm.scheduleNames).toEqual({})
+      wrapper.unmount()
+      wrapper = null
+    }
+
+    const denied = failure(403, 'ERROR_PERMISSION_DENIED')
+    await mountTab(denied)
+    expect(denied.handler.notifyIf).not.toHaveBeenCalled()
+
+    const broken = failure(500, 'ERROR_UNKNOWN')
+    await mountTab(broken)
+    expect(broken.handler.notifyIf).toHaveBeenCalled()
+  })
+
   test('datalake runs show their state, mode and error as text', async () => {
     setUser({ id: 5, is_staff: true })
     mock.onGet('/data-destinations/').reply(200, [])
