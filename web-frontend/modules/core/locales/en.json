@@ -699,7 +699,13 @@
     "mismatchTitle": "Backend and web-frontend builds differ",
     "mismatchMessage": "The backend runs {backend} while the web-frontend runs {frontend}. Only part of this deployment was upgraded, which can cause unexpected errors.",
     "unavailableTitle": "The backend build could not be read",
-    "unavailableMessage": "The request for the backend build failed. A backend older than this web-frontend does not answer it at all, which would mean only part of this deployment was upgraded."
+    "unavailableMessage": "The request for the backend build failed. A backend older than this web-frontend does not answer it at all, which would mean only part of this deployment was upgraded.",
+    "creditsFork": "This is the Baserow FOSS fork, maintained by its contributors.",
+    "forkRepository": "Source code",
+    "creditsUpstream": "Based on Baserow, created by Baserow B.V.",
+    "upstreamProject": "baserow.io",
+    "creditsLicense": "Released under the MIT license.",
+    "license": "License"
   },
   "settings": {
     "settingsTitle": "Admin settings",

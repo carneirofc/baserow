@@ -60,3 +60,21 @@
     margin-bottom: 16px;
   }
 }
+
+.build-info__credits {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 16px;
+  font-size: 13px;
+  color: $color-neutral-600;
+
+  a {
+    color: $color-neutral-600;
+    text-decoration: underline;
+
+    &:hover {
+      color: $color-neutral-900;
+    }
+  }
+}

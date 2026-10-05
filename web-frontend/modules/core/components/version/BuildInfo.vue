@@ -32,6 +32,32 @@
         })
       }}
     </Alert>
+    <div v-if="showCredits" class="build-info__credits">
+      <div class="build-info__credits-line">
+        {{ $t('buildInfo.creditsFork') }}
+        <a :href="credits.forkUrl" target="_blank" rel="noopener noreferrer">{{
+          $t('buildInfo.forkRepository')
+        }}</a>
+      </div>
+      <div class="build-info__credits-line">
+        {{ $t('buildInfo.creditsUpstream') }}
+        <a
+          :href="credits.upstreamUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          >{{ $t('buildInfo.upstreamProject') }}</a
+        >
+      </div>
+      <div class="build-info__credits-line">
+        {{ $t('buildInfo.creditsLicense') }}
+        <a
+          :href="credits.licenseUrl"
+          target="_blank"
+          rel="noopener noreferrer"
+          >{{ $t('buildInfo.license') }}</a
+        >
+      </div>
+    </div>
   </div>
 </template>
 
@@ -44,6 +70,10 @@ import {
   isSameBuild,
   shortCommit,
 } from '@baserow/modules/core/utils/buildInfo'
+import {
+  BRANDING_DEFAULTS,
+  PROJECT_CREDITS,
+} from '@baserow/modules/core/brandingDefaults'
 
 export default {
   name: 'BuildInfo',
@@ -68,7 +98,19 @@ export default {
       default: false,
     },
   },
+  data() {
+    return { credits: PROJECT_CREDITS }
+  },
   computed: {
+    /**
+     * Credits do not depend on the backend, so they render even when its build
+     * could not be read. They are attribution, so the branding can hide them.
+     */
+    showCredits() {
+      return (
+        this.$branding?.showAttribution ?? BRANDING_DEFAULTS.showAttribution
+      )
+    },
     /**
      * The web-frontend build, which unlike the backend one needs no request: it
      * is baked into this bundle.

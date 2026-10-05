@@ -1,6 +1,7 @@
 import { shallowMount } from '@vue/test-utils'
 
 import BuildInfo from '@baserow/modules/core/components/version/BuildInfo.vue'
+import { PROJECT_CREDITS } from '@baserow/modules/core/brandingDefaults'
 
 const COMMIT = '8b38f7dc832a689794023a21ee21e01772ec28de'
 
@@ -15,13 +16,15 @@ const backendBuild = (overrides = {}) => ({
 const mount = (
   backend,
   frontend = { version: 'v0.13.0', commit: COMMIT },
-  props = {}
+  props = {},
+  branding = { showAttribution: true }
 ) =>
   shallowMount(BuildInfo, {
     props: { backend, ...props },
     global: {
       mocks: {
         $buildInfo: { buildDate: '', ...frontend },
+        $branding: branding,
         $t: (key, values) =>
           values ? `${key}:${JSON.stringify(values)}` : key,
       },
@@ -87,5 +90,32 @@ describe('BuildInfo', () => {
     expect(wrapper.findAll('.build-info__row')).toHaveLength(0)
     // The web-frontend half still reports itself.
     expect(wrapper.find('.build-info__frontend').text()).toContain('v0.13.0')
+  })
+
+  it('credits the fork and upstream Baserow', () => {
+    const credits = mount(backendBuild()).find('.build-info__credits')
+    const hrefs = credits.findAll('a').map((link) => link.attributes('href'))
+    expect(hrefs).toEqual([
+      PROJECT_CREDITS.forkUrl,
+      PROJECT_CREDITS.upstreamUrl,
+      PROJECT_CREDITS.licenseUrl,
+    ])
+  })
+
+  it('keeps the credits when the backend build could not be read', () => {
+    const wrapper = mount(null, undefined, { error: true })
+    expect(wrapper.find('.build-info__credits').exists()).toBe(true)
+  })
+
+  it('hides the credits when the branding turns attribution off', () => {
+    const wrapper = mount(
+      backendBuild(),
+      undefined,
+      {},
+      {
+        showAttribution: false,
+      }
+    )
+    expect(wrapper.find('.build-info__credits').exists()).toBe(false)
   })
 })

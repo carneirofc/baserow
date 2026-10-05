@@ -97,8 +97,8 @@ webp, gif, ico, woff, woff2, ttf and otf.
   back to `appName`, then to `Baserow`. Max 160 characters.
 - **`showAttribution`**: set to `false` to remove the attribution entirely —
   the sidebar footer logo, the shared-view header logo, the public form
-  "Powered by" block and the dashboard "star on GitHub / share" alert all stop
-  rendering.
+  "Powered by" block, the dashboard "star on GitHub / share" alert and the
+  fork and upstream credits on the admin version panel all stop rendering.
 - **`messages`**: translation overrides per locale, using the same keys as
   `web-frontend/**/locales/<locale>.json`. The "Powered by" label is
   `formViewPoweredBy.poweredBy` in the database module.

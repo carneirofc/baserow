@@ -266,7 +266,13 @@
     "mismatchTitle": "As compilações do backend e do web-frontend são diferentes",
     "mismatchMessage": "O backend executa {backend} e o web-frontend executa {frontend}. Apenas parte desta instalação foi atualizada, o que pode causar erros inesperados.",
     "unavailableTitle": "Não foi possível ler a compilação do backend",
-    "unavailableMessage": "A requisição da compilação do backend falhou. Um backend mais antigo que este web-frontend não a responde, o que indicaria que apenas parte desta instalação foi atualizada."
+    "unavailableMessage": "A requisição da compilação do backend falhou. Um backend mais antigo que este web-frontend não a responde, o que indicaria que apenas parte desta instalação foi atualizada.",
+    "creditsFork": "Este é o fork FOSS do Baserow, mantido por seus contribuidores.",
+    "forkRepository": "Código-fonte",
+    "creditsUpstream": "Baseado no Baserow, criado pela Baserow B.V.",
+    "upstreamProject": "baserow.io",
+    "creditsLicense": "Distribuído sob a licença MIT.",
+    "license": "Licença"
   },
   "settings": {
     "settingsTitle": "Configurações administrativas",

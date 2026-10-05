@@ -12,3 +12,15 @@ export const BRANDING_DEFAULTS = {
   siteTitle: 'Baserow',
   showAttribution: true,
 }
+
+/**
+ * Where this software comes from, credited on the admin version panel. Unlike
+ * the values above these are not branding: an operator who rebrands the
+ * instance still runs this fork, so they cannot be overridden, only hidden
+ * along with the rest of the attribution through `showAttribution`.
+ */
+export const PROJECT_CREDITS = {
+  forkUrl: 'https://github.com/carneirofc/baserow',
+  licenseUrl: 'https://github.com/carneirofc/baserow/blob/develop/LICENSE',
+  upstreamUrl: 'https://baserow.io',
+}
