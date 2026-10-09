@@ -2,13 +2,13 @@
 
 ## Prerequisites
 
-- A running Baserow instance (local dev or deployed)
-- An MCP endpoint key (created via Settings > MCP in the Baserow UI)
+- A running Saveroom instance (local dev or deployed)
+- An MCP endpoint key (created via Settings > MCP in the Saveroom UI)
 - An MCP-compatible client (see step 1)
 
 ## 1. Connect an MCP client
 
-Go to **Settings > MCP** in Baserow and create an endpoint. The UI shows the
+Go to **Settings > MCP** in Saveroom and create an endpoint. The UI shows the
 SSE URL with the key pre-filled:
 
 ```
@@ -26,7 +26,7 @@ How you use this URL depends on your MCP client:
 - **Claude Desktop**:
   1. Open Claude Desktop settings (`Cmd+,` on macOS, `Ctrl+,` on Windows/Linux).
   2. Go to the **Develop** tab and click **Edit Config**.
-  3. Paste the JSON config snippet shown in the Baserow UI into
+  3. Paste the JSON config snippet shown in the Saveroom UI into
      `claude_desktop_config.json` and save.
   4. Restart Claude Desktop.
 
@@ -34,7 +34,7 @@ How you use this URL depends on your MCP client:
 
 ## 2. Verify connection
 
-After connecting, your client should list the available Baserow tools. In
+After connecting, your client should list the available Saveroom tools. In
 Claude Desktop this appears as a hammer icon in the input bar. In MCP
 Inspector, tools appear in the left panel after connecting.
 
@@ -56,7 +56,7 @@ The following tools are currently enabled:
 
 ### List databases and tables
 
-Ask Claude: *"What databases do I have in Baserow?"*
+Ask Claude: *"What databases do I have in Saveroom?"*
 
 Expected: Claude calls `list_databases`, then `list_tables`, and returns the
 names and IDs.

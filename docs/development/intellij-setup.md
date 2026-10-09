@@ -1,6 +1,6 @@
 # IntelliJ Setup
 
-This guide walks you through a first time Intellij setup for Baserow for developers. It
+This guide walks you through a first time Intellij setup for Saveroom for developers. It
 will ensure you can run and debug all tests and also enable all the relevant linters and
 automatic style fixers to make your life as easy as possible.
 
@@ -15,10 +15,10 @@ Install the following tools:
 
 ## Setup Steps
 
-1. First checkout a fresh copy of Baserow: `git clone git@github.com:baserow/baserow.git`
-1. `cd baserow`
+1. First checkout a fresh copy of Saveroom: `git clone git@github.com:carneirofc/saveroom.git`
+1. `cd saveroom`
 1. `./config/intellij/apply_standard_baserow_intellij_config.sh`
-    1. Type `Y` and hit enter to apply the standard Baserow config
+    1. Type `Y` and hit enter to apply the standard Saveroom config
 1. Open Intellij and on the "Welcome to IntelliJ IDEA" screen click the "Open" button
    and open the baserow folder you cloned above.
 1. Make sure you have installed / enabled the

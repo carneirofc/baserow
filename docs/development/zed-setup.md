@@ -1,6 +1,6 @@
 # Zed Setup
 
-This guide explains how to use [Zed](https://zed.dev) with Baserow, including the
+This guide explains how to use [Zed](https://zed.dev) with Saveroom, including the
 Python/Django debugger configurations that ship with the repo.
 
 ## Prerequisites

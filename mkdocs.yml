@@ -1,4 +1,4 @@
-site_name: Baserow (carneirofc fork) Docs
+site_name: Saveroom Docs
 site_url: https://carneirofc.github.io/saveroom/
 repo_url: https://github.com/carneirofc/saveroom
 repo_name: carneirofc/saveroom
@@ -7,6 +7,8 @@ docs_dir: docs
 
 theme:
   name: material
+  logo: assets/logo.svg
+  favicon: assets/logo.svg
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
@@ -62,7 +64,7 @@ nav:
       - Branding: installation/branding.md
       - Configuration: installation/configuration.md
   - Tutorials:
-      - Understanding Baserow Formulas: tutorials/understanding-baserow-formulas.md
+      - Understanding Saveroom Formulas: tutorials/understanding-baserow-formulas.md
       - Debugging Connection Issues: tutorials/debugging-connection-issues.md
       - Prefill forms: tutorials/prefill-forms.md
       - Protected editing: tutorials/protected-editing.md
@@ -121,7 +123,7 @@ nav:
       - Loading animations: patterns/loading-animations.md
       - Row history from action: patterns/row_history_from_action.md
   - Runbooks:
-      - Back up and restore Baserow: runbooks/back-up-and-restore-baserow.md
+      - Back up and restore Saveroom: runbooks/back-up-and-restore-baserow.md
       - Migrate from user tables database: runbooks/migrate-from-user-tables-database.md
       - Upgrade embedded Postgres: runbooks/upgrade-embedded-postgres.md
   - Testing:

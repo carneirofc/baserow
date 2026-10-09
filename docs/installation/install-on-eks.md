@@ -1,6 +1,6 @@
 # Installing on Amazon EKS
 
-This guide deploys Baserow on EKS in the shape most private AWS estates want: an
+This guide deploys Saveroom on EKS in the shape most private AWS estates want: an
 **internal** Application Load Balancer that is never exposed to the internet, fronted by
 **CloudFront using a VPC origin**, with media on S3 and **no long-lived AWS credentials
 anywhere** — the pods assume an IAM role through IRSA.
@@ -202,7 +202,7 @@ Why each of these:
 - **`listen-ports: HTTP 80`** — CloudFront already terminated TLS. Use HTTPS with an ACM
   certificate here instead if your security posture requires encryption in transit
   inside the VPC.
-- **`idle_timeout.timeout_seconds=4000`** — Baserow's realtime collaboration rides
+- **`idle_timeout.timeout_seconds=4000`** — Saveroom's realtime collaboration rides
   long-lived WebSockets on `/ws`; the 60s ALB default would cut them constantly.
 
 The ALB security group must allow inbound HTTP **from the CloudFront VPC origin's
@@ -273,7 +273,7 @@ kubectl -n baserow create secret generic baserow-db --from-literal=password='...
 kubectl -n baserow create secret generic baserow-redis --from-literal=redis-password='...'
 ```
 
-Use RDS for PostgreSQL **18** — Baserow targets that major version. Security groups on
+Use RDS for PostgreSQL **18** — Saveroom targets that major version. Security groups on
 both services must admit the pod subnets.
 
 ## 6. Install

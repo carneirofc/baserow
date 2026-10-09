@@ -1,6 +1,6 @@
 # Justfile Command Reference
 
-Baserow uses [just](https://github.com/casey/just) as a command runner. Commands are organized in three justfiles:
+Saveroom uses [just](https://github.com/casey/just) as a command runner. Commands are organized in three justfiles:
 
 - **Root** (`/justfile`) - Docker Compose and orchestration commands
 - **Backend** (`/backend/justfile`) - Python/Django commands using [uv](https://github.com/astral-sh/uv)

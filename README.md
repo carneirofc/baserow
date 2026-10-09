@@ -1,7 +1,10 @@
-## Baserow FOSS fork: a no-code database, app builder and automation platform
+<p align="center"><img src="web-frontend/modules/core/static/img/logo.svg" alt="Saveroom" height="48"></p>
 
-This is a fork of [Baserow](https://baserow.io) with the proprietary editions removed,
-intended as a clean open source starting point.
+## Saveroom: the safe room for your tables
+
+Saveroom is a no-code database, app builder and automation platform. It is a fork of
+[Baserow](https://baserow.io) with the proprietary editions removed, and it is heading in
+its own direction as a fully open source project.
 
 Upstream Baserow is open-core: most of it is MIT licensed, but the `premium/` and
 `enterprise/` directories are covered by separate licenses that require a paid
@@ -167,7 +170,7 @@ docker run -d \
   ghcr.io/carneirofc/saveroom:latest
 ```
 
-Then open [http://localhost](http://localhost). Baserow stores everything (Postgres,
+Then open [http://localhost](http://localhost). Saveroom stores everything (Postgres,
 Redis, uploads) inside the `baserow_data` volume.
 
 * Set `BASEROW_PUBLIC_URL` to `https://YOUR_DOMAIN` or `http://YOUR_IP` for external
@@ -181,7 +184,7 @@ Redis, uploads) inside the `baserow_data` volume.
   and environment variables keep their names.
 * To enable SSO, pass the `BASEROW_OIDC_PROVIDERS` (and optionally `BASEROW_OIDC_ONLY`)
   environment variables — see
-  [Passing the configuration to Baserow](docs/installation/sso-oidc.md#passing-the-configuration-to-baserow).
+  [Passing the configuration to Saveroom](docs/installation/sso-oidc.md#passing-the-configuration-to-saveroom).
 
 Images are published automatically by the
 [`build-publish-image`](.github/workflows/build-publish-image.yml) GitHub Actions
@@ -233,7 +236,7 @@ fork does not ship.
 
 ```bash
 git clone https://github.com/carneirofc/saveroom.git
-cd baserow
+cd saveroom
 
 just dc-dev build --parallel
 just dc-dev up -d

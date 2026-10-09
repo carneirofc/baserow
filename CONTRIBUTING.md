@@ -1,6 +1,6 @@
-# Contributing to Baserow
+# Contributing to Saveroom
 
-Thank you for your interest in Baserow. This document explains how you can get involved.
+Thank you for your interest in Saveroom. This document explains how you can get involved.
 
 ## We are not accepting unsolicited pull requests
 
@@ -38,4 +38,4 @@ If you find a security vulnerability, please report it privately through GitHub'
 
 ## Questions?
 
-For general questions about Baserow, use the [issue tracker](https://github.com/carneirofc/saveroom/issues).
+For general questions about Saveroom, use the [issue tracker](https://github.com/carneirofc/saveroom/issues).

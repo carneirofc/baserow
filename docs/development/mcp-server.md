@@ -1,6 +1,6 @@
 # MCP Server
 
-Baserow ships a built-in [Model Context Protocol](https://modelcontextprotocol.io/) (MCP) server that exposes database operations as tools so that AI assistants can read and write Baserow tables directly.
+Saveroom ships a built-in [Model Context Protocol](https://modelcontextprotocol.io/) (MCP) server that exposes database operations as tools so that AI assistants can read and write Saveroom tables directly.
 
 ## Architecture
 
@@ -21,7 +21,7 @@ ActionTypes → Django ORM
 
 - **MCPTool** (`registries.py`) — Base class for all tools. Subclasses define a `type`, a Pydantic `input_schema`, and implement `_sync_call()`. Tools with `enabled = False` are registered but hidden from MCP clients.
 - **Services layer** (`services.py`) — Workspace-scoped database operations used by the MCP tools.
-- **Action types** — All mutations go through Baserow's action-type layer, so operations are undoable.
+- **Action types** — All mutations go through Saveroom's action-type layer, so operations are undoable.
 - **Workspace isolation** — Every service function enforces workspace-scoped access. Tools cannot touch data outside the endpoint's workspace.
 
 ## Endpoint model
@@ -32,7 +32,7 @@ An `MCPEndpoint` links a 32-character secret key to a user and workspace. The ke
 GET /mcp/{key}/sse
 ```
 
-Endpoints are created via **Settings > MCP** in the Baserow UI.
+Endpoints are created via **Settings > MCP** in the Saveroom UI.
 
 ## Running the server
 

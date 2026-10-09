@@ -1,6 +1,6 @@
 # Installing with Helm
 
-The Helm chart deploys Baserow on Kubernetes as four separate workloads — `backend`,
+The Helm chart deploys Saveroom on Kubernetes as four separate workloads — `backend`,
 `web-frontend`, `celery` worker and `celery-beat` — with optional bundled PostgreSQL
 and Redis. It runs on plain Kubernetes, on OpenShift under the default `restricted-v2`
 SCC, and on Amazon EKS.
@@ -147,7 +147,7 @@ externalDatabase:
 `externalDatabase.url` sets a full DSN and overrides the discrete fields. Redis mirrors
 all of this with `redis.enabled` and `externalRedis.*`.
 
-Baserow targets **PostgreSQL 18**. Point it at an older server and `pg_dump`-based
+Saveroom targets **PostgreSQL 18**. Point it at an older server and `pg_dump`-based
 features will misbehave.
 
 ## Media storage

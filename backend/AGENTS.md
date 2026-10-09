@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Django backend for Baserow: REST API, real-time WebSocket layer, Celery workers, and the domain logic behind databases, the Application Builder, Automation, Dashboards, and integrations.
+Django backend for Saveroom: REST API, real-time WebSocket layer, Celery workers, and the domain logic behind databases, the Application Builder, Automation, Dashboards, and integrations.
 
 ## Ownership
 

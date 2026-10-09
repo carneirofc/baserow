@@ -1,6 +1,6 @@
 # Running the Dev Environment Locally (Without Docker)
 
-This guide covers running Baserow's backend and frontend natively on your machine, using Docker only for infrastructure services (PostgreSQL, Redis). This approach offers faster iteration, easier debugging, and better IDE integration compared to full Docker development.
+This guide covers running Saveroom's backend and frontend natively on your machine, using Docker only for infrastructure services (PostgreSQL, Redis). This approach offers faster iteration, easier debugging, and better IDE integration compared to full Docker development.
 
 ## Prerequisites
 
@@ -70,7 +70,7 @@ git --version
 ```bash
 # Clone the repository
 git clone --branch develop https://github.com/carneirofc/saveroom.git
-cd baserow
+cd saveroom
 
 # Initialize backend and frontend (creates venv, installs deps, creates .env.local)
 just init

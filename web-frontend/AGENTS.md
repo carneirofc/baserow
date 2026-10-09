@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Nuxt/Vue web application for Baserow: the browser UI for databases, the Application Builder, Automation, Dashboards, and admin.
+Nuxt/Vue web application for Saveroom: the browser UI for databases, the Application Builder, Automation, Dashboards, and admin.
 
 ## Ownership
 

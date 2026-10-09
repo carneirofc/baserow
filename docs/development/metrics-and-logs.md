@@ -1,7 +1,7 @@
 # Working with metrics and logs as a developer
 
 First see [our monitoring doc](../installation/monitoring.md) for an overview what
-Baserow offers to monitor itself.
+Saveroom offers to monitor itself.
 
 This doc explains how to:
 
@@ -11,7 +11,7 @@ This doc explains how to:
 3. What tracing is and how to add new spans tracing your functions
 4. Add new metrics to the codebase and when to do so
 
-## Setting up honeycomb to view Baserow telemetry in your local dev env
+## Setting up honeycomb to view Saveroom telemetry in your local dev env
 
 1. Sign up at https://honeycomb.io.
 2. Create your own environment inside of honeycomb, you will configure your local dev
@@ -67,10 +67,10 @@ of awesome features.
 
 ### When and what to log
 
-As of Feb 2023 Baserow doesn't log that much. Now we have a nicer logging framework
+As of Feb 2023 Saveroom doesn't log that much. Now we have a nicer logging framework
 `loguru` and a way of shipping and storing logs using OTEL we should log much more.
 
-1. Log for humans, so they can diagnose what happened in Baserow.
+1. Log for humans, so they can diagnose what happened in Saveroom.
 2. Use the different logging levels available to you error/warning/info/debug/trace.
 3. Don't be afraid of putting into too many logs.
 
@@ -137,7 +137,7 @@ class SomeClass(metaclass=baserow_trace_methods(tracer)):
 ```
 
 This comes in very useful when working with a class that has abstract methods that
-will be implemented by many sub classes (which we do allot in Baserow).
+will be implemented by many sub classes (which we do allot in Saveroom).
 
 See below for an example of how to trace every single subclasses implementation of
 `.do` for an abstract base class!

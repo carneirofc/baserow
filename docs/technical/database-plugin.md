@@ -1,6 +1,6 @@
 # Database plugin
 
-The database plugin is installed by default in every copy of Baserow. Without it you 
+The database plugin is installed by default in every copy of Saveroom. Without it you 
 can't really do anything with the application. In short this is the plugin that allows
 creating a database with a spreadsheet-like interface. You will notice that everything
 has been built around this concept.
@@ -8,7 +8,7 @@ has been built around this concept.
 ## Tables
 
 Each database application can have multiple tables and a table is exactly what you
-might suspect. It contains rows and columns, but in Baserow the columns are called fields. 
+might suspect. It contains rows and columns, but in Saveroom the columns are called fields. 
 Every table has its own schema representation in the PostgreSQL database.
 
 There is a `baserow.contrib.database.table.handler.TableHandler` handler class that has

@@ -1,8 +1,8 @@
-# Monitoring your Baserow server 
+# Monitoring your Saveroom server 
 
-Baserow can be configured to ship logs, metrics and traces using
+Saveroom can be configured to ship logs, metrics and traces using
 the [Open Telemetry standard](https://opentelemetry.io/). You can use these to monitor
-your Baserow instance.
+your Saveroom instance.
 
 Enable this by setting the env var `BASEROW_ENABLE_OTEL=true` and then depending on
 where you want to send telemetry set the
@@ -16,9 +16,9 @@ You probably want to set `OTEL_EXPORTER_OTLP_ENDPOINT` also.
 > If you want to use more, you need to edit the compose files
 > yourself and add the env var passthroughs you need.
 
-By default, Baserow will send the following telemetry:
+By default, Saveroom will send the following telemetry:
 
-- Baserow application logging. 
+- Saveroom application logging. 
 - Some basic metrics.
 - Various spans over some of our critical functions and handler methods.
 - Automatic instrumentation provided by OTEL libraries for:

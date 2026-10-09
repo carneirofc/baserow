@@ -93,7 +93,7 @@ successful you will receive messages related to that page. You will need to manu
 
 ### Table page
 
-Subscribing to a table page will request updates related to a Baserow table that will
+Subscribing to a table page will request updates related to a Saveroom table that will
 give you information about new rows, row updates, and other relevant information. 
 
 A table page expects the`table_id` parameter. Below you will find an example how to subscribe to that page.
@@ -120,7 +120,7 @@ are subscribed to the page.
 
 ### Row page
 
-Subscribing to a Row page will request additional updates related to a Baserow row of a particular table that will give you information like row history updates. Please note that to get updates such as row deletions and similar, you should use the table page described above.
+Subscribing to a Row page will request additional updates related to a Saveroom row of a particular table that will give you information like row history updates. Please note that to get updates such as row deletions and similar, you should use the table page described above.
 
 A Row page expects the`table_id` and `row_id` parameters. Below you will find an example how to subscribe to that page.
 

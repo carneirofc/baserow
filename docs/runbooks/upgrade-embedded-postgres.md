@@ -4,7 +4,7 @@ This runbook only applies to the **all-in-one image** running its **embedded**
 PostgreSQL database — that is, you did *not* pass `DATABASE_HOST` /
 `POSTGRESQL_*` environment variables when starting the container. If you run an
 external PostgreSQL server, nothing here applies: upgrade that server on its own
-schedule. Baserow supports PostgreSQL >= 14.
+schedule. Saveroom supports PostgreSQL >= 14.
 
 The all-in-one image's base moved to Ubuntu 26.04 LTS, which ships PostgreSQL 18.
 A PostgreSQL data directory initialised by version 15 cannot be read by version
@@ -21,7 +21,7 @@ data volume with the new one.
 ## Before you start
 
 - Take a full backup first, following
-  [Back-up Baserow](back-up-and-restore-baserow.md). The steps below create a new
+  [Back-up Saveroom](back-up-and-restore-baserow.md). The steps below create a new
   volume and leave the old one untouched, but a separate backup is still the
   safety net if something goes wrong halfway.
 - Note the exact image tag you are currently running (`docker inspect baserow`)
@@ -32,7 +32,7 @@ data volume with the new one.
 Below, `OLD_TAG` is the version you run today (PostgreSQL 15) and `NEW_TAG` is the
 version you are upgrading to (PostgreSQL 18).
 
-## 1. Stop Baserow
+## 1. Stop Saveroom
 
 ```bash
 docker stop baserow
@@ -78,7 +78,7 @@ docker run -it --rm \
   backend-cmd-with-db restore -f /baserow/host/pg15-backup.tar.gz
 ```
 
-## 5. Start Baserow on the new volume
+## 5. Start Saveroom on the new volume
 
 Use your normal run command, with the volume swapped:
 

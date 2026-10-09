@@ -1,6 +1,6 @@
-# Baserow Helm chart
+# Saveroom Helm chart
 
-Deploys this Baserow fork on Kubernetes as separate, hardened pods — `backend`,
+Deploys this Saveroom fork on Kubernetes as separate, hardened pods — `backend`,
 `web-frontend`, `celery` worker and `celery-beat` — plus optional, toggleable
 PostgreSQL and Redis subcharts.
 

@@ -1,6 +1,6 @@
 # Feature flags
 
-Baserow uses basic feature flags currently to allow unfinished features to be merged
+Saveroom uses basic feature flags currently to allow unfinished features to be merged
 and/or released.
 
 > Looking to turn databases, the application builder, dashboards or automations on or off

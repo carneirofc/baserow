@@ -4,7 +4,7 @@
 
 ### PostgreSQL
 
-Baserow uses PostgreSQL for persistent storage.
+Saveroom uses PostgreSQL for persistent storage.
 
 https://www.postgresql.org/
 
@@ -116,7 +116,7 @@ https://vuejs.org/
 Because of our experience with Vue.js and the great features Nuxt.js offers, the choice
 of Nuxt as a frontend framework was obvious. It offers server side rendering, automated
 code splitting, good project structure, modularity and lots of other features out of
-the box. All of which are needed for Baserow.
+the box. All of which are needed for Saveroom.
 
 https://nuxtjs.org/
 
@@ -146,7 +146,7 @@ https://prettier.io/
 
 ### webpack
 
-Bundles all the assets of Baserow. This is being used by default with Nuxt.js.
+Bundles all the assets of Saveroom. This is being used by default with Nuxt.js.
 
 https://webpack.js.org/
 
@@ -189,4 +189,4 @@ See [here](https://github.com/carneirofc/saveroom/blob/develop/changelog/README.
 ## Thanks!
 
 Big thanks to creators and contributors of the tools described above! Without you
-Baserow would not have been where it is today.
+Saveroom would not have been where it is today.

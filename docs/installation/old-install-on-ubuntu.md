@@ -1,11 +1,11 @@
 # Deprecated Guide - Installation on Ubuntu
 
-> Warning: This guide has been deprecated as of version 1.9 of Baserow. Please follow
+> Warning: This guide has been deprecated as of version 1.9 of Saveroom. Please follow
 > the [Install on Ubuntu - Upgrade from 1.8.2 Section](install-on-ubuntu.md) 
 > if you installed Baserow 1.8.2 using this guide to upgrade.
 
 This deprecated and now unsupported guide will walk you through a production
-installation of Baserow. Specifically this document aims to provide a walkthrough for
+installation of Saveroom. Specifically this document aims to provide a walkthrough for
 servers running Ubuntu 18.04.03 LTS. These instructions have been tested with a clean
 install of Ubuntu 18.04.03 LTS and a user account with root access. Note that without
 root access, many of the instructions cannot be executed, so root access is necessary in
@@ -33,7 +33,7 @@ are new to firewalls.
 
 ## Install & Setup PostgreSQL
 
-Baserow uses PostgreSQL in order to store its user data. You can install PostgreSQL with
+Saveroom uses PostgreSQL in order to store its user data. You can install PostgreSQL with
 the following commands:
 
 ```bash
@@ -53,7 +53,7 @@ baserow user password.
 
 ## Install & Setup Redis
 
-Baserow uses Redis for asynchronous tasks and the real time collaboration. You can
+Saveroom uses Redis for asynchronous tasks and the real time collaboration. You can
 install Redis with the following commands.
 
 ```bash
@@ -69,7 +69,7 @@ Redis is not publicly accessible by default, so there is no need to setup a pass
 
 ## Install other utils
 
-Git is required to download the source code of Baserow so you can install it in the
+Git is required to download the source code of Saveroom so you can install it in the
 following section. Curl will be required later in the guide to install nodejs. Install
 them both using the following command:
 
@@ -77,10 +77,10 @@ them both using the following command:
 $ sudo apt install git curl -y 
 ```
 
-## Install Baserow
+## Install Saveroom
 
-In this section, we will install Baserow itself. We will need a new user called
-`baserow`. Baserow uses the `/baserow` directory for storing the application itself.
+In this section, we will install Saveroom itself. We will need a new user called
+`baserow`. Saveroom uses the `/baserow` directory for storing the application itself.
 
 ```bash
 # Create baserow user
@@ -102,9 +102,9 @@ The password used for the `baserow` user does not have to be the same as the one
 with PostgreSQL. Just make sure that you use a secure password and that you remember it
 for when you need it later.
 
-## Install dependencies for & setup Baserow
+## Install dependencies for & setup Saveroom
 
-In order to use the Baserow application, we will need to create a media directory for
+In order to use the Saveroom application, we will need to create a media directory for
 the uploaded user files, a virtual environment and install some more dependencies like:
 NodeJS, Yarn, Python 3.7.
 
@@ -158,7 +158,7 @@ $ ./node_modules/nuxt/bin/nuxt.js build --config-file config/nuxt.config.local.j
 
 ## Install NGINX
 
-Baserow uses NGINX as a reverse proxy for its frontend and backend. Through that, you
+Saveroom uses NGINX as a reverse proxy for its frontend and backend. Through that, you
 can easily add SSL Certificates and add more applications to your server if you want to.
 
 ```bash
@@ -176,9 +176,9 @@ If you're unfamiliar with NGINX: NGINX uses so called "virtualhosts" to direct w
 traffic from outside your network to the correct application on your server. These
 virtual hosts are defined in `.conf` files which are put into the
 `/etc/nginx/sites-enabled/` directory where NGINX will then process them on startup.
-Baserow comes with two configuration files for NGINX. After moving these over, change
+Saveroom comes with two configuration files for NGINX. After moving these over, change
 the `server_name` value in both of the files. The server name is the domain under which
-you want Baserow to be reachable.
+you want Saveroom to be reachable.
 
 Make sure that in the following commands you replace `api.domain.com` with your own
 backend domain, that you replace `baserow.domain.com` with your frontend domain and
@@ -203,7 +203,7 @@ $ service nginx restart
 
 In the "*Install & Setup PostgreSQL*" Section, we created a database called `baserow`
 for the application. Since we didn't do anything with that database it is still empty,
-which will result in a non-working application since Baserow expects certain tables and
+which will result in a non-working application since Saveroom expects certain tables and
 relations to exist in that database. You can create these with the following commands:
 
 ```bash
@@ -225,7 +225,7 @@ $ deactivate
 ## Install & Configure Supervisor
 
 Supervisor is an application that starts and keeps track of processes and will restart
-them if the process finishes. For Baserow this is used to reduce downtime and in order
+them if the process finishes. For Saveroom this is used to reduce downtime and in order
 to restart the application in the unlikely event of an unforeseen termination. You can
 install and configure it with these commands:
 
@@ -273,9 +273,9 @@ $ sed -i 's/\*YOUR_MEDIA_DOMAIN\*/https:\/\/media.domain.com/g' /etc/supervisor/
 
 **Email SMTP configuration**
 
-If you want to configure Baserow to send emails you will have to add the following
+If you want to configure Saveroom to send emails you will have to add the following
 environment variables to the `/etc/supervisor/conf.d/baserow.conf` environment block.
-Otherwise, by default Baserow will not send emails and instead just log them in
+Otherwise, by default Saveroom will not send emails and instead just log them in
 `/var/log/baserow/worker.error`.
 
 * `EMAIL_SMTP` (default ``): Providing anything other than an empty string will enable
@@ -308,16 +308,16 @@ $ supervisorctl status
 
 If the `reread` or the `update` commands fail, try checking the logs at
 `/var/log/baserow/` - it is possible that another process is listening to one of the
-ports which would terminate NGINX, or parts of Baserow.
+ports which would terminate NGINX, or parts of Saveroom.
 
 ## HTTPS / SSL Support
 
-Since you're probably serving private data with Baserow, we strongly encourage to use a
+Since you're probably serving private data with Saveroom, we strongly encourage to use a
 SSL certificate to encrypt the traffic between the browser and your server. You can do
 that with the following commands. We will do that with certbot, which retrieves a SSL
 certificate from the LetsEncrypt Certificate Authority.
 
-If you're not installing Baserow on a completely new server, you might need to remove
+If you're not installing Saveroom on a completely new server, you might need to remove
 previously installed `certbot` binaries from your machine. Consult the
 [certbot installation instructions](https://certbot.eff.org/lets-encrypt/ubuntubionic-nginx)
 for more information.
@@ -339,12 +339,12 @@ $ supervisorctl restart nginx
 
 ## Conclusion
 
-You now have a full installation of Baserow, which will keep the Front- & Backend
+You now have a full installation of Saveroom, which will keep the Front- & Backend
 running even if there is an unforeseen termination of them.
 
 ## Updating existing installation to the latest version
 
-If you already have Baserow installed on your server and you want to update to the
+If you already have Saveroom installed on your server and you want to update to the
 latest version then you can execute the following commands. This only works if there
 aren't any additional instructions in the previous release blog posts.
 

@@ -2,9 +2,9 @@
 
 Software versions are divided into the following groups:
 
-* `Supported`: Baserow should run with this software without any issues, submit bug
+* `Supported`: Saveroom should run with this software without any issues, submit bug
   reports if it is not the case.
-* `Tested`: The specific Baserow version was tested on this version 
+* `Tested`: The specific Saveroom version was tested on this version 
   before the release.
 * `Recommended`: Recommended software for the best experience.  
 

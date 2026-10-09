@@ -1,6 +1,6 @@
 # Backend API
 
-Baserow is divided into two components, the **backend** and the 
+Saveroom is divided into two components, the **backend** and the 
 **web-frontend**, which talk to each other via a REST API. This page
 contains some documentation about those endpoints and how to use them. These endpoints
 should never be used to show data on your own website because that would mean you have

@@ -1,7 +1,7 @@
 # Protected editing
 
 Protected editing is a per-table safeguard against accidental data changes in the
-web interface. By default Baserow saves every change as soon as you make it. With
+web interface. By default Saveroom saves every change as soon as you make it. With
 protected editing enabled, changes wait for an explicit OK.
 
 ## Enabling it

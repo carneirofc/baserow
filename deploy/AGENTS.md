@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Deployment artifacts for running Baserow: the single-container "all-in-one" image and the Kubernetes/OpenShift Helm chart.
+Deployment artifacts for running Saveroom: the single-container "all-in-one" image and the Kubernetes/OpenShift Helm chart.
 
 ## Ownership
 

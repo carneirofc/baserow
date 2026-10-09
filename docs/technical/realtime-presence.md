@@ -1,8 +1,8 @@
 # Realtime Presence
 
-This document defines the **language and conceptual model** of Baserow's presence feature.
+This document defines the **language and conceptual model** of Saveroom's presence feature.
 
-Presence is built on Baserow's WebSocket infrastructure; see [realtime-reliability.md](realtime-reliability.md) for connection lifecycle, reconnection, and event durability. This document reuses its terms (web socket ID, page subscriptions, channel groups) without re-defining them.
+Presence is built on Saveroom's WebSocket infrastructure; see [realtime-reliability.md](realtime-reliability.md) for connection lifecycle, reconnection, and event durability. This document reuses its terms (web socket ID, page subscriptions, channel groups) without re-defining them.
 
 Presence answers one question for people working in the same place: **who else is here, and what are they doing?** — bounded by what each viewer is permitted to see.
 

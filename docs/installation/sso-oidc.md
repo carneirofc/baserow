@@ -1,13 +1,13 @@
 # Single sign-on with OpenID Connect (OIDC)
 
-Baserow signs users in through any OpenID Connect provider — Keycloak/RHBK, Authentik,
+Saveroom signs users in through any OpenID Connect provider — Keycloak/RHBK, Authentik,
 Zitadel, Entra ID, Okta and so on — configured entirely through environment variables.
 There is no admin UI and no provider row to manage: the environment is the source of truth.
 
 The IdP decides **who someone is at instance level**, through roles it puts in the token:
 
 * **User** — may sign in and gets an account.
-* **Staff** — the Baserow admin area, instance-wide.
+* **Staff** — the Saveroom admin area, instance-wide.
 * **Superuser** — staff plus superuser-only actions.
 
 Everything inside a workspace — who is a member, who administers it, teams, and what
@@ -23,13 +23,13 @@ day-to-day operations and hardening, see
 ## Contents
 
 * [Environment variables](#environment-variables)
-* [Registering Baserow with the IdP](#registering-baserow-with-the-idp)
+* [Registering Saveroom with the IdP](#registering-saveroom-with-the-idp)
 * [Provider reference](#provider-reference)
 * [Global profiles](#global-profiles)
 * [Workspace access in the app](#workspace-access-in-the-app)
 * [How access is decided on each login](#how-access-is-decided-on-each-login)
 * [Complete example](#complete-example)
-* [Passing the configuration to Baserow](#passing-the-configuration-to-baserow)
+* [Passing the configuration to Saveroom](#passing-the-configuration-to-saveroom)
 * [Configuring RHBK/Keycloak](#configuring-rhbkkeycloak)
 * [Login error codes](#login-error-codes)
 * [Upgrading from workspace mappings](#upgrading-from-workspace-mappings)
@@ -52,22 +52,22 @@ day-to-day operations and hardening, see
   settings).
 * Issuer discovery needs the network and happens at login, and is logged.
 
-## Registering Baserow with the IdP
+## Registering Saveroom with the IdP
 
-Whatever the provider, register Baserow as a client with these properties:
+Whatever the provider, register Saveroom as a client with these properties:
 
 | Setting | Value |
 | --- | --- |
-| Client type | Confidential (Baserow authenticates with a client secret) |
+| Client type | Confidential (Saveroom authenticates with a client secret) |
 | Flow | Authorization code (standard flow). Implicit, password and client-credentials grants are unused. |
 | Redirect / callback URI | `<BASEROW_PUBLIC_URL>/api/sso/oidc/callback/<name>/` — `<name>` is the provider's `name`, and the trailing slash is required. Example: `https://baserow.example.com/api/sso/oidc/callback/rhbk/` |
-| PKCE | `S256`. Baserow always sends a PKCE challenge; enforcing it on the IdP is recommended. |
+| PKCE | `S256`. Saveroom always sends a PKCE challenge; enforcing it on the IdP is recommended. |
 | Scopes | `openid`, `email`, `profile` (the default) |
 | ID token signing | RSA (`RS256` and friends) — the key is looked up in the IdP's JWKS by `kid` |
 
-What Baserow needs from the IdP at runtime:
+What Saveroom needs from the IdP at runtime:
 
-* **Discovery.** Baserow fetches `<issuer>/.well-known/openid-configuration` and uses its
+* **Discovery.** Saveroom fetches `<issuer>/.well-known/openid-configuration` and uses its
   `issuer`, `authorization_endpoint`, `token_endpoint`, `userinfo_endpoint` and `jwks_uri`.
   The backend itself makes these calls, server to server, so it must reach the IdP over the
   network and trust its TLS certificate.
@@ -88,7 +88,7 @@ Each element of `BASEROW_OIDC_PROVIDERS` is an object with these keys.
 
 | Key | Required | Default | Description |
 | --- | --- | --- | --- |
-| `name` | yes | — | Stable slug: letters, digits, `-` and `_` only, unique across providers. Appears in the callback URL and links Baserow accounts to this provider, so do not rename it once users have signed in. |
+| `name` | yes | — | Stable slug: letters, digits, `-` and `_` only, unique across providers. Appears in the callback URL and links Saveroom accounts to this provider, so do not rename it once users have signed in. |
 | `display_name` | no | `name` | Label on the login button. |
 | `issuer` | yes | — | The provider's issuer URL (`http` or `https`), without `/.well-known/openid-configuration`. |
 | `client_id` | yes | — | Client id registered in the IdP. Also the expected ID token audience. |
@@ -130,8 +130,8 @@ The rest of this page says "client role" for whatever strings `roles_claim` yiel
 | Key | Default | Description |
 | --- | --- | --- |
 | `user_roles` | `[]` | Roles whose holders may sign in as regular users. |
-| `staff_roles` | `[]` | Roles whose holders become Baserow **staff** (and may sign in). |
-| `superuser_roles` | `[]` | Roles whose holders become Baserow **superuser**, which also implies staff (and may sign in). |
+| `staff_roles` | `[]` | Roles whose holders become Saveroom **staff** (and may sign in). |
+| `superuser_roles` | `[]` | Roles whose holders become Saveroom **superuser**, which also implies staff (and may sign in). |
 
 A user needs **at least one** role from any of the three lists. Staff and superuser holders
 do not also need a `user_roles` entry.
@@ -222,7 +222,7 @@ teams the highest wins. With no level anywhere the member has full member access
 Workspace memberships are never touched by a login. Removing a role in the IdP does not end
 a session that is already open; it applies when the session expires and the user signs in
 again. To cut access immediately, disable the user in the IdP **and** deactivate the account
-in Baserow's admin area.
+in Saveroom's admin area.
 
 ## Complete example
 
@@ -284,7 +284,7 @@ Rollout order:
 3. Sign in with one test user per profile, plus one with no mapped role (must be refused).
 4. Have workspace admins add the signed-in users to their workspaces.
 
-## Passing the configuration to Baserow
+## Passing the configuration to Saveroom
 
 The value is JSON, so the only difficulty is quoting. Store it compacted to one line where
 the format requires it, and keep secrets out of version control.
@@ -361,13 +361,13 @@ The issuer is `https://<keycloak-host>/realms/<realm>`.
      `S256`.
    * Copy the secret from **Credentials**.
 2. **Create client roles.** **Clients → baserow → Roles → Create role**: `baserow-user`,
-   `baserow-staff`, `baserow-superusers`. Baserow reads **client** roles by default, not
+   `baserow-staff`, `baserow-superusers`. Saveroom reads **client** roles by default, not
    realm roles.
 3. **Assign roles through groups.** **Groups → Create group** (e.g. `baserow-users`), then
    **Role mapping → Assign role → Filter by clients** and pick the `baserow` roles — the
    default filter lists only realm roles. Add users under **Members**.
 4. **Put client roles in the ID token and userinfo.** Keycloak's built-in client roles
-   mapper adds them to the access token only, and Baserow reads the ID token and
+   mapper adds them to the access token only, and Saveroom reads the ID token and
    userinfo. On **Clients → baserow → Client scopes → `baserow-dedicated` → Add mapper →
    By configuration → User Client Role**:
 
@@ -394,9 +394,9 @@ The issuer is `https://<keycloak-host>/realms/<realm>`.
 6. **Check email verification.** Users need `email_verified: true`. For LDAP/AD
    federation, enable **Trust Email** on the user federation provider; otherwise verify
    users' emails or set `require_verified_email: false`.
-7. **Keep self-registration off** in **Realm settings → Login**, since Baserow links
+7. **Keep self-registration off** in **Realm settings → Login**, since Saveroom links
    accounts by email.
-8. **Configure Baserow** with the `rhbk` provider from the
+8. **Configure Saveroom** with the `rhbk` provider from the
    [complete example](#complete-example) (the default `roles_claim` already matches step 4)
    and restart.
 9. **Test** with one user per group and one user in no group — the latter must land on
@@ -413,12 +413,12 @@ A failed login redirects to `/login?error=<code>`, and the backend log has detai
 
 | Code | Cause | Fix |
 | --- | --- | --- |
-| `errorNoMappedRole` | The provider maps roles and the user holds none of them — or the roles never reached Baserow. | Check the token contents (for Keycloak: **Evaluate**, step 5 above); check `roles_claim`; assign the user a mapped role. |
+| `errorNoMappedRole` | The provider maps roles and the user holds none of them — or the roles never reached Saveroom. | Check the token contents (for Keycloak: **Evaluate**, step 5 above); check `roles_claim`; assign the user a mapped role. |
 | `errorEmailNotVerified` | `require_verified_email` is on and `email_verified` is not `true`. | Verify the email in the IdP, trust federated emails, or set `require_verified_email: false`. |
 | `errorAuthFlowError` | Discovery or JWKS unreachable; token signature/issuer/audience/nonce check failed; userinfo `sub` mismatch; no email returned; `state`/PKCE mismatch; the IdP returned no code. | Read the backend log. Check network and TLS trust to the issuer, the exact `issuer` string, `client_id`, the redirect URI, and the client's PKCE method. |
 | `errorProviderDoesNotExist` | The callback or login URL names a provider not in `BASEROW_OIDC_PROVIDERS`. | Match the redirect URI's `<name>` to the provider `name`; restart after config changes. |
 | `errorDifferentProvider` | An account with this email exists under a different sign-in method. | Expected protection. Link the account with the `link_oidc_account` command, or set `link_existing_accounts` on the provider. See [Recovering locked-out accounts](#recovering-locked-out-accounts). |
-| `errorUserDeactivated` | The Baserow account is deactivated. | Reactivate it in the admin area. |
+| `errorUserDeactivated` | The Saveroom account is deactivated. | Reactivate it in the admin area. |
 | `errorSignupDisabled` | The signup layer refused to create the account. SSO provisioning normally bypasses the signup setting, so this indicates an unusual flow. | Check the backend log. |
 
 ## Recovering locked-out accounts
@@ -457,7 +457,7 @@ Earlier versions let the IdP place users in workspaces (`workspace_mappings`,
 ## Security notes
 
 * **Accounts are linked by email.** Anyone who can obtain a verified token for an address
-  can sign in as the Baserow account with that address. Keep IdP self-registration off,
+  can sign in as the Saveroom account with that address. Keep IdP self-registration off,
   keep `require_verified_email` on unless the IdP's addresses are authoritative, and leave
   `BASEROW_ALLOW_MULTIPLE_SSO_PROVIDERS_FOR_SAME_ACCOUNT` unset.
 * **`link_existing_accounts` trusts the IdP with existing accounts.** Enable it only on an
@@ -492,7 +492,7 @@ Earlier versions let the IdP place users in workspaces (`workspace_mappings`,
    curl -fsS "https://keycloak.example.com/realms/main/.well-known/openid-configuration"
    ```
 
-   A failure here is DNS, network or TLS trust, not Baserow configuration.
+   A failure here is DNS, network or TLS trust, not Saveroom configuration.
 4. **Roles in the token?** Inspect the ID token and userinfo in the IdP (Keycloak:
    **Evaluate**) and confirm the path matches `roles_claim`.
 5. **Signed in but no workspace** — expected: a workspace admin must add the user in the

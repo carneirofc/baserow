@@ -3,14 +3,14 @@
 > Check out the [issue tracker](https://github.com/carneirofc/saveroom/issues) for
 > discussion.
 
-In this guide we dive into how to create a Baserow plugin from scratch, give you example
+In this guide we dive into how to create a Saveroom plugin from scratch, give you example
 plugins to get inspiration from and discuss how to publish your plugin.
 
 ## Initialize your plugin from the official template
 
 We highly recommend using the
 [Step by step tutorial on plugin creation using the plugin boilerplate](./boilerplate.md)
-which will setup a basic Baserow plugin ready for you to start working on. Please note
+which will setup a basic Saveroom plugin ready for you to start working on. Please note
 that the boilerplate is outdated and only compatible with version 2.0.6 and lower.
 
 To instantiate the template, execute the following commands:
@@ -25,32 +25,32 @@ $ $ cookiecutter https://github.com/baserow/plugin-boilerplate.git
 Additionally, we have created two example plugins to show plugin authors how to do
 common things with a plugin.
 
-### [Baserow Geo Plugin](https://gitlab.com/nigel_baserow/baserow_geo_plugin/)
+### [Saveroom Geo Plugin](https://gitlab.com/nigel_baserow/baserow_geo_plugin/)
 
 The [Geo plugin](https://gitlab.com/nigel_baserow/baserow_geo_plugin/) is an example
 plugin which adds a new "Point" field type. It shows how to:
 
-* Install and enables a postgres extension (only when Baserow is running in the
+* Install and enables a postgres extension (only when Saveroom is running in the
   all-in-one image when using an embedded database)
 * Install extra system packages using apt-get
 * Add custom backend python and frontend node dependencies
 * Add a new field type, with custom components and scss
 
-### [Baserow Example Formula Plugin](https://gitlab.com/nigel_baserow/baserow_example_formula_plugin/)
+### [Saveroom Example Formula Plugin](https://gitlab.com/nigel_baserow/baserow_example_formula_plugin/)
 
 The [Example formula plugin](https://gitlab.com/nigel_baserow/baserow_example_formula_plugin)
 adds a new formula function called `timezone`. It shows how to :
 
-* Add a new formula function to Baserow
+* Add a new formula function to Saveroom
 * Use a custom plpgsql stored procedure to implement the new formula function
 * Use a migration to add the stored procedure
 
 ## Plugin Architecture
 
-A Baserow plugin is fundamentally a folder named after the plugin, containing a
-`backend` and/or a `web-frontend` folder. Baserow has two main services, a
+A Saveroom plugin is fundamentally a folder named after the plugin, containing a
+`backend` and/or a `web-frontend` folder. Saveroom has two main services, a
 Django `backend` API server and a Nuxt frontend
-`web-frontend` server. A Baserow plugin can plug into either both or just one of these
+`web-frontend` server. A Saveroom plugin can plug into either both or just one of these
 services by populating the respective plugin sub-folder.
 
 Since the `backend` service is built with Django, the `backend` sub-folder in a plugin
@@ -61,11 +61,11 @@ v2) [module](https://nuxtjs.org/tutorials/creating-a-nuxt-module/).
 
 ### Plugin Installation API
 
-> The current Baserow Plugin API Version is `0.0.1-alpha`.
+> The current Saveroom Plugin API Version is `0.0.1-alpha`.
 
-All the Baserow official images ship with the following bash scripts which are used to
+All the Saveroom official images ship with the following bash scripts which are used to
 install plugins. They can be used either in a Dockerfile at build time to bake a plugin
-into a Docker image or to install a plugin into an existing Baserow container at
+into a Docker image or to install a plugin into an existing Saveroom container at
 runtime.
 `install_plugin.sh` can be used to install a plugin from an url, a git repo or a local
 folder on the filesystem.
@@ -76,7 +76,7 @@ You can find these scripts in the following locations in our images:
 2. `/baserow/plugins/uninstall_plugin.sh`
 3. `/baserow/plugins/list_plugins.sh`
 
-These scripts expect a Baserow plugin to follow the conventions described below.
+These scripts expect a Saveroom plugin to follow the conventions described below.
 
 ### Plugin File Structure
 
@@ -101,7 +101,7 @@ specific structure as follows:
 ```
 
 The backend and web-frontend sub folders come with three bash files which will be
-automatically called by Baserow's plugin scripts during installation and uninstallation.
+automatically called by Saveroom's plugin scripts during installation and uninstallation.
 You can use these scripts to perform extra build steps, installation of packages, and
 other docker container build steps required.
 
@@ -154,12 +154,12 @@ For example a conforming tar.gz archive should contain something like:
 ## Writing a Plugin
 
 Now you have created a plugin, lets go into more detail of how to actually extend and
-customize Baserow using your plugin.
+customize Saveroom using your plugin.
 
-First you should read the following documentation for a basic introduction to Baserow's
+First you should read the following documentation for a basic introduction to Saveroom's
 technical architecture:
 
-1. [Baserow Technical Introduction](../technical/introduction.md)
+1. [Saveroom Technical Introduction](../technical/introduction.md)
 2. [Database Plugin](../technical/database-plugin.md)
 
 ### Storing State
@@ -168,7 +168,7 @@ If your plugin needs to store state, you should only ever do this in:
 
 1. The database being used by Baserow
 2. Using Django's default storage mechanism
-3. The Redis being used by Baserow but only for non-persistent state like a cache that
+3. The Redis being used by Saveroom but only for non-persistent state like a cache that
    is fine to be destroyed at any moment.
 
 **Never store any state in your plugin folder itself inside the container.** This folder
@@ -180,13 +180,13 @@ store inside it can be lost.
 #### Adding Python Requirements
 
 Your backend plugin is just a normal python module which will be installed into the
-Baserow virtual environment using `pip` by `install_plugin.sh`. If using the plugin
+Saveroom virtual environment using `pip` by `install_plugin.sh`. If using the plugin
 boilerplate you can add any python requirements to the pip requirements file found
 at `backend/requirements/base.txt`.
 
 #### As a Django App
 
-When the Baserow backend Django service starts up it looks for any plugins in the plugin
+When the Saveroom backend Django service starts up it looks for any plugins in the plugin
 directory which have a `backend` sub-folder. If it finds any it assumes
 the `backend/src/plugin_name/`
 sub folder contains a Django App and adds it to the `INSTALLED_APPS`. This means that
@@ -199,13 +199,13 @@ etc.
 
 #### Backend Registries
 
-Baserow has a number of registries which are used to dynamically configure Baserow. For
+Saveroom has a number of registries which are used to dynamically configure Saveroom. For
 example the `field_type_registry` contains various implementations of the `FieldType`
 class.
 
 Each registry contains various implementations of a particular "interface" class. A
-registry in Baserow is simply a singleton dictionary populated by apps in their `ready`
-method. Then Baserow's various API endpoints will use these registries at runtime.
+registry in Saveroom is simply a singleton dictionary populated by apps in their `ready`
+method. Then Saveroom's various API endpoints will use these registries at runtime.
 
 So in your plugin's Django Apps `ready` method is where you should import any relevant
 registries and register your own implementations of field types.
@@ -228,8 +228,8 @@ class PluginNameConfig(AppConfig):
         plugin_registry.register(PluginNamePlugin())
 ```
 
-You can see all the different things you can dynamically register into Baserow with your
-plugin by searching the Baserow codebase and inspecting the `registry.py` and
+You can see all the different things you can dynamically register into Saveroom with your
+plugin by searching the Saveroom codebase and inspecting the `registry.py` and
 `registries.py` files.
 
 ### Writing a Web Frontend Plugin
@@ -237,12 +237,12 @@ plugin by searching the Baserow codebase and inspecting the `registry.py` and
 #### Adding Node Requirements
 
 Your web-frontend plugin is just a normal node package which will be installed into
-Baserow's node_modules using `yarn` by `install_plugin.sh`. You can add any extra
+Saveroom's node_modules using `yarn` by `install_plugin.sh`. You can add any extra
 frontend requires to your `web-frontend/package.json`.
 
 #### Web-frontend Registries
 
-The Baserow web-frontend nuxt app also follows the registry pattern that the backend
+The Saveroom web-frontend nuxt app also follows the registry pattern that the backend
 has. This means it has an equivalent frontend registry for most backend registries where
 it makes sense. So if you were to registry a new field type in the backend registry then
 also make sure to registry a new field type in the frontend registry also.

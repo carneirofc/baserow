@@ -79,12 +79,13 @@ Default section order:
 When the user requests a durable behavior change, record it here or in the relevant child AGENTS.md
 
 - This is a FOSS fork of Baserow. Scrub pointers/branding/infra ties back to Baserow B.V.; do not reintroduce them.
+- The product is named **Saveroom** (tagline "the safe room for your tables"). Rename only what users and operators see; internal `baserow` identifiers stay (the Python package, `BASEROW_*` env vars, API paths, protocol headers, DB/app labels, `local_baserow` types, the `baserow-icon` CSS prefix, the Helm chart's base resource name). Keep the MIT attribution to Baserow B.V. (`LICENSE`, file headers, the version panel credits, the README "Meta" section): it is a license obligation, not branding.
 - Change-candidate discovery via `change-scout` / `find-change-candidates` runs automatically; the user does not call it manually.
 - Remote repo retrieval via `repo-reader` and CI inspection via `ci-inspector` (and their skills) run automatically; the user does not call them manually.
 
 ## Project
 
-Baserow (FOSS fork): a no-code database and application platform. Django backend + Nuxt/Vue web frontend, orchestrated with Docker Compose and shipped via a Helm chart.
+Saveroom (a FOSS fork of Baserow): a no-code database and application platform. Django backend + Nuxt/Vue web frontend, orchestrated with Docker Compose and shipped via a Helm chart.
 
 Layout: `backend/` (Django API + workers), `web-frontend/` (Nuxt app), `e2e-tests/` (Playwright), `deploy/` (Compose + Helm), `docs/`, `changelog/`, `.agents/skills/` (canonical project skills; `.claude/skills` symlinks here), `.claude/agents/` (project subagents).
 

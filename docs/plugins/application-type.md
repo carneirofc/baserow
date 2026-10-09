@@ -2,7 +2,7 @@
 
 An application is an abstraction that a user can add to workspace. More information about 
 this can be found in the [introduction](../technical/introduction.md). This is a
-tutorial about how you can add your own application to Baserow via a plugin. We are 
+tutorial about how you can add your own application to Saveroom via a plugin. We are 
 going to create a text file application. In the end a user can use the "Create new" 
 button to create a text file and add it to a workspace. We expect that you are using the
 [plugin boilerplate](./boilerplate.md).
@@ -10,7 +10,7 @@ button to create a text file and add it to a workspace. We expect that you are u
 ## Backend
 
 We are going to start by creating a new application type instance for our text file and
-add it to the application type registry. By doing this the Baserow backend knows we 
+add it to the application type registry. By doing this the Saveroom backend knows we 
 have an additional application type names `text_file`. Creating the following python 
 classes and modify the plugins config. Every time a user creates a new text file 
 application a TextFile model instance is automatically created. It is also possible to 
@@ -120,5 +120,5 @@ the state right now it does not do anything. There are several methods that can
 be overridden in the `TextFileApplicationType` class. You can for example create a new 
 route and provide that route name in the `getRouteName` method if you want to navigate 
 to that route when the user clicks on the text file in the sidebar. You might want to 
-inspect the `web-frontend/modules/core/applicationTypes.js` file in the Baserow 
+inspect the `web-frontend/modules/core/applicationTypes.js` file in the Saveroom 
 repository for all the options.

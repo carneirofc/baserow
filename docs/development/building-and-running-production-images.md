@@ -1,10 +1,10 @@
 # Building and Running Production Images
 
-This guide covers building Baserow's production Docker images locally and running them for testing or deployment preparation.
+This guide covers building Saveroom's production Docker images locally and running them for testing or deployment preparation.
 
 ## Overview
 
-Baserow provides several image types for different deployment scenarios:
+Saveroom provides several image types for different deployment scenarios:
 
 | Image | Use Case | Command |
 |-------|----------|---------|
@@ -233,7 +233,7 @@ Key variables for production:
 
 | Variable | Description | Example |
 |----------|-------------|---------|
-| `BASEROW_PUBLIC_URL` | Public URL for Baserow | `https://baserow.example.com` |
+| `BASEROW_PUBLIC_URL` | Public URL for Saveroom | `https://baserow.example.com` |
 | `SECRET_KEY` | Django secret key | (generate a secure random string) |
 | `DATABASE_URL` | PostgreSQL connection | `postgres://user:pass@host:5432/db` |
 | `REDIS_URL` | Redis connection | `redis://host:6379` |
@@ -301,7 +301,7 @@ Each Dockerfile has multiple build targets:
 
 ```bash
 # Clear Docker builder cache
-# WARNING: This clears ALL Docker builder cache, not just Baserow!
+# WARNING: This clears ALL Docker builder cache, not just Saveroom!
 just prune
 
 # Build without cache

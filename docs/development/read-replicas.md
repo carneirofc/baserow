@@ -87,10 +87,10 @@ Restart your dev environment and observe that the read-only replications are acc
 They're available on port `5433` and `5434` with the same password you're using the
 same username and password as the writer `db`.
 
-## Baserow configuration
+## Saveroom configuration
 
 Add the following to your `.env` file and restart your dev server. This will configure
-Baserow to use the above read-only replications for read queries.
+Saveroom to use the above read-only replications for read queries.
 
 ```
 DATABASE_READ_1_NAME="baserow"

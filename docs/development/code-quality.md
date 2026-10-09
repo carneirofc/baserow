@@ -63,7 +63,7 @@ There are also commands to easily run the tests.
 
 ## Git pre-commit hooks
 
-Baserow uses [`pre-commit`](https://pre-commit.com/) to automatically run linters and
+Saveroom uses [`pre-commit`](https://pre-commit.com/) to automatically run linters and
 formatters before commits are created. This ensures your changes comply with repo-wide
 code quality rules without waiting for CI feedback.
 
@@ -148,7 +148,7 @@ they are separated by lint and test stages. It is not allowed to merge a branch 
 one of these jobs fails.
 
 The pipeline also has a build job. During this job
-[plugin boilerplate](../plugins/boilerplate.md) Baserow will be installed as a
+[plugin boilerplate](../plugins/boilerplate.md) Saveroom will be installed as a
 dependency to ensure that this still works.
 
 ### Running CI locally

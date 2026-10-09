@@ -8,22 +8,22 @@
 ## Raw K8S starting point
 
 See below for a starting point for a K8S configuration file which deploys a production
-ready Baserow.
+ready Saveroom.
 
-It assumes you want the most performant version of Baserow possible and
+It assumes you want the most performant version of Saveroom possible and
 so deploys separate wsgi and asgi backend services, separate async task workers etc.
 
 You will need to also provide a redis and postgres instance configured using the
-environment variables below. See [Configuring Baserow](./configuration.md) for more
+environment variables below. See [Configuring Saveroom](./configuration.md) for more
 details on these variables.
 
-You should also set up and configure Baserow to use an S3 compatible storage service
+You should also set up and configure Saveroom to use an S3 compatible storage service
 for uploading and serving user uploaded files.
 
 ## Example baserow.yml
 
 ```yaml
-# A secret containing all the required Baserow settings.
+# A secret containing all the required Saveroom settings.
 apiVersion: v1
 kind: Secret
 metadata:

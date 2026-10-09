@@ -6,7 +6,7 @@ Person(customer, "User/Anonymous User")
 Person(apicustomer, "API User", "Using an API/JWT token")
 
 Boundary(boundary0, "backend apps") {
-    Container(api, "backend", "python/Django/gunicorn", "The Baserow Django server")
+    Container(api, "backend", "python/Django/gunicorn", "The Saveroom Django server")
     Container(worker, "celery worker", "celery", "handles important async tasks like broadcasting realtime collab events, sending emails etc")
     Container(export_worker, "celery export worker", "celery", "handles lower priority async tasks including view/table exports, trash cleanup etc. (badly named)")
 }
@@ -21,8 +21,7 @@ Boundary(boundary2, "backend dependencies") {
 }
 Boundary(boundary3, "external servers") {
     Container(webhook_http_target_server, "Webhook Target Server", "http server", "a user configured http server")
-    Container(external_data_source, "External Database Software", "???", "supported external databases Baserow can import from")
-    Container(baserow_io, "Baserow.io", "http server", "The official Baserow.io server")
+    Container(external_data_source, "External Database Software", "???", "supported external databases Saveroom can import from")
 }
 
 
@@ -36,13 +35,12 @@ BiRel(webfrontend_client, api, "real time collaboration", "WebSocket")
 
 Rel(apicustomer, api, "direct api queries", "https/WebSocket")
 
-Rel(api, db, "reading/writing user table data, Baserow data etc", "tcp")
+Rel(api, db, "reading/writing user table data, Saveroom data etc", "tcp")
 BiRel(api, redis, "submitting async tasks, broadcasting realtime events, caching models", "tcp")
 Rel(worker, redis, "loads tasks using and broadcast realtime events to other gunicorn workers", "tcp")
 Rel(export_worker, redis, "loads tasks using", "tcp")
 Rel(export_worker, db, "reading user tables for exports, trashed related read/writes", "tcp")
 Rel(worker, smtp_server, "send email", "smtp")
 Rel(export_worker, webhook_http_target_server, "send webhook events", "http")
-Rel(export_worker, external_data_source, "import into Baserow from external site", "http")
-Rel(export_worker, baserow_io, "periodic license checks (only queries if user has explicitly added a Baserow license)", "http")
+Rel(export_worker, external_data_source, "import into Saveroom from external site", "http")
 @enduml

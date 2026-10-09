@@ -1,7 +1,7 @@
 Copyright (c) 2019-present Baserow B.V.
-Copyright (c) 2026-present Baserow FOSS fork contributors
+Copyright (c) 2026-present Saveroom contributors (formerly the Baserow FOSS fork)
 
-This repository is a fork of Baserow with the premium and enterprise editions
+This repository, Saveroom, is a fork of Baserow with the premium and enterprise editions
 removed. Upstream Baserow is open-core: the "premium/" and "enterprise/"
 directories were covered by separate proprietary licenses that required a paid
 subscription for production use. Those directories are not part of this fork,

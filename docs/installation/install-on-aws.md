@@ -1,13 +1,13 @@
 # Install on AWS
 
-This guide will walk you through picking the best way to deploy Baserow to AWS, what
+This guide will walk you through picking the best way to deploy Saveroom to AWS, what
 pre-requisites you will need to set up and also provide specific installation
 instructions. This guide is for those who already have experience and
 knowledge of deploying applications to AWS.
 
 ## Overview of deployment options
 
-Baserow can be deployed to AWS in the following ways:
+Saveroom can be deployed to AWS in the following ways:
 
 1. Deploying the [all-in-one image](./install-with-docker.md) to Fargate/ECS for a
    horizontally scalable but easy to
@@ -23,14 +23,14 @@ Baserow can be deployed to AWS in the following ways:
    our [all-in-one](./install-with-docker.md) or
    our [one container per service](./install-with-docker-compose.md) docker images.
 
-All of these deployment methods will store Baserow's data and state in RDS and S3 making
+All of these deployment methods will store Saveroom's data and state in RDS and S3 making
 switching between them (for example migrating to using EKS later on)
 straightforward.
 
-## Prerequisites for deploying Baserow to AWS
+## Prerequisites for deploying Saveroom to AWS
 
 We will go through these in more detail later in the guide but to give you a quick
-overview this is what any AWS deployment of Baserow will need:
+overview this is what any AWS deployment of Saveroom will need:
 
 * An AWS IAM account with sufficient privileges to create AWS resources* A Postgres
   database (RDS)
@@ -38,17 +38,17 @@ overview this is what any AWS deployment of Baserow will need:
   of tables.
 * An AWS IAM account with privileges to upload to the S3 bucket.
     * Specifically their AWS Access Key ID and Secret Access Key will be needed to
-      configure Baserow to upload into the bucket.
+      configure Saveroom to upload into the bucket.
     * A VPC
     * A non-clustered Redis
       server (Elasticache with TLS on and cluster mode off)
     *
         * A SMTP email server for
-          Baserow to send emails with.
+          Saveroom to send emails with.
 
 ## Option 1) Deploying the all-in-one image to Fargate/ECS
 
-The `ghcr.io/carneirofc/saveroom:0.6.0` image runs all of Baserow’s various services inside the
+The `ghcr.io/carneirofc/saveroom:0.6.0` image runs all of Saveroom’s various services inside the
 container for ease of use.
 
 This image is designed for single server deployments or simple deployments to
@@ -64,7 +64,7 @@ Run.
 * Simpler to use and setup compared to the one container per-service model below
   because:
     * You don't need to worry about configuring and linking together the different
-      services that make up a Baserow deployment.
+      services that make up a Saveroom deployment.
     * Configuring load balancers is easier as you can just directly route through all
       requests to any horizontally scaled container running `ghcr.io/carneirofc/saveroom:0.6.0`.
 
@@ -83,8 +83,8 @@ Run.
     * You can use environment variables to configure this somewhat.
 * Harder to isolate failures specific to certain services as the logs per container will
   include multiple services.
-    * However, Baserow fully
-      supports [Open Telemetry](./monitoring.md) which lets you hook Baserow up to many
+    * However, Saveroom fully
+      supports [Open Telemetry](./monitoring.md) which lets you hook Saveroom up to many
       cloud application monitoring solutions like Honeycomb, Datadog, NewRelic or a
       Grafana/Loki/Tempo/Prometheus stack.
 
@@ -95,15 +95,15 @@ etc and ELB specifics to keep this guide more generally applicable.
 
 #### 1) Provision an S3 bucket for user file uploads
 
-First Baserow needs an S3 bucket. Baserow will use this bucket to store files uploaded
+First Saveroom needs an S3 bucket. Saveroom will use this bucket to store files uploaded
 by users into tables and view/table exports for users to then download.
 
-Baserow will then generate pre-signed S3 URLs for the user to view and download files
+Saveroom will then generate pre-signed S3 URLs for the user to view and download files
 from this bucket. As a result, these pre-signed URLs need to be accessible from the
 user's browser and so depending on your setup most likely the bucket to allow public
 GET/ACLs.
 
-We recommend setting up a separate IAM user who Baserow will be configured with
+We recommend setting up a separate IAM user who Saveroom will be configured with
 credentials for, so it can upload into and delete from the bucket. Here is an example S3
 policy for this
 user to grant the minimal required operations:
@@ -132,7 +132,7 @@ policy = <<EOF
 }
 ```
 
-This bucket will also in the current version of Baserow need CORS rules set for the
+This bucket will also in the current version of Saveroom need CORS rules set for the
 in-tool file download button to work correctly. An example rule is provided below:
 
 ```
@@ -157,34 +157,34 @@ browser can GET and download the S3 files:
 
 #### 2) Provisioning a Postgres using RDS
 
-Baserow stores all of its non-file data in a PostgreSQL database. In AWS we recommend
-using an RDS Postgres cluster. You will later need to configure Baserow to be able to
+Saveroom stores all of its non-file data in a PostgreSQL database. In AWS we recommend
+using an RDS Postgres cluster. You will later need to configure Saveroom to be able to
 access this cluster.
 
-Baserow uses PostgreSQL heavily so scaling the RDS cluster up will be needed for larger
+Saveroom uses PostgreSQL heavily so scaling the RDS cluster up will be needed for larger
 deployments.
 
 > You should not put an RDS Proxy in front of the RDS instance. This is because the
 > proxy causes a transaction to end after a definition language (DDL) statement
-> completes. Baserow is therefore incompatible because it makes schema changes, and if
+> completes. Saveroom is therefore incompatible because it makes schema changes, and if
 > anything goes wrong the after a schema migration, the transaction isn't rolled back,
 > and results in data inconsistencies. More information:
 > https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.howitworks.html#rds-proxy-transactions
 
 #### 3) Provisioning a Redis using Elasticache
 
-Baserow uses Redis as a cache, for real-time collaboration over WebSockets and async
+Saveroom uses Redis as a cache, for real-time collaboration over WebSockets and async
 background task processing.
 
 We recommend setting up an Elasticache Redis in non-cluster mode with TLS enabled and in
-AUTH mode where you can specify an AUTH token password for Baserow to later connect to
+AUTH mode where you can specify an AUTH token password for Saveroom to later connect to
 the Redis server.
 
-Generally, the Redis server is not the bottleneck in Baserow deployments as they scale.
+Generally, the Redis server is not the bottleneck in Saveroom deployments as they scale.
 
 #### 4) Setting up an ALB and target group
 
-Now create a target group on port 80 and ALB ready to route traffic to the Baserow
+Now create a target group on port 80 and ALB ready to route traffic to the Saveroom
 containers.
 
 When setting up the health check for the ALB the `ghcr.io/carneirofc/saveroom:0.6.0` container
@@ -192,7 +192,7 @@ When setting up the health check for the ALB the `ghcr.io/carneirofc/saveroom:0.
 URL `/api/_health/`. We recommend a long grace period of 900 seconds to account for
 first-time migrations being run on the first container's startup.
 
-#### 5) Launching Baserow on ECS/Fargate
+#### 5) Launching Saveroom on ECS/Fargate
 
 Now we are ready to spin up our `ghcr.io/carneirofc/saveroom:0.6.0` containers. See below for a
 full task definition and environment variables. We recommend launching the containers
@@ -211,20 +211,20 @@ with 2vCPUs and 4 GB of RAM each to start with. In short, you will want to:
 | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `DISABLE_VOLUME_CHECK=true`   | *Must be set to true*. Needed to disable the check designed to help non-technical users who are not configuring an external Postgres and S3. Because we are configuring external services we do not need any volume mounted into the container.                                                                                                                                                                                           |
 | `BASEROW_PUBLIC_URL`          | The public URL or IP that will be used to access baserow in your user's browser. Always should start with http:// https:// even if accessing via an IP address.                                                                                                                                                                                                                                                                           |
-| `DATABASE_HOST`               | The hostname of the Postgres database Baserow will use to store its data in.                                                                                                                                                                                                                                                                                                                                                              |
-| `DATABASE_USER`               | The username of the database user Baserow will use to connect to the database at `DATABASE_HOST`.                                                                                                                                                                                                                                                                                                                                         |
-| `DATABASE_PORT`               | The port Baserow will use when trying to connect to the Postgres database at `DATABASE_HOST`.                                                                                                                                                                                                                                                                                                                                             |
-| `DATABASE_NAME`               | The database name Baserow will use to store data.                                                                                                                                                                                                                                                                                                                                                                                         |
+| `DATABASE_HOST`               | The hostname of the Postgres database Saveroom will use to store its data in.                                                                                                                                                                                                                                                                                                                                                              |
+| `DATABASE_USER`               | The username of the database user Saveroom will use to connect to the database at `DATABASE_HOST`.                                                                                                                                                                                                                                                                                                                                         |
+| `DATABASE_PORT`               | The port Saveroom will use when trying to connect to the Postgres database at `DATABASE_HOST`.                                                                                                                                                                                                                                                                                                                                             |
+| `DATABASE_NAME`               | The database name Saveroom will use to store data.                                                                                                                                                                                                                                                                                                                                                                                         |
 | `DATABASE_PASSWORD`           | The password of `DATABASE_USER` on the Postgres server at `DATABASE_HOST`. Alternatively, you can provide `DATABASE_PASSWORD_FILE` and set it to the file path of a secret injected into the container's file system.                                                                                                                                                                                                                     |
 | `REDIS_URL`                   | A standard Redis connection string in the format of: `redis://[redisuser]:[password]@[redishost]:[redisport]/0?ssl_cert_reqs=required`.                                                                                                                                                                                                                                                                                                   |
 | `AWS_STORAGE_BUCKET_NAME`     | Your AWS storage bucket name.                                                                                                                                                                                                                                                                                                                                                                                                             |
-| `AWS_ACCESS_KEY_ID`           | The access key for your S3 IAM AWS account. When set to anything other than empty will switch Baserow to use a S3 compatible bucket for storing user file uploads.                                                                                                                                                                                                                                                                        |
+| `AWS_ACCESS_KEY_ID`           | The access key for your S3 IAM AWS account. When set to anything other than empty will switch Saveroom to use a S3 compatible bucket for storing user file uploads.                                                                                                                                                                                                                                                                        |
 | `AWS_SECRET_ACCESS_KEY`       | The access secret key for your S3 IAM AWS account. `AWS_SECRET_ACCESS_KEY_FILE` can similarly be provided instead.                                                                                                                                                                                                                                                                                                                        |
 | `DOWNLOAD_FILE_VIA_XHR`       | Must be set to `1` to work with AWS S3 currently to force download links to download files via XHR query to bypass `Content-Disposition: inline`. If your files are stored under another origin, you also must add CORS headers to your S3 bucket.                                                                                                                                                                                        |
-| `BASEROW_EXTRA_ALLOWED_HOSTS` | An optional comma-separated list of hostnames which will be added to Baserow’s Django backend ALLOWED_HOSTS setting. Add your ALB IP address here so the health checks it sends are allowed through, or alternatively configure the less secure value `*` to get things running and restrict hosts later once everything is working.                                                                                                      |
+| `BASEROW_EXTRA_ALLOWED_HOSTS` | An optional comma-separated list of hostnames which will be added to Saveroom’s Django backend ALLOWED_HOSTS setting. Add your ALB IP address here so the health checks it sends are allowed through, or alternatively configure the less secure value `*` to get things running and restrict hosts later once everything is working.                                                                                                      |
 | `BASEROW_JWT_SIGNING_KEY`     | **Must be set so all the containers share the same signing key.** The signing key is used to sign the content of generated tokens. For HMAC signing, this should be a random string with at least as many bits of data as is required by the signing protocol. See [here](https://django-rest-framework-simplejwt.readthedocs.io/en/latest/settings.html#signing-key) for more details. `BASEROW_JWT_SIGNING_KEY_FILE` is also supported. |
 | `SECRET_KEY`                  | **Must be set so all the containers share the same secret key.** The Secret key used by Django for cryptographic signing such as generating secure password reset links and managing sessions. See [here](https://docs.djangoproject.com/en/3.2/ref/settings/#std:setting-SECRET_KEY) for more details. `SECRET_KEY_FILE` is also supported.                                                                                              |
-| `EMAIL_SMTP_*`                | There are a number of SMTP related environment variables documented in our environment variable guide [here](./configuration.md) which will also need to be set so Baserow can send password reset and notification emails.                                                                                                                                                                                                                 |
+| `EMAIL_SMTP_*`                | There are a number of SMTP related environment variables documented in our environment variable guide [here](./configuration.md) which will also need to be set so Saveroom can send password reset and notification emails.                                                                                                                                                                                                                 |
 
 5. Select the desired launch type (we used Fargate).
 6. Set the OS family as Linux.
@@ -353,7 +353,7 @@ certain services inside the container.
     1. This will cause this image to only launch a single celery task process which
        handles both the fast and slow queues.
     2. The consequence of this is that there is only one process handling tasks per
-       container and so a slow task such as a snapshot of a large Baserow database might
+       container and so a slow task such as a snapshot of a large Saveroom database might
        delay a fast queue task like sending a real-time row updated signal to all users
        looking at a table.
     3. However, if you have enough other containers, the overall pool of async task
@@ -361,18 +361,18 @@ certain services inside the container.
 
 #### 8) Deployment complete
 
-You should now have a fully running Baserow cluster. The first user to sign-up becomes
-the first "staff" instance-wide admin user. This user can then configure Baserow's
+You should now have a fully running Saveroom cluster. The first user to sign-up becomes
+the first "staff" instance-wide admin user. This user can then configure Saveroom's
 in-tool settings, promote other users to being staff etc.
 
-## Option 2) Deploying Baserow as separate services to Fargate/ECS
+## Option 2) Deploying Saveroom as separate services to Fargate/ECS
 
 The `ghcr.io/carneirofc/saveroom/backend:0.6.0` and `ghcr.io/carneirofc/saveroom/web-frontend:0.6.0` images allow you to run
-Baserow's various services as separate containers.
+Saveroom's various services as separate containers.
 
 These images are used by the Official Helm chart, our various docker-compose.yml
 example setups and are best for production environments where you want full control and
-flexibility managing Baserow.
+flexibility managing Saveroom.
 
 ### Why choose this method
 
@@ -419,16 +419,16 @@ routing to each of the separate groups.
 2. A path condition of `/ws/*` which forwards to the `backend-asgi` group.
 3. A path condition of `/api/*` which forwards to the `backend-wsgi` group.
 
-Later on the Baserow `web-frontend` service will need to be able to communicate with
+Later on the Saveroom `web-frontend` service will need to be able to communicate with
 the `backend-wsgi` service through a load balancer. You can use this same load balancer
 to both balance external requests and these inter service requests if you want, however
 make sure you've appropriately setup the security groups to allow communication between
 the ECS tasks and ALB.
 
-#### 5) Deploying Baserow's individual services
+#### 5) Deploying Saveroom's individual services
 
-Let's now deploy each of Baserow's individual services to Fargate/ECS. Make a
-new cluster for Baserow and then proceed to make the following task definitions.
+Let's now deploy each of Saveroom's individual services to Fargate/ECS. Make a
+new cluster for Saveroom and then proceed to make the following task definitions.
 
 > If you are familiar with K8S then [this sample config](./install-with-k8s.md) gives an
 > overview of the services.
@@ -445,7 +445,7 @@ This service is our HTTP REST API service. When creating the task definition you
 
 > We recommend setting the timeout of each HTTP API request to 60 seconds in the
 > command above as the default of 30 seconds can be too short for very large
-> Baserow tables.
+> Saveroom tables.
 
 3. We recommend 2vCPUs and 4 GB of RAM per container to start with.
 4. Map the container port `8000`/`TCP` with `HTTP` App protocol.
@@ -457,19 +457,19 @@ This service is our HTTP REST API service. When creating the task definition you
 | Env variable                  | Description                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `BASEROW_PUBLIC_URL`          | The public URL or IP that will be used to access baserow in your user's browser. Always should start with http:// https:// even if accessing via an IP address.                                                                                                                                                                                                                                                                           |
-| `DATABASE_HOST`               | The hostname of the Postgres database Baserow will use to store its data in.                                                                                                                                                                                                                                                                                                                                                              |
-| `DATABASE_USER`               | The username of the database user Baserow will use to connect to the database at `DATABASE_HOST`.                                                                                                                                                                                                                                                                                                                                         |
-| `DATABASE_PORT`               | The port Baserow will use when trying to connect to the Postgres database at `DATABASE_HOST`.                                                                                                                                                                                                                                                                                                                                             |
-| `DATABASE_NAME`               | The database name Baserow will use to store data.                                                                                                                                                                                                                                                                                                                                                                                         |
+| `DATABASE_HOST`               | The hostname of the Postgres database Saveroom will use to store its data in.                                                                                                                                                                                                                                                                                                                                                              |
+| `DATABASE_USER`               | The username of the database user Saveroom will use to connect to the database at `DATABASE_HOST`.                                                                                                                                                                                                                                                                                                                                         |
+| `DATABASE_PORT`               | The port Saveroom will use when trying to connect to the Postgres database at `DATABASE_HOST`.                                                                                                                                                                                                                                                                                                                                             |
+| `DATABASE_NAME`               | The database name Saveroom will use to store data.                                                                                                                                                                                                                                                                                                                                                                                         |
 | `DATABASE_PASSWORD`           | The password of `DATABASE_USER` on the Postgres server at `DATABASE_HOST`. Alternatively, you can provide `DATABASE_PASSWORD_FILE` and set it to the file path of a secret injected into the container's file system.                                                                                                                                                                                                                     |
 | `REDIS_URL`                   | A standard Redis connection string in the format of: `redis://[redisuser]:[password]@[redishost]:[redisport]/0?ssl_cert_reqs=required`.                                                                                                                                                                                                                                                                                                   |
 | `AWS_STORAGE_BUCKET_NAME`     | Your AWS storage bucket name.                                                                                                                                                                                                                                                                                                                                                                                                             |
-| `AWS_ACCESS_KEY_ID`           | The access key for your S3 IAM AWS account. When set to anything other than empty will switch Baserow to use a S3 compatible bucket for storing user file uploads.                                                                                                                                                                                                                                                                        |
+| `AWS_ACCESS_KEY_ID`           | The access key for your S3 IAM AWS account. When set to anything other than empty will switch Saveroom to use a S3 compatible bucket for storing user file uploads.                                                                                                                                                                                                                                                                        |
 | `AWS_SECRET_ACCESS_KEY`       | The access secret key for your S3 IAM AWS account. `AWS_SECRET_ACCESS_KEY_FILE` can similarly be provided instead.                                                                                                                                                                                                                                                                                                                        |
-| `BASEROW_EXTRA_ALLOWED_HOSTS` | An optional comma-separated list of hostnames which will be added to Baserow’s Django backend ALLOWED_HOSTS setting. Add your ALB IP address here so the health checks it sends are allowed through, or alternatively configure the less secure value `*` to get things running and restrict hosts later once everything is working.                                                                                                      |
+| `BASEROW_EXTRA_ALLOWED_HOSTS` | An optional comma-separated list of hostnames which will be added to Saveroom’s Django backend ALLOWED_HOSTS setting. Add your ALB IP address here so the health checks it sends are allowed through, or alternatively configure the less secure value `*` to get things running and restrict hosts later once everything is working.                                                                                                      |
 | `BASEROW_JWT_SIGNING_KEY`     | **Must be set so all the containers share the same signing key.** The signing key is used to sign the content of generated tokens. For HMAC signing, this should be a random string with at least as many bits of data as is required by the signing protocol. See [here](https://django-rest-framework-simplejwt.readthedocs.io/en/latest/settings.html#signing-key) for more details. `BASEROW_JWT_SIGNING_KEY_FILE` is also supported. |
 | `SECRET_KEY`                  | **Must be set so all the containers share the same secret key.** The Secret key used by Django for cryptographic signing such as generating secure password reset links and managing sessions. See [here](https://docs.djangoproject.com/en/3.2/ref/settings/#std:setting-SECRET_KEY) for more details. `SECRET_KEY_FILE` is also supported.                                                                                              |
-| `EMAIL_SMTP_*`                | There are a number of SMTP related environment variables documented in our environment variable guide [here](./configuration.md) which will also need to be set so Baserow can send password reset and notification emails.                                                                                                                                                                                                                 |
+| `EMAIL_SMTP_*`                | There are a number of SMTP related environment variables documented in our environment variable guide [here](./configuration.md) which will also need to be set so Saveroom can send password reset and notification emails.                                                                                                                                                                                                                 |
 
 #### 7) The backend ASGI service
 
@@ -534,7 +534,7 @@ This service is our CRON task scheduler that can have multiple replicas deployed
 #### 11) The web-frontend service
 
 Finally, this service is used for server side rendering and serving the frontend of
-Baserow.
+Saveroom.
 
 1. Use the `ghcr.io/carneirofc/saveroom/web-frontend:0.6.0` image with no arguments needed.
 2. Map the container port `3000`
@@ -567,7 +567,7 @@ task definitions you just made. Remember to set 900 second grace
 periods in the health check when connecting things up.
 
 > Alternatively you can make a
-> single ECS service for all of Baserow's tasks, however you will then need to use
+> single ECS service for all of Saveroom's tasks, however you will then need to use
 > the API/CLI to connect multiple target groups to this single ECS service as this is
 > not possible via the AWS UI currently. You might also need to ensure that
 > `backend-asgi` and `backend-wsgi` are exposed on different ports for the target groups
@@ -588,7 +588,7 @@ Most of the time scaling up your `backend-wsgi` tasks and RDS postgres will be y
 first port of call for handling more requests. If your realtime collaboration is slowing
 down you can scale up the `backend-asgi` and `celery-worker` services. Finally, if you
 are having to wait a long time for jobs to start (they will have progress bars in the
-Baserow UI stuck at 0%) then you can add more `celery-exportworker` services.
+Saveroom UI stuck at 0%) then you can add more `celery-exportworker` services.
 
 There are also the following env vars that can change the number of worker processes
 launched inside each container to vertically scale each one:
@@ -601,16 +601,16 @@ launched inside each container to vertically scale each one:
 
 #### 13) Deployment complete
 
-You should now have a fully running Baserow cluster. This deployment method is more
+You should now have a fully running Saveroom cluster. This deployment method is more
 complex to get working so if you need any help please post in
 the [issue tracker](https://github.com/carneirofc/saveroom/issues).
 
 The first user to sign-up becomes the first "staff" instance-wide admin user. This user
-can then configure Baserow's in-tool settings, promote other users to being staff etc.
+can then configure Saveroom's in-tool settings, promote other users to being staff etc.
 
-## Upgrading Baserow
+## Upgrading Saveroom
 
-Upgrading an ECS/Fargate deployment of Baserow can be done by.
+Upgrading an ECS/Fargate deployment of Saveroom can be done by.
 
 1. Back up/snapshot your RDS Postgres database
 2. Stop all existing containers running the old version first to prevent
@@ -619,17 +619,17 @@ Upgrading an ECS/Fargate deployment of Baserow can be done by.
 4. The first new `baserow/baserow` or `baserow/backend-wsgi/asgi` container to startup
    will
    automatically apply any required database migrations and upgrades.
-5. Once these are complete, all the new Baserow containers will start accepting requests
+5. Once these are complete, all the new Saveroom containers will start accepting requests
    and your upgrade is complete.
 
 ## FAQ
 
 ### Fixing the `CROSSSLOT Keys in request don't hash to the same slot` error
 
-If you see this error in your logs it means you have launched Baserow with a Redis which
-is in cluster mode. Baserow uses libraries that do not support Redis in cluster mode, so
+If you see this error in your logs it means you have launched Saveroom with a Redis which
+is in cluster mode. Saveroom uses libraries that do not support Redis in cluster mode, so
 you will need to provision a new Redis in the non-cluster mode for things to work.
-Non-cluster mode Redis can still be scaled and multi-zone, additionally Baserow does not
+Non-cluster mode Redis can still be scaled and multi-zone, additionally Saveroom does not
 generally end up with Redis as the bottleneck for requests.
 
 ### My ELB Health checks are failing
@@ -642,7 +642,7 @@ has its internal health check script which will be also calling the health check
 endpoint. So the presence of logs showing health check 200 responses doesn't mean your
 ELB is the one triggering those.
 
-### I get `CORS errors` when downloading a file from a Baserow file field
+### I get `CORS errors` when downloading a file from a Saveroom file field
 
 Your CORS was not set up properly on the S3 bucket. Please see the example CORS config
 above or contact us for support.

@@ -1,24 +1,24 @@
-# Baserow Technical Introduction
+# Saveroom Technical Introduction
 
 ## Architecture
 
-Baserow consists of two main components:
+Saveroom consists of two main components:
 
 1. The **backend** is a Python Django application that exposes a REST API. This is the
-   core of Baserow and it does not have a user interface. The [API spec](../apis/rest-api.md) can
+   core of Saveroom and it does not have a user interface. The [API spec](../apis/rest-api.md) can
    be found here. The persistent state is stored in a PostgreSQL database.
 2. The **web frontend** is an application that serves as a user interface for the
    backend and is made in [NuxtJS](https://nuxtjs.org/) and
    [Vue.js](https://vuejs.org/). It communicates to the backend via the REST API.
    
-![server_diagram](https://raw.githubusercontent.com/baserow/baserow/refs/heads/master/docs/assets/diagrams/server-architecture.png "Server Architecture")
+![server_diagram](../assets/diagrams/server-architecture.png "Server Architecture")
 
 ## Backend
 
 The backend consists of the **core**, **api** and **database** apps. The package also
 contains base settings that can be extended. The REST API is written as a decoupled
-component which is not required to run Baserow. It is highly recommended though. The
-same goes for the database app, which is written as a plugin for Baserow. Without it you
+component which is not required to run Saveroom. It is highly recommended though. The
+same goes for the database app, which is written as a plugin for Saveroom. Without it you
 would only have the core which has functionality like authentication, workspaces and the
 application abstraction.
 

@@ -1,6 +1,6 @@
 # Data destinations, backups and datalake exports
 
-Baserow can write two kinds of data to storage outside the instance:
+Saveroom can write two kinds of data to storage outside the instance:
 
 * **Backups** — the regular workspace export archive (structure and rows, signed and
   checksummed), uploaded to external storage and restorable onto this or a fresh
@@ -225,7 +225,7 @@ tables/workspace=<id>/database=<id>/table=<id>/schedule=<id>/
 ```
 
 **Ignore a run without `_SUCCESS`.** The manifest lists the files with their row counts
-and checksums, the columns with their Baserow field id, name and type, the snapshot
+and checksums, the columns with their Saveroom field id, name and type, the snapshot
 moment and the reason a run was full.
 
 Columns: `id`, `created_on`, `updated_on`, `_deleted`, `_run_id`, `_extracted_at`, then

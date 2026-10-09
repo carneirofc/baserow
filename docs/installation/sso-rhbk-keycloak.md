@@ -1,8 +1,8 @@
 # Single sign-on with Red Hat build of Keycloak (RHBK)
 
-This guide configures Baserow so that **Keycloak client roles decide who may sign in and
+This guide configures Saveroom so that **Keycloak client roles decide who may sign in and
 who administers the instance**. Everything inside a workspace — members, workspace admins,
-teams and database/table access — is managed in Baserow by the workspace's admins, so
+teams and database/table access — is managed in Saveroom by the workspace's admins, so
 creating a workspace never needs a Keycloak or environment change. A user holding none of
 the mapped client roles is refused at login and no account is created for them.
 
@@ -21,37 +21,37 @@ example and the login error codes — see
 
 Deploying Keycloak itself is out of scope. Before you start you need:
 
-* A **running** Keycloak/RHBK instance, reachable over HTTPS from the Baserow backend
+* A **running** Keycloak/RHBK instance, reachable over HTTPS from the Saveroom backend
   (the backend fetches the discovery document and the JWKS itself, server to server).
 * An account that can manage clients, roles, groups and users in the target realm.
-* The realm you want Baserow to use, decided. Its issuer URL is
+* The realm you want Saveroom to use, decided. Its issuer URL is
   `https://<keycloak-host>/realms/<realm>` — that exact string is what goes in `issuer`
-  below, and Baserow appends `/.well-known/openid-configuration` to it to discover the
+  below, and Saveroom appends `/.well-known/openid-configuration` to it to discover the
   rest.
-* Baserow's own public URL, since it determines the redirect URI you register in step 1.
+* Saveroom's own public URL, since it determines the redirect URI you register in step 1.
 
 ## 1. Create the client
 
-In the realm you want Baserow to use:
+In the realm you want Saveroom to use:
 
 1. **Clients → Create client**, client type `OpenID Connect`, Client ID `baserow`.
-2. Enable **Client authentication** (Baserow is a confidential client and uses a secret).
+2. Enable **Client authentication** (Saveroom is a confidential client and uses a secret).
 3. Under **Authentication flow**, keep **Standard flow** enabled; the others are unused.
 4. Set **Valid redirect URIs** to
    `<BASEROW_PUBLIC_URL>/api/sso/oidc/callback/<name>/`, where `<name>` is the provider
    `name` you will put in `BASEROW_OIDC_PROVIDERS` — for example
    `https://baserow.example.com/api/sso/oidc/callback/rhbk/`.
 5. Under **Advanced → Advanced settings**, set **Proof Key for Code Exchange Code
-   Challenge Method** to `S256`. Baserow always sends a PKCE challenge; this makes
+   Challenge Method** to `S256`. Saveroom always sends a PKCE challenge; this makes
    Keycloak refuse any code exchange that lacks one.
 6. Copy the secret from the client's **Credentials** tab.
 
 ## 2. Define the client roles
 
-Baserow reads **client** roles (`resource_access.<client_id>.roles`), not realm roles.
+Saveroom reads **client** roles (`resource_access.<client_id>.roles`), not realm roles.
 On the `baserow` client, open **Roles → Create role** and add one role per profile:
 
-| Client role | What Baserow will do with it |
+| Client role | What Saveroom will do with it |
 | --- | --- |
 | `baserow-user` | allow signing in as a regular user |
 | `baserow-staff` | grant global staff (admin area) |
@@ -62,37 +62,37 @@ editing `BASEROW_OIDC_PROVIDERS` and restarting the backend.
 
 ### Administrator means the whole instance
 
-Baserow has two separate notions of privilege, and Keycloak only ever grants the first:
+Saveroom has two separate notions of privilege, and Keycloak only ever grants the first:
 
 * **Global** — `is_staff` / `is_superuser`. Instance-wide authority: the admin area,
   instance settings, every workspace. Granted by `staff_roles` / `superuser_roles`.
 * **Workspace-scoped** — a member's `ADMIN` or `MEMBER` permissions inside one workspace,
-  plus teams and access levels. Managed in Baserow by that workspace's admins (whoever
+  plus teams and access levels. Managed in Saveroom by that workspace's admins (whoever
   created it, or someone they promoted), or by staff.
 
 ## 3. Assign the roles through groups
 
 You can assign client roles directly to users, but groups are the shape worth building.
-Baserow reconciles staff and superuser on **every** login, so one group membership becomes
+Saveroom reconciles staff and superuser on **every** login, so one group membership becomes
 the single lever that both grants and revokes a person's profile.
 
 1. **Groups → Create group**, one per profile — for example `baserow-users`,
    `baserow-staff`.
 2. Open the group, go to **Role mapping → Assign role**, then switch the filter to
    **Filter by clients** and pick the `baserow` role. This filter is the step people
-   miss: the default view lists only realm roles, and Baserow ignores those.
+   miss: the default view lists only realm roles, and Saveroom ignores those.
 3. Add users to the group under its **Members** tab.
 
 ## 4. Put the client roles into the ID token and userinfo
 
 **This is the step that is easy to miss.** Keycloak's built-in `client roles` mapper adds
 `resource_access.<client_id>.roles` to the **access token only** — *Add to ID token* and
-*Add to userinfo* are off by default, and Baserow reads the ID token and the userinfo
+*Add to userinfo* are off by default, and Saveroom reads the ID token and the userinfo
 response. Without this step the user appears to hold no roles at all and every login is
 refused.
 
 That built-in mapper lives in the realm-wide `roles` client scope, so editing it changes
-every client in the realm. Add a mapper on the Baserow client's **dedicated** scope
+every client in the realm. Add a mapper on the Saveroom client's **dedicated** scope
 instead:
 
 1. **Clients → baserow → Client scopes → `baserow-dedicated` → Add mapper → By
@@ -107,7 +107,7 @@ instead:
    - **Add to userinfo**: **On**
    - **Add to access token**: On (harmless; leave as it comes)
 
-Baserow only needs one of the two token types to carry the claim — it reads both and
+Saveroom only needs one of the two token types to carry the claim — it reads both and
 takes the union — but enabling both is the most forgiving configuration.
 
 The dedicated scope is always applied, whatever scopes the client asks for, so there is
@@ -144,7 +144,7 @@ BASEROW_OIDC_PROVIDERS='[
     // The label on the login button.
     "display_name": "Company SSO",
 
-    // https://<keycloak-host>/realms/<realm>. Baserow appends
+    // https://<keycloak-host>/realms/<realm>. Saveroom appends
     // /.well-known/openid-configuration to discover the rest.
     "issuer": "https://keycloak.example.com/realms/main",
 
@@ -162,7 +162,7 @@ BASEROW_OIDC_PROVIDERS='[
     "session_lifetime_minutes": 480,
 
     // Refuse users whose email Keycloak has not verified (default true). The email is
-    // what links a Keycloak identity to a Baserow account.
+    // what links a Keycloak identity to a Saveroom account.
     "require_verified_email": true
   }
 ]'
@@ -183,31 +183,31 @@ Work through these in order, so a failure tells you which layer is wrong.
 
 1. **The claim is in the token.** Use **Evaluate** as described in step 4. If the roles
    are missing here, nothing downstream can work.
-2. **Baserow can reach the issuer.** From the backend container:
+2. **Saveroom can reach the issuer.** From the backend container:
 
    ```bash
    curl -fsS "https://keycloak.example.com/realms/main/.well-known/openid-configuration"
    ```
 
    A failure here is network, DNS or TLS trust — not configuration.
-3. **A user signs in.** Log in as a test user holding `baserow-user`. They land in Baserow
+3. **A user signs in.** Log in as a test user holding `baserow-user`. They land in Saveroom
    with no workspace (or can create one, if the instance allows it).
 4. **A workspace admin adds them.** In a workspace, *Settings → Members → Add members*,
    search the test user and add them. They now see the workspace.
 5. **Staff is granted and revoked.** Log in as a user holding `baserow-staff`: the admin
    area is available. Remove the role, sign in again: it is gone.
 6. **An unmapped user is refused.** Log in as a test user holding none of the mapped
-   roles. Baserow must redirect to `/login?error=errorNoMappedRole`, and **no account may
+   roles. Saveroom must redirect to `/login?error=errorNoMappedRole`, and **no account may
    exist for them afterwards**.
 
 ## How access is decided on each login
 
-1. Baserow verifies the callback: the `state` and PKCE verifier must match the ones it
+1. Saveroom verifies the callback: the `state` and PKCE verifier must match the ones it
    issued, the ID token's signature, issuer, audience, expiry and nonce must check out,
    and the userinfo `sub` must equal the ID token's. With `require_verified_email` (the
    default), a user whose `email_verified` claim is not `true` is refused with
    `errorEmailNotVerified`.
-2. Baserow reads the client roles from the ID token and the userinfo response and unions
+2. Saveroom reads the client roles from the ID token and the userinfo response and unions
    them.
 3. If the user holds none of `user_roles`, `staff_roles` or `superuser_roles`, the login is
    refused with `errorNoMappedRole` — **before** any account is provisioned.
@@ -232,7 +232,7 @@ session that is already open, but a session only lasts `session_lifetime_minutes
 
 ### Give someone access to another workspace, or restrict it
 
-Done entirely in Baserow by that workspace's admins: add the member, put them in a team,
+Done entirely in Saveroom by that workspace's admins: add the member, put them in a team,
 and set *No access* / *Viewer* / *Editor* / *Builder* with *Manage access* on databases and
 tables. Changes apply immediately. See
 [Workspace access in the app](sso-oidc.md#workspace-access-in-the-app).
@@ -249,12 +249,12 @@ An existing workspace admin (or staff, from the admin area) changes the member's
 
 ### Offboard someone
 
-Remove them from the Baserow groups in Keycloak: they can no longer sign in once their
+Remove them from the Saveroom groups in Keycloak: they can no longer sign in once their
 session ends (`session_lifetime_minutes`). Their workspace memberships stay until a
 workspace admin removes them.
 
 > Removing a role does **not** end an active session early. To cut access immediately,
-> disable or delete the user in Keycloak, and deactivate the account from Baserow's admin
+> disable or delete the user in Keycloak, and deactivate the account from Saveroom's admin
 > area.
 
 ### Rotate the client secret
@@ -267,25 +267,25 @@ window you can tolerate.
 
 ### The realm
 
-Baserow matches an incoming SSO identity to an existing account **by email address**. Two
+Saveroom matches an incoming SSO identity to an existing account **by email address**. Two
 consequences:
 
 * Keep realm self-registration disabled, or make sure the email address on an account is
   authoritative (for example because users come from LDAP/AD federation). A realm where a
   stranger can self-register an arbitrary address is a realm where they can attempt to
-  land on someone else's Baserow account.
+  land on someone else's Saveroom account.
 * Leave `BASEROW_ALLOW_MULTIPLE_SSO_PROVIDERS_FOR_SAME_ACCOUNT` unset. By default, an
   account created through a different authentication method cannot be taken over through
-  this provider — Baserow refuses with `errorDifferentProvider`. That env var removes the
+  this provider — Saveroom refuses with `errorDifferentProvider`. That env var removes the
   check instance-wide; to recover specific accounts use the `link_oidc_account` command or
   the provider's `link_existing_accounts` key (see
   [Recovering locked-out accounts](sso-oidc.md#recovering-locked-out-accounts)).
 
-### The Baserow instance
+### The Saveroom instance
 
 Set the instance's email verification setting to **no verification** (admin settings).
 SSO-provisioned accounts are created with their email marked unverified, so `recommended`
-or `enforced` makes Baserow send a verification mail for an address Keycloak already owns.
+or `enforced` makes Saveroom send a verification mail for an address Keycloak already owns.
 
 Set `BASEROW_OIDC_ONLY=true` to disable password signup and refuse password login for
 non-staff accounts. A staff/superuser account can still use the password form (via
@@ -313,7 +313,7 @@ toggle covers and how to set it through the API.
 | Every login redirects to `/login?error=errorEmailNotVerified` | Keycloak reports `email_verified: false`. Verify the users' emails, enable **Trust Email** on an LDAP/AD federation provider, or set `require_verified_email: false` if the realm's addresses are authoritative. |
 | Every login redirects to `/login?error=errorAuthFlowError` after a Keycloak upgrade or client change | Check the backend log: a `state`, PKCE or `sub` mismatch means something is rewriting the callback URL or the client's PKCE method is not `S256`. |
 | Every login redirects to `/login?error=errorNoMappedRole` | The client-roles mapper is not enabled on the ID token *and* userinfo, or the user holds none of `user_roles` / `staff_roles` / `superuser_roles`. Check **Evaluate** (step 4). |
-| The user signs in but sees no workspace | Expected: a workspace admin must add them in Baserow. |
+| The user signs in but sees no workspace | Expected: a workspace admin must add them in Saveroom. |
 | A workspace admin cannot find the user in *Add members* | The user has not signed in yet (no account exists), is deactivated, or the search has fewer than 3 characters. Ask them to sign in once first. |
 | A configuration change had no effect | The provider JSON is read at startup. Restart the backend. |
 | The backend refuses to start after an upgrade | The provider JSON still uses retired keys: `groups_claim` / `staff_groups` / `superuser_groups` (rename), or `workspace_mappings` / `team_mappings` / `strict_membership` (remove; see [Upgrading from workspace mappings](sso-oidc.md#upgrading-from-workspace-mappings)). |
@@ -333,7 +333,7 @@ It creates exactly three things, matching steps 1, 2 and 4:
 * the `oidc-usermodel-client-role-mapper` from step 4, emitting
   `resource_access.baserow.roles` into the ID token, the access token and userinfo.
 
-It contains no workspace information — Keycloak has no notion of a Baserow workspace.
+It contains no workspace information — Keycloak has no notion of a Saveroom workspace.
 
 Unlike the example in step 5, this block carries no `//` comments: it is pasted into
 Keycloak's partial import and `kcadm.sh`, which accept strict JSON only.
@@ -347,7 +347,7 @@ Keycloak's partial import and `kcadm.sh`, which accept strict JSON only.
   "clients": [
     {
       "clientId": "baserow",
-      "name": "Baserow",
+      "name": "Saveroom",
       "enabled": true,
       "protocol": "openid-connect",
       "publicClient": false,
@@ -379,9 +379,9 @@ Keycloak's partial import and `kcadm.sh`, which accept strict JSON only.
   "roles": {
     "client": {
       "baserow": [
-        { "name": "baserow-user", "description": "May sign in to Baserow" },
-        { "name": "baserow-staff", "description": "Baserow global staff" },
-        { "name": "baserow-admins", "description": "Baserow global superuser" }
+        { "name": "baserow-user", "description": "May sign in to Saveroom" },
+        { "name": "baserow-staff", "description": "Saveroom global staff" },
+        { "name": "baserow-admins", "description": "Saveroom global superuser" }
       ]
     }
   }

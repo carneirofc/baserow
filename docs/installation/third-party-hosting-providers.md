@@ -1,7 +1,7 @@
 # Third party hosting providers
 
 Here are some third party hosting/deployment providers who can make it very easy to
-deploy or self-host your own Baserow.
+deploy or self-host your own Saveroom.
 
 Please note that we have not officially been involved with these integrations as they 
 are independently setup and offered by third parties.
@@ -30,7 +30,7 @@ Click to deploy: [https://unfurl.cloud/onecommons/blueprints/baserow/](https://u
 ## Easypanel
 
 [Easypanel](https://easypanel.io) it a modern server control panel. You can use it to
-deploy Baserow on your own server.
+deploy Saveroom on your own server.
 
 Click to deploy: [https://easypanel.io/docs/templates/baserow](https://easypanel.io/docs/templates/baserow)
 
@@ -39,4 +39,4 @@ Click to deploy: [https://easypanel.io/docs/templates/baserow](https://easypanel
 1. Create a VM that runs Ubuntu on your cloud provider.
 2. Install Easypanel using the instructions from the website.
 3. Create a new project.
-4. Install Baserow using the dedicated template.
+4. Install Saveroom using the dedicated template.

@@ -1,6 +1,6 @@
 # Turning application types off instance-wide
 
-Baserow ships four kinds of application — databases, applications (the application
+Saveroom ships four kinds of application — databases, applications (the application
 builder), dashboards and automations. An instance administrator can turn any of them off,
 so that the type stops existing for everyone: nobody can create one, and the ones that
 already exist disappear from the interface and from the API.
@@ -110,7 +110,7 @@ applications hidden in step 4.
 
 ## See also
 
-* [Configuring Baserow](configuration.md) — environment variables, including the ones
+* [Configuring Saveroom](configuration.md) — environment variables, including the ones
   that must be set before startup.
 * [Single sign-on with OpenID Connect](sso-oidc.md) — granting the global staff role
   that can change these settings from your IdP's roles.

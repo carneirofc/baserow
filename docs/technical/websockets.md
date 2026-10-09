@@ -1,10 +1,10 @@
 # Working with websockets
 
-Baserow uses [Django Channels](https://channels.readthedocs.io/en/latest/) library to handle websocket connections.
+Saveroom uses [Django Channels](https://channels.readthedocs.io/en/latest/) library to handle websocket connections.
 
 ## Consumers
 
-The communication between connected clients (like the Baserow web-frontend) and Baserow backend is done through Django Channels [consumers](https://channels.readthedocs.io/en/latest/topics/consumers.html). A consumer is akin to a Django view. It can receive payloads from a client and send payloads to the client. The difference is that consumers are stateful and handle communication back and forth for the whole duration of a websocket connection.
+The communication between connected clients (like the Saveroom web-frontend) and Saveroom backend is done through Django Channels [consumers](https://channels.readthedocs.io/en/latest/topics/consumers.html). A consumer is akin to a Django view. It can receive payloads from a client and send payloads to the client. The difference is that consumers are stateful and handle communication back and forth for the whole duration of a websocket connection.
 
 Similarly to Django views, consumers are hooked to a particular URL, see this excerpt from `backend/src/baserow/ws/routing.py` on how the `CoreConsumer` is routed:
 
@@ -70,11 +70,11 @@ class MyConsumer(AsyncJsonWebsocketConsumer):
 
 ### CoreConsumer
 
-The main Baserow consumer is `CoreConsumer` (from `backend/src/baserow/ws/consumers.py`). It currently handles all web-frontend connections, all backend events and exchange of all messages between clients and the backend.
+The main Saveroom consumer is `CoreConsumer` (from `backend/src/baserow/ws/consumers.py`). It currently handles all web-frontend connections, all backend events and exchange of all messages between clients and the backend.
 
 ## Channel Layer and Channel Groups
 
-In essense, a [channel layer](https://channels.readthedocs.io/en/latest/topics/channel_layers.html) facilitates cross-process communication like the communication between consumers themselves or between consumers and any other backend code that needs to send messages to connected clients. Baserow uses [RedisChannelLayer](https://github.com/django/channels_redis/) for this purpose.
+In essense, a [channel layer](https://channels.readthedocs.io/en/latest/topics/channel_layers.html) facilitates cross-process communication like the communication between consumers themselves or between consumers and any other backend code that needs to send messages to connected clients. Saveroom uses [RedisChannelLayer](https://github.com/django/channels_redis/) for this purpose.
 
 Each consumer has a unique *channel name* (the `self.channel_name` in the example above), and can join arbitrary-named groups, allowing both point-to-point and broadcast messaging.
 
@@ -88,7 +88,7 @@ Currently, `CoreConsumer`s use these channel groups for broadcasts:
 
 `CoreConsumer` has a concept of *pages* that a client can subscribe to in order to receive messages targeting specific pages. Clients have to manually request to be subscribed with a special payload. The consumer can then check if the client has the permissions necessary to receive these page updates and if so, add itself to the particular channel group representing the page.
 
-For example, users can subscribe to receive updates to a particular Baserow table. If the request is permitted, the consumer handling the connection will join `table-{id}` channel group and start receiving messages related to the table page with the particular id.
+For example, users can subscribe to receive updates to a particular Saveroom table. If the request is permitted, the consumer handling the connection will join `table-{id}` channel group and start receiving messages related to the table page with the particular id.
 
 Each page that can be subscribed is implemented as a `PageType` and registered in `page_registry` so it is possible to implement new page types without making changes to the consumer itself. See `backend/src/baserow/ws/registries.py` for details.
 
@@ -117,9 +117,9 @@ async_to_sync(send_message_to_channel_group)(channel_layer, group, message)
 
 ## Front-end
 
-Websocket connections are automatically established for each user, including anonymous users, in the main page layout `web-frontend/modules/core/layouts/app.vue` when the Baserow web-frontend is loaded. Interacting with the backend using websocket connections is abstracted in `RealTimeHandler` class which is available in Vue components under `this.$realtime` property.
+Websocket connections are automatically established for each user, including anonymous users, in the main page layout `web-frontend/modules/core/layouts/app.vue` when the Saveroom web-frontend is loaded. Interacting with the backend using websocket connections is abstracted in `RealTimeHandler` class which is available in Vue components under `this.$realtime` property.
 
-Consult client-side documentation in `docs/apis/web-socket-api.md` for implementing webscocket clients for Baserow.
+Consult client-side documentation in `docs/apis/web-socket-api.md` for implementing webscocket clients for Saveroom.
 
 ## Web Socket ID
 

@@ -1,7 +1,7 @@
 # Managing workspace access
 
 Who is in a workspace, who administers it, and what each member can do with its databases
-and tables are managed inside Baserow — not by the identity provider and not through
+and tables are managed inside Saveroom — not by the identity provider and not through
 environment variables. Creating a workspace therefore never needs a configuration change or
 a restart.
 

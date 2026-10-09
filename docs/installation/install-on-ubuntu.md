@@ -7,7 +7,7 @@
 > If you installed Baserow 1.8.2 or earlier using this guide in version 1.8.2 please
 > See the upgrade section at the end of this guide.
 
-This guide will walk you through a production installation of Baserow using Docker 
+This guide will walk you through a production installation of Saveroom using Docker 
 on Ubuntu. This document aims to provide a walkthrough for servers running Ubuntu 
 20.04.4 LTS. These instructions have been tested with a clean install of Ubuntu 
 20.04.4 LTS and a user account with root access or the ability to run Docker containers. 
@@ -24,8 +24,8 @@ sudo usermod -aG docker $USER
 # Refresh the group so you don't need to relog to get docker permissions
 newgrp docker 
 # Change BASEROW_PUBLIC_URL to your domain name or http://YOUR_SERVERS_IP if you want
-# to access Baserow remotely.
-# This command will run Baserow with it's data stored in the new baserow_data docker 
+# to access Saveroom remotely.
+# This command will run Saveroom with it's data stored in the new baserow_data docker 
 # volume.
 docker run -e BASEROW_PUBLIC_URL=http://localhost \
 --name baserow \
@@ -35,24 +35,24 @@ docker run -e BASEROW_PUBLIC_URL=http://localhost \
 -p 80:80 \
 -p 443:443 \
 ghcr.io/carneirofc/saveroom:0.15.0
-# Watch the logs for Baserow to come available by running:
+# Watch the logs for Saveroom to come available by running:
 docker logs baserow
 ```
 
 ## Further information 
 
 Please refer to the [Install with Docker](install-with-docker.md) guide for how to
-configure and maintain your Docker based Baserow server.
+configure and maintain your Docker based Saveroom server.
 
 ## Upgrade from Baserow 1.8.2 or earlier
 
 The [Old Install on Ubuntu](old-install-on-ubuntu.md) guide is now deprecated. We are 
-asking any users who wish to run Baserow on Ubuntu to instead install Docker and use our
-official Docker images to run Baserow. This guide explains how to migrate an existing
-Baserow Ubuntu install to use our official Docker images.
+asking any users who wish to run Saveroom on Ubuntu to instead install Docker and use our
+official Docker images to run Saveroom. This guide explains how to migrate an existing
+Saveroom Ubuntu install to use our official Docker images.
 
 > If you were previously using a separate api.your_baserow_server.com domain this is no
-> longer needed. Baserow will now work on a single domain accessing the api at 
+> longer needed. Saveroom will now work on a single domain accessing the api at 
 > YOUR_DOMAIN.com/api. 
 
 ### Migration Steps
@@ -92,8 +92,8 @@ newgrp docker
 
 docker run hello-world
 
-# === Baserow Upgrade ===
-# When you are ready to stop your old Baserow server by running
+# === Saveroom Upgrade ===
+# When you are ready to stop your old Saveroom server by running
 sudo supervisorctl stop all
 
 # === Extract your secret key ===
@@ -121,14 +121,14 @@ sudo systemctl restart postgresql
 # 8. Check the logs do not have errors by running
 sudo less /var/log/postgresql/postgresql-YOUR_PSQL_VERSION-main.log
 
-# === Launch Baserow ===
+# === Launch Saveroom ===
 
 # Please change this variable to the password used by the baserow user in your 
 # postgresql database.
 YOUR_BASEROW_DATABASE_PASSWORD=yourpassword
 # Change BASEROW_PUBLIC_URL to your domain name or http://YOUR_SERVERS_IP if you want
-# to access Baserow remotely.
-# This command will run Baserow so it uses your existing postgresql database and your
+# to access Saveroom remotely.
+# This command will run Saveroom so it uses your existing postgresql database and your
 # existing user uploaded files in /baserow/media. 
 # It will store it's redis database and password, any data related to the automatic 
 # HTTPS setup provided by Caddy in the new baserow_data docker volume.
@@ -148,9 +148,9 @@ docker run \
   -p 80:80 \
   -p 443:443 \
   ghcr.io/carneirofc/saveroom:0.15.0
-# Check the logs and wait for Baserow to become available
+# Check the logs and wait for Saveroom to become available
 docker logs baserow
 ```
 
 Please refer to the [Install with Docker](install-with-docker.md) guide in the future
-and for more information on how to manage your Docker based Baserow install.
+and for more information on how to manage your Docker based Saveroom install.

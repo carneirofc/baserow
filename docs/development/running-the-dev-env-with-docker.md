@@ -1,6 +1,6 @@
 # Running the Dev Environment with Docker
 
-This guide covers running the Baserow development environment using Docker. This is the recommended approach for most developers as it requires minimal local setup and ensures a consistent environment.
+This guide covers running the Saveroom development environment using Docker. This is the recommended approach for most developers as it requires minimal local setup and ensures a consistent environment.
 
 ## Prerequisites
 
@@ -33,7 +33,7 @@ just --version
 ```bash
 # Clone the repository
 git clone --branch develop https://github.com/carneirofc/saveroom.git
-cd baserow
+cd saveroom
 
 # Build and start the dev environment
 just dc-dev up -d
@@ -155,7 +155,7 @@ just dc-dev build backend
 just dc-dev build --no-cache --parallel
 
 # Clear Docker builder cache completely
-# WARNING: This clears ALL Docker builder cache, not just Baserow!
+# WARNING: This clears ALL Docker builder cache, not just Saveroom!
 just prune
 ```
 

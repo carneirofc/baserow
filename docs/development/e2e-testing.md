@@ -1,6 +1,6 @@
 # End-to-End Testing
 
-Baserow includes an end-to-end test suite in the `e2e-tests` folder using [Playwright](https://playwright.dev/) to run UI tests against a running Baserow instance.
+Saveroom includes an end-to-end test suite in the `e2e-tests` folder using [Playwright](https://playwright.dev/) to run UI tests against a running Saveroom instance.
 
 ## Prerequisites
 

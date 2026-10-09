@@ -1,6 +1,6 @@
 # VSCode Setup
 
-This guide walks you through a first time VScode setup for Baserow for developers. It
+This guide walks you through a first time VScode setup for Saveroom for developers. It
 will ensure you can run and debug all tests and also enable all the relevant linters and
 automatic style fixers to make your life as easy as possible.
 
@@ -15,11 +15,11 @@ Install the following tools:
 
 ## Setup Steps
 
-1. First checkout a fresh copy of Baserow: `git clone git@github.com:baserow/baserow.git`
+1. First checkout a fresh copy of Saveroom: `git clone git@github.com:carneirofc/saveroom.git`
    (or your personal fork of the project)
-1. `cd baserow`
+1. `cd saveroom`
 1. `./config/vscode/apply_standard_baserow_vscode_config.sh`
-    1. Type `Y` and hit enter to apply the standard Baserow config
+    1. Type `Y` and hit enter to apply the standard Saveroom config
 1. Open VSCode and on the "Welcome to VSCode" screen click the "Open" button
    and open the baserow folder you cloned above.
 1. Make sure you have installed / enabled the Python VSCode plugin.

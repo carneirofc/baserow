@@ -1,6 +1,6 @@
 # Table of contents
 
-Baserow is an open-source online database tool. Users can use this no-code platform to
+Saveroom is an open-source online database tool, a fork of Baserow. Users can use this no-code platform to
 create a database without any technical experience. It lowers the barriers to app
 creation so that anyone who can work with a spreadsheet can also create a database. The
 interface looks a lot like a spreadsheet. Our goal is to provide a perfect and fast user
@@ -10,38 +10,38 @@ developer.
 
 ## Installation
 
-You can easily self-host Baserow by following one of the guides below:
+You can easily self-host Saveroom by following one of the guides below:
 
 * [Install with Docker](installation/install-with-docker.md): A step-by-step guide to
-  install Baserow using docker.
+  install Saveroom using docker.
 * [Install with Docker Compose](installation/install-with-docker-compose.md): A
-  step-by-step guide to install Baserow using Docker Compose.
+  step-by-step guide to install Saveroom using Docker Compose.
 * [Install on AWS](installation/install-on-aws.md): An overview of your options to 
-  install Baserow on AWS with two specific guides for ECS.
+  install Saveroom on AWS with two specific guides for ECS.
 * [Install using Standalone images](installation/install-using-standalone-images.md): A
-  general overview on how to run the Baserow standalone service images with your own
+  general overview on how to run the Saveroom standalone service images with your own
   container orchestration software.
 * [Install on Digital Ocean Apps](installation/install-on-digital-ocean.md):
   Instructions on how to install on Digital Ocean Apps platform.
 * [Install on Railway](installation/install-on-railway.md): A step-by-step guide to
-  install Baserow on Railway.
+  install Saveroom on Railway.
 * [Install on Ubuntu](installation/install-on-ubuntu.md): Instructions on how to install
-  Docker and use it to install Baserow on a fresh ubuntu install.
+  Docker and use it to install Saveroom on a fresh ubuntu install.
 * [Third party hosting providers](installation/third-party-hosting-providers.md): A list
-  of hosting/deployment providers that allow to easily self-host Baserow.
+  of hosting/deployment providers that allow to easily self-host Saveroom.
 * [Install with Helm](installation/install-with-helm.md): The recommended Kubernetes
   path. Deploys the split backend/web-frontend/Celery pods with optional bundled
   PostgreSQL/Redis and S3 media, and runs unmodified under OpenShift's restricted-v2 SCC.
-* [Install on Amazon EKS](installation/install-on-eks.md): Baserow on EKS behind an
+* [Install on Amazon EKS](installation/install-on-eks.md): Saveroom on EKS behind an
   internal ALB fronted by CloudFront, with S3 media authenticated through IRSA.
 * [Install with K8S](installation/install-with-k8s.md): An example performant 
   production ready K8S configuration for use as a starting point.
 * [DEPRECATED: Install on Ubuntu](installation/old-install-on-ubuntu.md): A deprecated
-  and now unsupported guide on how to manually install Baserow and its required services
+  and now unsupported guide on how to manually install Saveroom and its required services
   on a fresh Ubuntu install. Please use the guides above instead.
 * [Supported runtime dependencies and environments](installation/supported.md): Learn about
   the supported and recommended runtime dependencies.
-* [Monitoring Baserow](installation/monitoring.md): Learn how to monitor your Baserow
+* [Monitoring Saveroom](installation/monitoring.md): Learn how to monitor your Saveroom
   server using open telemetry.
 * [Single sign-on with OpenID Connect](installation/sso-oidc.md): Full OIDC reference —
   provider keys, the user/staff/superuser profiles the IdP defines, a complete example and
@@ -58,16 +58,16 @@ You can easily self-host Baserow by following one of the guides below:
   the admin settings to disable databases, the application builder, dashboards or
   automations for the whole instance.
 
-## Baserow Tutorials
+## Saveroom Tutorials
 
-* [Understanding Baserow Formulas](tutorials/understanding-baserow-formulas.md): A
-  tutorial explaining how to use the formula field in Baserow.
+* [Understanding Saveroom Formulas](tutorials/understanding-baserow-formulas.md): A
+  tutorial explaining how to use the formula field in Saveroom.
 * [Debugging Connection Issues](tutorials/debugging-connection-issues.md): A guide
-  to help you troubleshoot and resolve common connection issues in Baserow.
+  to help you troubleshoot and resolve common connection issues in Saveroom.
 
 ## API Usage
 
-Baserow provides various APIs detailed below:
+Saveroom provides various APIs detailed below:
 
 * [REST API](apis/rest-api.md): An introduction to the REST API and information about
   API resources.
@@ -77,29 +77,29 @@ Baserow provides various APIs detailed below:
 ## Technical Overviews
 
 * [Introduction](technical/introduction.md): An introduction to some important technical
-  concepts in Baserow.
+  concepts in Saveroom.
 * [Database plugin](technical/database-plugin.md) An introduction to the database plugin
   which is installed by default.
 * [Formula Technical Guide](technical/formula-technical-guide.md): A more technical
   guide about formulas aimed at developers who want to understand and work with
-  internals of Baserow formulas.
-* [Undo Redo Technical Guide](technical/undo-redo-guide.md): How Baserow implements undo
+  internals of Saveroom formulas.
+* [Undo Redo Technical Guide](technical/undo-redo-guide.md): How Saveroom implements undo
   redo technically.
-* [Permissions handling Guide](technical/permissions-guide.md): How Baserow implements
+* [Permissions handling Guide](technical/permissions-guide.md): How Saveroom implements
   permission checking technically.
 
 ## Development
 
-Everything related to contributing and developing for Baserow.
+Everything related to contributing and developing for Saveroom.
 
 * [Development environment](./development/development-environment.md): More detailed
   information on baserow's local development environment.
 * [Running the Dev Environment Locally](development/running-the-dev-env-locally.md): A
-  step-by-step guide to run Baserow locally for development.
+  step-by-step guide to run Saveroom locally for development.
 * [Running the Dev Environment with Docker](development/running-the-dev-env-with-docker.md): A
-  step-by-step guide to run Baserow with Docker for development.
+  step-by-step guide to run Saveroom with Docker for development.
 * [Directory structure](./development/directory-structure.md): The structure of all the
-  directories in the Baserow repository explained.
+  directories in the Saveroom repository explained.
 * [Tools](./development/tools.md): The tools (flake8, pytest, eslint, etc) and how to
   use them.
 * [Code quality](./development/code-quality.md): More information about the code style,
@@ -110,20 +110,20 @@ Everything related to contributing and developing for Baserow.
 * [Justfile reference](./development/justfile.md): Complete reference for all `just` commands
   available for development.
 * [IntelliJ setup](./development/intellij-setup.md): How to configure Intellij to work
-  well with Baserow for development purposes.
-* [Feature flags](./development/feature-flags.md): How Baserow uses basic feature flags for optionally
+  well with Saveroom for development purposes.
+* [Feature flags](./development/feature-flags.md): How Saveroom uses basic feature flags for optionally
   enabling unfinished or unready features.
-* [E2E Testing](./development/e2e-testing.md): How to run Baserow's end-to-end tests 
+* [E2E Testing](./development/e2e-testing.md): How to run Saveroom's end-to-end tests 
   and when to add your own.
 * [Metrics and Logs](./development/metrics-and-logs.md): How to work with metrics and logs
-  to aid with monitoring Baserow as a developer.
+  to aid with monitoring Saveroom as a developer.
 * [Backend Tests](development/running-tests.md): A guide on how to run python tests for the backend.
 
 ## Plugins
 
 Everything related to custom plugin development.
 
-* [Plugin basics](./plugins/introduction.md): An introduction into Baserow plugins.
+* [Plugin basics](./plugins/introduction.md): An introduction into Saveroom plugins.
 * [Plugin boilerplate](./plugins/boilerplate.md) **Outdated**: Don't reinvent the
   wheel, use the boilerplate for quick plugin development.
 * [Create application](./plugins/application-type.md): Want to create an application
@@ -139,5 +139,5 @@ Everything related to custom plugin development.
 
 ## Other
 
-* [External resources related to Baserow](./other/external-resources.md): A list of
+* [External resources related to Saveroom](./other/external-resources.md): A list of
   external third party resources.

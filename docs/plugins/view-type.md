@@ -3,7 +3,7 @@
 A view is an abstraction that defines how table data is displayed to a user. More 
 information about this can be found on the 
 [database plugin page](../technical/database-plugin.md). This is a tutorial about 
-how to create your own custom table view type for Baserow via a plugin. We are going to
+how to create your own custom table view type for Saveroom via a plugin. We are going to
 create a calendar view that doesn't really do anything. In the end the user can create 
 a new calendar view that only shows a hello world message. We expect that you are 
 using the [plugin boilerplate](./boilerplate.md).
@@ -28,7 +28,7 @@ class CalendarView(View):
 
 Next we need a to create a `CalendarViewType` class. All the view type configuration, 
 hooks and other related things are in here. More information about the possibilities 
-can be found in the Baserow repository at 
+can be found in the Saveroom repository at 
 `backend/src/baserow/contrib/database/views/registries.py::ViewType`.
 
 plugins/my_baserow_plugin/backend/src/my_baserow_plugin/view_types.py

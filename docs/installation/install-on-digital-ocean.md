@@ -1,7 +1,7 @@
 # Installation on Digital Ocean Apps
 
 This guide will walk you through deploying on the Digital Ocean Apps platform. It's a
-step-by-step guide that helps you install Baserow from scratch in a scalable way.
+step-by-step guide that helps you install Saveroom from scratch in a scalable way.
 
 ## Create managed database
 
@@ -15,7 +15,7 @@ the app depends on these resources to exist, we have to create those first.
 Navigate to the `Databases` page in the left sidebar of your Digital Ocean dashboard.
 Click on `Create Database` in the top right corner. Choose your region, it's important
 that all the created servers are in the same region, select PostgreSQL v15, and choose
-the server specs you would like to have. Baserow is compatible with 1vCPU and 1GB
+the server specs you would like to have. Saveroom is compatible with 1vCPU and 1GB
 RAM.
 
 While the database server is being created, you can already find the `Connection
@@ -28,7 +28,7 @@ later.
 Navigate to the `Databases` page in the left sidebar of your Digital Ocean dashboard.
 Click on `Create Database` in the top right corner. Choose your region, it's important
 that all the created servers are in the same region, select Redis v7, and choose the
-server specs you would like to have. Baserow is compatible with 1vCPU and 1GB RAM.
+server specs you would like to have. Saveroom is compatible with 1vCPU and 1GB RAM.
 
 While the database server is being created, you can already find the `Connection
 Details` on the database detail page. Click on the dropdown in that top right corner,
@@ -110,7 +110,7 @@ environment variable `BASEROW_TRIGGER_SYNC_TEMPLATES_AFTER_MIGRATION` to `true`.
 
 ### Spaces
 
-In order for the download button to work in Baserow you would need to configure the CORS
+In order for the download button to work in Saveroom you would need to configure the CORS
 settings in spaces. Navigate to the created space, go to the `Settings` tab, click on
 `Add` next to the CORS  Configurations, and add the URL of the newly created
 application without a trailing slash, so it must not end with a `/`. Select the `GET`,
@@ -118,12 +118,12 @@ application without a trailing slash, so it must not end with a `/`. Select the 
 
 ## Finish
 
-Wait until the build restarts, and then visit the copied URL to make use of your Baserow
+Wait until the build restarts, and then visit the copied URL to make use of your Saveroom
 environment.
 
 ## Update version
 
-In order to update the Baserow version, you simply need to replace the image tag.
+In order to update the Saveroom version, you simply need to replace the image tag.
 Navigate to the `Settings` tag of your created app, click on the `baserow-baserow`
 component, then click on the `Edit` button next to source, change the `Image tag` into
 the desired version (see the
@@ -146,7 +146,7 @@ EMAIL_SMTP_USE_TLS=
 
 ## Application builder domains
 
-Baserow has an application builder that allows to deploy an application to a specific
+Saveroom has an application builder that allows to deploy an application to a specific
 domain. Because Digital Ocean has a reverse proxy that routes a domain to the right
 app, the deployed application isn't automatically available on the chosen domain.
 
@@ -158,7 +158,7 @@ application builder domain.
 
 ### Containers
 
-If you're going to use Baserow with more concurrent users, have big database schemas,
+If you're going to use Saveroom with more concurrent users, have big database schemas,
 need more API requests per second, then you're going to run into limitations with
 the current setup, and you need to scale up.
 

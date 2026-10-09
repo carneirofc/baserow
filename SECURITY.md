@@ -1,1 +1,1 @@
-Please report vulnerabilities in Baserow privately through GitHub's [security advisories](https://github.com/carneirofc/saveroom/security/advisories/new). If you need another contact path, email claudiofcarneiro@gmail.com.
+Please report vulnerabilities in Saveroom privately through GitHub's [security advisories](https://github.com/carneirofc/saveroom/security/advisories/new). If you need another contact path, email claudiofcarneiro@gmail.com.

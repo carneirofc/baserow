@@ -8,7 +8,7 @@ possible for the user to see an preview of the template before installing.
 ## Build your own
 
 If you want to create your own template, you first need to make one in an installation
-of Baserow. You need at least version 1.1 because that contains the exporting
+of Saveroom. You need at least version 1.1 because that contains the exporting
 functionality that you are going to need later.
 
 The first step is creating a new empty workspace. It doesn't matter what it is named. Next
@@ -26,7 +26,7 @@ create a template based off it.
 It is possible to make an export of all the applications that are in a workspace. When a
 user installs a template, then that export is used to import the applications
 into the user's desired workspace. It is only possible to make this export via the command
-line interface of Baserow.
+line interface of Saveroom.
 
 Before you can export the application, you first need to figure out what the ID of your
 workspace is. You will see a list of all your workspaces when you click on the name of your
@@ -35,7 +35,7 @@ three dots. If you click on that you will see another context menu containing th
 of that workspace, and a number between brackets. That number is your workspace ID.
 
 Now that you have the workspace ID that contains your template, you need to export it to
-JSON format. In order to do that you need access to the command line of your Baserow
+JSON format. In order to do that you need access to the command line of your Saveroom
 environment. This could be different depending on how your environment is installed.
 A couple of examples:
 
@@ -50,7 +50,7 @@ $ python src/baserow/manage.py export_workspace_applications YOUR_WORKSPACE_ID -
 ### Cloudron environment
 
 By logging into your Cloudron environment, you can access to the terminal of your
-Baserow app. There you can enter the following command to export your application:
+Saveroom app. There you can enter the following command to export your application:
 
 ```
 $ /app/code/env/bin/python /app/code/baserow/backend/src/baserow/manage.py export_workspace_applications YOUR_WORKSPACE_ID --indent --settings=cloudron.settings

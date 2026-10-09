@@ -1,18 +1,18 @@
-# Baserow Formula Technical Guide
+# Saveroom Formula Technical Guide
 
-This guide explains the inner workings of Baserow formulas for developers.
+This guide explains the inner workings of Saveroom formulas for developers.
 
 See the [understanding baserow formulas guide](../tutorials/understanding-baserow-formulas.md) if
-you instead want a general guide of how to use formulas as a user within Baserow.
+you instead want a general guide of how to use formulas as a user within Saveroom.
 
 ## Technical Overview
 
-In Baserow there is a special formula field type. The user enters a single formula for a
+In Saveroom there is a special formula field type. The user enters a single formula for a
 whole formula field which is then used to calculate every cell in the formula field.
 
-Baserow formulas are written in the open source Baserow Formula language which is a
+Saveroom formulas are written in the open source Saveroom Formula language which is a
 simple expression based language similar to formulas you will find in other spreadsheet
-tools. The Baserow Formula language itself is a fully functioning programming language
+tools. The Saveroom Formula language itself is a fully functioning programming language
 with a :
 
 * A language syntax/grammar definition.
@@ -58,9 +58,9 @@ BaserowToText function call.
 Functions define how to transform themselves into a Django Expression to calculate their
 result.
 
-### Extending Baserow Formulas using plugins
+### Extending Saveroom Formulas using plugins
 
-Plugins can easily add new Baserow formula functions and types by implementing
+Plugins can easily add new Saveroom formula functions and types by implementing
 a `BaserowFunctionDefinition` and registering it in the `formula_function_registry`.
 Hint: Use the various `{Zero/One/Two/Three}ArgumentBaserowFunctionDefinition` sub-classes
 get a nicer set of functions to implement corresponding to the arguments.
@@ -153,7 +153,7 @@ need to check and re-type the table in these situations.
 
 ### Sorting and Filtering Formula Fields
 
-Formula fields can be sorted and filtered using Baserow's existing view filters based on
+Formula fields can be sorted and filtered using Saveroom's existing view filters based on
 the BaserowFormulaType of the field. Simply using
 the `FormulaFieldType.compatible_with_formula_types`
 helper function when defining your view filters `compatible_field_types` to say which of
