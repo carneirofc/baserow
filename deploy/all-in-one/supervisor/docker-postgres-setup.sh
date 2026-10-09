@@ -105,7 +105,7 @@ _main() {
           echo "Your PostgreSQL data directory was initialized with version $PGDATA_VERSION, but this image is running version $POSTGRES_VERSION."
           echo "A PostgreSQL data directory can only be read by the major version that created it, so this image will not start against it."
           echo "Follow the upgrade runbook to dump your data with your previous image and restore it into a fresh volume:"
-          echo "https://github.com/carneirofc/baserow/blob/develop/docs/runbooks/upgrade-embedded-postgres.md"
+          echo "https://github.com/carneirofc/saveroom/blob/develop/docs/runbooks/upgrade-embedded-postgres.md"
           echo
           exit 1
         fi

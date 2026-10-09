@@ -1,6 +1,6 @@
 # Example production overrides for Amazon EKS behind an internal ALB fronted by
 # CloudFront using the VPC origin pattern.
-#   helm install baserow deploy/helm/baserow -f deploy/helm/baserow/values-eks.yaml
+#   helm install baserow deploy/helm/saveroom -f deploy/helm/saveroom/values-eks.yaml
 #
 #   viewer --TLS--> CloudFront --VPC origin--> internal ALB --> backend / web-frontend
 #

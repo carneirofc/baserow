@@ -14,15 +14,15 @@ This wasn't an easy decision, and we know it affects well-intentioned contributo
 
 There's a lot you can do that we genuinely value:
 
-- **Report bugs** — open a [bug report](https://github.com/carneirofc/baserow/issues/new?template=bug.yml) with steps to reproduce and the expected behavior.
-- **Request features** — open a [feature request](https://github.com/carneirofc/baserow/issues/new?template=feature_request.yml) describing what you need and why.
-- **Join the discussion** — share ideas, feedback, and use cases in our [issue tracker](https://github.com/carneirofc/baserow/issues).
+- **Report bugs** — open a [bug report](https://github.com/carneirofc/saveroom/issues/new?template=bug.yml) with steps to reproduce and the expected behavior.
+- **Request features** — open a [feature request](https://github.com/carneirofc/saveroom/issues/new?template=feature_request.yml) describing what you need and why.
+- **Join the discussion** — share ideas, feedback, and use cases in our [issue tracker](https://github.com/carneirofc/saveroom/issues).
 
 Well-described issues and feedback help us shape the product and are always welcome.
 
 ## Want to contribute code?
 
-If you have something specific in mind, contact us first through the [issue tracker](https://github.com/carneirofc/baserow/issues). If we agree the change makes sense, we'll coordinate the approach with you before any code is written — only then should you open a PR.
+If you have something specific in mind, contact us first through the [issue tracker](https://github.com/carneirofc/saveroom/issues). If we agree the change makes sense, we'll coordinate the approach with you before any code is written — only then should you open a PR.
 
 ## Quality standards
 
@@ -34,8 +34,8 @@ When you submit code changes, your submissions are understood to be under the sa
 
 ## Security vulnerabilities
 
-If you find a security vulnerability, please report it privately through GitHub's [security advisories](https://github.com/carneirofc/baserow/security/advisories/new) — do not open a public issue.
+If you find a security vulnerability, please report it privately through GitHub's [security advisories](https://github.com/carneirofc/saveroom/security/advisories/new) — do not open a public issue.
 
 ## Questions?
 
-For general questions about Baserow, use the [issue tracker](https://github.com/carneirofc/baserow/issues).
+For general questions about Baserow, use the [issue tracker](https://github.com/carneirofc/saveroom/issues).

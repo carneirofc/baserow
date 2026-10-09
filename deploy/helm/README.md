@@ -26,13 +26,13 @@ OpenShift.
 
 ```sh
 # From the published chart
-helm install baserow oci://ghcr.io/carneirofc/baserow/charts/baserow \
+helm install baserow oci://ghcr.io/carneirofc/saveroom/charts/saveroom \
   -n baserow --create-namespace \
   --set publicURL=https://baserow.example.com
 
 # Or from a checkout
-helm dependency build deploy/helm/baserow
-helm install baserow deploy/helm/baserow -n baserow --create-namespace \
+helm dependency build deploy/helm/saveroom
+helm install baserow deploy/helm/saveroom -n baserow --create-namespace \
   --set publicURL=https://baserow.example.com
 ```
 
@@ -150,6 +150,6 @@ Config and Secret checksums are stamped onto every pod, so a config-only
   strict zero-downtime upgrades, split this into a pre-upgrade Job later.
 - No PodDisruptionBudget, HorizontalPodAutoscaler, per-component scheduling or
   configurable probe timings yet.
-- Validate on your cluster: `helm lint --strict deploy/helm/baserow`,
+- Validate on your cluster: `helm lint --strict deploy/helm/saveroom`,
   `helm install --dry-run`, then
   `kubectl get pods -l app.kubernetes.io/instance=<release>`.

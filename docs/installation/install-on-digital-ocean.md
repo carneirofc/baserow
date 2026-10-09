@@ -127,7 +127,7 @@ In order to update the Baserow version, you simply need to replace the image tag
 Navigate to the `Settings` tag of your created app, click on the `baserow-baserow`
 component, then click on the `Edit` button next to source, change the `Image tag` into
 the desired version (see the
-[releases](https://github.com/carneirofc/baserow/releases) for the latest tag), and click
+[releases](https://github.com/carneirofc/saveroom/releases) for the latest tag), and click
 on save. The app will redeploy
 with the latest version.
 

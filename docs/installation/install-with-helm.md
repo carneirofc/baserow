@@ -8,8 +8,8 @@ SCC, and on Amazon EKS.
 For the EKS-specific deployment shape (internal ALB behind a CloudFront VPC origin,
 IRSA, S3 media) see [Installing on Amazon EKS](install-on-eks.md).
 
-- Chart source: [`deploy/helm/baserow`](../../deploy/helm/baserow)
-- Published as: `oci://ghcr.io/carneirofc/baserow/charts/baserow`
+- Chart source: [`deploy/helm/saveroom`](../../deploy/helm/saveroom)
+- Published as: `oci://ghcr.io/carneirofc/saveroom/charts/saveroom`
 
 ## Prerequisites
 
@@ -21,7 +21,7 @@ IRSA, S3 media) see [Installing on Amazon EKS](install-on-eks.md).
 ## Install
 
 ```sh
-helm install baserow oci://ghcr.io/carneirofc/baserow/charts/baserow \
+helm install baserow oci://ghcr.io/carneirofc/saveroom/charts/saveroom \
   --namespace baserow --create-namespace \
   --set publicURL=https://baserow.example.com \
   --set ingress.enabled=true \
@@ -32,15 +32,15 @@ helm install baserow oci://ghcr.io/carneirofc/baserow/charts/baserow \
 From a checkout, fetch the subcharts first:
 
 ```sh
-helm dependency build deploy/helm/baserow
-helm install baserow deploy/helm/baserow -n baserow --create-namespace -f my-values.yaml
+helm dependency build deploy/helm/saveroom
+helm install baserow deploy/helm/saveroom -n baserow --create-namespace -f my-values.yaml
 ```
 
 Two ready-made presets ship with the chart; copy one and edit rather than starting
 from scratch:
 
-- [`values-openshift.yaml`](../../deploy/helm/baserow/values-openshift.yaml)
-- [`values-eks.yaml`](../../deploy/helm/baserow/values-eks.yaml)
+- [`values-openshift.yaml`](../../deploy/helm/saveroom/values-openshift.yaml)
+- [`values-eks.yaml`](../../deploy/helm/saveroom/values-eks.yaml)
 
 Pin the chart version in anything automated: `--version 0.2.0`.
 
@@ -294,8 +294,8 @@ silently leaving them on the old values.
 
 ```sh
 helm repo update                    # or re-pull the OCI chart
-helm diff upgrade baserow oci://ghcr.io/carneirofc/baserow/charts/baserow -f my-values.yaml
-helm upgrade baserow oci://ghcr.io/carneirofc/baserow/charts/baserow -f my-values.yaml
+helm diff upgrade baserow oci://ghcr.io/carneirofc/saveroom/charts/saveroom -f my-values.yaml
+helm upgrade baserow oci://ghcr.io/carneirofc/saveroom/charts/saveroom -f my-values.yaml
 ```
 
 `migrateOnStartup: true` (the default) runs Django migrations from the backend pod on
@@ -326,7 +326,7 @@ kubectl get pods -l app.kubernetes.io/instance=baserow
 kubectl logs deploy/baserow-backend
 kubectl logs deploy/baserow-celery
 helm get values baserow
-helm template baserow deploy/helm/baserow -f my-values.yaml | less
+helm template baserow deploy/helm/saveroom -f my-values.yaml | less
 ```
 
 | Symptom | Cause |

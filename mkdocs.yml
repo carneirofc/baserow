@@ -1,7 +1,7 @@
 site_name: Baserow (carneirofc fork) Docs
-site_url: https://carneirofc.github.io/baserow/
-repo_url: https://github.com/carneirofc/baserow
-repo_name: carneirofc/baserow
+site_url: https://carneirofc.github.io/saveroom/
+repo_url: https://github.com/carneirofc/saveroom
+repo_name: carneirofc/saveroom
 edit_uri: edit/develop/docs/
 docs_dir: docs
 

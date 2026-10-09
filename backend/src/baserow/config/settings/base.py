@@ -495,13 +495,13 @@ BRANDING_APP_NAME = os.getenv("BASEROW_BRANDING_APP_NAME") or "Saveroom"
 SPECTACULAR_SETTINGS = {
     "TITLE": f"{BRANDING_APP_NAME} API spec",
     "DESCRIPTION": "For more information about our REST API, please visit "
-    "[this page](https://github.com/carneirofc/baserow).\n\n"
+    "[this page](https://github.com/carneirofc/saveroom).\n\n"
     "For more information about our deprecation policy, please visit "
-    "[this page](https://github.com/carneirofc/baserow).",
-    "CONTACT": {"url": "https://github.com/carneirofc/baserow"},
+    "[this page](https://github.com/carneirofc/saveroom).",
+    "CONTACT": {"url": "https://github.com/carneirofc/saveroom"},
     "LICENSE": {
         "name": "MIT",
-        "url": "https://github.com/carneirofc/baserow/blob/develop/LICENSE",
+        "url": "https://github.com/carneirofc/saveroom/blob/develop/LICENSE",
     },
     "VERSION": "2.3.2",
     "SERVE_INCLUDE_SCHEMA": False,

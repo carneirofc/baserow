@@ -1019,7 +1019,7 @@ dc-deploy name="" *ARGS:
             echo "  just dc-deploy all-in-one logs -f"
             echo ""
             echo "For a simple multi-service local stack use: docker compose up -d"
-            echo "For OpenShift use the Helm chart in deploy/helm/baserow/"
+            echo "For OpenShift use the Helm chart in deploy/helm/saveroom/"
             [[ -n "{{ name }}" ]] && exit 1 || exit 0
             ;;
     esac

@@ -1,8 +1,8 @@
 # Configuring Baserow
 
 > Any questions, problems or suggestions with this guide? Ask a question in our
-> [issue tracker](https://github.com/carneirofc/baserow/issues) or contribute the change yourself at
-> https://github.com/carneirofc/baserow/tree/develop/docs .
+> [issue tracker](https://github.com/carneirofc/saveroom/issues) or contribute the change yourself at
+> https://github.com/carneirofc/saveroom/tree/develop/docs .
 
 The table below shows all available environment variables supported by Baserow.
 Some environment variables have different defaults, are not supported, are optional etc

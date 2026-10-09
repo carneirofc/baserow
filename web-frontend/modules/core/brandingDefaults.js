@@ -8,8 +8,8 @@
  */
 export const BRANDING_DEFAULTS = {
   appName: 'Saveroom',
-  siteUrl: 'https://github.com/carneirofc/baserow',
-  docsUrl: 'https://github.com/carneirofc/baserow',
+  siteUrl: 'https://github.com/carneirofc/saveroom',
+  docsUrl: 'https://github.com/carneirofc/saveroom',
   siteTitle: 'Saveroom',
   showAttribution: true,
 }
@@ -21,7 +21,7 @@ export const BRANDING_DEFAULTS = {
  * along with the rest of the attribution through `showAttribution`.
  */
 export const PROJECT_CREDITS = {
-  forkUrl: 'https://github.com/carneirofc/baserow',
-  licenseUrl: 'https://github.com/carneirofc/baserow/blob/develop/LICENSE',
+  forkUrl: 'https://github.com/carneirofc/saveroom',
+  licenseUrl: 'https://github.com/carneirofc/saveroom/blob/develop/LICENSE',
   upstreamUrl: 'https://baserow.io',
 }

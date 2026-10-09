@@ -231,7 +231,7 @@ class MaxLocksPerTransactionExceededException(Exception):
 
     message = (
         "The server has exceeded the maximum number of PostgreSQL locks per transaction. "
-        "Please read https://github.com/carneirofc/baserow"
+        "Please read https://github.com/carneirofc/saveroom"
     )
 
 
@@ -256,7 +256,7 @@ class DuplicateApplicationMaxLocksExceededException(
     message = (
         "The server attempted to duplicate an application, but exceeded the maximum "
         "number of PostgreSQL locks per transaction. Please read "
-        "https://github.com/carneirofc/baserow"
+        "https://github.com/carneirofc/saveroom"
     )
 
 

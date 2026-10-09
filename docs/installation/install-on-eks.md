@@ -5,7 +5,7 @@ This guide deploys Baserow on EKS in the shape most private AWS estates want: an
 **CloudFront using a VPC origin**, with media on S3 and **no long-lived AWS credentials
 anywhere** — the pods assume an IAM role through IRSA.
 
-Start from [`deploy/helm/baserow/values-eks.yaml`](../../deploy/helm/baserow/values-eks.yaml),
+Start from [`deploy/helm/saveroom/values-eks.yaml`](../../deploy/helm/saveroom/values-eks.yaml),
 which encodes everything below. Read [Installing with Helm](install-with-helm.md) first
 for the values that are not AWS-specific.
 
@@ -279,7 +279,7 @@ both services must admit the pod subnets.
 ## 6. Install
 
 ```sh
-helm install baserow oci://ghcr.io/carneirofc/baserow/charts/baserow \
+helm install baserow oci://ghcr.io/carneirofc/saveroom/charts/saveroom \
   --namespace baserow --create-namespace \
   -f values-eks.yaml
 ```

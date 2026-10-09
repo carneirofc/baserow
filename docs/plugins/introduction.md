@@ -31,7 +31,7 @@ The [Plugin Installation](./installation.md) guide goes into detail on how to in
 and uninstall Baserow plugins in the various official Baserow docker images.
 
 Currently, we do not provide an officially supported plugins, however check out the
-[issue tracker](https://github.com/carneirofc/baserow/issues) for further discussion.
+[issue tracker](https://github.com/carneirofc/saveroom/issues) for further discussion.
 
 ## Step by step plugin creation tutorial
 

@@ -1,7 +1,7 @@
 apiVersion: v2
-name: baserow
+name: saveroom
 description: >-
-  Baserow (FOSS fork) for Kubernetes, OpenShift and Amazon EKS. Deploys the
+  Saveroom (a FOSS fork of Baserow) for Kubernetes, OpenShift and Amazon EKS. Deploys the
   backend, web-frontend and Celery workers as separate hardened pods that run
   unmodified under OpenShift's restricted-v2 SCC (arbitrary UID, non-root, no
   privileged ports). Routing is via Ingress, an AWS ALB IngressGroup, or
@@ -10,17 +10,18 @@ description: >-
   at an external managed database instead by disabling them.
 type: application
 keywords:
+  - saveroom
   - baserow
   - no-code
   - database
   - openshift
   - eks
-version: 0.8.3
+version: 0.9.0
 # Tracks the application version shipped by this fork's images.
 appVersion: "0.15.0"
-home: https://github.com/carneirofc/baserow
+home: https://github.com/carneirofc/saveroom
 sources:
-  - https://github.com/carneirofc/baserow
+  - https://github.com/carneirofc/saveroom
 maintainers:
   - name: carneirofc
     email: claudiofcarneiro@gmail.com
@@ -29,7 +30,14 @@ annotations:
   artifacthub.io/changes: |
     - kind: changed
       description: >-
-        Bump the bundled Bitnami subcharts: PostgreSQL 18.12.4 and Redis 28.3.
+        Renamed the chart to saveroom, published at
+        oci://ghcr.io/carneirofc/saveroom/charts/saveroom. Resource names and
+        selector labels keep the baserow name, so existing releases upgrade in
+        place.
+    - kind: added
+      description: >-
+        branding.appName also reaches the backend and Celery pods, for the
+        product name in emails and the API docs.
 
 dependencies:
   - name: postgresql

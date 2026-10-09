@@ -1,0 +1,9 @@
+{
+    "type": "breaking_change",
+    "message": "The repository is now `carneirofc/saveroom`, so images and the Helm chart are published under new names from this release on: the all-in-one image is `ghcr.io/carneirofc/saveroom`, the split images are `ghcr.io/carneirofc/saveroom/{backend,web-frontend,caddy}`, and the chart is `oci://ghcr.io/carneirofc/saveroom/charts/saveroom`. Update image references and `helm upgrade` commands to the new paths. Releases up to 0.15.0 stay at the old `ghcr.io/carneirofc/baserow/*` paths. Volumes, databases, environment variables and the chart's resource names are unchanged, so existing installs and Helm releases upgrade in place. The docs moved to https://carneirofc.github.io/saveroom/.",
+    "issue_origin": "github",
+    "issue_number": null,
+    "domain": "core",
+    "bullet_points": [],
+    "created_at": "2026-10-09"
+}

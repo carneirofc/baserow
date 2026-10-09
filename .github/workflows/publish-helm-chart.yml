@@ -1,14 +1,14 @@
 name: Publish Helm Chart
 
-# Packages deploy/helm/baserow and publishes it as an installable artifact.
+# Packages deploy/helm/saveroom and publishes it as an installable artifact.
 # On pull requests touching the chart the workflow only validates, renders and
 # packages (uploading the .tgz as a workflow artifact for inspection). On
 # version tags it additionally pushes the chart as an OCI package to this
 # repo's GitHub Container Registry, using only the built-in GITHUB_TOKEN.
 #
 # Result:
-#   oci://ghcr.io/<owner>/<repo>/charts/baserow:<chart version>
-#   (install with: helm install baserow oci://ghcr.io/<owner>/<repo>/charts/baserow)
+#   oci://ghcr.io/<owner>/<repo>/charts/saveroom:<chart version>
+#   (install with: helm install saveroom oci://ghcr.io/<owner>/<repo>/charts/saveroom)
 #
 # The chart version is taken from Chart.yaml (bumped manually per
 # deploy/AGENTS.md), not from the git tag — the v* tag only marks a release
@@ -32,7 +32,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  CHART_DIR: deploy/helm/baserow
+  CHART_DIR: deploy/helm/saveroom
 
 jobs:
   # deploy/AGENTS.md requires Chart.yaml to be bumped whenever the chart changes.
@@ -221,12 +221,12 @@ jobs:
           helm package "$CHART_DIR" --destination dist
           tgz="$(ls dist/*.tgz)"
           echo "path=$tgz" >> "$GITHUB_OUTPUT"
-          echo "version=$(basename "$tgz" .tgz | sed 's/^baserow-//')" >> "$GITHUB_OUTPUT"
+          echo "version=$(basename "$tgz" .tgz | sed 's/^saveroom-//')" >> "$GITHUB_OUTPUT"
 
       - name: Upload packaged chart as workflow artifact
         uses: actions/upload-artifact@v7
         with:
-          name: baserow-helm-chart-${{ steps.package.outputs.version }}
+          name: saveroom-helm-chart-${{ steps.package.outputs.version }}
           path: ${{ steps.package.outputs.path }}
           if-no-files-found: error
 

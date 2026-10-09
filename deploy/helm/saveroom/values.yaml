@@ -1,9 +1,10 @@
-# Default values for the Baserow (FOSS fork) chart.
+# Default values for the Saveroom chart.
 # Designed to run under OpenShift's default restricted-v2 SCC with NO cluster
 # security changes: arbitrary UID, non-root, read-only rootfs, unprivileged ports.
 
-# Override the generated resource names. `nameOverride` replaces the chart name
-# ("baserow") inside them; `fullnameOverride` replaces the whole prefix.
+# Override the generated resource names. `nameOverride` replaces the base name
+# ("baserow", kept from before the product was renamed so existing releases
+# upgrade in place) inside them; `fullnameOverride` replaces the whole prefix.
 nameOverride: ""
 fullnameOverride: ""
 
@@ -20,11 +21,11 @@ image:
   # These images are already restricted-v2 compatible (no chown/su-exec,
   # unprivileged ports 8000/3000). Do NOT use the all-in-one image on OpenShift.
   backend:
-    repository: carneirofc/baserow/backend
+    repository: carneirofc/saveroom/backend
     tag: "" # defaults to Chart.appVersion
     pullPolicy: IfNotPresent
   webFrontend:
-    repository: carneirofc/baserow/web-frontend
+    repository: carneirofc/saveroom/web-frontend
     tag: "" # defaults to Chart.appVersion
     pullPolicy: IfNotPresent
 imagePullSecrets: []

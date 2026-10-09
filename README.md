@@ -164,7 +164,7 @@ docker run -d \
   -p 80:80 \
   -p 443:443 \
   --restart unless-stopped \
-  ghcr.io/carneirofc/baserow/baserow:latest
+  ghcr.io/carneirofc/saveroom:latest
 ```
 
 Then open [http://localhost](http://localhost). Baserow stores everything (Postgres,
@@ -173,7 +173,12 @@ Redis, uploads) inside the `baserow_data` volume.
 * Set `BASEROW_PUBLIC_URL` to `https://YOUR_DOMAIN` or `http://YOUR_IP` for external
   access — it must match the address you use in the browser.
 * Pin a specific release instead of `latest` with a version tag, e.g.
-  `ghcr.io/carneirofc/baserow/baserow:0.15.0`.
+  `ghcr.io/carneirofc/saveroom:0.16.0`. Releases up to 0.15.0 were published before
+  the rename and stay at the old paths: `ghcr.io/carneirofc/baserow/baserow` for the
+  all-in-one image, `ghcr.io/carneirofc/baserow/{backend,web-frontend,caddy}`, and
+  `oci://ghcr.io/carneirofc/baserow/charts/baserow` for the chart. Switching an
+  existing install to the new paths needs no data migration: the volumes, database
+  and environment variables keep their names.
 * To enable SSO, pass the `BASEROW_OIDC_PROVIDERS` (and optionally `BASEROW_OIDC_ONLY`)
   environment variables — see
   [Passing the configuration to Baserow](docs/installation/sso-oidc.md#passing-the-configuration-to-baserow).
@@ -197,12 +202,12 @@ This fork supports two deployment paths:
   docker compose up -d --build   # http://localhost
   ```
 
-* **Kubernetes, OpenShift or Amazon EKS** — the [Helm chart](deploy/helm/baserow) deploys
+* **Kubernetes, OpenShift or Amazon EKS** — the [Helm chart](deploy/helm/saveroom) deploys
   the backend, web-frontend and Celery workers as hardened pods. It is published to GHCR
   as an OCI artifact:
 
   ```bash
-  helm install baserow oci://ghcr.io/carneirofc/baserow/charts/baserow \
+  helm install baserow oci://ghcr.io/carneirofc/saveroom/charts/saveroom \
     -n baserow --create-namespace --set publicURL=https://baserow.example.com
   ```
 
@@ -214,12 +219,12 @@ This fork supports two deployment paths:
   [Installing on Amazon EKS](docs/installation/install-on-eks.md).
 
 For a single-container deployment, the all-in-one image
-`ghcr.io/carneirofc/baserow/baserow` (embedded PostgreSQL + Redis) is published by CI and
+`ghcr.io/carneirofc/saveroom` (embedded PostgreSQL + Redis) is published by CI and
 covered by the generic [Docker](docs/installation/install-with-docker.md) guide.
 
 ## Documentation
 
-Browse the hosted docs at https://carneirofc.github.io/baserow/, or the source
+Browse the hosted docs at https://carneirofc.github.io/saveroom/, or the source
 [in the repository](./docs/index.md). Upstream's hosted docs at
 https://baserow.io/docs/index also cover the premium and enterprise features that this
 fork does not ship.
@@ -227,7 +232,7 @@ fork does not ship.
 ## Development environment
 
 ```bash
-git clone https://github.com/carneirofc/baserow.git
+git clone https://github.com/carneirofc/saveroom.git
 cd baserow
 
 just dc-dev build --parallel

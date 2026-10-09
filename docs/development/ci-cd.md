@@ -51,7 +51,7 @@ The results are pushed to this repo's GitHub Container Registry as
 Steps 1 and 2 also push short-lived `backend:build-<sha>` / `web-frontend:build-<sha>`
 intermediates that the all-in-one build consumes. Every published image is CVE-scanned
 after the push. `publish-helm-chart.yml` publishes the chart on the same tag as
-`oci://ghcr.io/<owner>/<repo>/charts/baserow:<Chart.yaml version>`.
+`oci://ghcr.io/<owner>/<repo>/charts/saveroom:<Chart.yaml version>`.
 
 The GHCR packages are public, so the images and chart pull anonymously. A newly created
 package starts private: make it public once under its package settings (**Danger Zone →
@@ -62,9 +62,9 @@ Change visibility**). That change cannot be undone.
 1. On `develop`, bump the release version everywhere it is pinned:
    * the `BASEROW_VERSION` defaults in `docker-compose.yml` and
      `deploy/all-in-one/docker-compose.yml`;
-   * `appVersion` in `deploy/helm/baserow/Chart.yaml`, plus `version` if the chart
+   * `appVersion` in `deploy/helm/saveroom/Chart.yaml`, plus `version` if the chart
      changed since its last publish;
-   * the `ghcr.io/carneirofc/baserow/*:<version>` image tags in `docs/installation/`,
+   * the `ghcr.io/carneirofc/saveroom/*:<version>` image tags in `docs/installation/`,
      `docs/plugins/` and `deploy/all-in-one/README.md`, the image tag in
      `docs/installation/install-on-digital-ocean.md`, and the version heading in
      `docs/installation/supported.md`

@@ -6,7 +6,7 @@ name: Build & Publish All-in-One Image
 # Registry. Uses only the built-in GITHUB_TOKEN — no external secrets required.
 #
 # Results (each + :latest):
-#   ghcr.io/<owner>/<repo>/baserow:<version>       (all-in-one; compose/simple deploys)
+#   ghcr.io/<owner>/<repo>:<version>               (all-in-one; compose/simple deploys)
 #   ghcr.io/<owner>/<repo>/backend:<version>       (Helm chart)
 #   ghcr.io/<owner>/<repo>/web-frontend:<version>  (Helm chart)
 #   ghcr.io/<owner>/<repo>/caddy:<version>         (split-services compose)
@@ -60,7 +60,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v6
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}/baserow
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
@@ -68,7 +68,7 @@ jobs:
             type=raw,value=latest
 
       # Stable tags for the standalone backend / web-frontend images so the
-      # Helm chart (deploy/helm/baserow) can consume them directly.
+      # Helm chart (deploy/helm/saveroom) can consume them directly.
       - name: Docker metadata for backend image
         id: meta-backend
         uses: docker/metadata-action@v6

@@ -1,5 +1,5 @@
 # Example production overrides for a hardened OpenShift cluster.
-#   helm install baserow deploy/helm/baserow -f deploy/helm/baserow/values-openshift.yaml
+#   helm install baserow deploy/helm/saveroom -f deploy/helm/saveroom/values-openshift.yaml
 #
 # Recommended posture: external managed PostgreSQL + S3 object storage, so the
 # app pods stay stateless and nothing needs elevated SCC.

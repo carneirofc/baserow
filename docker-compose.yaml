@@ -8,7 +8,7 @@
 # serves the whole app on a single origin (http://localhost).
 #
 # For the contributor hot-reload harness use `just dev` / `just dc-dev` instead.
-# For OpenShift use the Helm chart in deploy/helm/baserow/.
+# For OpenShift use the Helm chart in deploy/helm/saveroom/.
 
 x-backend-env: &backend-env
   SECRET_KEY: ${SECRET_KEY:?}

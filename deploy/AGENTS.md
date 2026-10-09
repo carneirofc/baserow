@@ -9,7 +9,7 @@ Deployment artifacts for running Baserow: the single-container "all-in-one" imag
 Owns everything under `deploy/`:
 
 - `all-in-one/` — self-contained image bundling backend, frontend, workers, and supervisor (`baserow.sh`, `Dockerfile`, `docker-compose.yml`, `supervisor/`).
-- `helm/baserow/` — Helm chart (`Chart.yaml`, `values.yaml`, `values.schema.json`, `values-openshift.yaml`, `values-eks.yaml`, `templates/`, subcharts).
+- `helm/saveroom/` — Helm chart, published as `saveroom` (`Chart.yaml`, `values.yaml`, `values.schema.json`, `values-openshift.yaml`, `values-eks.yaml`, `templates/`, subcharts). Its resource names and selector labels keep the base name `baserow` (`baserow.name` in `_helpers.tpl`), pinned rather than derived from `.Chart.Name`, because selectors are immutable and releases installed before the rename must keep upgrading in place; never derive them from the chart name again.
 - `caddy/` — standalone Caddy reverse-proxy image for the split-services Compose stacks; published as `ghcr.io/<owner>/<repo>/caddy` by `.github/workflows/build-publish-image.yml`.
 - `plugins/` — plugin packaging helpers.
 
@@ -43,19 +43,19 @@ The root `docker-compose.yaml` / `docker-compose.yml` and `Caddyfile*` are the l
 - `.github/workflows/build-publish-image.yml` passes `BASEROW_BUILD_VERSION`/`BASEROW_BUILD_COMMIT`/`BASEROW_BUILD_DATE` as build args to the backend, web-frontend and all-in-one builds; each Dockerfile turns them into `ENV`, and the UI reports them. A new image that runs the backend or the web-frontend needs the same three, or it reports itself as a development build. Never forward them from Compose or the chart as possibly-empty values: the backend reads an empty value as a development build, while the web-frontend ignores an empty value and keeps what was baked in (`env-remap.mjs` maps them only when non-empty), so the two halves would disagree.
 - Images are CVE-gated with Trivy (HIGH/CRITICAL with a fix, exceptions in root `.trivyignore.yaml`): `ci.yml` scans the caddy and web-frontend prod images it builds, and `build-publish-image.yml` scans all four published images after push, failing the release run. Locally: `just audit images <refs>`.
 - `.github/workflows/build-publish-image.yml` builds every image with `pull: true`, so a `v*` tag cut re-resolves `ubuntu:26.04` and `golang:${GO_VERSION}` instead of serving a stale GHA cache hit. Cutting a release is therefore the way to republish images against upstream security rebuilds when no source changed.
-- Every image reference points at this fork's registry (`ghcr.io/carneirofc/baserow/{backend,web-frontend,baserow,caddy}`), including the `BACKEND_IMAGE`/`WEBFRONTEND_IMAGE` defaults in `all-in-one/Dockerfile`. Never reference Docker Hub `baserow/*` — those are Baserow B.V.'s images, and a stack pointed at them silently runs and gets scanned as upstream code.
+- Every image reference points at this fork's registry (`ghcr.io/carneirofc/saveroom` for the all-in-one and `ghcr.io/carneirofc/saveroom/{backend,web-frontend,caddy}`), including the `BACKEND_IMAGE`/`WEBFRONTEND_IMAGE` defaults in `all-in-one/Dockerfile`. Never reference Docker Hub `baserow/*` — those are Baserow B.V.'s images, and a stack pointed at them silently runs and gets scanned as upstream code.
 - The images target PostgreSQL 18, so every database beside them is pinned to `pgvector/pgvector:pg18` — the root `docker-compose.yaml`/`docker-compose.yml`, `docker-compose.dev.yml`, `docker-compose.e2e-infra.yml`, the `ci.yml` service blocks, and the `justfile` ramdisk test DB. Bump them together; a split leaves `pg_dump` talking to an older server than its own major.
 - Bumping the embedded PostgreSQL major version is a breaking change for all-in-one users: update `docs/runbooks/upgrade-embedded-postgres.md` and the version guard in `all-in-one/supervisor/docker-postgres-setup.sh` together.
 
 ## Work Guidance
 
-- Validate chart edits with `helm lint --strict deploy/helm/baserow` and `helm template` against all three values presets before shipping, then pipe the render through `kubeconform -strict -ignore-missing-schemas` (`-ignore-missing-schemas` covers the OpenShift `Route` CRD). `kubectl apply --dry-run=client` is not a substitute — it downloads the OpenAPI schema from a live cluster.
+- Validate chart edits with `helm lint --strict deploy/helm/saveroom` and `helm template` against all three values presets before shipping, then pipe the render through `kubeconform -strict -ignore-missing-schemas` (`-ignore-missing-schemas` covers the OpenShift `Route` CRD). `kubectl apply --dry-run=client` is not a substitute — it downloads the OpenAPI schema from a live cluster.
 - User-facing chart docs live in `docs/installation/install-with-helm.md` (values reference, day-two ops) and `docs/installation/install-on-eks.md` (internal ALB + CloudFront VPC origin, IRSA). `deploy/helm/README.md` is the short orientation page that links to both; keep the three consistent.
 - Keep the all-in-one image and the Compose/Helm envs in sync with backend/frontend env-var contracts.
 
 ## Verification
 
-- `.github/workflows/publish-helm-chart.yml` runs on PRs touching `deploy/helm/**` and on `v*` tags. It gates the chart version bump, lints and `kubeconform`-validates all three values presets plus five option combinations, asserts the IRSA render carries no static credentials and that default values render no OpenShift `Route`, then packages the chart. On `v*` tags it pushes to `oci://ghcr.io/<owner>/<repo>/charts/baserow` (chart version from `Chart.yaml`).
+- `.github/workflows/publish-helm-chart.yml` runs on PRs touching `deploy/helm/**` and on `v*` tags. It gates the chart version bump, lints and `kubeconform`-validates all three values presets plus five option combinations, asserts the IRSA render carries no static credentials and that default values render no OpenShift `Route`, then packages the chart. On `v*` tags it pushes to `oci://ghcr.io/<owner>/<repo>/charts/saveroom` (chart version from `Chart.yaml`).
 - Locally: `helm lint --strict`/`helm template` + `kubeconform`, and a `docker compose` bring-up.
 
 ## Child DOX Index

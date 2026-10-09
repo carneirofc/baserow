@@ -46,7 +46,7 @@ exports[`Public View Page Tests > Can see a publicly shared grid view 1`] = `
           >
             <a
               class="header__filter-logo"
-              href="https://github.com/carneirofc/baserow"
+              href="https://github.com/carneirofc/saveroom"
               target="_blank"
               title="Saveroom"
             >

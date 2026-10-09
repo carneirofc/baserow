@@ -1,6 +1,12 @@
-{{/* Chart name */}}
+{{/*
+Base name of every resource and of the app.kubernetes.io/name selector label.
+Pinned to "baserow" rather than .Chart.Name: the chart was published as
+"baserow" before the product was renamed, and selectors are immutable, so
+deriving them from the new chart name would break `helm upgrade` of existing
+releases and recreate their volumes.
+*/}}
 {{- define "baserow.name" -}}
-{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
+{{- default "baserow" .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/* Fully qualified app name */}}
@@ -8,7 +14,7 @@
 {{- if .Values.fullnameOverride -}}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
-{{- $name := default .Chart.Name .Values.nameOverride -}}
+{{- $name := include "baserow.name" . -}}
 {{- if contains $name .Release.Name -}}
 {{- .Release.Name | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
@@ -27,7 +33,7 @@ helm.sh/chart: {{ include "baserow.chart" . }}
 {{ include "baserow.selectorLabels" . }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
-app.kubernetes.io/part-of: baserow
+app.kubernetes.io/part-of: saveroom
 {{- end -}}
 
 {{/* Selector labels */}}
