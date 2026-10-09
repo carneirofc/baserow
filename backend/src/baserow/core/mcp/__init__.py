@@ -1,6 +1,8 @@
 import contextvars
 from typing import TYPE_CHECKING
 
+from django.conf import settings
+
 from asgiref.sync import sync_to_async
 from loguru import logger
 
@@ -43,9 +45,9 @@ class BaserowMCPServer:
         from mcp.server.lowlevel.server import lifespan as default_lifespan
 
         self._mcp_server = Server(
-            name="Baserow MCP",
+            name=f"{settings.BRANDING_APP_NAME} MCP",
             instructions="Handles all the actions, operations, mutations, and tools "
-            "related to Baserow.",
+            f"related to {settings.BRANDING_APP_NAME}.",
             lifespan=default_lifespan,
         )
 

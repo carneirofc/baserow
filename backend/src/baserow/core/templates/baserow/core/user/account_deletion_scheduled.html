@@ -175,18 +175,14 @@
                     </tr>
                     <tr>
                       <td align="left" style="font-size:0px;padding:10px 25px;word-break:break-word;">
-                        <div style="font-family:Inter,sans-serif;font-size:13px;line-height:170%;text-align:left;color:#070810;">{% blocktrans trimmed with user.username as username and baserow_embedded_share_hostname as baserow_embedded_share_hostname %} Your account ({{ username }}) on Baserow ({{ baserow_embedded_share_hostname }}) will be permanently deleted in {{ days_left }} days. {% endblocktrans %}</div>
+                        <div style="font-family:Inter,sans-serif;font-size:13px;line-height:170%;text-align:left;color:#070810;">{% blocktrans trimmed with user.username as username and baserow_embedded_share_hostname as baserow_embedded_share_hostname %} Your account ({{ username }}) on {{ app_name }} ({{ baserow_embedded_share_hostname }}) will be permanently deleted in {{ days_left }} days. {% endblocktrans %}</div>
                       </td>
                     </tr>
                     <tr>
                       <td align="left" style="font-size:0px;padding:10px 25px;padding-bottom:20px;word-break:break-word;">
                         <div style="font-family:Inter,sans-serif;font-size:13px;line-height:170%;text-align:left;color:#070810;">{% blocktrans trimmed %} If you've changed your mind and want to cancel your account deletion, you just have to login again. {% endblocktrans %}</div>
                       </td>
-                    </tr> {% if show_baserow_description %} <tr>
-                      <td align="left" style="font-size:0px;padding:10px 25px;word-break:break-word;">
-                        <div style="font-family:Inter,sans-serif;font-size:13px;line-height:170%;text-align:left;color:#070810;">{% blocktrans trimmed %} Baserow is an open source no-code database tool which allows you to collaborate on projects, customers and more. It gives you the powers of a developer without leaving your browser. {% endblocktrans %}</div>
-                      </td>
-                    </tr> {% endif %}
+                    </tr>
                   </tbody>
                 </table>
               </div>

@@ -1,6 +1,8 @@
+import { BRANDING_DEFAULTS } from './brandingDefaults.js'
+
 export default {
-  title: 'Baserow',
-  titleTemplate: '%s | Baserow',
+  title: BRANDING_DEFAULTS.appName,
+  titleTemplate: `%s | ${BRANDING_DEFAULTS.appName}`,
   meta: [
     { charset: 'utf-8' },
     {

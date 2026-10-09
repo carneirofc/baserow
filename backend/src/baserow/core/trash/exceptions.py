@@ -44,7 +44,7 @@ class PermanentDeletionMaxLocksExceededException(
     """
 
     message = (
-        "Baserow attempted to permanently delete trashed items, but exceeded the maximum "
+        "The server attempted to permanently delete trashed items, but exceeded the maximum "
         "number of PostgreSQL locks per transaction. Please read "
         "https://github.com/carneirofc/baserow"
     )

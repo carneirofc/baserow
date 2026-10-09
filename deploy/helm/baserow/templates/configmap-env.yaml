@@ -36,6 +36,10 @@ data:
   SYNC_TEMPLATES_ON_STARTUP: "false"
   # Defensive HOME for arbitrary-UID (restricted-v2) pods.
   HOME: "/tmp"
+  {{- with .Values.branding.appName }}
+  # Product name in the backend's emails and API docs.
+  BASEROW_BRANDING_APP_NAME: {{ . | quote }}
+  {{- end }}
 
   {{- if .Values.objectStorage.enabled }}
   # --- Media via S3-compatible object storage ---

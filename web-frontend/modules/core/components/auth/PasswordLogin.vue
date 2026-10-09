@@ -129,8 +129,8 @@ export default {
           this.showError(
             'Backend URL mis-configuration detected',
             `Cannot connect to the backend at ${publicBackendUrlWithProto}.` +
-              ` You visited Baserow at ${browserWindowUrl} ` +
-              ' which indicates you have mis-configured the Baserow ' +
+              ` You visited ${this.$branding.appName} at ${browserWindowUrl} ` +
+              ' which indicates you have mis-configured the' +
               ' BASEROW_PUBLIC_URL or PUBLIC_BACKEND_URL environment variables. ' +
               ` Please visit ${this.$branding.docsUrl} ` +
               ' on how to fix this error.'

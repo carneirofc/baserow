@@ -7,9 +7,10 @@
  * module free of node builtins so it can be bundled for the browser.
  */
 export const BRANDING_DEFAULTS = {
+  appName: 'Saveroom',
   siteUrl: 'https://github.com/carneirofc/baserow',
   docsUrl: 'https://github.com/carneirofc/baserow',
-  siteTitle: 'Baserow',
+  siteTitle: 'Saveroom',
   showAttribution: true,
 }
 

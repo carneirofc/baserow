@@ -138,7 +138,7 @@ class LocalBaserowUpsertRowNodeType(AutomationNodeActionNodeType):
 
 
 class LocalBaserowCreateRowNodeType(LocalBaserowUpsertRowNodeType):
-    display_name = _("Local Baserow create row")
+    display_name = _("Create row")
     type = "local_baserow_create_row"
     compat_type = "create_row"
     model_class = LocalBaserowCreateRowActionNode
@@ -155,7 +155,7 @@ class LocalBaserowCreateRowsNodeType(AutomationNodeActionNodeType):
 
 
 class LocalBaserowUpdateRowNodeType(LocalBaserowUpsertRowNodeType):
-    display_name = _("Local Baserow update row")
+    display_name = _("Update row")
     type = "local_baserow_update_row"
     compat_type = "update_row"
     model_class = LocalBaserowUpdateRowActionNode
@@ -172,7 +172,7 @@ class LocalBaserowUpdateRowsNodeType(AutomationNodeActionNodeType):
 
 
 class LocalBaserowDeleteRowNodeType(AutomationNodeActionNodeType):
-    display_name = _("Local Baserow delete row")
+    display_name = _("Delete row")
     type = "local_baserow_delete_row"
     compat_type = "delete_row"
     model_class = LocalBaserowDeleteRowActionNode
@@ -180,7 +180,7 @@ class LocalBaserowDeleteRowNodeType(AutomationNodeActionNodeType):
 
 
 class LocalBaserowGetRowNodeType(AutomationNodeActionNodeType):
-    display_name = _("Local Baserow get row")
+    display_name = _("Get row")
     type = "local_baserow_get_row"
     compat_type = "get_row"
     model_class = LocalBaserowGetRowActionNode
@@ -188,7 +188,7 @@ class LocalBaserowGetRowNodeType(AutomationNodeActionNodeType):
 
 
 class LocalBaserowListRowsNodeType(AutomationNodeActionNodeType):
-    display_name = _("Local Baserow list rows")
+    display_name = _("List rows")
     type = "local_baserow_list_rows"
     compat_type = "list_rows"
     model_class = LocalBaserowListRowsActionNode
@@ -196,7 +196,7 @@ class LocalBaserowListRowsNodeType(AutomationNodeActionNodeType):
 
 
 class LocalBaserowAggregateRowsNodeType(AutomationNodeActionNodeType):
-    display_name = _("Local Baserow aggregate rows")
+    display_name = _("Aggregate rows")
     type = "local_baserow_aggregate_rows"
     compat_type = "aggregate_rows"
     model_class = LocalBaserowAggregateRowsActionNode
@@ -432,7 +432,7 @@ class AutomationNodeTriggerType(AutomationNodeType):
 
 
 class LocalBaserowRowsCreatedNodeTriggerType(AutomationNodeTriggerType):
-    display_name = _("Local Baserow rows created")
+    display_name = _("Rows created")
     type = "local_baserow_rows_created"
     compat_type = "rows_created"
     model_class = LocalBaserowRowsCreatedTriggerNode
@@ -440,7 +440,7 @@ class LocalBaserowRowsCreatedNodeTriggerType(AutomationNodeTriggerType):
 
 
 class LocalBaserowRowsUpdatedNodeTriggerType(AutomationNodeTriggerType):
-    display_name = _("Local Baserow rows updated")
+    display_name = _("Rows updated")
     type = "local_baserow_rows_updated"
     compat_type = "rows_updated"
     model_class = LocalBaserowRowsUpdatedTriggerNode
@@ -448,7 +448,7 @@ class LocalBaserowRowsUpdatedNodeTriggerType(AutomationNodeTriggerType):
 
 
 class LocalBaserowRowsDeletedNodeTriggerType(AutomationNodeTriggerType):
-    display_name = _("Local Baserow rows deleted")
+    display_name = _("Rows deleted")
     type = "local_baserow_rows_deleted"
     compat_type = "rows_deleted"
     model_class = LocalBaserowRowsDeletedTriggerNode

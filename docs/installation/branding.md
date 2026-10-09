@@ -2,7 +2,7 @@
 
 Operators can change the web-frontend's look without rebuilding the image:
 
-- the app name in the browser title
+- the app name in the browser title and the interface texts
 - any color of the design palette
 - the UI font
 - the logo, favicons and built-in icons
@@ -63,8 +63,13 @@ webp, gif, ico, woff, woff2, ttf and otf.
 }
 ```
 
-- **`appName`**: shown in the browser tab (`Page | Acme Data`). Max 64
-  characters.
+- **`appName`**: the product name, `Saveroom` by default. It is shown in the
+  browser tab (`Page | Acme Data`) and wherever the interface names the
+  product ("Welcome to Acme Data", "New to Acme Data?"): those translations
+  link to the `app.name` key, which this value fills in every language. Max 64
+  characters. The backend's emails and API docs only see the
+  `BASEROW_BRANDING_APP_NAME` environment variable, not `branding.json`, so set
+  the variable to rename those too.
 - **`colors`**: overrides color tokens. Two kinds of names are accepted:
   - Palette tokens (`palette-<hue>-<step>`) are the raw scale. Hues are
     `neutral`, `blue`, `green`, `red`, `cyan`, `yellow`, `magenta` and
@@ -94,11 +99,11 @@ webp, gif, ico, woff, woff2, ttf and otf.
   `javascript:` above all, is ignored with a warning: these values go straight
   into a link.
 - **`siteTitle`**: the `title` and `alt` text on the attribution logo. Falls
-  back to `appName`, then to `Baserow`. Max 160 characters.
+  back to `appName`, then to `Saveroom`. Max 160 characters.
 - **`showAttribution`**: set to `false` to remove the attribution entirely —
   the sidebar footer logo, the shared-view header logo, the public form
-  "Powered by" block, the dashboard "star on GitHub / share" alert and the
-  fork and upstream credits on the admin version panel all stop rendering.
+  "Powered by" block and the fork and upstream credits on the admin version
+  panel all stop rendering.
 - **`messages`**: translation overrides per locale, using the same keys as
   `web-frontend/**/locales/<locale>.json`. The "Powered by" label is
   `formViewPoweredBy.poweredBy` in the database module.
@@ -127,7 +132,7 @@ These take precedence over `branding.json`, and empty values count as unset:
 | Variable | Purpose |
 | --- | --- |
 | `BASEROW_BRANDING_DIR` | Branding directory path (default `/baserow/branding`). |
-| `BASEROW_BRANDING_APP_NAME` | Overrides `appName`. |
+| `BASEROW_BRANDING_APP_NAME` | Overrides `appName`. Also read by the backend, for the name in emails and the API docs title; give it to the backend and Celery containers as well. |
 | `BASEROW_BRANDING_COLORS` | JSON object merged over `colors`, e.g. `{"color-primary-500":"#0f766e"}`. |
 | `BASEROW_BRANDING_SITE_URL` | Overrides `siteUrl`. |
 | `BASEROW_BRANDING_DOCS_URL` | Overrides `docsUrl`. |

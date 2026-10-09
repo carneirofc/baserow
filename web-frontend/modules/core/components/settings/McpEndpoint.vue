@@ -95,7 +95,7 @@
         ></MarkdownIt>
         <pre><code class="mcp-endpoint__code">{
   "mcpServers": {
-    "Baserow MCP": {
+    "{{ $branding.appName }} MCP": {
       "command": "npx",
       "args": [
         "mcp-remote",
@@ -115,7 +115,7 @@
         ></MarkdownIt>
         <pre><code class="mcp-endpoint__code">{
   "mcpServers": {
-    "Baserow MCP": {
+    "{{ $branding.appName }} MCP": {
       "url": "{{ endpointUrl }}"
     }
   }
@@ -131,7 +131,7 @@
         ></MarkdownIt>
         <pre><code class="mcp-endpoint__code">{
   "mcpServers": {
-    "Baserow MCP": {
+    "{{ $branding.appName }} MCP": {
       "serverUrl": "{{ endpointUrl }}"
     }
   }

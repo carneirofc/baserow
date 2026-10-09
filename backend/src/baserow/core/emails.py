@@ -121,9 +121,14 @@ class NotificationsSummaryEmail(BaseEmailMessage):
         count = self.new_notifications_count
 
         if count == 1:
-            return _("You have 1 new notification - Baserow")
+            return _("You have 1 new notification - %(app_name)s") % {
+                "app_name": settings.BRANDING_APP_NAME
+            }
 
-        return _("You have %(count)d new notifications - Baserow") % {"count": count}
+        return _("You have %(count)d new notifications - %(app_name)s") % {
+            "count": count,
+            "app_name": settings.BRANDING_APP_NAME,
+        }
 
     def get_context(self):
         context = super().get_context()

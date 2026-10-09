@@ -1065,14 +1065,14 @@ class AirtableHandler:
             SCOPE_AUTOMATIONS,
             "",
             ERROR_TYPE_UNSUPPORTED_FEATURE,
-            "Baserow doesn't support automations.",
+            "Importing Airtable automations isn't supported.",
         )
         import_report.add_failed(
             "All interfaces",
             SCOPE_INTERFACES,
             "",
             ERROR_TYPE_UNSUPPORTED_FEATURE,
-            "Baserow doesn't support interfaces.",
+            "Importing Airtable interfaces isn't supported.",
         )
 
         # Convert the import report to the serialized export format of a Baserow table,

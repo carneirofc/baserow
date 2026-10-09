@@ -8,6 +8,7 @@ import FormViewPoweredBy from '@baserow/modules/database/components/view/form/Fo
 const branding = (overrides = {}) => ({
   siteUrl: 'https://acme.example',
   docsUrl: 'https://docs.acme.example',
+  appName: 'Acme Data',
   siteTitle: 'Acme Data',
   showAttribution: true,
   ...overrides,

@@ -37,8 +37,8 @@ def test_is_sse_disconnect_teardown_error():
 def test_create_server():
     async def inner():
         mcp = BaserowMCPServer()
-        assert mcp._mcp_server.name == "Baserow MCP"
-        assert "Baserow" in mcp._mcp_server.instructions
+        assert mcp._mcp_server.name == "Saveroom MCP"
+        assert "Saveroom" in mcp._mcp_server.instructions
 
     with transaction.atomic():
         async_to_sync(inner)()

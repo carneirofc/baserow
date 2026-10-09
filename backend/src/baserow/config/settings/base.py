@@ -486,8 +486,14 @@ SIMPLE_JWT = {
     "USER_AUTHENTICATION_RULE": lambda user: user is not None,
 }
 
+# The product name shown in emails and the API docs. It reads the same variable
+# as the web-frontend's runtime branding (docs/installation/branding.md), so one
+# value renames both halves. An empty value counts as unset because Compose
+# passes unset variables through as empty strings.
+BRANDING_APP_NAME = os.getenv("BASEROW_BRANDING_APP_NAME") or "Saveroom"
+
 SPECTACULAR_SETTINGS = {
-    "TITLE": "Baserow API spec",
+    "TITLE": f"{BRANDING_APP_NAME} API spec",
     "DESCRIPTION": "For more information about our REST API, please visit "
     "[this page](https://github.com/carneirofc/baserow).\n\n"
     "For more information about our deprecation policy, please visit "
@@ -1292,7 +1298,7 @@ BASEROW_CONTENTS_API_MAX_ROWS = int(
     os.getenv("BASEROW_CONTENTS_API_MAX_ROWS", "100000")
 )
 
-TOTP_ISSUER_NAME = os.getenv("BASEROW_TOTP_ISSUER_NAME", "Baserow")
+TOTP_ISSUER_NAME = os.getenv("BASEROW_TOTP_ISSUER_NAME") or BRANDING_APP_NAME
 
 # ======== WARNING ========
 # Please read and understand everything at:

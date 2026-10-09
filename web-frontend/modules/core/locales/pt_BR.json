@@ -257,7 +257,7 @@
     "mismatchMessage": "O backend executa {backend} e o web-frontend executa {frontend}. Apenas parte desta instalação foi atualizada, o que pode causar erros inesperados.",
     "unavailableTitle": "Não foi possível ler a compilação do backend",
     "unavailableMessage": "A requisição da compilação do backend falhou. Um backend mais antigo que este web-frontend não a responde, o que indicaria que apenas parte desta instalação foi atualizada.",
-    "creditsFork": "Este é o fork FOSS do Baserow, mantido por seus contribuidores.",
+    "creditsFork": "Este é o Saveroom, um fork FOSS do Baserow mantido por seus contribuidores.",
     "forkRepository": "Código-fonte",
     "creditsUpstream": "Baseado no Baserow, criado pela Baserow B.V.",
     "upstreamProject": "baserow.io",
@@ -269,13 +269,13 @@
     "versionTitle": "Versão",
     "versionDescription": "Qual compilação da aplicação esta instância executa. Informe estes valores ao relatar um problema.",
     "baserowInstanceId": "Instância ID",
-    "instanceIdDescription": "A instância ID é uma identificação única da cópia do seu Baserow.",
+    "instanceIdDescription": "O ID da instância é o identificador único desta instalação.",
     "accountRestrictions": "Restrições ao conta",
     "settingAllowResetPasswordName": "",
     "settingAllowResetPasswordDescription": "",
     "settingAllowResetPasswordWarning": "",
     "settingAllowNewAccountsName": "Permitir criar novas contas",
-    "settingAllowNewAccountsDescription": "Por padrão, qualquer usuário que visite seu domínio Baserow pode se inscrever para uma nova conta.",
+    "settingAllowNewAccountsDescription": "Por padrão, qualquer usuário que visite o seu domínio pode se inscrever para uma nova conta.",
     "enabled": "ativar"
   },
   "formSidebar": {
@@ -341,7 +341,7 @@
     }
   },
   "notificationPanel": {
-    "noNotification": "Notificaremos sobre atualizações importar e quando você mencionado no Baserow.",
+    "noNotification": "Notificaremos você sobre atualizações importantes e sempre que for mencionado no @:{'app.name'}.",
     "title": "Notificações",
     "newNotificationsAvailable": "Novas notificações disponíveis",
     "refresh": "Atualizar",
@@ -579,19 +579,9 @@
     },
     "dashboard": {
       "title": "Painel de controle",
-      "alertTitle": "Nós precisamos da sua ajuda!",
-      "alertText": "Se você achar o Baserow útil, então patrocinar, estrelar ou compartilhar conosco é muito apreciado. Ao nos patrocinar no GitHub, você terá acesso antecipado aos recursos premium!",
-      "tweetContent": "Confira {'@'}baserow uma ferramenta de banco de dados sem código de código aberto e uma alternativa ao Airtable!",
-      "redditTitle": "'Baserow - Um banco de dados de código-aberto e no-code",
       "noWorkspaceTitle": "Sem grupos encontrados",
       "noWorkspaceText": "Você não é membro de nenhum grupo. Aplicativos como bancos de dados pertencem a um grupo, portanto, para criá-los, você precisa criar um grupo.",
       "createWorkspace": "Criar grupo",
-      "becomeGithubSponsor": "Seja um patrocinador do Github",
-      "starOnGitlab": "Nos dê estrelas no Gitlab",
-      "shareOnTwitter": "Tweet sobre Baserow",
-      "shareOnReddit": "Compartilhar no Reddit",
-      "shareOnFacebook": "Compartilhar no Facebook",
-      "shareOnLinkedIn": "Compartilhar no LinkedIn",
       "totals": "Totais",
       "totalUsers": "Total de usuários",
       "totalWorkspaces": "Total de grupos",
@@ -640,13 +630,13 @@
     "settings": {
       "settingsTitle": "Configurações administrativas",
       "baserowInstanceId": "Instância ID",
-      "instanceIdDescription": "A instância ID é uma identificação única da cópia do seu Baserow.",
+      "instanceIdDescription": "O ID da instância é o identificador único desta instalação.",
       "accountRestrictions": "Restrições ao conta",
       "settingAllowResetPasswordName": "",
       "settingAllowResetPasswordDescription": "",
       "settingAllowResetPasswordWarning": "",
       "settingAllowNewAccountsName": "Permitir criar novas contas",
-      "settingAllowNewAccountsDescription": "Por padrão, qualquer usuário que visite seu domínio Baserow pode se inscrever para uma nova conta.",
+      "settingAllowNewAccountsDescription": "Por padrão, qualquer usuário que visite o seu domínio pode se inscrever para uma nova conta.",
       "enabled": "ativar"
     },
     "formSidebar": {
@@ -712,7 +702,7 @@
       }
     },
     "notificationPanel": {
-      "noNotification": "Notificaremos sobre atualizações importar e quando você mencionado no Baserow.",
+      "noNotification": "Notificaremos você sobre atualizações importantes e sempre que for mencionado no @:{'app.name'}.",
       "title": "Notificações",
       "newNotificationsAvailable": "Novas notificações disponíveis",
       "refresh": "Atualizar",

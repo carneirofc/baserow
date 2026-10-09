@@ -1208,7 +1208,7 @@ def test_import_from_airtable_to_workspace_with_report_table(data_fixture, tmpdi
     assert row.scope.value == "Interfaces"
     assert row.table is None
     assert row.error_type.value == "Unsupported feature"
-    assert row.message == "Baserow doesn't support interfaces."
+    assert row.message == "Importing Airtable interfaces isn't supported."
 
 
 @pytest.mark.django_db

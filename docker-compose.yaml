@@ -33,6 +33,8 @@ x-backend-env: &backend-env
   # `*_file` keys must be mounted into the backend and celery containers. See
   # docs/installation/data-destinations.md.
   BASEROW_DATA_DESTINATIONS: ${BASEROW_DATA_DESTINATIONS:-}
+  # Product name in emails and the API docs; the web-frontend reads it too.
+  BASEROW_BRANDING_APP_NAME: ${BASEROW_BRANDING_APP_NAME:-}
 
 services:
   db:
