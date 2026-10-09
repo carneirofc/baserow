@@ -14,4 +14,24 @@
 #     statement: "Dev-only build tool; never shipped in the prod image."
 #     expired_at: 2026-12-31
 
-vulnerabilities: []
+vulnerabilities:
+  - id: CVE-2026-102826
+    paths:
+      - "web-frontend/yarn.lock"
+    statement: "Dev-only: pulled in solely by @nuxt/devtools (dev server, never in the prod image), which runs fixed git commands (branch, revparse --short HEAD, status) on the project root; the bypasses need attacker-controlled git arguments or config. simple-git 4 drops the default export devtools 3.x imports, so a resolution breaks `nuxt dev`; drop this once @nuxt/devtools ships without simple-git 3."
+    expired_at: 2026-12-31
+  - id: CVE-2026-102827
+    paths:
+      - "web-frontend/yarn.lock"
+    statement: "Dev-only: pulled in solely by @nuxt/devtools (dev server, never in the prod image), which runs fixed git commands (branch, revparse --short HEAD, status) on the project root; the bypasses need attacker-controlled git arguments or config. simple-git 4 drops the default export devtools 3.x imports, so a resolution breaks `nuxt dev`; drop this once @nuxt/devtools ships without simple-git 3."
+    expired_at: 2026-12-31
+  - id: CVE-2026-102828
+    paths:
+      - "web-frontend/yarn.lock"
+    statement: "Dev-only: pulled in solely by @nuxt/devtools (dev server, never in the prod image), which runs fixed git commands (branch, revparse --short HEAD, status) on the project root; the bypasses need attacker-controlled git arguments or config. simple-git 4 drops the default export devtools 3.x imports, so a resolution breaks `nuxt dev`; drop this once @nuxt/devtools ships without simple-git 3."
+    expired_at: 2026-12-31
+  - id: CVE-2026-102829
+    paths:
+      - "web-frontend/yarn.lock"
+    statement: "Dev-only: pulled in solely by @nuxt/devtools (dev server, never in the prod image), which runs fixed git commands (branch, revparse --short HEAD, status) on the project root; the bypasses need attacker-controlled git arguments or config. simple-git 4 drops the default export devtools 3.x imports, so a resolution breaks `nuxt dev`; drop this once @nuxt/devtools ships without simple-git 3."
+    expired_at: 2026-12-31
