@@ -28,7 +28,7 @@ class BaserowVersionUpgradeNotificationType(CliNotificationTypeMixin, Notificati
             return
 
         release_notes_url = input(
-            "Enter the release notes URL (i.e. https://github.com/carneirofc/saveroom/releases/tag/1.19): "
+            "Enter the release notes URL (i.e. https://github.com/carneirofc/baserow/releases/tag/1.19): "
         )
 
         confirm = input(

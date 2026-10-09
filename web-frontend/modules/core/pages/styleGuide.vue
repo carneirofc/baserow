@@ -1576,7 +1576,7 @@
                 <div class="card__field-name">URL</div>
                 <div class="card__field-value">
                   <div class="card-text">
-                    <a href="#">https://github.com/carneirofc/saveroom</a>
+                    <a href="#">https://github.com/carneirofc/baserow</a>
                   </div>
                 </div>
               </div>

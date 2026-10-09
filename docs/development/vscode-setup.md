@@ -15,7 +15,7 @@ Install the following tools:
 
 ## Setup Steps
 
-1. First checkout a fresh copy of Saveroom: `git clone git@github.com:carneirofc/saveroom.git`
+1. First checkout a fresh copy of Saveroom: `git clone git@github.com:carneirofc/baserow.git`
    (or your personal fork of the project)
 1. `cd saveroom`
 1. `./config/vscode/apply_standard_baserow_vscode_config.sh`

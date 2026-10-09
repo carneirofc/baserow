@@ -1,8 +1,8 @@
 # Installation on Ubuntu
 
 > Any questions, problems or suggestions with this guide? Ask a question in our
-> [issue tracker](https://github.com/carneirofc/saveroom/issues) or contribute the change yourself at
-> https://github.com/carneirofc/saveroom/tree/develop/docs .
+> [issue tracker](https://github.com/carneirofc/baserow/issues) or contribute the change yourself at
+> https://github.com/carneirofc/baserow/tree/develop/docs .
 
 > If you installed Baserow 1.8.2 or earlier using this guide in version 1.8.2 please
 > See the upgrade section at the end of this guide.
@@ -34,7 +34,7 @@ docker run -e BASEROW_PUBLIC_URL=http://localhost \
 -v baserow_data:/baserow/data \
 -p 80:80 \
 -p 443:443 \
-ghcr.io/carneirofc/saveroom:0.15.0
+ghcr.io/carneirofc/baserow:0.15.0
 # Watch the logs for Saveroom to come available by running:
 docker logs baserow
 ```
@@ -147,7 +147,7 @@ docker run \
   -v /baserow/media:/baserow/data/media \
   -p 80:80 \
   -p 443:443 \
-  ghcr.io/carneirofc/saveroom:0.15.0
+  ghcr.io/carneirofc/baserow:0.15.0
 # Check the logs and wait for Saveroom to become available
 docker logs baserow
 ```

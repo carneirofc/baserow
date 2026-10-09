@@ -127,7 +127,7 @@ docker-compose up -d
 
 ## Fixing an install using standalone Saveroom service images
 
-Saveroom also provides the `ghcr.io/carneirofc/saveroom/backend` and `ghcr.io/carneirofc/saveroom/web-frontend` images for users
+Saveroom also provides the `ghcr.io/carneirofc/baserow/backend` and `ghcr.io/carneirofc/baserow/web-frontend` images for users
 who want to host and co-ordinate the various Saveroom services themselves. Using
 these images you instead need to set the following environment variables on all 
 containers running these images. Please note that the `BASEROW_PUBLIC_URL` environment
@@ -147,5 +147,5 @@ variable is not used by these standalone images.
 
 ## Further help 
 
-Please post on the [issue tracker](https://github.com/carneirofc/saveroom/issues) if you are having further
+Please post on the [issue tracker](https://github.com/carneirofc/baserow/issues) if you are having further
 troubles or are using another installation method.

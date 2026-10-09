@@ -1,8 +1,8 @@
 ARG UID="9999"
 ARG GID="9999"
 
-ARG BACKEND_IMAGE=ghcr.io/carneirofc/saveroom/backend
-ARG WEBFRONTEND_IMAGE=ghcr.io/carneirofc/saveroom/web-frontend
+ARG BACKEND_IMAGE=ghcr.io/carneirofc/baserow/backend
+ARG WEBFRONTEND_IMAGE=ghcr.io/carneirofc/baserow/web-frontend
 ARG CADDY_VERSION=2.11.7
 ARG GO_VERSION=1.27.1
 # hadolint ignore=DL3006

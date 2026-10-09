@@ -6,7 +6,7 @@ body:
     attributes:
       value: |
         If you have a question about Baserow, please open a discussion or issue:
-        https://github.com/carneirofc/saveroom/issues
+        https://github.com/carneirofc/baserow/issues
 
   - type: textarea
     id: describe-problem

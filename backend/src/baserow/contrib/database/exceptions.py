@@ -17,5 +17,5 @@ class DatabaseSnapshotMaxLocksExceededException(
     message = (
         "The server attempted to snapshot a database, but exceeded the maximum "
         "number of PostgreSQL locks per transaction. Please read "
-        "https://github.com/carneirofc/saveroom"
+        "https://github.com/carneirofc/baserow"
     )

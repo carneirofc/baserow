@@ -26,7 +26,7 @@ OpenShift.
 
 ```sh
 # From the published chart
-helm install baserow oci://ghcr.io/carneirofc/saveroom/charts/saveroom \
+helm install baserow oci://ghcr.io/carneirofc/baserow/charts/saveroom \
   -n baserow --create-namespace \
   --set publicURL=https://baserow.example.com
 

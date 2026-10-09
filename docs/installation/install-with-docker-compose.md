@@ -1,8 +1,8 @@
 # Install with Docker compose
 
 > Any questions, problems or suggestions with this guide? Ask a question in our
-> [issue tracker](https://github.com/carneirofc/saveroom/issues) or contribute the change yourself at
-> https://github.com/carneirofc/saveroom/tree/develop/docs .
+> [issue tracker](https://github.com/carneirofc/baserow/issues) or contribute the change yourself at
+> https://github.com/carneirofc/baserow/tree/develop/docs .
 
 ## Quickstart
 
@@ -15,7 +15,7 @@ guide on the specifics of how to work with this image.
 services:
   baserow:
     container_name: baserow
-    image: ghcr.io/carneirofc/saveroom:latest
+    image: ghcr.io/carneirofc/baserow:latest
     environment:
       BASEROW_PUBLIC_URL: 'http://localhost'
     ports:
@@ -44,13 +44,13 @@ https://docs.docker.com/compose/install/.
 
 You can download the example Saveroom `docker-compose.yml` by either directly downloading
 the file from
-[https://github.com/carneirofc/saveroom/blob/master/docker-compose.yml](https://github.com/carneirofc/saveroom/blob/master/docker-compose.yml)
+[https://github.com/carneirofc/baserow/blob/master/docker-compose.yml](https://github.com/carneirofc/baserow/blob/master/docker-compose.yml)
 and running:
 
 ```bash
-curl -o docker-compose.yml https://raw.githubusercontent.com/carneirofc/saveroom/refs/heads/develop/docker-compose.yml
-curl -o .env https://raw.githubusercontent.com/carneirofc/saveroom/refs/heads/develop/.env.example 
-curl -o Caddyfile https://raw.githubusercontent.com/carneirofc/saveroom/refs/heads/develop/Caddyfile
+curl -o docker-compose.yml https://raw.githubusercontent.com/carneirofc/baserow/refs/heads/develop/docker-compose.yml
+curl -o .env https://raw.githubusercontent.com/carneirofc/baserow/refs/heads/develop/.env.example 
+curl -o Caddyfile https://raw.githubusercontent.com/carneirofc/baserow/refs/heads/develop/Caddyfile
 # Edit .env and set your own secure passwords for the 3 required variables at the top. 
 gedit .env
 docker-compose up -d
@@ -59,7 +59,7 @@ docker-compose up -d
 or by directly cloning our git repo so you can get updates easier:
 
 ```bash
-git clone --depth=1 --branch develop https://github.com/carneirofc/saveroom.git ~/saveroom
+git clone --depth=1 --branch develop https://github.com/carneirofc/baserow.git ~/saveroom
 cd ~/saveroom
 cp .env.example .env
 # Edit .env and set your own secure passwords for the 3 required variables at the top. 
@@ -102,10 +102,10 @@ You can set these variables by using docker-compose env file
 (https://docs.docker.com/compose/environment-variables/#the-env-file):
 
 1. Copy the `.env.example` file found in the root of Baserows repository
-   (https://github.com/carneirofc/saveroom/blob/master/.env.example)  to `.env`:
+   (https://github.com/carneirofc/baserow/blob/master/.env.example)  to `.env`:
 
 ```
-curl -o .env https://raw.githubusercontent.com/carneirofc/saveroom/refs/heads/develop/.env.example
+curl -o .env https://raw.githubusercontent.com/carneirofc/baserow/refs/heads/develop/.env.example
 ```
 
 2. Edit `.env` and provide values for the missing environment variables.

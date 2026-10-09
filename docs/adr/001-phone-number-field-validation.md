@@ -1,6 +1,6 @@
 # How to Validate and Format Phone Number Fields 
 
-See the [issue tracker](https://github.com/carneirofc/saveroom/issues) for background.
+See the [issue tracker](https://github.com/carneirofc/baserow/issues) for background.
 
 For the new number phone number field there are a number of options around how to
 validate and format the field. This document captures

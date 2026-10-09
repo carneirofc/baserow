@@ -111,11 +111,11 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/carneirofc/saveroom"
-"Bug Tracker" = "https://github.com/carneirofc/saveroom/issues"
-Documentation = "https://github.com/carneirofc/saveroom"
-Support = "https://github.com/carneirofc/saveroom/issues"
-Changelog = "https://github.com/carneirofc/saveroom/blob/develop/changelog.md"
+Homepage = "https://github.com/carneirofc/baserow"
+"Bug Tracker" = "https://github.com/carneirofc/baserow/issues"
+Documentation = "https://github.com/carneirofc/baserow"
+Support = "https://github.com/carneirofc/baserow/issues"
+Changelog = "https://github.com/carneirofc/baserow/blob/develop/changelog.md"
 
 [project.scripts]
 baserow = "baserow.manage:main"

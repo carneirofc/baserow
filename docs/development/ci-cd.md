@@ -64,7 +64,7 @@ Change visibility**). That change cannot be undone.
      `deploy/all-in-one/docker-compose.yml`;
    * `appVersion` in `deploy/helm/saveroom/Chart.yaml`, plus `version` if the chart
      changed since its last publish;
-   * the `ghcr.io/carneirofc/saveroom/*:<version>` image tags in `docs/installation/`,
+   * the `ghcr.io/carneirofc/baserow/*:<version>` image tags in `docs/installation/`,
      `docs/plugins/` and `deploy/all-in-one/README.md`, the image tag in
      `docs/installation/install-on-digital-ocean.md`, and the version heading in
      `docs/installation/supported.md`

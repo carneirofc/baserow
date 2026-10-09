@@ -48,7 +48,7 @@ stringData:
   REDIS_SSL_CA_CERTS: "TODO"
   BASEROW_AMOUNT_OF_GUNICORN_WORKERS: "5"
   # S3 Compatible storage is recommended with K8S to get the exports and file storage working
-  # See the docs for more info https://github.com/carneirofc/saveroom/blob/develop/docs/installation/configuration.md#user-file-upload-configuration
+  # See the docs for more info https://github.com/carneirofc/baserow/blob/develop/docs/installation/configuration.md#user-file-upload-configuration
   AWS_ACCESS_KEY_ID: "TODO"
   AWS_SECRET_ACCESS_KEY: "TODO"
   AWS_STORAGE_BUCKET_NAME: "TODO"
@@ -167,7 +167,7 @@ spec:
                 topologyKey: "kubernetes.io/hostname"
       containers:
         - name: backend-asgi
-          image: ghcr.io/carneirofc/saveroom/backend:0.15.0
+          image: ghcr.io/carneirofc/baserow/backend:0.15.0
           workingDir: /baserow
           args:
             - "gunicorn"
@@ -224,7 +224,7 @@ spec:
                 topologyKey: "kubernetes.io/hostname"
       containers:
         - name: backend-wsgi
-          image: ghcr.io/carneirofc/saveroom/backend:0.15.0
+          image: ghcr.io/carneirofc/baserow/backend:0.15.0
           workingDir: /baserow
           args:
             - "gunicorn-wsgi"
@@ -283,7 +283,7 @@ spec:
                 topologyKey: "kubernetes.io/hostname"
       containers:
         - name: backend-worker
-          image: ghcr.io/carneirofc/saveroom/backend:0.15.0
+          image: ghcr.io/carneirofc/baserow/backend:0.15.0
           args:
             - "celery-worker"
           imagePullPolicy: Always
@@ -300,7 +300,7 @@ spec:
             - secretRef:
                 name: YOUR_ENV_SECRET_REF
         - name: backend-export-worker
-          image: ghcr.io/carneirofc/saveroom/backend:0.15.0
+          image: ghcr.io/carneirofc/baserow/backend:0.15.0
           args:
             - "celery-exportworker"
           imagePullPolicy: Always
@@ -317,7 +317,7 @@ spec:
             - secretRef:
                 name: YOUR_ENV_SECRET_REF
         - name: backend-beat-worker
-          image: ghcr.io/carneirofc/saveroom/backend:0.15.0
+          image: ghcr.io/carneirofc/baserow/backend:0.15.0
           args:
             - "celery-beat"
           imagePullPolicy: Always
@@ -358,7 +358,7 @@ spec:
                 topologyKey: "kubernetes.io/hostname"
       containers:
         - name: web-frontend
-          image: ghcr.io/carneirofc/saveroom/web-frontend:0.15.0
+          image: ghcr.io/carneirofc/baserow/web-frontend:0.15.0
           args:
             - nuxt
           ports:

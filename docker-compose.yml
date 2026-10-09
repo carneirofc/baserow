@@ -17,11 +17,11 @@
 # 3. Set further environment variables as you wish.
 #
 # More documentation can be found in:
-# https://github.com/carneirofc/saveroom
+# https://github.com/carneirofc/baserow
 #
 ########################################################################################
 
-# See https://github.com/carneirofc/saveroom for more details on these
+# See https://github.com/carneirofc/baserow for more details on these
 # backend environment variables, their defaults if left blank etc.
 x-backend-variables:
   &backend-variables # Most users should only need to set these first four variables.
@@ -88,7 +88,7 @@ x-backend-variables:
   AWS_S3_ENDPOINT_URL:
   AWS_S3_CUSTOM_DOMAIN:
 
-  # Misc settings see https://github.com/carneirofc/saveroom for info
+  # Misc settings see https://github.com/carneirofc/baserow for info
   BASEROW_AMOUNT_OF_WORKERS:
   BASEROW_BRANDING_APP_NAME:
   BASEROW_ROW_PAGE_SIZE_LIMIT:
@@ -255,7 +255,7 @@ services:
     # official caddy image lags behind Go security releases. It is tagged with
     # this fork's release versions like the other images, but keeps its own
     # variable so it can be pinned independently of BASEROW_VERSION.
-    image: ghcr.io/carneirofc/saveroom/caddy:${BASEROW_CADDY_VERSION:-latest}
+    image: ghcr.io/carneirofc/baserow/caddy:${BASEROW_CADDY_VERSION:-latest}
     restart: unless-stopped
     environment:
       # Controls what port the Caddy server binds to inside its container.
@@ -276,7 +276,7 @@ services:
       local:
 
   backend:
-    image: ghcr.io/carneirofc/saveroom/backend:${BASEROW_VERSION:-0.15.0}
+    image: ghcr.io/carneirofc/baserow/backend:${BASEROW_VERSION:-0.15.0}
     restart: unless-stopped
 
     environment:
@@ -290,7 +290,7 @@ services:
       local:
 
   web-frontend:
-    image: ghcr.io/carneirofc/saveroom/web-frontend:${BASEROW_VERSION:-0.15.0}
+    image: ghcr.io/carneirofc/baserow/web-frontend:${BASEROW_VERSION:-0.15.0}
     restart: unless-stopped
     environment:
       BASEROW_PUBLIC_URL: ${BASEROW_PUBLIC_URL-http://localhost}
@@ -354,7 +354,7 @@ services:
       local:
 
   celery:
-    image: ghcr.io/carneirofc/saveroom/backend:${BASEROW_VERSION:-0.15.0}
+    image: ghcr.io/carneirofc/baserow/backend:${BASEROW_VERSION:-0.15.0}
     restart: unless-stopped
     environment:
       <<: *backend-variables
@@ -376,7 +376,7 @@ services:
       local:
 
   celery-export-worker:
-    image: ghcr.io/carneirofc/saveroom/backend:${BASEROW_VERSION:-0.15.0}
+    image: ghcr.io/carneirofc/baserow/backend:${BASEROW_VERSION:-0.15.0}
     restart: unless-stopped
     command: celery-exportworker
     environment:
@@ -398,7 +398,7 @@ services:
       local:
 
   celery-beat-worker:
-    image: ghcr.io/carneirofc/saveroom/backend:${BASEROW_VERSION:-0.15.0}
+    image: ghcr.io/carneirofc/baserow/backend:${BASEROW_VERSION:-0.15.0}
     restart: unless-stopped
     command: celery-beat
     healthcheck:
@@ -425,7 +425,7 @@ services:
   db:
     image: pgvector/pgvector:pg18
     # If you were using a previous version, perform the update by uncommenting the
-    # following line. See: https://github.com/carneirofc/saveroom
+    # following line. See: https://github.com/carneirofc/baserow
     # for more information.
     # image: pgautoupgrade/pgautoupgrade:15-alpine3.8
     restart: unless-stopped

@@ -14,8 +14,8 @@ test("Branding config is served with defaults @fast", async ({ request }) => {
   const body = await response.json();
   expect(body).toMatchObject({
     hasTheme: false,
-    siteUrl: "https://github.com/carneirofc/saveroom",
-    docsUrl: "https://github.com/carneirofc/saveroom",
+    siteUrl: "https://github.com/carneirofc/baserow",
+    docsUrl: "https://github.com/carneirofc/baserow",
     siteTitle: "Baserow",
     showAttribution: true,
   });

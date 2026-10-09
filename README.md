@@ -168,7 +168,7 @@ docker run -d \
   -p 80:80 \
   -p 443:443 \
   --restart unless-stopped \
-  ghcr.io/carneirofc/saveroom:latest
+  ghcr.io/carneirofc/baserow:latest
 ```
 
 Then open [http://localhost](http://localhost). Saveroom stores everything (Postgres,
@@ -177,7 +177,7 @@ Redis, uploads) inside the `baserow_data` volume.
 * Set `BASEROW_PUBLIC_URL` to `https://YOUR_DOMAIN` or `http://YOUR_IP` for external
   access — it must match the address you use in the browser.
 * Pin a specific release instead of `latest` with a version tag, e.g.
-  `ghcr.io/carneirofc/saveroom:0.16.0`. Releases up to 0.15.0 were published before
+  `ghcr.io/carneirofc/baserow:0.16.0`. Releases up to 0.15.0 were published before
   the rename and stay at the old paths: `ghcr.io/carneirofc/baserow/baserow` for the
   all-in-one image, `ghcr.io/carneirofc/baserow/{backend,web-frontend,caddy}`, and
   `oci://ghcr.io/carneirofc/baserow/charts/baserow` for the chart. Switching an
@@ -211,7 +211,7 @@ This fork supports two deployment paths:
   as an OCI artifact:
 
   ```bash
-  helm install baserow oci://ghcr.io/carneirofc/saveroom/charts/saveroom \
+  helm install baserow oci://ghcr.io/carneirofc/baserow/charts/saveroom \
     -n baserow --create-namespace --set publicURL=https://baserow.example.com
   ```
 
@@ -223,12 +223,12 @@ This fork supports two deployment paths:
   [Installing on Amazon EKS](docs/installation/install-on-eks.md).
 
 For a single-container deployment, the all-in-one image
-`ghcr.io/carneirofc/saveroom` (embedded PostgreSQL + Redis) is published by CI and
+`ghcr.io/carneirofc/baserow` (embedded PostgreSQL + Redis) is published by CI and
 covered by the generic [Docker](docs/installation/install-with-docker.md) guide.
 
 ## Documentation
 
-Browse the hosted docs at https://carneirofc.github.io/saveroom/, or the source
+Browse the hosted docs at https://carneirofc.github.io/baserow/, or the source
 [in the repository](./docs/index.md). Upstream's hosted docs at
 https://baserow.io/docs/index also cover the premium and enterprise features that this
 fork does not ship.
@@ -236,7 +236,7 @@ fork does not ship.
 ## Development environment
 
 ```bash
-git clone https://github.com/carneirofc/saveroom.git
+git clone https://github.com/carneirofc/baserow.git
 cd saveroom
 
 just dc-dev build --parallel

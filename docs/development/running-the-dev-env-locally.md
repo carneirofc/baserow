@@ -69,7 +69,7 @@ git --version
 
 ```bash
 # Clone the repository
-git clone --branch develop https://github.com/carneirofc/saveroom.git
+git clone --branch develop https://github.com/carneirofc/baserow.git
 cd saveroom
 
 # Initialize backend and frontend (creates venv, installs deps, creates .env.local)

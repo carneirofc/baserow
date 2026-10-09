@@ -19,9 +19,9 @@ keywords:
 version: 0.9.0
 # Tracks the application version shipped by this fork's images.
 appVersion: "0.15.0"
-home: https://github.com/carneirofc/saveroom
+home: https://github.com/carneirofc/baserow
 sources:
-  - https://github.com/carneirofc/saveroom
+  - https://github.com/carneirofc/baserow
 maintainers:
   - name: carneirofc
     email: claudiofcarneiro@gmail.com
@@ -35,7 +35,7 @@ annotations:
     - kind: changed
       description: >-
         Renamed the chart to saveroom, published at
-        oci://ghcr.io/carneirofc/saveroom/charts/saveroom. Resource names and
+        oci://ghcr.io/carneirofc/baserow/charts/saveroom. Resource names and
         selector labels keep the baserow name, so existing releases upgrade in
         place.
     - kind: added

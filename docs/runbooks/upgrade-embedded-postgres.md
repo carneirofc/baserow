@@ -49,7 +49,7 @@ existing cluster and dump it. Write the dump to your host, outside both volumes:
 docker run -it --rm \
   -v baserow_data:/baserow/data \
   -v "$PWD":/baserow/host \
-  ghcr.io/carneirofc/saveroom:OLD_TAG \
+  ghcr.io/carneirofc/baserow:OLD_TAG \
   backend-cmd-with-db backup -f /baserow/host/pg15-backup.tar.gz
 ```
 
@@ -74,7 +74,7 @@ restores the dump into it:
 docker run -it --rm \
   -v baserow_data_pg18:/baserow/data \
   -v "$PWD":/baserow/host \
-  ghcr.io/carneirofc/saveroom:NEW_TAG \
+  ghcr.io/carneirofc/baserow:NEW_TAG \
   backend-cmd-with-db restore -f /baserow/host/pg15-backup.tar.gz
 ```
 
@@ -87,7 +87,7 @@ docker run -d \
   --name baserow \
   -v baserow_data_pg18:/baserow/data \
   # ... the rest of your usual arguments
-  ghcr.io/carneirofc/saveroom:NEW_TAG
+  ghcr.io/carneirofc/baserow:NEW_TAG
 ```
 
 Watch the startup logs (`docker logs -f baserow`). The PostgreSQL version guard
@@ -111,8 +111,8 @@ tag against it again:
 ```bash
 docker run -d --name baserow -v baserow_data:/baserow/data \
   # ... the rest of your usual arguments
-  ghcr.io/carneirofc/saveroom:OLD_TAG
+  ghcr.io/carneirofc/baserow:OLD_TAG
 ```
 
-Then open an issue at https://github.com/carneirofc/saveroom/issues with the
+Then open an issue at https://github.com/carneirofc/baserow/issues with the
 container logs from the failed attempt.

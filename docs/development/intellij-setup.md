@@ -15,7 +15,7 @@ Install the following tools:
 
 ## Setup Steps
 
-1. First checkout a fresh copy of Saveroom: `git clone git@github.com:carneirofc/saveroom.git`
+1. First checkout a fresh copy of Saveroom: `git clone git@github.com:carneirofc/baserow.git`
 1. `cd saveroom`
 1. `./config/intellij/apply_standard_baserow_intellij_config.sh`
     1. Type `Y` and hit enter to apply the standard Saveroom config

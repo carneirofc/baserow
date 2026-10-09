@@ -52,7 +52,7 @@ on `Create App`, choose a container image from `GitHub Container Registry` (GHCR
 fill out the following. The image is public, so no registry credentials are needed:
 
 Registry (owner): `carneirofc`
-Repository: `ghcr.io/carneirofc/saveroom`
+Repository: `ghcr.io/carneirofc/baserow`
 Image tag or digest: `0.6.0`
 
 Click on `Next`, then on the `Edit` button of the `baserow-baserow` web service. Here
@@ -127,7 +127,7 @@ In order to update the Saveroom version, you simply need to replace the image ta
 Navigate to the `Settings` tag of your created app, click on the `baserow-baserow`
 component, then click on the `Edit` button next to source, change the `Image tag` into
 the desired version (see the
-[releases](https://github.com/carneirofc/saveroom/releases) for the latest tag), and click
+[releases](https://github.com/carneirofc/baserow/releases) for the latest tag), and click
 on save. The app will redeploy
 with the latest version.
 

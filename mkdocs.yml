@@ -1,7 +1,7 @@
 site_name: Saveroom Docs
-site_url: https://carneirofc.github.io/saveroom/
-repo_url: https://github.com/carneirofc/saveroom
-repo_name: carneirofc/saveroom
+site_url: https://carneirofc.github.io/baserow/
+repo_url: https://github.com/carneirofc/baserow
+repo_name: carneirofc/baserow
 edit_uri: edit/develop/docs/
 docs_dir: docs
 

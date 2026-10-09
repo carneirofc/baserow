@@ -21,11 +21,11 @@ image:
   # These images are already restricted-v2 compatible (no chown/su-exec,
   # unprivileged ports 8000/3000). Do NOT use the all-in-one image on OpenShift.
   backend:
-    repository: carneirofc/saveroom/backend
+    repository: carneirofc/baserow/backend
     tag: "" # defaults to Chart.appVersion
     pullPolicy: IfNotPresent
   webFrontend:
-    repository: carneirofc/saveroom/web-frontend
+    repository: carneirofc/baserow/web-frontend
     tag: "" # defaults to Chart.appVersion
     pullPolicy: IfNotPresent
 imagePullSecrets: []
