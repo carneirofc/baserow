@@ -58,7 +58,7 @@ Install the following tools:
         ```
 1. Now you should be able to run the backend python tests, try
    run `backend/tests/baserow/core/test_core_models.py` for instance.
-1. Now lets set up your frontend dev by changing directory to `baserow/web-frontend`
+1. Now lets set up your frontend dev by changing directory to `saveroom/web-frontend`
 1. Now run `just f install` (or `yarn install` directly). If you do not have yarn available
    check out and install a node version manager like [nvm](https://github.com/nvm-sh/nvm) or
    [fnm](https://github.com/Schniz/fnm) and follow the
@@ -72,7 +72,7 @@ Install the following tools:
 1. Open settings and search for eslint, make sure you have switched
    to `Manual ESLint configuration`, have set the `ESlint package` to to `eslint` sub
    folder in the `node_modules` created by the
-   previous `yarn install` (`baserow/web-frontend/node_modules/eslint`)
+   previous `yarn install` (`saveroom/web-frontend/node_modules/eslint`)
 
 # Recommended Plugins
 

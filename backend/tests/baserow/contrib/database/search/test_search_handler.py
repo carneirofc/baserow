@@ -25,7 +25,7 @@ def test_escape_query():
     # Spacing is standardized.
     assert SearchHandler.escape_query("Full   text   search") == "Full text search"
     # Escape colons for URLs.
-    assert SearchHandler.escape_query("https://baserow.io") == "https baserow io"
+    assert SearchHandler.escape_query("https://example.com") == "https example com"
     # Special characters are trimmed.
     assert SearchHandler.escape_query("Base<&(|)!>row") == "Base row"
     # Leading or trailing spaces trimmed.

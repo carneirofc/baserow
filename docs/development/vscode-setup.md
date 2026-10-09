@@ -51,7 +51,7 @@ Install the following tools:
         ```
 1. Now you should be able to run the backend python tests from the testing menu, try
    run `backend/tests/baserow/core/test_core_models.py` for instance.
-1. Now lets set up your frontend dev by changing directory to `baserow/web-frontend`
+1. Now lets set up your frontend dev by changing directory to `saveroom/web-frontend`
 1. Use [nvm](https://github.com/nvm-sh/nvm) or [fnm](https://github.com/Schniz/fnm) to install the correct version of `node`.
    To determine the version of Node.js to use, see the `runtimeVersion` inside the
    `launch.json` file. E.g. if the version is `v16.15.0`, you can install it with:

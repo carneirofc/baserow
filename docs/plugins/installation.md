@@ -154,8 +154,8 @@ in a Dockerfile or at runtime. The scripts will automatically detect if they are
 in a `backend` only or `web-frontend` only image and only install the respective
 plugin `backend` or `web-frontend` module.
 
-The [plugin boilerplate](./boilerplate.md) provides examples of doing this in the
-`backend.Dockerfile` and `web-frontend.Dockerfile` images.
+Do this in your own `backend` and `web-frontend` Dockerfiles, built on top of the
+official images.
 
 ## Uninstalling a plugin
 

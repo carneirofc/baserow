@@ -6,8 +6,8 @@ information can be found on the
 create your own custom table field type for Saveroom via a plugin. We are going to create
 a integer field which displays as "hello world". Of course a number field with the more
 features already exists, this is just for example purposes. In the end the user can
-create an integer field that only shows a hello world message. We expect that you are
-using the [plugin boilerplate](./boilerplate.md).
+create an integer field that only shows a hello world message. We expect that you have a plugin laid out as described in
+[plugin architecture](./creation.md#plugin-architecture).
 
 ## Backend
 

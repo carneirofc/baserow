@@ -2096,7 +2096,7 @@ def test_field_constraints_unique_with_empty(data_fixture):
         URLFieldType.type: {
             "constraint": UniqueWithEmptyConstraint.constraint_name,
             "empty": "",
-            "value": "https://baserow.io",
+            "value": "https://example.com",
         },
         EmailFieldType.type: {
             "constraint": UniqueWithEmptyConstraint.constraint_name,

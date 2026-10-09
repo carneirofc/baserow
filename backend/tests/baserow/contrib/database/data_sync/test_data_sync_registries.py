@@ -37,7 +37,7 @@ UID:1725220374375-34056@ical.marudot.com
 DTSTART;TZID=Europe/Berlin:20240901T100000
 DTEND;TZID=Europe/Berlin:20240901T110000
 SUMMARY:Test event 0
-URL:https://baserow.io
+URL:https://example.com
 DESCRIPTION:Test description 1
 LOCATION:Amsterdam
 END:VEVENT
@@ -49,7 +49,7 @@ END:VCALENDAR"""
 def test_import_export_data_sync(data_fixture):
     responses.add(
         responses.GET,
-        "https://baserow.io/ical.ics",
+        "https://example.com/ical.ics",
         status=200,
         body=ICAL_FEED_WITH_ONE_ITEMS,
     )
@@ -66,7 +66,7 @@ def test_import_export_data_sync(data_fixture):
         table_name="Test",
         type_name="ical_calendar",
         synced_properties=["uid", "dtstart", "dtend", "summary"],
-        ical_url="https://baserow.io/ical.ics",
+        ical_url="https://example.com/ical.ics",
     )
     properties = data_sync.synced_properties.all().order_by("key")
     handler.sync_data_sync_table(user=user, data_sync=data_sync)
@@ -120,7 +120,7 @@ def test_import_export_data_sync(data_fixture):
 def test_base_data_sync_settings_are_preserved_on_import_export(data_fixture):
     responses.add(
         responses.GET,
-        "https://baserow.io/ical.ics",
+        "https://example.com/ical.ics",
         status=200,
         body=ICAL_FEED_WITH_ONE_ITEMS,
     )
@@ -139,7 +139,7 @@ def test_base_data_sync_settings_are_preserved_on_import_export(data_fixture):
         synced_properties=["uid"],
         auto_add_new_properties=True,  # default False
         delete_unmatched_rows=False,  # default True
-        ical_url="https://baserow.io/ical.ics",
+        ical_url="https://example.com/ical.ics",
     )
     # `two_way_sync` can't be enabled through the handler for iCal (no two-way sync
     # strategy), so set it directly to still cover it in the serialization round-trip.

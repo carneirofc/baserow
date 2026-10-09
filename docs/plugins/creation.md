@@ -6,26 +6,12 @@
 In this guide we dive into how to create a Saveroom plugin from scratch, give you example
 plugins to get inspiration from and discuss how to publish your plugin.
 
-## Initialize your plugin from the official template
+## Get inspiration from examples
 
-We highly recommend using the
-[Step by step tutorial on plugin creation using the plugin boilerplate](./boilerplate.md)
-which will setup a basic Saveroom plugin ready for you to start working on. Please note
-that the boilerplate is outdated and only compatible with version 2.0.6 and lower.
+Two example plugins written for upstream Baserow show how to do common things with a
+plugin. They target upstream's plugin API, so expect to adapt them.
 
-To instantiate the template, execute the following commands:
-
-```sh
-$ pip install cookiecutter
-$ $ cookiecutter https://github.com/baserow/plugin-boilerplate.git
-```
-
-## Get inspiration from our examples
-
-Additionally, we have created two example plugins to show plugin authors how to do
-common things with a plugin.
-
-### [Saveroom Geo Plugin](https://gitlab.com/nigel_baserow/baserow_geo_plugin/)
+### [Baserow Geo Plugin](https://gitlab.com/nigel_baserow/baserow_geo_plugin/)
 
 The [Geo plugin](https://gitlab.com/nigel_baserow/baserow_geo_plugin/) is an example
 plugin which adds a new "Point" field type. It shows how to:
@@ -36,7 +22,7 @@ plugin which adds a new "Point" field type. It shows how to:
 * Add custom backend python and frontend node dependencies
 * Add a new field type, with custom components and scss
 
-### [Saveroom Example Formula Plugin](https://gitlab.com/nigel_baserow/baserow_example_formula_plugin/)
+### [Baserow Example Formula Plugin](https://gitlab.com/nigel_baserow/baserow_example_formula_plugin/)
 
 The [Example formula plugin](https://gitlab.com/nigel_baserow/baserow_example_formula_plugin)
 adds a new formula function called `timezone`. It shows how to :
@@ -138,9 +124,7 @@ containing metadata about your plugin. It should have the following JSON structu
 When using `install_plugin.sh --url URL_TO_PLUGIN_TAR_GZ`
 or `install_plugin.sh --git URL_TO_PLUGIN_REPO` the plugin archive/repo should contain a
 single `plugins` folder, inside which there should a single plugin folder following the
-structure above and has the same name as your plugin. By default,
-the [plugin boilerplate](./boilerplate.md) generates a repository with this structure.
-For example a conforming tar.gz archive should contain something like:
+structure above and has the same name as your plugin. For example a conforming tar.gz archive should contain something like:
 
 ```
 ├─ * (an outermost wrapper directory named anything is allowed but not required) 
@@ -180,9 +164,8 @@ store inside it can be lost.
 #### Adding Python Requirements
 
 Your backend plugin is just a normal python module which will be installed into the
-Saveroom virtual environment using `pip` by `install_plugin.sh`. If using the plugin
-boilerplate you can add any python requirements to the pip requirements file found
-at `backend/requirements/base.txt`.
+Saveroom virtual environment using `pip` by `install_plugin.sh`. Declare your python requirements in your
+plugin's own requirements file.
 
 #### As a Django App
 

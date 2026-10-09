@@ -150,10 +150,10 @@ def test_urlfield_get_search_expression(data_fixture):
     )
     field = table.field_set.get(name="URL")
     row = RowHandler().force_create_row(
-        user=user, table=table, values={f"field_{field.id}": "https://baserow.io"}
+        user=user, table=table, values={f"field_{field.id}": "https://example.com"}
     )
     model = table.get_model()
-    qs = model.objects.all().pg_search("https://baserow.io")
+    qs = model.objects.all().pg_search("https://example.com")
     assert qs.exists()
     matching_row = qs.get()
     assert matching_row.id == row.id

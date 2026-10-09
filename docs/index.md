@@ -124,8 +124,6 @@ Everything related to contributing and developing for Saveroom.
 Everything related to custom plugin development.
 
 * [Plugin basics](./plugins/introduction.md): An introduction into Saveroom plugins.
-* [Plugin boilerplate](./plugins/boilerplate.md) **Outdated**: Don't reinvent the
-  wheel, use the boilerplate for quick plugin development.
 * [Create application](./plugins/application-type.md): Want to create an application
   type? Learn how to do that here.
 * [Create database table view](./plugins/view-type.md): Display table data like a

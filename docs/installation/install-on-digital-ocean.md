@@ -52,7 +52,7 @@ on `Create App`, choose a container image from `GitHub Container Registry` (GHCR
 fill out the following. The image is public, so no registry credentials are needed:
 
 Registry (owner): `carneirofc`
-Repository: `baserow/baserow`
+Repository: `ghcr.io/carneirofc/saveroom`
 Image tag or digest: `0.6.0`
 
 Click on `Next`, then on the `Edit` button of the `baserow-baserow` web service. Here

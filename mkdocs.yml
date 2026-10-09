@@ -106,7 +106,6 @@ nav:
       - Zed setup: development/zed-setup.md
   - Plugins:
       - Plugin basics: plugins/introduction.md
-      - "Plugin boilerplate (outdated)": plugins/boilerplate.md
       - Create application type: plugins/application-type.md
       - Create database table view: plugins/view-type.md
       - Create database table view filter: plugins/view-filter-type.md

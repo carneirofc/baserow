@@ -505,7 +505,7 @@ def test_postgresql_data_sync_table_connect_to_blacklist(data_fixture):
 
     with pytest.raises(SyncError) as e:
         with override_settings(
-            BASEROW_POSTGRESQL_DATA_SYNC_BLACKLIST=["localhost", "baserow.io"]
+            BASEROW_POSTGRESQL_DATA_SYNC_BLACKLIST=["localhost", "example.com"]
         ):
             data_sync = handler.create_data_sync_table(
                 user=user,

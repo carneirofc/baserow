@@ -111,11 +111,11 @@ just dc-prod build --no-cache --parallel
 
 | Command | Resulting Tag |
 |---------|---------------|
-| `just build backend` | `baserow/backend:latest` |
-| `just build backend 2.0.0` | `baserow/backend:2.0.0` |
-| `just build all-in-one` | `baserow/baserow:latest` |
-| `just build all-in-one 2.0.0` | `baserow/baserow:2.0.0` |
-| `just build all-in-one-lite` | `baserow/baserow:lite-latest` |
+| `just build backend` | `saveroom/backend:latest` |
+| `just build backend 2.0.0` | `saveroom/backend:2.0.0` |
+| `just build all-in-one` | `saveroom/all-in-one:latest` |
+| `just build all-in-one 2.0.0` | `saveroom/all-in-one:2.0.0` |
+| `just build all-in-one-lite` | `saveroom/all-in-one:lite-latest` |
 
 ## Running Production Images
 
@@ -196,7 +196,7 @@ docker run -d \
   -e REDIS_URL=redis://host:6379 \
   -e BASEROW_PUBLIC_URL=https://baserow.example.com \
   -p 80:80 \
-  baserow/baserow:lite-latest
+  saveroom/all-in-one:lite-latest
 ```
 
 #### Platform-Specific Deployments
@@ -262,10 +262,10 @@ Typical production image sizes:
 
 | Image | Approximate Size |
 |-------|------------------|
-| `baserow/backend:latest` | ~500MB |
-| `baserow/web-frontend:latest` | ~400MB |
-| `baserow/baserow:latest` (all-in-one) | ~1.5GB |
-| `baserow/baserow:lite-latest` | ~1GB |
+| `saveroom/backend:latest` | ~500MB |
+| `saveroom/web-frontend:latest` | ~400MB |
+| `saveroom/all-in-one:latest` (all-in-one) | ~1.5GB |
+| `saveroom/all-in-one:lite-latest` | ~1GB |
 
 ## Dockerfile Targets
 
@@ -323,7 +323,7 @@ just dc-prod ps
 docker ps -a
 
 # Run with interactive shell to debug
-docker run -it --entrypoint bash baserow/backend:latest
+docker run -it --entrypoint bash saveroom/backend:latest
 ```
 
 ### Database Connection Issues
@@ -342,13 +342,13 @@ If images are unexpectedly large:
 
 ```bash
 # Check image layers
-docker history baserow/backend:latest
+docker history saveroom/backend:latest
 
 # Inspect image
-docker inspect baserow/backend:latest
+docker inspect saveroom/backend:latest
 
 # Check what's inside
-docker run --rm -it baserow/backend:latest du -sh /*
+docker run --rm -it saveroom/backend:latest du -sh /*
 ```
 
 ## Exporting Images
@@ -357,7 +357,7 @@ To transfer images without a registry:
 
 ```bash
 # Save to tar.gz
-docker save baserow/backend:latest | gzip > baserow-backend.tar.gz
+docker save saveroom/backend:latest | gzip > baserow-backend.tar.gz
 
 # Load on another machine
 docker load < baserow-backend.tar.gz

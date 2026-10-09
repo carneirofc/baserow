@@ -5,8 +5,8 @@ information about this can be found on the
 [database plugin page](../technical/database-plugin.md). This is a tutorial about 
 how to create your own custom table view type for Saveroom via a plugin. We are going to
 create a calendar view that doesn't really do anything. In the end the user can create 
-a new calendar view that only shows a hello world message. We expect that you are 
-using the [plugin boilerplate](./boilerplate.md).
+a new calendar view that only shows a hello world message. We expect that you have a plugin laid out as described in
+[plugin architecture](./creation.md#plugin-architecture).
 
 ## Backend
 

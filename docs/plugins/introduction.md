@@ -33,11 +33,10 @@ and uninstall Saveroom plugins in the various official Saveroom docker images.
 Currently, we do not provide an officially supported plugins, however check out the
 [issue tracker](https://github.com/carneirofc/saveroom/issues) for further discussion.
 
-## Step by step plugin creation tutorial
+## Creating a plugin
 
-Check out
-our [step by step tutorial on plugin creation using the plugin boilerplate](./boilerplate.md)
-for a quick and easy way to get a plugin started.
+See [creating a plugin](./creation.md) for the folder layout a plugin needs and how
+to install it.
 
 ## Creating a Plugin
 

@@ -335,8 +335,8 @@ container_definitions    = <<DEFINITION
 
 #### 7) Extra Scaling Options
 
-Other than launching more `baserow/baserow` tasks and scaling up the RDS postgres
-server, the `baserow/baserow` image has the following scaling environment variables
+Other than launching more `ghcr.io/carneirofc/saveroom` tasks and scaling up the RDS postgres
+server, the `ghcr.io/carneirofc/saveroom` image has the following scaling environment variables
 which can help reduce the resource usage per container or allocate more resources to
 certain services inside the container.
 
@@ -616,7 +616,7 @@ Upgrading an ECS/Fargate deployment of Saveroom can be done by.
 2. Stop all existing containers running the old version first to prevent
    users from getting errors whilst accessing old containers during the upgrade.
 3. Update your task definitions to have the new image.
-4. The first new `baserow/baserow` or `baserow/backend-wsgi/asgi` container to startup
+4. The first new `ghcr.io/carneirofc/saveroom` or `ghcr.io/carneirofc/saveroom/backend (wsgi/asgi)` container to startup
    will
    automatically apply any required database migrations and upgrades.
 5. Once these are complete, all the new Saveroom containers will start accepting requests

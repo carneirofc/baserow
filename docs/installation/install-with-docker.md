@@ -60,7 +60,7 @@ a single container for maximum ease of use.
 >
 > If you are instead looking for images which are better suited for horizontal
 > scaling (e.g. when using [K8S](./install-with-k8s.md)) then please instead use our
-> [baserow/backend and baserow/web-frontend](./install-with-docker-compose.md) images
+> [ghcr.io/carneirofc/saveroom/backend and ghcr.io/carneirofc/saveroom/web-frontend](./install-with-docker-compose.md) images
 > instead which deploy each Saveroom service in its own container independently.
 
 A quick summary of its features are:
@@ -373,11 +373,11 @@ docker run -it \
 ## Stateless Deployment for Horizontal Scaling
 
 This image can also be configured to deploy Saveroom in a horizontally scalable way.
-We recommend you first consider using our `baserow/backend` and `baserow/web-frontend`
+We recommend you first consider using our `ghcr.io/carneirofc/saveroom/backend` and `ghcr.io/carneirofc/saveroom/web-frontend`
 single service per container images
 on [K8S](./install-with-k8s.md).
 However, if you just want to easily horizontally scale Saveroom on something like
-AWS ECS or Google Cloud Run then the `baserow/baserow` can be used.
+AWS ECS or Google Cloud Run then the `ghcr.io/carneirofc/saveroom` can be used.
 
 ### Prerequisites
 

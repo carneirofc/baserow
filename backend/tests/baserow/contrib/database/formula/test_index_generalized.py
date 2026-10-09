@@ -69,7 +69,7 @@ def _to_date(val: str) -> date:
             lambda df, table: df.create_url_field(table=table, name="target"),
             [
                 "https://example.com",
-                "https://baserow.io",
+                "https://example.com",
                 "https://python.org",
                 "https://django.com",
             ],

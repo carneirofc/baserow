@@ -147,10 +147,6 @@ above will execute in an isolated environment. In order to improve speed
 they are separated by lint and test stages. It is not allowed to merge a branch if
 one of these jobs fails.
 
-The pipeline also has a build job. During this job
-[plugin boilerplate](../plugins/boilerplate.md) Saveroom will be installed as a
-dependency to ensure that this still works.
-
 ### Running CI locally
 
 You can run the same checks locally before pushing:

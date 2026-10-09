@@ -56,7 +56,7 @@ UID:1725220374375-34056@ical.marudot.com
 DTSTART;TZID=Europe/Berlin:20240901T100000
 DTEND;TZID=Europe/Berlin:20240901T110000
 SUMMARY:Test event 0
-URL:https://baserow.io
+URL:https://example.com
 DESCRIPTION:Test description 1
 LOCATION:Amsterdam
 END:VEVENT
@@ -75,7 +75,7 @@ def test_create_data_sync_no_permissions(data_fixture, api_client):
             "table_name": "Test 1",
             "type": "ical_calendar",
             "synced_properties": ["uid", "dtstart", "dtend", "summary"],
-            "ical_url": "https://baserow.io/ical.ics",
+            "ical_url": "https://example.com/ical.ics",
         },
         format="json",
         HTTP_AUTHORIZATION=f"JWT {token}",
@@ -118,7 +118,7 @@ def test_create_data_sync_wrong_properties(data_fixture, api_client):
             "table_name": "Test 1",
             "type": "ical_calendar",
             "synced_properties": ["TEST"],
-            "ical_url": "https://baserow.io/ical.ics",
+            "ical_url": "https://example.com/ical.ics",
         },
         format="json",
         HTTP_AUTHORIZATION=f"JWT {token}",
@@ -178,7 +178,7 @@ def test_create_data_sync_without_data(data_fixture, api_client):
 def test_create_data_sync(data_fixture, api_client):
     responses.add(
         responses.GET,
-        "https://baserow.io/ical.ics",
+        "https://example.com/ical.ics",
         status=200,
         body=ICAL_FEED_WITH_ONE_ITEMS,
     )
@@ -193,7 +193,7 @@ def test_create_data_sync(data_fixture, api_client):
             "table_name": "Test 1",
             "type": "ical_calendar",
             "synced_properties": ["uid", "dtstart", "dtend", "summary"],
-            "ical_url": "https://baserow.io/ical.ics",
+            "ical_url": "https://example.com/ical.ics",
         },
         format="json",
         HTTP_AUTHORIZATION=f"JWT {token}",
@@ -203,7 +203,7 @@ def test_create_data_sync(data_fixture, api_client):
     data_syncs = list(DataSync.objects.all())
     assert len(data_syncs) == 1
     data_sync = data_syncs[0].specific
-    assert data_sync.ical_url == "https://baserow.io/ical.ics"
+    assert data_sync.ical_url == "https://example.com/ical.ics"
 
     properties = DataSyncSyncedProperty.objects.filter(data_sync=data_sync).order_by(
         "id"
@@ -256,7 +256,7 @@ def test_create_data_sync(data_fixture, api_client):
 def test_create_data_sync_with_auto_add_new_properties(data_fixture, api_client):
     responses.add(
         responses.GET,
-        "https://baserow.io/ical.ics",
+        "https://example.com/ical.ics",
         status=200,
         body=ICAL_FEED_WITH_ONE_ITEMS,
     )
@@ -273,7 +273,7 @@ def test_create_data_sync_with_auto_add_new_properties(data_fixture, api_client)
             "synced_properties": ["uid"],
             "auto_add_new_properties": True,
             "two_way_sync": False,
-            "ical_url": "https://baserow.io/ical.ics",
+            "ical_url": "https://example.com/ical.ics",
         },
         format="json",
         HTTP_AUTHORIZATION=f"JWT {token}",
@@ -284,7 +284,7 @@ def test_create_data_sync_with_auto_add_new_properties(data_fixture, api_client)
     assert len(data_syncs) == 1
     data_sync = data_syncs[0].specific
     assert data_sync.auto_add_new_properties is True
-    assert data_sync.ical_url == "https://baserow.io/ical.ics"
+    assert data_sync.ical_url == "https://example.com/ical.ics"
 
     properties = DataSyncSyncedProperty.objects.filter(data_sync=data_sync).order_by(
         "id"
@@ -325,7 +325,7 @@ def test_can_undo_redo_create_data_sync(api_client, data_fixture):
 
     responses.add(
         responses.GET,
-        "https://baserow.io/ical.ics",
+        "https://example.com/ical.ics",
         status=200,
         body=ICAL_FEED_WITH_ONE_ITEMS,
     )
@@ -340,7 +340,7 @@ def test_can_undo_redo_create_data_sync(api_client, data_fixture):
             "table_name": "Test 1",
             "type": "ical_calendar",
             "synced_properties": ["uid", "dtstart", "dtend", "summary"],
-            "ical_url": "https://baserow.io/ical.ics",
+            "ical_url": "https://example.com/ical.ics",
         },
         format="json",
         HTTP_AUTHORIZATION=f"JWT {token}",
@@ -398,7 +398,7 @@ def test_update_data_sync_no_permissions(data_fixture, api_client):
         table_name="Test",
         type_name="ical_calendar",
         synced_properties=["uid", "dtstart", "dtend"],
-        ical_url="https://baserow.io",
+        ical_url="https://example.com",
     )
 
     url = reverse("api:database:data_sync:item", kwargs={"data_sync_id": data_sync.id})
@@ -428,7 +428,7 @@ def test_update_data_sync_invalid_synced_properties(data_fixture, api_client):
         table_name="Test",
         type_name="ical_calendar",
         synced_properties=["uid", "dtstart", "dtend"],
-        ical_url="https://baserow.io",
+        ical_url="https://example.com",
     )
 
     url = reverse("api:database:data_sync:item", kwargs={"data_sync_id": data_sync.id})
@@ -479,7 +479,7 @@ def test_update_data_sync_invalid_kwargs(data_fixture, api_client):
         table_name="Test",
         type_name="ical_calendar",
         synced_properties=["uid", "dtstart", "dtend"],
-        ical_url="https://baserow.io",
+        ical_url="https://example.com",
     )
 
     url = reverse("api:database:data_sync:item", kwargs={"data_sync_id": data_sync.id})
@@ -510,7 +510,7 @@ def test_update_data_sync_not_providing_anything(data_fixture, api_client):
         table_name="Test",
         type_name="ical_calendar",
         synced_properties=["uid"],
-        ical_url="https://baserow.io",
+        ical_url="https://example.com",
     )
 
     url = reverse("api:database:data_sync:item", kwargs={"data_sync_id": data_sync.id})
@@ -554,7 +554,7 @@ def test_update_data_sync(data_fixture, api_client):
         table_name="Test",
         type_name="ical_calendar",
         synced_properties=["uid", "dtstart", "dtend"],
-        ical_url="https://baserow.io",
+        ical_url="https://example.com",
     )
 
     url = reverse("api:database:data_sync:item", kwargs={"data_sync_id": data_sync.id})
@@ -615,7 +615,7 @@ def test_update_data_sync_auto_add_new_properties(data_fixture, api_client):
         table_name="Test",
         type_name="ical_calendar",
         synced_properties=["uid", "dtstart", "dtend"],
-        ical_url="https://baserow.io",
+        ical_url="https://example.com",
     )
 
     url = reverse("api:database:data_sync:item", kwargs={"data_sync_id": data_sync.id})
@@ -650,7 +650,7 @@ def test_update_data_sync_auto_add_new_properties(data_fixture, api_client):
 def test_create_data_sync_with_delete_unmatched_rows(data_fixture, api_client):
     responses.add(
         responses.GET,
-        "https://baserow.io/ical.ics",
+        "https://example.com/ical.ics",
         status=200,
         body=ICAL_FEED_WITH_ONE_ITEMS,
     )
@@ -666,7 +666,7 @@ def test_create_data_sync_with_delete_unmatched_rows(data_fixture, api_client):
             "type": "ical_calendar",
             "synced_properties": ["uid"],
             "delete_unmatched_rows": False,
-            "ical_url": "https://baserow.io/ical.ics",
+            "ical_url": "https://example.com/ical.ics",
         },
         format="json",
         HTTP_AUTHORIZATION=f"JWT {token}",
@@ -690,7 +690,7 @@ def test_create_data_sync_delete_unmatched_rows_defaults_true(data_fixture, api_
         table_name="Test",
         type_name="ical_calendar",
         synced_properties=["uid"],
-        ical_url="https://baserow.io",
+        ical_url="https://example.com",
     )
     assert data_sync.delete_unmatched_rows is True
 
@@ -712,7 +712,7 @@ def test_update_data_sync_delete_unmatched_rows(data_fixture, api_client):
         table_name="Test",
         type_name="ical_calendar",
         synced_properties=["uid"],
-        ical_url="https://baserow.io",
+        ical_url="https://example.com",
     )
 
     url = reverse("api:database:data_sync:item", kwargs={"data_sync_id": data_sync.id})
@@ -742,7 +742,7 @@ def test_update_data_sync_delete_unmatched_rows(data_fixture, api_client):
 def test_async_sync_data_sync_table_invalid_data_sync(api_client, data_fixture):
     responses.add(
         responses.GET,
-        "https://baserow.io/ical.ics",
+        "https://example.com/ical.ics",
         status=200,
         body=ICAL_FEED_WITH_ONE_ITEMS,
     )
@@ -765,7 +765,7 @@ def test_async_sync_data_sync_table_invalid_data_sync(api_client, data_fixture):
 def test_async_sync_data_sync_table_failed_sync(api_client, data_fixture):
     responses.add(
         responses.GET,
-        "https://baserow.io/ical.ics",
+        "https://example.com/ical.ics",
         status=404,
         body=ICAL_FEED_WITH_ONE_ITEMS,
     )
@@ -782,7 +782,7 @@ def test_async_sync_data_sync_table_failed_sync(api_client, data_fixture):
             "table_name": "Test 1",
             "type": "ical_calendar",
             "synced_properties": ["uid", "dtstart", "dtend", "summary"],
-            "ical_url": "https://baserow.io/ical.ics",
+            "ical_url": "https://example.com/ical.ics",
         },
         format="json",
         HTTP_AUTHORIZATION=f"JWT {token}",
@@ -825,7 +825,7 @@ def test_async_sync_data_sync_table_failed_sync(api_client, data_fixture):
 def test_async_sync_data_sync_table_already_running(api_client, data_fixture):
     responses.add(
         responses.GET,
-        "https://baserow.io/ical.ics",
+        "https://example.com/ical.ics",
         status=404,
         body=ICAL_FEED_WITH_ONE_ITEMS,
     )
@@ -842,7 +842,7 @@ def test_async_sync_data_sync_table_already_running(api_client, data_fixture):
             "table_name": "Test 1",
             "type": "ical_calendar",
             "synced_properties": ["uid", "dtstart", "dtend", "summary"],
-            "ical_url": "https://baserow.io/ical.ics",
+            "ical_url": "https://example.com/ical.ics",
         },
         format="json",
         HTTP_AUTHORIZATION=f"JWT {token}",
@@ -864,7 +864,7 @@ def test_async_sync_data_sync_table_already_running(api_client, data_fixture):
 def test_async_sync_data_sync_table_unauthorized(api_client, data_fixture):
     responses.add(
         responses.GET,
-        "https://baserow.io/ical.ics",
+        "https://example.com/ical.ics",
         status=200,
         body=ICAL_FEED_WITH_ONE_ITEMS,
     )
@@ -884,7 +884,7 @@ def test_async_sync_data_sync_table_unauthorized(api_client, data_fixture):
             "table_name": "Test 1",
             "type": "ical_calendar",
             "synced_properties": ["uid", "dtstart", "dtend", "summary"],
-            "ical_url": "https://baserow.io/ical.ics",
+            "ical_url": "https://example.com/ical.ics",
         },
         format="json",
         HTTP_AUTHORIZATION=f"JWT {token}",
@@ -910,7 +910,7 @@ def test_async_sync_data_sync_table_unauthorized_after_job_created(
 ):
     responses.add(
         responses.GET,
-        "https://baserow.io/ical.ics",
+        "https://example.com/ical.ics",
         status=200,
         body=ICAL_FEED_WITH_ONE_ITEMS,
     )
@@ -927,7 +927,7 @@ def test_async_sync_data_sync_table_unauthorized_after_job_created(
             "table_name": "Test 1",
             "type": "ical_calendar",
             "synced_properties": ["uid", "dtstart", "dtend", "summary"],
-            "ical_url": "https://baserow.io/ical.ics",
+            "ical_url": "https://example.com/ical.ics",
         },
         format="json",
         HTTP_AUTHORIZATION=f"JWT {token}",
@@ -945,7 +945,7 @@ def test_async_sync_data_sync_table_unauthorized_after_job_created(
 def test_async_sync_data_sync_table_job_with_trashed_table(api_client, data_fixture):
     responses.add(
         responses.GET,
-        "https://baserow.io/ical.ics",
+        "https://example.com/ical.ics",
         status=200,
         body=ICAL_FEED_WITH_ONE_ITEMS,
     )
@@ -962,7 +962,7 @@ def test_async_sync_data_sync_table_job_with_trashed_table(api_client, data_fixt
             "table_name": "Test 1",
             "type": "ical_calendar",
             "synced_properties": ["uid", "dtstart", "dtend", "summary"],
-            "ical_url": "https://baserow.io/ical.ics",
+            "ical_url": "https://example.com/ical.ics",
         },
         format="json",
         HTTP_AUTHORIZATION=f"JWT {token}",
@@ -988,7 +988,7 @@ def test_async_sync_data_sync_table_job_with_trashed_table(api_client, data_fixt
 def test_async_sync_data_sync_table_job_with_deleted_table(api_client, data_fixture):
     responses.add(
         responses.GET,
-        "https://baserow.io/ical.ics",
+        "https://example.com/ical.ics",
         status=200,
         body=ICAL_FEED_WITH_ONE_ITEMS,
     )
@@ -1005,7 +1005,7 @@ def test_async_sync_data_sync_table_job_with_deleted_table(api_client, data_fixt
             "table_name": "Test 1",
             "type": "ical_calendar",
             "synced_properties": ["uid", "dtstart", "dtend", "summary"],
-            "ical_url": "https://baserow.io/ical.ics",
+            "ical_url": "https://example.com/ical.ics",
         },
         format="json",
         HTTP_AUTHORIZATION=f"JWT {token}",
@@ -1028,7 +1028,7 @@ def test_async_sync_data_sync_table_job_with_deleted_table(api_client, data_fixt
 def test_async_sync_data_sync_table(api_client, data_fixture):
     responses.add(
         responses.GET,
-        "https://baserow.io/ical.ics",
+        "https://example.com/ical.ics",
         status=200,
         body=ICAL_FEED_WITH_ONE_ITEMS,
     )
@@ -1045,7 +1045,7 @@ def test_async_sync_data_sync_table(api_client, data_fixture):
             "table_name": "Test 1",
             "type": "ical_calendar",
             "synced_properties": ["uid", "dtstart", "dtend", "summary"],
-            "ical_url": "https://baserow.io/ical.ics",
+            "ical_url": "https://example.com/ical.ics",
         },
         format="json",
         HTTP_AUTHORIZATION=f"JWT {token}",
@@ -1113,7 +1113,7 @@ def test_get_data_sync_properties_unauthorized(data_fixture, api_client):
         url,
         {
             "type": "ical_calendar",
-            "ical_url": "https://baserow.io/ical.ics",
+            "ical_url": "https://example.com/ical.ics",
         },
         format="json",
     )
@@ -1144,7 +1144,7 @@ def test_get_data_sync_properties_invalid_data(data_fixture, api_client):
 def test_get_data_sync_properties(data_fixture, api_client):
     responses.add(
         responses.GET,
-        "https://baserow.io/ical.ics",
+        "https://example.com/ical.ics",
         status=200,
         body=ICAL_FEED_WITH_ONE_ITEMS,
     )
@@ -1156,7 +1156,7 @@ def test_get_data_sync_properties(data_fixture, api_client):
         url,
         {
             "type": "ical_calendar",
-            "ical_url": "https://baserow.io/ical.ics",
+            "ical_url": "https://example.com/ical.ics",
         },
         format="json",
         HTTP_AUTHORIZATION=f"JWT {token}",
@@ -1208,7 +1208,7 @@ def test_get_data_sync_properties_of_data_sync_unauthorized(data_fixture, api_cl
             "table_name": "Test 1",
             "type": "ical_calendar",
             "synced_properties": ["uid", "dtstart", "dtend", "summary"],
-            "ical_url": "https://baserow.io/ical.ics",
+            "ical_url": "https://example.com/ical.ics",
         },
         format="json",
         HTTP_AUTHORIZATION=f"JWT {token}",
@@ -1244,7 +1244,7 @@ def test_get_data_sync_properties_of_data_sync_no_permissions(data_fixture, api_
             "table_name": "Test 1",
             "type": "ical_calendar",
             "synced_properties": ["uid", "dtstart", "dtend", "summary"],
-            "ical_url": "https://baserow.io/ical.ics",
+            "ical_url": "https://example.com/ical.ics",
         },
         format="json",
         HTTP_AUTHORIZATION=f"JWT {token_2}",
@@ -1287,7 +1287,7 @@ def test_get_data_sync_properties_of_data_sync_does_not_exist(data_fixture, api_
 def test_get_data_sync_properties_of_data_sync(data_fixture, api_client):
     responses.add(
         responses.GET,
-        "https://baserow.io/ical.ics",
+        "https://example.com/ical.ics",
         status=200,
         body=ICAL_FEED_WITH_ONE_ITEMS,
     )
@@ -1302,7 +1302,7 @@ def test_get_data_sync_properties_of_data_sync(data_fixture, api_client):
             "table_name": "Test 1",
             "type": "ical_calendar",
             "synced_properties": ["uid", "dtstart", "dtend", "summary"],
-            "ical_url": "https://baserow.io/ical.ics",
+            "ical_url": "https://example.com/ical.ics",
         },
         format="json",
         HTTP_AUTHORIZATION=f"JWT {token}",
@@ -1385,7 +1385,7 @@ def test_get_data_sync_no_permission(data_fixture, api_client):
             "table_name": "Test 1",
             "type": "ical_calendar",
             "synced_properties": ["uid", "dtstart", "dtend", "summary"],
-            "ical_url": "https://baserow.io/ical.ics",
+            "ical_url": "https://example.com/ical.ics",
         },
         format="json",
         HTTP_AUTHORIZATION=f"JWT {token_2}",
@@ -1416,7 +1416,7 @@ def test_get_data_sync(data_fixture, api_client):
         table_name="Test",
         type_name="ical_calendar",
         synced_properties=["uid"],
-        ical_url="https://baserow.io",
+        ical_url="https://example.com",
     )
 
     url = reverse("api:database:data_sync:item", kwargs={"data_sync_id": data_sync.id})
@@ -1444,7 +1444,7 @@ def test_get_data_sync(data_fixture, api_client):
         ],
         "last_sync": None,
         "last_error": None,
-        "ical_url": "https://baserow.io",
+        "ical_url": "https://example.com",
     }
 
 
@@ -1461,7 +1461,7 @@ def test_create_data_sync_with_two_way_sync_unsupported_type(data_fixture, api_c
             "type": "ical_calendar",
             "synced_properties": ["uid"],
             "two_way_sync": True,
-            "ical_url": "https://baserow.io/ical.ics",
+            "ical_url": "https://example.com/ical.ics",
         },
         format="json",
         HTTP_AUTHORIZATION=f"JWT {token}",
@@ -1489,7 +1489,7 @@ def test_update_data_sync_enable_two_way_sync_unsupported_type(
         table_name="Test",
         type_name="ical_calendar",
         synced_properties=["uid"],
-        ical_url="https://baserow.io",
+        ical_url="https://example.com",
     )
 
     url = reverse("api:database:data_sync:item", kwargs={"data_sync_id": data_sync.id})

@@ -932,7 +932,7 @@ build target="" tag="latest" *ARGS:
             if [[ "{{ tag }}" == "dev" ]]; then
                 UID_GID_ARGS="--build-arg UID=$(id -u) --build-arg GID=$(id -g)"
             fi
-            NAME_ARG="baserow/backend:{{ tag }}"
+            NAME_ARG="saveroom/backend:{{ tag }}"
             $BUILD_CMD "${BUILD_ARGS[@]}" $UID_GID_ARGS -f backend/Dockerfile $TARGET_ARG -t $NAME_ARG .
             ;;
         "web-frontend")
@@ -944,29 +944,29 @@ build target="" tag="latest" *ARGS:
             if [[ "{{ tag }}" == "dev" ]]; then
                 UID_GID_ARGS="--build-arg UID=$(id -u) --build-arg GID=$(id -g)"
             fi
-            NAME_ARG="baserow/web-frontend:{{ tag }}"
+            NAME_ARG="saveroom/web-frontend:{{ tag }}"
             $BUILD_CMD "${BUILD_ARGS[@]}" $UID_GID_ARGS -f web-frontend/Dockerfile $TARGET_ARG -t $NAME_ARG .
             ;;
         "all-in-one")
             echo "Building backend (prod)..."
-            $BUILD_CMD "${BUILD_ARGS[@]}" -f backend/Dockerfile --target prod -t baserow/backend:{{ tag }} .
-            BUILD_ARGS+=("--build-arg" "BACKEND_IMAGE=baserow/backend:{{ tag }}")
+            $BUILD_CMD "${BUILD_ARGS[@]}" -f backend/Dockerfile --target prod -t saveroom/backend:{{ tag }} .
+            BUILD_ARGS+=("--build-arg" "BACKEND_IMAGE=saveroom/backend:{{ tag }}")
             echo "Building web-frontend (prod)..."
-            $BUILD_CMD "${BUILD_ARGS[@]}" -f web-frontend/Dockerfile --target prod -t baserow/web-frontend:{{ tag }} .
-            BUILD_ARGS+=("--build-arg" "WEB_FRONTEND_IMAGE=baserow/web-frontend:{{ tag }}")
+            $BUILD_CMD "${BUILD_ARGS[@]}" -f web-frontend/Dockerfile --target prod -t saveroom/web-frontend:{{ tag }} .
+            BUILD_ARGS+=("--build-arg" "WEB_FRONTEND_IMAGE=saveroom/web-frontend:{{ tag }}")
             echo "Building all-in-one..."
-            NAME_ARG="baserow/baserow:{{ tag }}"
+            NAME_ARG="saveroom/all-in-one:{{ tag }}"
             $BUILD_CMD "${BUILD_ARGS[@]}" -f deploy/all-in-one/Dockerfile --target prod -t $NAME_ARG .
             ;;
         "all-in-one-lite")
             echo "Building backend (prod)..."
-            $BUILD_CMD "${BUILD_ARGS[@]}" -f backend/Dockerfile --target prod -t baserow/backend:{{ tag }} .
-            BUILD_ARGS+=("--build-arg" "BACKEND_IMAGE=baserow/backend:{{ tag }}")
+            $BUILD_CMD "${BUILD_ARGS[@]}" -f backend/Dockerfile --target prod -t saveroom/backend:{{ tag }} .
+            BUILD_ARGS+=("--build-arg" "BACKEND_IMAGE=saveroom/backend:{{ tag }}")
             echo "Building web-frontend (prod)..."
-            $BUILD_CMD "${BUILD_ARGS[@]}" -f web-frontend/Dockerfile --target prod -t baserow/web-frontend:{{ tag }} .
-            BUILD_ARGS+=("--build-arg" "WEB_FRONTEND_IMAGE=baserow/web-frontend:{{ tag }}")
+            $BUILD_CMD "${BUILD_ARGS[@]}" -f web-frontend/Dockerfile --target prod -t saveroom/web-frontend:{{ tag }} .
+            BUILD_ARGS+=("--build-arg" "WEB_FRONTEND_IMAGE=saveroom/web-frontend:{{ tag }}")
             echo "Building all-in-one-lite (no postgres/redis)..."
-            NAME_ARG="baserow/baserow:lite-{{ tag }}"
+            NAME_ARG="saveroom/all-in-one:lite-{{ tag }}"
             $BUILD_CMD "${BUILD_ARGS[@]}" -f deploy/all-in-one/Dockerfile --target prod-lite -t $NAME_ARG .
             ;;
         *)
@@ -1210,7 +1210,7 @@ audit target="all" *IMAGES:
     audit_images() {
         local images=({{ IMAGES }})
         if [ ${#images[@]} -eq 0 ]; then
-            images=(baserow/backend:latest baserow/web-frontend:latest baserow/baserow:latest)
+            images=(saveroom/backend:latest saveroom/web-frontend:latest saveroom/all-in-one:latest)
         fi
         for ref in "${images[@]}"; do
             echo "==> Scanning image $ref..."
@@ -1236,7 +1236,7 @@ audit target="all" *IMAGES:
             echo ""
             echo "Examples:"
             echo "  just audit deps"
-            echo "  just build web-frontend prod && just audit images baserow/web-frontend:prod"
+            echo "  just build web-frontend prod && just audit images saveroom/web-frontend:prod"
             exit 1
             ;;
     esac

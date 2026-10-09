@@ -11,7 +11,7 @@ Owns everything under `e2e-tests/`: `tests/` (specs), `pages/` (page objects), `
 ## Local Contracts
 
 - Runner is **Playwright** (`playwright.config.ts`); package manager is **yarn**.
-- Tests run against **built CI images** (`baserow/backend:ci`, `baserow/web-frontend:ci`) on a dedicated Docker network, not a local dev server.
+- Tests run against **built CI images** (`saveroom/backend:ci`, `saveroom/web-frontend:ci`) on a dedicated Docker network, not a local dev server.
 - Use the **page-object** pattern in `pages/` (e.g. `loginPage.ts`, `baserowPage.ts`) — specs should not select raw DOM ad hoc.
 - Fixtures/DB seed live in `fixtures/` (`e2e-db.dump`); restore/dump via the justfile recipes rather than manual SQL.
 

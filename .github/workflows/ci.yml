@@ -375,7 +375,7 @@ jobs:
           platforms: linux/amd64
           push: false
           load: true
-          tags: baserow/caddy:ci
+          tags: saveroom/caddy:ci
           cache-from: type=gha,scope=caddy-ci
           cache-to: type=gha,scope=caddy-ci,mode=max
 
@@ -385,8 +385,8 @@ jobs:
         run: |
           set -euo pipefail
           expected="go$(grep -oP '^ARG GO_VERSION=\K.*' deploy/caddy/Dockerfile)"
-          docker run --rm baserow/caddy:ci caddy version
-          docker create --name caddy_ci baserow/caddy:ci
+          docker run --rm saveroom/caddy:ci caddy version
+          docker create --name caddy_ci saveroom/caddy:ci
           docker cp caddy_ci:/usr/bin/caddy ./caddy-bin
           docker rm caddy_ci
           actual=$(docker run --rm -v "$PWD:/w" golang:1-bookworm go version /w/caddy-bin | awk '{print $2}')
@@ -399,7 +399,7 @@ jobs:
       - name: Assert pebble was stripped from the image
         run: |
           set -euo pipefail
-          docker create --name caddy_audit baserow/caddy:ci
+          docker create --name caddy_audit saveroom/caddy:ci
           docker export caddy_audit | tar -tf - > ./caddy-files.txt
           docker rm caddy_audit
           if grep -E '^usr/bin/pebble$|^var/lib/pebble' ./caddy-files.txt; then
@@ -412,7 +412,7 @@ jobs:
         run: |
           docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
             -v "$PWD:/src" -w /src "$TRIVY_IMAGE" \
-            image $TRIVY_GATE baserow/caddy:ci
+            image $TRIVY_GATE saveroom/caddy:ci
 
   # The prod web-frontend target is only built by the release workflow, so build
   # it here too and guard what it ships. The prod stage copies only `.output`,
@@ -444,7 +444,7 @@ jobs:
           platforms: linux/amd64
           push: false
           load: true
-          tags: baserow/web-frontend:ci-prod
+          tags: saveroom/web-frontend:ci-prod
           cache-from: type=gha,scope=frontend-prod-ci
           cache-to: type=gha,scope=frontend-prod-ci,mode=max
 
@@ -453,7 +453,7 @@ jobs:
       - name: Assert no Go binaries in the image
         run: |
           set -euo pipefail
-          docker create --name webfrontend_audit baserow/web-frontend:ci-prod
+          docker create --name webfrontend_audit saveroom/web-frontend:ci-prod
           docker export webfrontend_audit | tar -tf - > ./image-files.txt
           docker rm webfrontend_audit
           if grep -iE 'esbuild' ./image-files.txt; then
@@ -470,12 +470,12 @@ jobs:
         run: |
           docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
             -v "$PWD:/src" -w /src "$TRIVY_IMAGE" \
-            image $TRIVY_GATE baserow/web-frontend:ci-prod
+            image $TRIVY_GATE saveroom/web-frontend:ci-prod
 
       - name: Check web-frontend startup
         run: |
           set -euo pipefail
-          docker run -d --name webfrontend_boot             -e PUBLIC_BACKEND_URL=http://localhost:8000             -e PUBLIC_WEB_FRONTEND_URL=http://localhost:3000             -e PRIVATE_BACKEND_URL=http://localhost:8000             -p 3000:3000             baserow/web-frontend:ci-prod
+          docker run -d --name webfrontend_boot             -e PUBLIC_BACKEND_URL=http://localhost:8000             -e PUBLIC_WEB_FRONTEND_URL=http://localhost:3000             -e PRIVATE_BACKEND_URL=http://localhost:8000             -p 3000:3000             saveroom/web-frontend:ci-prod
           for _ in $(seq 1 60); do
             if curl -fsS http://localhost:3000/_health/ >/dev/null 2>&1; then
               echo "web-frontend answered /_health/"

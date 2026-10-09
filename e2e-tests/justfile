@@ -8,8 +8,8 @@
 # Docker settings
 network := "baserow-e2e"
 # Use same image names as `just build backend ci` and `just build web-frontend ci`
-backend_image := "baserow/backend:ci"
-frontend_image := "baserow/web-frontend:ci"
+backend_image := "saveroom/backend:ci"
+frontend_image := "saveroom/web-frontend:ci"
 db_image := "pgvector/pgvector:pg${POSTGRES_IMAGE_VERSION:-18}"
 redis_image := "redis:8"
 
