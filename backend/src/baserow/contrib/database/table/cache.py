@@ -55,7 +55,7 @@ def set_cached_model_field_attrs(table: "Table", field_attrs: Dict[str, Any]):
 
 
 def clear_generated_model_cache():
-    print("Clearing Baserow's internal generated model cache...")
+    print("Clearing Saveroom's internal generated model cache...")
     if hasattr(generated_models_cache, "delete_pattern"):
         generated_models_cache.delete_pattern("full_table_model_*")
     elif settings.TESTS:
@@ -63,7 +63,7 @@ def clear_generated_model_cache():
         generated_models_cache.clear()
     else:
         raise ImproperlyConfigured(
-            "Baserow must be run with a redis cache outside of tests."
+            "Saveroom must be run with a redis cache outside of tests."
         )
     print("Done clearing cache.")
 

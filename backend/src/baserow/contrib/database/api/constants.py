@@ -19,7 +19,7 @@ SEARCH_MODE_API_PARAM = OpenApiParameter(
         f"If the default `{SearchMode.FT_WITH_COUNT}` is used, then Postgres "
         f"full-text search is used. If `{SearchMode.COMPAT}` is "
         "provided then the search term will be exactly searched for including "
-        "whitespace on each cell. This is the Baserow legacy search behaviour."
+        "whitespace on each cell. This is the Saveroom legacy search behaviour."
     ),
 )
 

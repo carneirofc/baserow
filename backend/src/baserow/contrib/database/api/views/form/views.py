@@ -353,7 +353,7 @@ class FormUploadFileView(APIView):
         tags=["Database table form view"],
         operation_id="upload_file_form_view",
         description=(
-            "Uploads a file anonymously to Baserow by uploading the file "
+            "Uploads a file anonymously to Saveroom by uploading the file "
             "contents directly. A `file` multipart is expected containing the file "
             "contents."
         ),

@@ -1634,7 +1634,7 @@ class CoreHandler(metaclass=baserow_trace_methods(tracer, exclude="clear_context
 
         for template_file_path in tqdm(
             template_files_paths,
-            desc="Syncing Baserow templates. Disable by setting "
+            desc="Syncing Saveroom templates. Disable by setting "
             "BASEROW_TRIGGER_SYNC_TEMPLATES_AFTER_MIGRATION=false.",
         ):
             with transaction.atomic():

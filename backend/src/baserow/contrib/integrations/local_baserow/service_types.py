@@ -193,12 +193,12 @@ class LocalBaserowTableServiceType(LocalBaserowServiceType):
         "table_id": serializers.IntegerField(
             required=False,
             allow_null=True,
-            help_text="The id of the Baserow table we want the data for.",
+            help_text="The id of the Saveroom table we want the data for.",
         ),
         "integration_id": serializers.IntegerField(
             required=False,
             allow_null=True,
-            help_text="The id of the Baserow integration we want the data for.",
+            help_text="The id of the Saveroom integration we want the data for.",
         ),
     }
 
@@ -781,7 +781,7 @@ class LocalBaserowViewServiceType(LocalBaserowTableServiceType):
             "view_id": serializers.IntegerField(
                 required=False,
                 allow_null=True,
-                help_text="The id of the Baserow view we want the data for.",
+                help_text="The id of the Saveroom view we want the data for.",
             ),
         }
 
@@ -1324,7 +1324,7 @@ class LocalBaserowAggregateRowsUserServiceType(
             "field_id": serializers.IntegerField(
                 required=False,
                 allow_null=True,
-                help_text="The id of the Baserow field we want to aggregate on.",
+                help_text="The id of the Saveroom field we want to aggregate on.",
             ),
         }
 

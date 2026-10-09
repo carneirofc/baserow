@@ -7026,7 +7026,7 @@ class MultipleCollaboratorsFieldType(
     def get_serializer_help_text(self, instance):
         return (
             "This field accepts a list of objects representing the chosen "
-            "collaborators through the object's `id` property. The id is Baserow "
+            "collaborators through the object's `id` property. The id is Saveroom "
             "user id. The response objects also contains the collaborator name "
             "directly along with its id."
         )

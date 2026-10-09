@@ -184,7 +184,7 @@ class RefreshJSONWebToken(TokenRefreshView):
         tags=["User"],
         operation_id="token_refresh",
         description=(
-            "Generate a new access_token that can be used to continue operating on Baserow "
+            "Generate a new access_token that can be used to continue operating on Saveroom "
             "starting from a valid refresh token."
         ),
         responses={

@@ -12,7 +12,7 @@ User = get_user_model()
 
 class Command(BaseCommand):
     help = (
-        "Break-glass management of the links between Baserow accounts and the "
+        "Break-glass management of the links between Saveroom accounts and the "
         "env-configured OIDC providers. Use it to recover accounts refused with "
         "errorDifferentProvider, including staff accounts that are never linked "
         "automatically, or to carry every link over after renaming a provider."

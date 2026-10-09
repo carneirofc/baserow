@@ -43,7 +43,7 @@ ERROR_INITIAL_TABLE_DATA_LIMIT_EXCEEDED = (
 ERROR_INITIAL_TABLE_DATA_HAS_DUPLICATE_NAMES = (
     "ERROR_INITIAL_TABLE_DATA_HAS_DUPLICATE_NAMES",
     HTTP_400_BAD_REQUEST,
-    "Field names must be unique in Baserow per table however the initial table data "
+    "Field names must be unique per table, however the initial table data "
     "provided contains duplicate field names, please make them unique and try again.",
 )
 ERROR_IMPORT_AMBIGUOUS_MATCHES = (

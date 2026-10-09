@@ -181,7 +181,7 @@ def load_test_data():
         create_element(
             link_element_type,
             homepage,
-            value='"Visit Baserow"',
+            value='"Visit Saveroom"',
             variant="link",
             navigation_type="custom",
             target="blank",

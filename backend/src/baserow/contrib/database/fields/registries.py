@@ -1419,7 +1419,7 @@ class FieldType(
         from baserow.contrib.database.formula import BaserowFormulaInvalidType
 
         return BaserowFormulaInvalidType(
-            f"A field of type {self.type} cannot be referenced in a Baserow formula."
+            f"A field of type {self.type} cannot be referenced in a formula."
         )
 
     def from_baserow_formula_type(self, formula_type) -> Field:
@@ -1433,7 +1433,7 @@ class FieldType(
         """
 
         raise NotImplementedError(
-            f"A field of type {self.type} cannot be referenced in a Baserow formula."
+            f"A field of type {self.type} cannot be referenced in a formula."
         )
 
     def to_baserow_formula_expression(self, field):

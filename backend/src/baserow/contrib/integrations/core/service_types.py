@@ -595,7 +595,7 @@ class CoreHTTPRequestServiceType(CoreServiceType):
         elif service.body_type == BODY_TYPE.RAW:  # Raw payload
             body_dict["data"] = body_content
 
-        headers = {"user-agent": f"Baserow/{BASEROW_VERSION}/HTTPRequestService"} | {
+        headers = {"user-agent": f"Saveroom/{BASEROW_VERSION}/HTTPRequestService"} | {
             h.key: resolved_values[f"header_{h.id}"] for h in service.headers.all()
         }
         query_params = {

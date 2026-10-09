@@ -1109,7 +1109,7 @@ class PublicGridViewRowsView(APIView):
                 description="Optionally the rows can be grouped by provided field ids "
                 "separated by comma. By default no groups are applied. This doesn't "
                 "actually responds with the rows groups, this is just what's needed "
-                "for the Baserow group by feature.",
+                "for the Saveroom group by feature.",
             ),
         ],
         tags=["Database table grid view"],
