@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-09 12:45+0000\n"
+"POT-Creation-Date: 2026-10-09 13:22+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -175,12 +175,13 @@ msgid "Please confirm email"
 msgstr ""
 
 #: src/baserow/core/emails.py:124
-msgid "You have 1 new notification - Baserow"
+#, python-format
+msgid "You have 1 new notification - %(app_name)s"
 msgstr ""
 
-#: src/baserow/core/emails.py:126
+#: src/baserow/core/emails.py:128
 #, python-format
-msgid "You have %(count)d new notifications - Baserow"
+msgid "You have %(count)d new notifications - %(app_name)s"
 msgstr ""
 
 #: src/baserow/core/fields.py:114
@@ -199,38 +200,6 @@ msgstr ""
 #: src/baserow/core/handler.py:1928 src/baserow/core/user/handler.py:241
 #, python-format
 msgid "%(name)s's workspace"
-msgstr ""
-
-#: src/baserow/core/mcp/actions.py:20
-msgid "Create MCP endpoint"
-msgstr ""
-
-#: src/baserow/core/mcp/actions.py:22
-#, python-format
-msgid ""
-"An MCP Endpoint with name \"%(endpoint_name)s\" (%(endpoint_id)s) has been "
-"created"
-msgstr ""
-
-#: src/baserow/core/mcp/actions.py:60
-msgid "Update MCP endpoint name"
-msgstr ""
-
-#: src/baserow/core/mcp/actions.py:62
-#, python-format
-msgid ""
-"The MCP Endpoint (%(endpoint_id)s) name changed from "
-"\"%(original_endpoint_name)s\" to \"%(endpoint_name)s\""
-msgstr ""
-
-#: src/baserow/core/mcp/actions.py:108
-msgid "Delete MCP endpoint"
-msgstr ""
-
-#: src/baserow/core/mcp/actions.py:109
-#, python-format
-msgid ""
-"The MCP Endpoint \"%(endpoint_name)s\" (%(endpoint_id)s) has been deleted"
 msgstr ""
 
 #: src/baserow/core/snapshots/actions.py:21
@@ -571,25 +540,31 @@ msgid ""
 msgstr ""
 
 #: src/baserow/core/user/emails.py:16
-msgid "Reset password - Baserow"
+#, python-format
+msgid "Reset password - %(app_name)s"
 msgstr ""
 
-#: src/baserow/core/user/emails.py:36
-msgid "Password changed - Baserow"
+#: src/baserow/core/user/emails.py:38
+#, python-format
+msgid "Password changed - %(app_name)s"
 msgstr ""
 
-#: src/baserow/core/user/emails.py:53
-msgid "Account deletion scheduled - Baserow"
+#: src/baserow/core/user/emails.py:57
+#, python-format
+msgid "Account deletion scheduled - %(app_name)s"
 msgstr ""
 
-#: src/baserow/core/user/emails.py:72
-msgid "Account permanently deleted - Baserow"
+#: src/baserow/core/user/emails.py:78
+#, python-format
+msgid "Account permanently deleted - %(app_name)s"
 msgstr ""
 
-#: src/baserow/core/user/emails.py:90
-msgid "Account deletion cancelled - Baserow"
+#: src/baserow/core/user/emails.py:98
+#, python-format
+msgid "Account deletion cancelled - %(app_name)s"
 msgstr ""
 
-#: src/baserow/core/user/emails.py:110
-msgid "Confirm email address change - Baserow"
+#: src/baserow/core/user/emails.py:120
+#, python-format
+msgid "Confirm email address change - %(app_name)s"
 msgstr ""

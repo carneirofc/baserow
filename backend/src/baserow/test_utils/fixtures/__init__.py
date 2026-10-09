@@ -21,7 +21,6 @@ from .file_import import FileImportFixtures
 from .import_export import ImportExportWorkspaceFixtures
 from .integration import IntegrationFixtures
 from .job import JobFixtures
-from .mcp import MCPFixtures
 from .notifications import NotificationsFixture
 from .page import PageFixtures
 from .row import RowFixture
@@ -82,7 +81,6 @@ class Fixtures(
     BackupFixtures,
     DashboardDataSourceFixtures,
     WidgetFixtures,
-    MCPFixtures,
 ):
     def __init__(self, fake=None):
         self.fake = fake

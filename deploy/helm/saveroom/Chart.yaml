@@ -28,6 +28,10 @@ maintainers:
 
 annotations:
   artifacthub.io/changes: |
+    - kind: removed
+      description: >-
+        Dropped the /mcp and /assistant backend routes; the MCP server and the
+        AI assistant they served are removed.
     - kind: changed
       description: >-
         Renamed the chart to saveroom, published at

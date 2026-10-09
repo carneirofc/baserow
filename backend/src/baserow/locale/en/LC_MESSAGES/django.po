@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-09 12:45+0000\n"
+"POT-Creation-Date: 2026-10-09 13:22+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -46,12 +46,13 @@ msgid ""
 "(%(automation_id)s)."
 msgstr ""
 
-#: src/baserow/contrib/automation/automation_init_application.py:29
+#: src/baserow/contrib/automation/automation_init_application.py:30
 msgid "Workflow"
 msgstr ""
 
-#: src/baserow/contrib/automation/automation_init_application.py:30
-msgid "Local Baserow"
+#: src/baserow/contrib/automation/automation_init_application.py:31
+#, python-format
+msgid "Local %(app_name)s"
 msgstr ""
 
 #: src/baserow/contrib/automation/nodes/actions.py:25
@@ -111,27 +112,27 @@ msgid "Node (%(node_id)s) moved"
 msgstr ""
 
 #: src/baserow/contrib/automation/nodes/node_types.py:141
-msgid "Local Baserow create row"
+msgid "Create row"
 msgstr ""
 
 #: src/baserow/contrib/automation/nodes/node_types.py:158
-msgid "Local Baserow update row"
+msgid "Update row"
 msgstr ""
 
 #: src/baserow/contrib/automation/nodes/node_types.py:175
-msgid "Local Baserow delete row"
+msgid "Delete row"
 msgstr ""
 
 #: src/baserow/contrib/automation/nodes/node_types.py:183
-msgid "Local Baserow get row"
+msgid "Get row"
 msgstr ""
 
 #: src/baserow/contrib/automation/nodes/node_types.py:191
-msgid "Local Baserow list rows"
+msgid "List rows"
 msgstr ""
 
 #: src/baserow/contrib/automation/nodes/node_types.py:199
-msgid "Local Baserow aggregate rows"
+msgid "Aggregate rows"
 msgstr ""
 
 #: src/baserow/contrib/automation/nodes/node_types.py:207
@@ -155,15 +156,15 @@ msgid "Branch"
 msgstr ""
 
 #: src/baserow/contrib/automation/nodes/node_types.py:435
-msgid "Local Baserow rows created"
+msgid "Rows created"
 msgstr ""
 
 #: src/baserow/contrib/automation/nodes/node_types.py:443
-msgid "Local Baserow rows updated"
+msgid "Rows updated"
 msgstr ""
 
 #: src/baserow/contrib/automation/nodes/node_types.py:451
-msgid "Local Baserow rows deleted"
+msgid "Rows deleted"
 msgstr ""
 
 #: src/baserow/contrib/automation/nodes/node_types.py:467

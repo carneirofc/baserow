@@ -22,7 +22,7 @@ for the values that are not AWS-specific.
    internal ALB  (scheme: internal, target-type: ip)
            │
     ┌──────┴───────────────────────┐
-    │ /api /ws /mcp /assistant     │  everything else
+    │ /api /ws                     │  everything else
     │ /static                      │
     ▼                              ▼
  backend Service :8000     web-frontend Service :3000
@@ -217,7 +217,7 @@ Create a VPC origin pointing at the internal ALB's ARN, then a distribution usin
   `Host` header, so the backend sees your real domain and `publicURL` alone satisfies
   `ALLOWED_HOSTS`, and it forwards the `Sec-WebSocket-*` headers that `/ws` needs.
 - **Cache policy:** `CachingDisabled` as the default behaviour, and for the
-  `/api/*`, `/ws/*`, `/mcp/*` and `/assistant/*` path patterns. Use `CachingOptimized`
+  `/api/*` and `/ws/*` path patterns. Use `CachingOptimized`
   only for `/static/*`. Caching an authenticated API response and serving it to another
   user is the failure mode to avoid here.
 - **Allowed methods:** all of them, including `DELETE`, `PATCH`, `POST` and `PUT`.

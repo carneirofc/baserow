@@ -1,15 +1,13 @@
 from django.conf import settings
 from django.core.asgi import get_asgi_application
-from django.urls import re_path
 
-from channels.routing import ProtocolTypeRouter, URLRouter
+from channels.routing import ProtocolTypeRouter
 
 from baserow.config.helpers import (
     ConcurrencyLimiterASGI,
     check_lazy_loaded_libraries,
     log_env_warnings,
 )
-from baserow.core.mcp import get_baserow_mcp_server
 from baserow.core.telemetry.telemetry import setup_telemetry
 from baserow.ws.routers import websocket_router
 
@@ -28,12 +26,7 @@ log_env_warnings()
 application = ProtocolTypeRouter(
     {
         "http": ConcurrencyLimiterASGI(
-            URLRouter(
-                [
-                    re_path(r"^mcp", get_baserow_mcp_server().sse_app()),
-                    re_path(r"", django_asgi_app),
-                ]
-            ),
+            django_asgi_app,
             max_concurrency=settings.ASGI_HTTP_MAX_CONCURRENCY,
         ),
         "websocket": websocket_router,

@@ -50,8 +50,9 @@ Anything reimplemented here must be written from scratch — the removed code is
 licensed for reuse.
 
 In addition, this fork removes generative AI end to end — not just the premium AI
-fields and enterprise AI assistant, but the underlying pgvector embeddings service and
-AI infrastructure, so there is no AI code path left in the core.
+fields and enterprise AI assistant, but the underlying pgvector embeddings service, the
+MCP server that let AI clients such as Claude or Cursor act on your data, and the rest of
+the AI infrastructure, so there is no AI code path left in the core.
 
 ## What this fork adds
 

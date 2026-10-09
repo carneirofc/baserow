@@ -21,7 +21,6 @@ import {
   PasswordSettingsType,
   EmailSettingsType,
   EmailNotificationsSettingsType,
-  MCPEndpointSettingsType,
   DeleteAccountSettingsType,
   TwoFactorAuthSettingsType,
 } from '@baserow/modules/core/settingsTypes'
@@ -164,7 +163,6 @@ export default defineNuxtPlugin({
     registry.register('settings', new PasswordSettingsType(context))
     registry.register('settings', new EmailSettingsType(context))
     registry.register('settings', new EmailNotificationsSettingsType(context))
-    registry.register('settings', new MCPEndpointSettingsType(context))
     registry.register('settings', new DeleteAccountSettingsType(context))
     registry.register('settings', new TwoFactorAuthSettingsType(context))
 

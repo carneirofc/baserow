@@ -349,16 +349,6 @@ class CoreConfig(AppConfig):
 
         trash_operation_type_registry.register(DefaultTrashOperationType())
 
-        from baserow.core.mcp.actions import (
-            CreateMCPEndpointActionType,
-            DeleteMCPEndpointActionType,
-            UpdateMCPEndpointActionType,
-        )
-
-        action_type_registry.register(CreateMCPEndpointActionType())
-        action_type_registry.register(UpdateMCPEndpointActionType())
-        action_type_registry.register(DeleteMCPEndpointActionType())
-
         from baserow.core.user.actions import (
             CancelUserDeletionActionType,
             ChangeEmailActionType,
@@ -553,22 +543,6 @@ class CoreConfig(AppConfig):
         operation_type_registry.register(UpdateUserSourceOperationType())
         operation_type_registry.register(AuthenticateUserSourceOperationType())
         operation_type_registry.register(LoginUserSourceOperationType())
-
-        from baserow.core.mcp.operations import (
-            CreateMCPEndpointOperationType,
-            DeleteMCPEndpointOperationType,
-            ReadMCPEndpointOperationType,
-            UpdateMCPEndpointOperationType,
-        )
-
-        operation_type_registry.register(CreateMCPEndpointOperationType())
-        operation_type_registry.register(ReadMCPEndpointOperationType())
-        operation_type_registry.register(UpdateMCPEndpointOperationType())
-        operation_type_registry.register(DeleteMCPEndpointOperationType())
-
-        from baserow.core.mcp.object_scopes import MCPEndpointObjectScopeType
-
-        object_scope_type_registry.register(MCPEndpointObjectScopeType())
 
         from baserow.core.api_clients.operations import (
             CreateApiClientOperationType,

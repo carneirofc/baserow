@@ -56,7 +56,7 @@ hostnames — a load balancer health check hitting the pod by its DNS name, for 
 
 ## Routing
 
-Backend and web-frontend share one origin. `/api`, `/ws`, `/mcp`, `/assistant` and
+Backend and web-frontend share one origin. `/api`, `/ws` and
 `/static` go to the backend; everything else goes to the web-frontend. There is no
 reverse-proxy pod and no CORS configuration.
 

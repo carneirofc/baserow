@@ -101,7 +101,6 @@ nav:
       - Backend Tests: development/running-tests.md
       - Building and running production images: development/building-and-running-production-images.md
       - CI/CD: development/ci-cd.md
-      - MCP server: development/mcp-server.md
       - Read replicas: development/read-replicas.md
       - VS Code setup: development/vscode-setup.md
       - Zed setup: development/zed-setup.md
@@ -128,7 +127,6 @@ nav:
       - Upgrade embedded Postgres: runbooks/upgrade-embedded-postgres.md
   - Testing:
       - Grid view test plan: testing/grid-view-test-plan.md
-      - MCP test plan: testing/mcp-test-plan.md
   - Architecture Decision Records:
       - "001: Phone number field validation": adr/001-phone-number-field-validation.md
       - "002: Baserow data backups": adr/002-baserow-data-backups.md

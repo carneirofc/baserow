@@ -43,7 +43,7 @@ URL users will actually reach.
 ## Routing
 
 Backend and web-frontend share one origin, so there is no reverse-proxy pod and no
-CORS configuration. `/api`, `/ws`, `/mcp`, `/assistant` and `/static` go to the
+CORS configuration. `/api`, `/ws` and `/static` go to the
 backend; everything else goes to the web-frontend. `/media` is served from object
 storage. Three ways to wire it up:
 

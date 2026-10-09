@@ -55,8 +55,6 @@ openshift:
     backendPaths:
       - /api
       - /ws
-      - /mcp
-      - /assistant
       - /static
     annotations: {}
 
@@ -87,8 +85,6 @@ ingress:
   backendPaths:
     - /api
     - /ws
-    - /mcp
-    - /assistant
     - /static
 
 # Annotations on the per-component Services. The AWS Load Balancer Controller merges
