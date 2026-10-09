@@ -215,12 +215,10 @@ exports[`Preview exportTableModal > Modal with no view 1`] = `
                           <span>
                             exporterType.csv
                           </span>
-                          <!--v-if-->
                           <i
                             class="choice-items__icon-active iconoir-check-circle"
                           />
                         </a>
-                        <!--v-if-->
                       </li>
                       
                     </ul>
@@ -2121,12 +2119,10 @@ exports[`Preview exportTableModal > Modal with view 1`] = `
                           <span>
                             exporterType.csv
                           </span>
-                          <!--v-if-->
                           <i
                             class="choice-items__icon-active iconoir-check-circle"
                           />
                         </a>
-                        <!--v-if-->
                       </li>
                       
                     </ul>

@@ -309,38 +309,6 @@ def test_create_element(api_client, data_fixture):
 
 
 @pytest.mark.django_db
-def test_create_element_deactivated_type(
-    api_client, data_fixture, mutable_element_type_registry
-):
-    user, token = data_fixture.create_user_and_token()
-    page = data_fixture.create_builder_page(user=user)
-
-    regular_element_type = next(
-        filter(
-            lambda t: not t.is_multi_page_element,
-            mutable_element_type_registry.get_all(),
-        )
-    )
-
-    prev_is_deactivated = regular_element_type.is_deactivated
-    regular_element_type.is_deactivated = lambda x: True
-
-    url = reverse("api:builder:element:list", kwargs={"page_id": page.id})
-    response = api_client.post(
-        url,
-        {"type": regular_element_type.type, "value": ""},
-        format="json",
-        HTTP_AUTHORIZATION=f"JWT {token}",
-    )
-
-    regular_element_type.is_deactivated = prev_is_deactivated
-
-    response_json = response.json()
-    assert response.status_code == HTTP_400_BAD_REQUEST
-    assert response_json["error"] == "ERROR_ELEMENT_TYPE_DEACTIVATED"
-
-
-@pytest.mark.django_db
 def test_create_element_bad_request_for_formula(api_client, data_fixture):
     user, token = data_fixture.create_user_and_token()
     page = data_fixture.create_builder_page(user=user)
@@ -1512,9 +1480,6 @@ def test_element_full_lifecycle(api_client, data_fixture, element_type):
         page = builder.shared_page
     else:
         page = data_fixture.create_builder_page(user=user)
-
-    if element_type.is_deactivated(page.builder.workspace):
-        pytest.skip(f"{element_type.type} is deactivated in this workspace")
 
     response = api_client.post(
         reverse("api:builder:element:list", kwargs={"page_id": page.id}),

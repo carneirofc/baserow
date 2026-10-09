@@ -665,18 +665,7 @@ export class FormDataProviderType extends DataProviderType {
     const files = {}
 
     const updatedValue = Object.fromEntries(
-      Object.entries(dataContent)
-        .filter(([elementId, value]) => {
-          const element = this.app.$store.getters['element/getElementById'](
-            page,
-            elementId
-          )
-          const elementType = this.app.$registry.get('element', element.type)
-          return !elementType.isDeactivated({
-            workspace: applicationContext.workspace,
-          })
-        })
-        .map(([elementId, value]) => {
+      Object.entries(dataContent).map(([elementId, value]) => {
           const element = this.app.$store.getters['element/getElementById'](
             page,
             elementId

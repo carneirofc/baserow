@@ -144,10 +144,14 @@ export default defineNuxtPlugin({
 
     // Automation settings
     $registry.registerNamespace('automationSettings')
-    $registry.register(
-      'automationSettings',
-      new GeneralAutomationSettingsType(context)
-    )
+    // The general settings are still work in progress, so they are only
+    // available while developing.
+    if (import.meta.env.MODE === 'development') {
+      $registry.register(
+        'automationSettings',
+        new GeneralAutomationSettingsType(context)
+      )
+    }
     $registry.register(
       'automationSettings',
       new IntegrationsAutomationSettingsType(context)

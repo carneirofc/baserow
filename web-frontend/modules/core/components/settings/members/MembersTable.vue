@@ -197,12 +197,10 @@ export default {
       )
 
       for (const plugin of this.membersPagePlugins) {
-        if (!plugin.isDeactivated(this.workspace.id)) {
-          columns = plugin.mutateMembersTableColumns(columns, {
-            workspace: this.workspace,
-            client: this.$client,
-          })
-        }
+        columns = plugin.mutateMembersTableColumns(columns, {
+          workspace: this.workspace,
+          client: this.$client,
+        })
       }
       return columns
     },

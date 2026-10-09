@@ -22,7 +22,6 @@ from loguru import logger
 
 from baserow.contrib.builder.elements.exceptions import (
     ElementDoesNotExist,
-    ElementTypeDeactivated,
 )
 from baserow.contrib.builder.elements.models import ContainerElement, Element
 from baserow.contrib.builder.elements.permission_manager import (
@@ -523,9 +522,6 @@ class ElementHandler:
         :param kwargs: Additional attributes of the element.
         :return: The created element.
         """
-
-        if element_type.is_deactivated(page.builder.workspace):
-            raise ElementTypeDeactivated()
 
         allowed_values = extract_allowed(
             kwargs, self.allowed_fields_create + element_type.allowed_fields

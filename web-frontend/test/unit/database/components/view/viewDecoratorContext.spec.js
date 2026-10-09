@@ -28,14 +28,6 @@ export class FakeDecoratorType extends ViewDecoratorType {
     return true
   }
 
-  isDeactivated(workspaceId) {
-    return false
-  }
-
-  getDeactivatedText() {
-    return 'unavailability reason'
-  }
-
   getComponent() {
     return (props) => h('div', `fake_decoration: ${props.value}`)
   }
@@ -237,32 +229,6 @@ describe('GridViewRows component with decoration', () => {
     body.querySelector('#teleports:empty')?.remove()
     return body
   }
-
-  test('Should show unavailable decorator tooltip', async () => {
-    const { application, table, fields, view } = await populateStore()
-
-    const fakeDecorator = new FakeDecoratorType({ app: testApp })
-    const fakeValueProvider = new FakeValueProviderType({ app: testApp })
-
-    fakeDecorator.isDeactivated = () => true
-
-    store.$registry.register('viewDecorator', fakeDecorator)
-    store.$registry.register('decoratorValueProvider', fakeValueProvider)
-
-    const wrapper = await mountComponent({
-      database: application,
-      view,
-      table,
-      fields,
-      readOnly: false,
-    })
-
-    await wrapper
-      .find('.decorator-list > div:first-child')
-      .trigger('mouseenter')
-
-    expect(bodyWithoutTeleports()).toMatchSnapshot()
-  })
 
   test('Should show cant add decorator tooltip', async () => {
     const { application, table, fields, view } = await populateStore()

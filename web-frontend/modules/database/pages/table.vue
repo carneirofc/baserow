@@ -110,11 +110,6 @@ const { data, error } = await useAsyncData(
         const type = $registry.get('view', view.type)
         result.view = view
 
-        if (type.isDeactivated(currentDatabase.workspace.id)) {
-          result.error = { statusCode: 400, message: type.getDeactivatedText() }
-          return result
-        }
-
         await type.fetch(
           { store: $store, app: nuxtApp },
           currentDatabase,

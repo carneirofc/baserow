@@ -35,24 +35,8 @@ export class FormViewModeType extends Registerable {
     throw new Error('The icon class of an importer type must be set.')
   }
 
-  /**
-   * If the decorator type is disabled, this text will be visible explaining why.
-   */
-  getDeactivatedText({ view }) {}
 
-  /**
-   * When the deactivated view decorator is clicked, this modal will be shown.
-   */
-  getDeactivatedClickModal() {
-    return null
-  }
 
-  /**
-   * Indicates if the decorator type is disabled.
-   */
-  isDeactivated(workspaceId) {
-    return false
-  }
 
   /**
    * This is the component that's responsible for previewing and editing the form.

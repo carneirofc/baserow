@@ -214,9 +214,6 @@ export class ElementType extends Registerable {
     placeInContainer,
     pagePlace,
   }) {
-    if (this.isDeactivatedReason({ workspace }) !== null) {
-      return this.isDeactivatedReason({ workspace })
-    }
     if (!parentElement) {
       const sharedPage = this.app.$store.getters['page/getSharedPage'](builder)
 
@@ -257,18 +254,6 @@ export class ElementType extends Registerable {
         }
       }
     }
-    return null
-  }
-
-  isDeactivatedReason({ workspace }) {
-    return null
-  }
-
-  isDeactivated({ workspace }) {
-    return !!this.isDeactivatedReason({ workspace })
-  }
-
-  getDeactivatedClickModal({ workspace }) {
     return null
   }
 
@@ -374,12 +359,6 @@ export class ElementType extends Registerable {
    * @returns A string that represent the current error.
    */
   getErrorMessage(element, applicationContext) {
-    const { workspace } = applicationContext
-
-    if (this.isDeactivatedReason({ workspace }) !== null) {
-      return this.isDeactivatedReason({ workspace })
-    }
-
     if (
       this.getEvents(element).length > 0 &&
       this.workflowActionsInError(element, applicationContext)

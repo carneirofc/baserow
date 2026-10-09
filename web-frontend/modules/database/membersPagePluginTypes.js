@@ -20,13 +20,6 @@ export class MembersPagePluginType extends Registerable {
   mutateAdminUsersTableColumns(columns, context) {
     return columns
   }
-
-  /**
-   * Set to false in order to enable the plugin
-   */
-  isDeactivated(workspaceId) {
-    return false
-  }
 }
 
 /**

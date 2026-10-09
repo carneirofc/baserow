@@ -238,11 +238,8 @@ export default {
       await this.$nextTick()
 
       this.$emit('toggle-admin', true)
-      const activatedAdminTypes = this.sortedAdminTypes.filter(
-        (adminType) => !adminType.isDeactivated()
-      )
       try {
-        await this.$router.push({ name: activatedAdminTypes[0].routeName })
+        await this.$router.push({ name: this.sortedAdminTypes[0].routeName })
         await pageFinished(this.nuxtApp)
         await nextTick()
       } catch {}

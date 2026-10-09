@@ -28,8 +28,7 @@ exports[`GridViewRows component with decoration > Default component 1`] = `
             <div
               class="decorator-item__title"
             >
-              Fake decorator 
-              <!--v-if-->
+              Fake decorator
             </div>
             <div
               class="decorator-item__description"
@@ -38,7 +37,6 @@ exports[`GridViewRows component with decoration > Default component 1`] = `
             </div>
           </div>
         </div>
-        <!--v-if-->
       </div>
       
     </div>
@@ -57,27 +55,6 @@ exports[`GridViewRows component with decoration > Should show cant add decorator
       class="tooltip__content"
     >
       can't be added reason
-    </div>
-  </div>
-  <div
-    data-v-app=""
-    id="__nuxt"
-  >
-    <!---->
-  </div>
-</body>
-`;
-
-exports[`GridViewRows component with decoration > Should show unavailable decorator tooltip 1`] = `
-<body>
-  <div
-    class="tooltip tooltip--body tooltip--center"
-    style="top: 4px; left: 0px;"
-  >
-    <div
-      class="tooltip__content"
-    >
-      unavailability reason
     </div>
   </div>
   <div
@@ -126,8 +103,7 @@ exports[`GridViewRows component with decoration > View with decoration configure
                   <div
                     class="decorator-item__title"
                   >
-                    Fake decorator 
-                    <!--v-if-->
+                    Fake decorator
                   </div>
                   <div
                     class="decorator-item__description"
@@ -208,8 +184,7 @@ exports[`GridViewRows component with decoration > View with decoration configure
                   <div
                     class="decorator-item__title"
                   >
-                    Fake decorator 
-                    <!--v-if-->
+                    Fake decorator
                   </div>
                   <div
                     class="decorator-item__description"

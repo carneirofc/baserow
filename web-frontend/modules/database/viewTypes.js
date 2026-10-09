@@ -368,24 +368,8 @@ export class ViewType extends Registerable {
     }
   }
 
-  /**
-   * If the view type is disabled, this text will be visible explaining why.
-   */
-  getDeactivatedText() {}
 
-  /**
-   * When the disabled view type is clicked, this modal will be shown.
-   */
-  getDeactivatedClickModal() {
-    return null
-  }
 
-  /**
-   * Indicates if the view type is disabled.
-   */
-  isDeactivated(workspaceId) {
-    return false
-  }
 
   /**
    * Helper function to set a field value to null for all

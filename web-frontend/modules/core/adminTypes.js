@@ -72,20 +72,6 @@ export class AdminType extends Registerable {
       routeName: this.routeName,
     }
   }
-
-  /**
-   * Indicates if the admin type is disabled.
-   */
-  isDeactivated() {
-    return false
-  }
-
-  /**
-   * Opens this modal if the user clicks on the item in the menu when it's disabled.
-   */
-  getDeactivatedModal() {
-    return null
-  }
 }
 
 export class DashboardAdminType extends AdminType {

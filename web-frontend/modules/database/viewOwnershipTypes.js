@@ -29,26 +29,8 @@ export class ViewOwnershipType extends Registerable {
     return null
   }
 
-  /**
-   * Indicates if the view ownership type is disabled.
-   */
-  isDeactivated(workspaceId) {
-    return false
-  }
 
-  /**
-   * Text description when deactivated.
-   */
-  getDeactivatedText() {
-    return null
-  }
 
-  /**
-   * Show deactivated modal when selecting.
-   */
-  getDeactivatedModal() {
-    return null
-  }
 
   /**
    * Returns whether this ownership type is compatible with the given view type.

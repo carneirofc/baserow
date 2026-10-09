@@ -67,17 +67,8 @@ export class WebhookEventType extends Registerable {
     return null
   }
 
-  getDeactivatedText() {
-    return ''
-  }
 
-  getDeactivatedClickModal() {
-    return null
-  }
 
-  isDeactivated(workspaceId) {
-    return false
-  }
 
   getFeatureName() {
     return ''

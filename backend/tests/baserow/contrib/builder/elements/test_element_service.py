@@ -36,15 +36,10 @@ def test_create_element(element_created_mock, data_fixture, element_type):
     if element_type.is_multi_page_element:
         page = shared_page
 
-    prev_is_deactivated = element_type.is_deactivated
-    element_type.is_deactivated = lambda x: False
-
     pytest_params = element_type.get_pytest_params(data_fixture)
 
     service = ElementService()
     element = service.create_element(user, element_type, page=page, **pytest_params)
-
-    element_type.is_deactivated = prev_is_deactivated
 
     last_element = Element.objects.last()
 

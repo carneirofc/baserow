@@ -28,7 +28,6 @@ from baserow.contrib.builder.pages.models import Page
 from baserow.core.formula.types import BaserowFormulaObject
 from baserow.core.graph.exceptions import GraphPointReferencePointInvalid
 from baserow.core.graph.types import GraphPointPosition, GraphPointPositionType
-from baserow.core.models import Workspace
 from baserow.core.registry import (
     CustomFieldsInstanceMixin,
     CustomFieldsRegistryMixin,
@@ -82,13 +81,6 @@ class ElementType(
         """
 
         return {"": {"label": ""}}
-
-    def is_deactivated(self, workspace: Workspace) -> bool:
-        """
-        Returns whether this element type is deactivated for the given workspace.
-        """
-
-        return False
 
     def prepare_value_for_db(self, values: Dict, instance: Optional[Element] = None):
         """

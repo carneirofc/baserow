@@ -656,9 +656,6 @@ export function getDefaultView(app, store, workspaceId, showRowModal) {
 
   return views.find((view) => {
     const viewType = app.$registry.get('view', view.type)
-    if (viewType.isDeactivated(workspaceId)) {
-      return false
-    }
     // Ensure that the view can display the row data if required.
     return showRowModal ? viewType.canShowRowModal() : true
   })

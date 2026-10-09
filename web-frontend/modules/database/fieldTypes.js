@@ -1069,19 +1069,7 @@ export class FieldType extends Registerable {
     return null
   }
 
-  /**
-   * Indicates whether the field is visible, but in a deactivated state.
-   */
-  isDeactivated(workspaceId) {
-    return false
-  }
 
-  /**
-   * The modal that must be shown when a deactivated field is clicked.
-   */
-  getDeactivatedClickModal(workspaceId) {
-    return null
-  }
 
   /**
    * Alternative text used when searching for the field.
