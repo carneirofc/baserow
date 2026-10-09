@@ -17,12 +17,12 @@
         <link rel="next" href="../workspace-search/">
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/logo.svg">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
     
     
       
-        <title>WebSockets - Baserow (carneirofc fork) Docs</title>
+        <title>WebSockets - Saveroom Docs</title>
       
     
     
@@ -88,10 +88,9 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-header__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+    <a href="../.." title="Saveroom Docs" class="md-header__button md-logo" aria-label="Saveroom Docs" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../../assets/logo.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -102,7 +101,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Baserow (carneirofc fork) Docs
+            Saveroom Docs
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -451,13 +450,12 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-nav__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+    <a href="../.." title="Saveroom Docs" class="md-nav__button md-logo" aria-label="Saveroom Docs" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../../assets/logo.svg" alt="logo">
 
     </a>
-    Baserow (carneirofc fork) Docs
+    Saveroom Docs
   </label>
   
     <div class="md-nav__source">
@@ -1050,7 +1048,7 @@
         
   
   <span class="md-ellipsis">
-    Understanding Baserow Formulas
+    Understanding Saveroom Formulas
   </span>
   
 
@@ -2078,27 +2076,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/mcp-server/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MCP server
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../development/read-replicas/" class="md-nav__link">
         
   
@@ -2212,27 +2189,6 @@
   
   <span class="md-ellipsis">
     Plugin basics
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../plugins/boilerplate/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Plugin boilerplate (outdated)
   </span>
   
 
@@ -2616,7 +2572,7 @@
         
   
   <span class="md-ellipsis">
-    Back up and restore Baserow
+    Back up and restore Saveroom
   </span>
   
 
@@ -2725,27 +2681,6 @@
   
   <span class="md-ellipsis">
     Grid view test plan
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../testing/mcp-test-plan/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MCP test plan
   </span>
   
 
@@ -3145,9 +3080,9 @@
 
 
 <h1 id="working-with-websockets">Working with websockets<a class="headerlink" href="#working-with-websockets" title="Permanent link">&para;</a></h1>
-<p>Baserow uses <a href="https://channels.readthedocs.io/en/latest/">Django Channels</a> library to handle websocket connections.</p>
+<p>Saveroom uses <a href="https://channels.readthedocs.io/en/latest/">Django Channels</a> library to handle websocket connections.</p>
 <h2 id="consumers">Consumers<a class="headerlink" href="#consumers" title="Permanent link">&para;</a></h2>
-<p>The communication between connected clients (like the Baserow web-frontend) and Baserow backend is done through Django Channels <a href="https://channels.readthedocs.io/en/latest/topics/consumers.html">consumers</a>. A consumer is akin to a Django view. It can receive payloads from a client and send payloads to the client. The difference is that consumers are stateful and handle communication back and forth for the whole duration of a websocket connection.</p>
+<p>The communication between connected clients (like the Saveroom web-frontend) and Saveroom backend is done through Django Channels <a href="https://channels.readthedocs.io/en/latest/topics/consumers.html">consumers</a>. A consumer is akin to a Django view. It can receive payloads from a client and send payloads to the client. The difference is that consumers are stateful and handle communication back and forth for the whole duration of a websocket connection.</p>
 <p>Similarly to Django views, consumers are hooked to a particular URL, see this excerpt from <code>backend/src/baserow/ws/routing.py</code> on how the <code>CoreConsumer</code> is routed:</p>
 <div class="highlight"><pre><span></span><code><span class="n">websocket_urlpatterns</span> <span class="o">=</span> <span class="p">[</span><span class="n">re_path</span><span class="p">(</span><span class="sa">r</span><span class="s2">"^ws/core/"</span><span class="p">,</span> <span class="n">CoreConsumer</span><span class="o">.</span><span class="n">as_asgi</span><span class="p">())]</span>
 </code></pre></div>
@@ -3201,9 +3136,9 @@
         <span class="o">...</span>
 </code></pre></div>
 <h3 id="coreconsumer">CoreConsumer<a class="headerlink" href="#coreconsumer" title="Permanent link">&para;</a></h3>
-<p>The main Baserow consumer is <code>CoreConsumer</code> (from <code>backend/src/baserow/ws/consumers.py</code>). It currently handles all web-frontend connections, all backend events and exchange of all messages between clients and the backend.</p>
+<p>The main Saveroom consumer is <code>CoreConsumer</code> (from <code>backend/src/baserow/ws/consumers.py</code>). It currently handles all web-frontend connections, all backend events and exchange of all messages between clients and the backend.</p>
 <h2 id="channel-layer-and-channel-groups">Channel Layer and Channel Groups<a class="headerlink" href="#channel-layer-and-channel-groups" title="Permanent link">&para;</a></h2>
-<p>In essense, a <a href="https://channels.readthedocs.io/en/latest/topics/channel_layers.html">channel layer</a> facilitates cross-process communication like the communication between consumers themselves or between consumers and any other backend code that needs to send messages to connected clients. Baserow uses <a href="https://github.com/django/channels_redis/">RedisChannelLayer</a> for this purpose.</p>
+<p>In essense, a <a href="https://channels.readthedocs.io/en/latest/topics/channel_layers.html">channel layer</a> facilitates cross-process communication like the communication between consumers themselves or between consumers and any other backend code that needs to send messages to connected clients. Saveroom uses <a href="https://github.com/django/channels_redis/">RedisChannelLayer</a> for this purpose.</p>
 <p>Each consumer has a unique <em>channel name</em> (the <code>self.channel_name</code> in the example above), and can join arbitrary-named groups, allowing both point-to-point and broadcast messaging.</p>
 <p>Currently, <code>CoreConsumer</code>s use these channel groups for broadcasts:</p>
 <ul>
@@ -3213,7 +3148,7 @@
 </ul>
 <h2 id="pages-and-subscriptions">Pages and Subscriptions<a class="headerlink" href="#pages-and-subscriptions" title="Permanent link">&para;</a></h2>
 <p><code>CoreConsumer</code> has a concept of <em>pages</em> that a client can subscribe to in order to receive messages targeting specific pages. Clients have to manually request to be subscribed with a special payload. The consumer can then check if the client has the permissions necessary to receive these page updates and if so, add itself to the particular channel group representing the page.</p>
-<p>For example, users can subscribe to receive updates to a particular Baserow table. If the request is permitted, the consumer handling the connection will join <code>table-{id}</code> channel group and start receiving messages related to the table page with the particular id.</p>
+<p>For example, users can subscribe to receive updates to a particular Saveroom table. If the request is permitted, the consumer handling the connection will join <code>table-{id}</code> channel group and start receiving messages related to the table page with the particular id.</p>
 <p>Each page that can be subscribed is implemented as a <code>PageType</code> and registered in <code>page_registry</code> so it is possible to implement new page types without making changes to the consumer itself. See <code>backend/src/baserow/ws/registries.py</code> for details.</p>
 <h2 id="message-broadcasting">Message Broadcasting<a class="headerlink" href="#message-broadcasting" title="Permanent link">&para;</a></h2>
 <p>Often we need to notify connected clients about something. For example, clients subscribed to a table page need real-time updates about created or updated rows.</p>
@@ -3234,8 +3169,8 @@
 <span class="n">async_to_sync</span><span class="p">(</span><span class="n">send_message_to_channel_group</span><span class="p">)(</span><span class="n">channel_layer</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">message</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="front-end">Front-end<a class="headerlink" href="#front-end" title="Permanent link">&para;</a></h2>
-<p>Websocket connections are automatically established for each user, including anonymous users, in the main page layout <code>web-frontend/modules/core/layouts/app.vue</code> when the Baserow web-frontend is loaded. Interacting with the backend using websocket connections is abstracted in <code>RealTimeHandler</code> class which is available in Vue components under <code>this.$realtime</code> property.</p>
-<p>Consult client-side documentation in <code>docs/apis/web-socket-api.md</code> for implementing webscocket clients for Baserow.</p>
+<p>Websocket connections are automatically established for each user, including anonymous users, in the main page layout <code>web-frontend/modules/core/layouts/app.vue</code> when the Saveroom web-frontend is loaded. Interacting with the backend using websocket connections is abstracted in <code>RealTimeHandler</code> class which is available in Vue components under <code>this.$realtime</code> property.</p>
+<p>Consult client-side documentation in <code>docs/apis/web-socket-api.md</code> for implementing webscocket clients for Saveroom.</p>
 <h2 id="web-socket-id">Web Socket ID<a class="headerlink" href="#web-socket-id" title="Permanent link">&para;</a></h2>
 <p>The <strong>web socket id</strong> is a UUID generated once at application boot and stored in the auth store. The client sends it as a query parameter on the WebSocket URL and as a <code>WebSocketId</code> HTTP header on REST API requests. The backend uses it to exclude the originating client from the broadcast of its own mutations, so a client never receives an echo of a change it just made.</p>
 <p>The ID persists across reconnects within the same page load. A new tab or page refresh generates a fresh UUID.</p>

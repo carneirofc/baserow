@@ -17,12 +17,12 @@
         <link rel="next" href="../install-with-k8s/">
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/logo.svg">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
     
     
       
-        <title>Amazon EKS - Baserow (carneirofc fork) Docs</title>
+        <title>Amazon EKS - Saveroom Docs</title>
       
     
     
@@ -88,10 +88,9 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-header__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+    <a href="../.." title="Saveroom Docs" class="md-header__button md-logo" aria-label="Saveroom Docs" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../../assets/logo.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -102,7 +101,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Baserow (carneirofc fork) Docs
+            Saveroom Docs
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -451,13 +450,12 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-nav__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+    <a href="../.." title="Saveroom Docs" class="md-nav__button md-logo" aria-label="Saveroom Docs" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../../assets/logo.svg" alt="logo">
 
     </a>
-    Baserow (carneirofc fork) Docs
+    Saveroom Docs
   </label>
   
     <div class="md-nav__source">
@@ -1224,7 +1222,7 @@
         
   
   <span class="md-ellipsis">
-    Understanding Baserow Formulas
+    Understanding Saveroom Formulas
   </span>
   
 
@@ -2069,27 +2067,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/mcp-server/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MCP server
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../development/read-replicas/" class="md-nav__link">
         
   
@@ -2203,27 +2180,6 @@
   
   <span class="md-ellipsis">
     Plugin basics
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../plugins/boilerplate/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Plugin boilerplate (outdated)
   </span>
   
 
@@ -2607,7 +2563,7 @@
         
   
   <span class="md-ellipsis">
-    Back up and restore Baserow
+    Back up and restore Saveroom
   </span>
   
 
@@ -2716,27 +2672,6 @@
   
   <span class="md-ellipsis">
     Grid view test plan
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../testing/mcp-test-plan/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MCP test plan
   </span>
   
 
@@ -3127,11 +3062,11 @@
 
 
 <h1 id="installing-on-amazon-eks">Installing on Amazon EKS<a class="headerlink" href="#installing-on-amazon-eks" title="Permanent link">&para;</a></h1>
-<p>This guide deploys Baserow on EKS in the shape most private AWS estates want: an
+<p>This guide deploys Saveroom on EKS in the shape most private AWS estates want: an
 <strong>internal</strong> Application Load Balancer that is never exposed to the internet, fronted by
 <strong>CloudFront using a VPC origin</strong>, with media on S3 and <strong>no long-lived AWS credentials
 anywhere</strong> — the pods assume an IAM role through IRSA.</p>
-<p>Start from <a href="../../deploy/helm/baserow/values-eks.yaml"><code>deploy/helm/baserow/values-eks.yaml</code></a>,
+<p>Start from <a href="../../deploy/helm/saveroom/values-eks.yaml"><code>deploy/helm/saveroom/values-eks.yaml</code></a>,
 which encodes everything below. Read <a href="../install-with-helm/">Installing with Helm</a> first
 for the values that are not AWS-specific.</p>
 <h2 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h2>
@@ -3145,7 +3080,7 @@ for the values that are not AWS-specific.</p>
    internal ALB  (scheme: internal, target-type: ip)
            │
     ┌──────┴───────────────────────┐
-    │ /api /ws /mcp /assistant     │  everything else
+    │ /api /ws                     │  everything else
     │ /static                      │
     ▼                              ▼
  backend Service :8000     web-frontend Service :3000
@@ -3292,7 +3227,7 @@ ServiceAccount and tell the chart only to stop injecting credentials:</p>
 <li><strong><code>listen-ports: HTTP 80</code></strong> — CloudFront already terminated TLS. Use HTTPS with an ACM
   certificate here instead if your security posture requires encryption in transit
   inside the VPC.</li>
-<li><strong><code>idle_timeout.timeout_seconds=4000</code></strong> — Baserow's realtime collaboration rides
+<li><strong><code>idle_timeout.timeout_seconds=4000</code></strong> — Saveroom's realtime collaboration rides
   long-lived WebSockets on <code>/ws</code>; the 60s ALB default would cut them constantly.</li>
 </ul>
 <p>The ALB security group must allow inbound HTTP <strong>from the CloudFront VPC origin's
@@ -3305,7 +3240,7 @@ security group</strong>, and nothing else.</p>
   <code>Host</code> header, so the backend sees your real domain and <code>publicURL</code> alone satisfies
   <code>ALLOWED_HOSTS</code>, and it forwards the <code>Sec-WebSocket-*</code> headers that <code>/ws</code> needs.</li>
 <li><strong>Cache policy:</strong> <code>CachingDisabled</code> as the default behaviour, and for the
-  <code>/api/*</code>, <code>/ws/*</code>, <code>/mcp/*</code> and <code>/assistant/*</code> path patterns. Use <code>CachingOptimized</code>
+  <code>/api/*</code> and <code>/ws/*</code> path patterns. Use <code>CachingOptimized</code>
   only for <code>/static/*</code>. Caching an authenticated API response and serving it to another
   user is the failure mode to avoid here.</li>
 <li><strong>Allowed methods:</strong> all of them, including <code>DELETE</code>, <code>PATCH</code>, <code>POST</code> and <code>PUT</code>.</li>
@@ -3347,10 +3282,10 @@ of the pods terminates TLS.</p>
 <div class="highlight"><pre><span></span><code>kubectl<span class="w"> </span>-n<span class="w"> </span>baserow<span class="w"> </span>create<span class="w"> </span>secret<span class="w"> </span>generic<span class="w"> </span>baserow-db<span class="w"> </span>--from-literal<span class="o">=</span><span class="nv">password</span><span class="o">=</span><span class="s1">'...'</span>
 kubectl<span class="w"> </span>-n<span class="w"> </span>baserow<span class="w"> </span>create<span class="w"> </span>secret<span class="w"> </span>generic<span class="w"> </span>baserow-redis<span class="w"> </span>--from-literal<span class="o">=</span>redis-password<span class="o">=</span><span class="s1">'...'</span>
 </code></pre></div>
-<p>Use RDS for PostgreSQL <strong>18</strong> — Baserow targets that major version. Security groups on
+<p>Use RDS for PostgreSQL <strong>18</strong> — Saveroom targets that major version. Security groups on
 both services must admit the pod subnets.</p>
 <h2 id="6-install">6. Install<a class="headerlink" href="#6-install" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>helm<span class="w"> </span>install<span class="w"> </span>baserow<span class="w"> </span>oci://ghcr.io/carneirofc/baserow/charts/baserow<span class="w"> </span><span class="se">\</span>
+<div class="highlight"><pre><span></span><code>helm<span class="w"> </span>install<span class="w"> </span>baserow<span class="w"> </span>oci://ghcr.io/carneirofc/baserow/charts/saveroom<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--namespace<span class="w"> </span>baserow<span class="w"> </span>--create-namespace<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-f<span class="w"> </span>values-eks.yaml
 </code></pre></div>

@@ -17,12 +17,12 @@
         <link rel="next" href="../ci-cd/">
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/logo.svg">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
     
     
       
-        <title>Building and running production images - Baserow (carneirofc fork) Docs</title>
+        <title>Building and running production images - Saveroom Docs</title>
       
     
     
@@ -88,10 +88,9 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-header__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+    <a href="../.." title="Saveroom Docs" class="md-header__button md-logo" aria-label="Saveroom Docs" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../../assets/logo.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -102,7 +101,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Baserow (carneirofc fork) Docs
+            Saveroom Docs
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -451,13 +450,12 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-nav__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+    <a href="../.." title="Saveroom Docs" class="md-nav__button md-logo" aria-label="Saveroom Docs" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../../assets/logo.svg" alt="logo">
 
     </a>
-    Baserow (carneirofc fork) Docs
+    Saveroom Docs
   </label>
   
     <div class="md-nav__source">
@@ -1050,7 +1048,7 @@
         
   
   <span class="md-ellipsis">
-    Understanding Baserow Formulas
+    Understanding Saveroom Formulas
   </span>
   
 
@@ -2261,27 +2259,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../mcp-server/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MCP server
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../read-replicas/" class="md-nav__link">
         
   
@@ -2395,27 +2372,6 @@
   
   <span class="md-ellipsis">
     Plugin basics
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../plugins/boilerplate/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Plugin boilerplate (outdated)
   </span>
   
 
@@ -2799,7 +2755,7 @@
         
   
   <span class="md-ellipsis">
-    Back up and restore Baserow
+    Back up and restore Saveroom
   </span>
   
 
@@ -2908,27 +2864,6 @@
   
   <span class="md-ellipsis">
     Grid view test plan
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../testing/mcp-test-plan/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MCP test plan
   </span>
   
 
@@ -3511,9 +3446,9 @@
 
 
 <h1 id="building-and-running-production-images">Building and Running Production Images<a class="headerlink" href="#building-and-running-production-images" title="Permanent link">&para;</a></h1>
-<p>This guide covers building Baserow's production Docker images locally and running them for testing or deployment preparation.</p>
+<p>This guide covers building Saveroom's production Docker images locally and running them for testing or deployment preparation.</p>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p>Baserow provides several image types for different deployment scenarios:</p>
+<p>Saveroom provides several image types for different deployment scenarios:</p>
 <table>
 <thead>
 <tr>
@@ -3640,23 +3575,23 @@ just<span class="w"> </span>dc-prod<span class="w"> </span>build<span class="w">
 <tbody>
 <tr>
 <td><code>just build backend</code></td>
-<td><code>baserow/backend:latest</code></td>
+<td><code>saveroom/backend:latest</code></td>
 </tr>
 <tr>
 <td><code>just build backend 2.0.0</code></td>
-<td><code>baserow/backend:2.0.0</code></td>
+<td><code>saveroom/backend:2.0.0</code></td>
 </tr>
 <tr>
 <td><code>just build all-in-one</code></td>
-<td><code>baserow/baserow:latest</code></td>
+<td><code>saveroom/all-in-one:latest</code></td>
 </tr>
 <tr>
 <td><code>just build all-in-one 2.0.0</code></td>
-<td><code>baserow/baserow:2.0.0</code></td>
+<td><code>saveroom/all-in-one:2.0.0</code></td>
 </tr>
 <tr>
 <td><code>just build all-in-one-lite</code></td>
-<td><code>baserow/baserow:lite-latest</code></td>
+<td><code>saveroom/all-in-one:lite-latest</code></td>
 </tr>
 </tbody>
 </table>
@@ -3719,7 +3654,7 @@ docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </sp
 <span class="w">  </span>-e<span class="w"> </span><span class="nv">REDIS_URL</span><span class="o">=</span>redis://host:6379<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-e<span class="w"> </span><span class="nv">BASEROW_PUBLIC_URL</span><span class="o">=</span>https://baserow.example.com<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-p<span class="w"> </span><span class="m">80</span>:80<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>baserow/baserow:lite-latest
+<span class="w">  </span>saveroom/all-in-one:lite-latest
 </code></pre></div>
 <h4 id="platform-specific-deployments">Platform-Specific Deployments<a class="headerlink" href="#platform-specific-deployments" title="Permanent link">&para;</a></h4>
 <div class="highlight"><pre><span></span><code><span class="c1"># Heroku</span>
@@ -3754,7 +3689,7 @@ just<span class="w"> </span>dc-deploy<span class="w"> </span>local-testing<span 
 <tbody>
 <tr>
 <td><code>BASEROW_PUBLIC_URL</code></td>
-<td>Public URL for Baserow</td>
+<td>Public URL for Saveroom</td>
 <td><code>https://baserow.example.com</code></td>
 </tr>
 <tr>
@@ -3811,19 +3746,19 @@ docker<span class="w"> </span>compose<span class="w"> </span>--env-file<span cla
 </thead>
 <tbody>
 <tr>
-<td><code>baserow/backend:latest</code></td>
+<td><code>saveroom/backend:latest</code></td>
 <td>~500MB</td>
 </tr>
 <tr>
-<td><code>baserow/web-frontend:latest</code></td>
+<td><code>saveroom/web-frontend:latest</code></td>
 <td>~400MB</td>
 </tr>
 <tr>
-<td><code>baserow/baserow:latest</code> (all-in-one)</td>
+<td><code>saveroom/all-in-one:latest</code> (all-in-one)</td>
 <td>~1.5GB</td>
 </tr>
 <tr>
-<td><code>baserow/baserow:lite-latest</code></td>
+<td><code>saveroom/all-in-one:lite-latest</code></td>
 <td>~1GB</td>
 </tr>
 </tbody>
@@ -3902,7 +3837,7 @@ docker<span class="w"> </span>compose<span class="w"> </span>--env-file<span cla
 <h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
 <h3 id="build-failures">Build Failures<a class="headerlink" href="#build-failures" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="c1"># Clear Docker builder cache</span>
-<span class="c1"># WARNING: This clears ALL Docker builder cache, not just Baserow!</span>
+<span class="c1"># WARNING: This clears ALL Docker builder cache, not just Saveroom!</span>
 just<span class="w"> </span>prune
 
 <span class="c1"># Build without cache</span>
@@ -3921,7 +3856,7 @@ just<span class="w"> </span>dc-prod<span class="w"> </span>ps
 docker<span class="w"> </span>ps<span class="w"> </span>-a
 
 <span class="c1"># Run with interactive shell to debug</span>
-docker<span class="w"> </span>run<span class="w"> </span>-it<span class="w"> </span>--entrypoint<span class="w"> </span>bash<span class="w"> </span>baserow/backend:latest
+docker<span class="w"> </span>run<span class="w"> </span>-it<span class="w"> </span>--entrypoint<span class="w"> </span>bash<span class="w"> </span>saveroom/backend:latest
 </code></pre></div>
 <h3 id="database-connection-issues">Database Connection Issues<a class="headerlink" href="#database-connection-issues" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="c1"># For all-in-one, check internal PostgreSQL</span>
@@ -3933,18 +3868,18 @@ just<span class="w"> </span>dc-prod<span class="w"> </span><span class="nb">exec
 <h3 id="image-too-large">Image Too Large<a class="headerlink" href="#image-too-large" title="Permanent link">&para;</a></h3>
 <p>If images are unexpectedly large:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># Check image layers</span>
-docker<span class="w"> </span><span class="nb">history</span><span class="w"> </span>baserow/backend:latest
+docker<span class="w"> </span><span class="nb">history</span><span class="w"> </span>saveroom/backend:latest
 
 <span class="c1"># Inspect image</span>
-docker<span class="w"> </span>inspect<span class="w"> </span>baserow/backend:latest
+docker<span class="w"> </span>inspect<span class="w"> </span>saveroom/backend:latest
 
 <span class="c1"># Check what's inside</span>
-docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-it<span class="w"> </span>baserow/backend:latest<span class="w"> </span>du<span class="w"> </span>-sh<span class="w"> </span>/*
+docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>-it<span class="w"> </span>saveroom/backend:latest<span class="w"> </span>du<span class="w"> </span>-sh<span class="w"> </span>/*
 </code></pre></div>
 <h2 id="exporting-images">Exporting Images<a class="headerlink" href="#exporting-images" title="Permanent link">&para;</a></h2>
 <p>To transfer images without a registry:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># Save to tar.gz</span>
-docker<span class="w"> </span>save<span class="w"> </span>baserow/backend:latest<span class="w"> </span><span class="p">|</span><span class="w"> </span>gzip<span class="w"> </span>&gt;<span class="w"> </span>baserow-backend.tar.gz
+docker<span class="w"> </span>save<span class="w"> </span>saveroom/backend:latest<span class="w"> </span><span class="p">|</span><span class="w"> </span>gzip<span class="w"> </span>&gt;<span class="w"> </span>baserow-backend.tar.gz
 
 <span class="c1"># Load on another machine</span>
 docker<span class="w"> </span>load<span class="w"> </span>&lt;<span class="w"> </span>baserow-backend.tar.gz

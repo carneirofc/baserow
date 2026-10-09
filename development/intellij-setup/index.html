@@ -17,12 +17,12 @@
         <link rel="next" href="../feature-flags/">
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/logo.svg">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
     
     
       
-        <title>IntelliJ setup - Baserow (carneirofc fork) Docs</title>
+        <title>IntelliJ setup - Saveroom Docs</title>
       
     
     
@@ -88,10 +88,9 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-header__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+    <a href="../.." title="Saveroom Docs" class="md-header__button md-logo" aria-label="Saveroom Docs" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../../assets/logo.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -102,7 +101,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Baserow (carneirofc fork) Docs
+            Saveroom Docs
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -451,13 +450,12 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-nav__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+    <a href="../.." title="Saveroom Docs" class="md-nav__button md-logo" aria-label="Saveroom Docs" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../../assets/logo.svg" alt="logo">
 
     </a>
-    Baserow (carneirofc fork) Docs
+    Saveroom Docs
   </label>
   
     <div class="md-nav__source">
@@ -1050,7 +1048,7 @@
         
   
   <span class="md-ellipsis">
-    Understanding Baserow Formulas
+    Understanding Saveroom Formulas
   </span>
   
 
@@ -1958,27 +1956,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../mcp-server/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MCP server
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../read-replicas/" class="md-nav__link">
         
   
@@ -2092,27 +2069,6 @@
   
   <span class="md-ellipsis">
     Plugin basics
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../plugins/boilerplate/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Plugin boilerplate (outdated)
   </span>
   
 
@@ -2496,7 +2452,7 @@
         
   
   <span class="md-ellipsis">
-    Back up and restore Baserow
+    Back up and restore Saveroom
   </span>
   
 
@@ -2605,27 +2561,6 @@
   
   <span class="md-ellipsis">
     Grid view test plan
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../testing/mcp-test-plan/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MCP test plan
   </span>
   
 
@@ -2905,7 +2840,7 @@
 
 
 <h1 id="intellij-setup">IntelliJ Setup<a class="headerlink" href="#intellij-setup" title="Permanent link">&para;</a></h1>
-<p>This guide walks you through a first time Intellij setup for Baserow for developers. It
+<p>This guide walks you through a first time Intellij setup for Saveroom for developers. It
 will ensure you can run and debug all tests and also enable all the relevant linters and
 automatic style fixers to make your life as easy as possible.</p>
 <blockquote>
@@ -2918,10 +2853,10 @@ postgres and command line tools.</p>
 - <a href="https://github.com/astral-sh/uv">uv</a> - Python package manager</p>
 <h2 id="setup-steps">Setup Steps<a class="headerlink" href="#setup-steps" title="Permanent link">&para;</a></h2>
 <ol>
-<li>First checkout a fresh copy of Baserow: <code>git clone git@github.com:baserow/baserow.git</code></li>
-<li><code>cd baserow</code></li>
+<li>First checkout a fresh copy of Saveroom: <code>git clone git@github.com:carneirofc/baserow.git</code></li>
+<li><code>cd saveroom</code></li>
 <li><code>./config/intellij/apply_standard_baserow_intellij_config.sh</code><ol>
-<li>Type <code>Y</code> and hit enter to apply the standard Baserow config</li>
+<li>Type <code>Y</code> and hit enter to apply the standard Saveroom config</li>
 </ol>
 </li>
 <li>Open Intellij and on the "Welcome to IntelliJ IDEA" screen click the "Open" button
@@ -2968,7 +2903,7 @@ postgres and command line tools.</p>
 </li>
 <li>Now you should be able to run the backend python tests, try
    run <code>backend/tests/baserow/core/test_core_models.py</code> for instance.</li>
-<li>Now lets set up your frontend dev by changing directory to <code>baserow/web-frontend</code></li>
+<li>Now lets set up your frontend dev by changing directory to <code>saveroom/web-frontend</code></li>
 <li>Now run <code>just f install</code> (or <code>yarn install</code> directly). If you do not have yarn available
    check out and install a node version manager like <a href="https://github.com/nvm-sh/nvm">nvm</a> or
    <a href="https://github.com/Schniz/fnm">fnm</a> and follow the
@@ -2982,7 +2917,7 @@ postgres and command line tools.</p>
 <li>Open settings and search for eslint, make sure you have switched
    to <code>Manual ESLint configuration</code>, have set the <code>ESlint package</code> to to <code>eslint</code> sub
    folder in the <code>node_modules</code> created by the
-   previous <code>yarn install</code> (<code>baserow/web-frontend/node_modules/eslint</code>)</li>
+   previous <code>yarn install</code> (<code>saveroom/web-frontend/node_modules/eslint</code>)</li>
 </ol>
 <h1 id="recommended-plugins">Recommended Plugins<a class="headerlink" href="#recommended-plugins" title="Permanent link">&para;</a></h1>
 <ol>

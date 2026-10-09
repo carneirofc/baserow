@@ -17,12 +17,12 @@
         <link rel="next" href="../configuration/">
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/logo.svg">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
     
     
       
-        <title>Branding - Baserow (carneirofc fork) Docs</title>
+        <title>Branding - Saveroom Docs</title>
       
     
     
@@ -88,10 +88,9 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-header__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+    <a href="../.." title="Saveroom Docs" class="md-header__button md-logo" aria-label="Saveroom Docs" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../../assets/logo.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -102,7 +101,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Baserow (carneirofc fork) Docs
+            Saveroom Docs
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -451,13 +450,12 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-nav__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+    <a href="../.." title="Saveroom Docs" class="md-nav__button md-logo" aria-label="Saveroom Docs" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../../assets/logo.svg" alt="logo">
 
     </a>
-    Baserow (carneirofc fork) Docs
+    Saveroom Docs
   </label>
   
     <div class="md-nav__source">
@@ -1197,7 +1195,7 @@
         
   
   <span class="md-ellipsis">
-    Understanding Baserow Formulas
+    Understanding Saveroom Formulas
   </span>
   
 
@@ -2042,27 +2040,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/mcp-server/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MCP server
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../development/read-replicas/" class="md-nav__link">
         
   
@@ -2176,27 +2153,6 @@
   
   <span class="md-ellipsis">
     Plugin basics
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../plugins/boilerplate/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Plugin boilerplate (outdated)
   </span>
   
 
@@ -2580,7 +2536,7 @@
         
   
   <span class="md-ellipsis">
-    Back up and restore Baserow
+    Back up and restore Saveroom
   </span>
   
 
@@ -2689,27 +2645,6 @@
   
   <span class="md-ellipsis">
     Grid view test plan
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../testing/mcp-test-plan/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MCP test plan
   </span>
   
 
@@ -3075,7 +3010,7 @@
 <h1 id="branding">Branding<a class="headerlink" href="#branding" title="Permanent link">&para;</a></h1>
 <p>Operators can change the web-frontend's look without rebuilding the image:</p>
 <ul>
-<li>the app name in the browser title</li>
+<li>the app name in the browser title and the interface texts</li>
 <li>any color of the design palette</li>
 <li>the UI font</li>
 <li>the logo, favicons and built-in icons</li>
@@ -3127,8 +3062,13 @@ webp, gif, ico, woff, woff2, ttf and otf.</p>
 <span class="p">}</span>
 </code></pre></div>
 <ul>
-<li><strong><code>appName</code></strong>: shown in the browser tab (<code>Page | Acme Data</code>). Max 64
-  characters.</li>
+<li><strong><code>appName</code></strong>: the product name, <code>Saveroom</code> by default. It is shown in the
+  browser tab (<code>Page | Acme Data</code>) and wherever the interface names the
+  product ("Welcome to Acme Data", "New to Acme Data?"): those translations
+  link to the <code>app.name</code> key, which this value fills in every language. Max 64
+  characters. The backend's emails and API docs only see the
+  <code>BASEROW_BRANDING_APP_NAME</code> environment variable, not <code>branding.json</code>, so set
+  the variable to rename those too.</li>
 <li><strong><code>colors</code></strong>: overrides color tokens. Two kinds of names are accepted:</li>
 <li>Palette tokens (<code>palette-&lt;hue&gt;-&lt;step&gt;</code>) are the raw scale. Hues are
     <code>neutral</code>, <code>blue</code>, <code>green</code>, <code>red</code>, <code>cyan</code>, <code>yellow</code>, <code>magenta</code> and
@@ -3156,11 +3096,11 @@ webp, gif, ico, woff, woff2, ttf and otf.</p>
   <code>javascript:</code> above all, is ignored with a warning: these values go straight
   into a link.
 - <strong><code>siteTitle</code></strong>: the <code>title</code> and <code>alt</code> text on the attribution logo. Falls
-  back to <code>appName</code>, then to <code>Baserow</code>. Max 160 characters.
+  back to <code>appName</code>, then to <code>Saveroom</code>. Max 160 characters.
 - <strong><code>showAttribution</code></strong>: set to <code>false</code> to remove the attribution entirely —
   the sidebar footer logo, the shared-view header logo, the public form
-  "Powered by" block, the dashboard "star on GitHub / share" alert and the
-  fork and upstream credits on the admin version panel all stop rendering.
+  "Powered by" block and the fork and upstream credits on the admin version
+  panel all stop rendering.
 - <strong><code>messages</code></strong>: translation overrides per locale, using the same keys as
   <code>web-frontend/**/locales/&lt;locale&gt;.json</code>. The "Powered by" label is
   <code>formViewPoweredBy.poweredBy</code> in the database module.</p>
@@ -3193,7 +3133,7 @@ variables, so it can override anything. Reference your own assets from
 </tr>
 <tr>
 <td><code>BASEROW_BRANDING_APP_NAME</code></td>
-<td>Overrides <code>appName</code>.</td>
+<td>Overrides <code>appName</code>. Also read by the backend, for the name in emails and the API docs title; give it to the backend and Celery containers as well.</td>
 </tr>
 <tr>
 <td><code>BASEROW_BRANDING_COLORS</code></td>

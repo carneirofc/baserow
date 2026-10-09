@@ -17,12 +17,12 @@
         <link rel="next" href="../install-on-eks/">
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/logo.svg">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
     
     
       
-        <title>Helm - Baserow (carneirofc fork) Docs</title>
+        <title>Helm - Saveroom Docs</title>
       
     
     
@@ -88,10 +88,9 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-header__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+    <a href="../.." title="Saveroom Docs" class="md-header__button md-logo" aria-label="Saveroom Docs" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../../assets/logo.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -102,7 +101,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Baserow (carneirofc fork) Docs
+            Saveroom Docs
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -451,13 +450,12 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-nav__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+    <a href="../.." title="Saveroom Docs" class="md-nav__button md-logo" aria-label="Saveroom Docs" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../../assets/logo.svg" alt="logo">
 
     </a>
-    Baserow (carneirofc fork) Docs
+    Saveroom Docs
   </label>
   
     <div class="md-nav__source">
@@ -1290,7 +1288,7 @@
         
   
   <span class="md-ellipsis">
-    Understanding Baserow Formulas
+    Understanding Saveroom Formulas
   </span>
   
 
@@ -2135,27 +2133,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/mcp-server/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MCP server
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../development/read-replicas/" class="md-nav__link">
         
   
@@ -2269,27 +2246,6 @@
   
   <span class="md-ellipsis">
     Plugin basics
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../plugins/boilerplate/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Plugin boilerplate (outdated)
   </span>
   
 
@@ -2673,7 +2629,7 @@
         
   
   <span class="md-ellipsis">
-    Back up and restore Baserow
+    Back up and restore Saveroom
   </span>
   
 
@@ -2782,27 +2738,6 @@
   
   <span class="md-ellipsis">
     Grid view test plan
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../testing/mcp-test-plan/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MCP test plan
   </span>
   
 
@@ -3259,15 +3194,15 @@
 
 
 <h1 id="installing-with-helm">Installing with Helm<a class="headerlink" href="#installing-with-helm" title="Permanent link">&para;</a></h1>
-<p>The Helm chart deploys Baserow on Kubernetes as four separate workloads — <code>backend</code>,
+<p>The Helm chart deploys Saveroom on Kubernetes as four separate workloads — <code>backend</code>,
 <code>web-frontend</code>, <code>celery</code> worker and <code>celery-beat</code> — with optional bundled PostgreSQL
 and Redis. It runs on plain Kubernetes, on OpenShift under the default <code>restricted-v2</code>
 SCC, and on Amazon EKS.</p>
 <p>For the EKS-specific deployment shape (internal ALB behind a CloudFront VPC origin,
 IRSA, S3 media) see <a href="../install-on-eks/">Installing on Amazon EKS</a>.</p>
 <ul>
-<li>Chart source: <a href="../../deploy/helm/baserow"><code>deploy/helm/baserow</code></a></li>
-<li>Published as: <code>oci://ghcr.io/carneirofc/baserow/charts/baserow</code></li>
+<li>Chart source: <a href="../../deploy/helm/saveroom"><code>deploy/helm/saveroom</code></a></li>
+<li>Published as: <code>oci://ghcr.io/carneirofc/baserow/charts/saveroom</code></li>
 </ul>
 <h2 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
 <ul>
@@ -3277,7 +3212,7 @@ IRSA, S3 media) see <a href="../install-on-eks/">Installing on Amazon EKS</a>.</
   The bundled subcharts are fine for evaluation but are not a database strategy.</li>
 </ul>
 <h2 id="install">Install<a class="headerlink" href="#install" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>helm<span class="w"> </span>install<span class="w"> </span>baserow<span class="w"> </span>oci://ghcr.io/carneirofc/baserow/charts/baserow<span class="w"> </span><span class="se">\</span>
+<div class="highlight"><pre><span></span><code>helm<span class="w"> </span>install<span class="w"> </span>baserow<span class="w"> </span>oci://ghcr.io/carneirofc/baserow/charts/saveroom<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--namespace<span class="w"> </span>baserow<span class="w"> </span>--create-namespace<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--set<span class="w"> </span><span class="nv">publicURL</span><span class="o">=</span>https://baserow.example.com<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--set<span class="w"> </span>ingress.enabled<span class="o">=</span><span class="nb">true</span><span class="w"> </span><span class="se">\</span>
@@ -3285,14 +3220,14 @@ IRSA, S3 media) see <a href="../install-on-eks/">Installing on Amazon EKS</a>.</
 <span class="w">  </span>--set<span class="w"> </span>ingress.host<span class="o">=</span>baserow.example.com
 </code></pre></div>
 <p>From a checkout, fetch the subcharts first:</p>
-<div class="highlight"><pre><span></span><code>helm<span class="w"> </span>dependency<span class="w"> </span>build<span class="w"> </span>deploy/helm/baserow
-helm<span class="w"> </span>install<span class="w"> </span>baserow<span class="w"> </span>deploy/helm/baserow<span class="w"> </span>-n<span class="w"> </span>baserow<span class="w"> </span>--create-namespace<span class="w"> </span>-f<span class="w"> </span>my-values.yaml
+<div class="highlight"><pre><span></span><code>helm<span class="w"> </span>dependency<span class="w"> </span>build<span class="w"> </span>deploy/helm/saveroom
+helm<span class="w"> </span>install<span class="w"> </span>baserow<span class="w"> </span>deploy/helm/saveroom<span class="w"> </span>-n<span class="w"> </span>baserow<span class="w"> </span>--create-namespace<span class="w"> </span>-f<span class="w"> </span>my-values.yaml
 </code></pre></div>
 <p>Two ready-made presets ship with the chart; copy one and edit rather than starting
 from scratch:</p>
 <ul>
-<li><a href="../../deploy/helm/baserow/values-openshift.yaml"><code>values-openshift.yaml</code></a></li>
-<li><a href="../../deploy/helm/baserow/values-eks.yaml"><code>values-eks.yaml</code></a></li>
+<li><a href="../../deploy/helm/saveroom/values-openshift.yaml"><code>values-openshift.yaml</code></a></li>
+<li><a href="../../deploy/helm/saveroom/values-eks.yaml"><code>values-eks.yaml</code></a></li>
 </ul>
 <p>Pin the chart version in anything automated: <code>--version 0.2.0</code>.</p>
 <h2 id="publicurl-is-not-optional"><code>publicURL</code> is not optional<a class="headerlink" href="#publicurl-is-not-optional" title="Permanent link">&para;</a></h2>
@@ -3303,7 +3238,7 @@ errors, or a UI that loads and then fails every API call.</p>
 <p>Set <code>extraAllowedHosts</code> (comma-separated) when the backend is also reached under other
 hostnames — a load balancer health check hitting the pod by its DNS name, for example.</p>
 <h2 id="routing">Routing<a class="headerlink" href="#routing" title="Permanent link">&para;</a></h2>
-<p>Backend and web-frontend share one origin. <code>/api</code>, <code>/ws</code>, <code>/mcp</code>, <code>/assistant</code> and
+<p>Backend and web-frontend share one origin. <code>/api</code>, <code>/ws</code> and
 <code>/static</code> go to the backend; everything else goes to the web-frontend. There is no
 reverse-proxy pod and no CORS configuration.</p>
 <h3 id="ingress-plain-kubernetes">Ingress (plain Kubernetes)<a class="headerlink" href="#ingress-plain-kubernetes" title="Permanent link">&para;</a></h3>
@@ -3387,7 +3322,7 @@ target group, so per-target settings can be applied without <code>albGroup</code
 </code></pre></div>
 <p><code>externalDatabase.url</code> sets a full DSN and overrides the discrete fields. Redis mirrors
 all of this with <code>redis.enabled</code> and <code>externalRedis.*</code>.</p>
-<p>Baserow targets <strong>PostgreSQL 18</strong>. Point it at an older server and <code>pg_dump</code>-based
+<p>Saveroom targets <strong>PostgreSQL 18</strong>. Point it at an older server and <code>pg_dump</code>-based
 features will misbehave.</p>
 <h2 id="media-storage">Media storage<a class="headerlink" href="#media-storage" title="Permanent link">&para;</a></h2>
 <h3 id="object-storage-default-recommended">Object storage (default, recommended)<a class="headerlink" href="#object-storage-default-recommended" title="Permanent link">&para;</a></h3>
@@ -3517,8 +3452,8 @@ fail the render with an explanatory message for combinations a schema cannot exp
 silently leaving them on the old values.</p>
 <h2 id="upgrading">Upgrading<a class="headerlink" href="#upgrading" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code>helm<span class="w"> </span>repo<span class="w"> </span>update<span class="w">                    </span><span class="c1"># or re-pull the OCI chart</span>
-helm<span class="w"> </span>diff<span class="w"> </span>upgrade<span class="w"> </span>baserow<span class="w"> </span>oci://ghcr.io/carneirofc/baserow/charts/baserow<span class="w"> </span>-f<span class="w"> </span>my-values.yaml
-helm<span class="w"> </span>upgrade<span class="w"> </span>baserow<span class="w"> </span>oci://ghcr.io/carneirofc/baserow/charts/baserow<span class="w"> </span>-f<span class="w"> </span>my-values.yaml
+helm<span class="w"> </span>diff<span class="w"> </span>upgrade<span class="w"> </span>baserow<span class="w"> </span>oci://ghcr.io/carneirofc/baserow/charts/saveroom<span class="w"> </span>-f<span class="w"> </span>my-values.yaml
+helm<span class="w"> </span>upgrade<span class="w"> </span>baserow<span class="w"> </span>oci://ghcr.io/carneirofc/baserow/charts/saveroom<span class="w"> </span>-f<span class="w"> </span>my-values.yaml
 </code></pre></div>
 <p><code>migrateOnStartup: true</code> (the default) runs Django migrations from the backend pod on
 boot. With more than one backend replica the migration races between pods; for a
@@ -3539,7 +3474,7 @@ without passing <code>values-openshift.yaml</code>, set it explicitly:</p>
 kubectl<span class="w"> </span>logs<span class="w"> </span>deploy/baserow-backend
 kubectl<span class="w"> </span>logs<span class="w"> </span>deploy/baserow-celery
 helm<span class="w"> </span>get<span class="w"> </span>values<span class="w"> </span>baserow
-helm<span class="w"> </span>template<span class="w"> </span>baserow<span class="w"> </span>deploy/helm/baserow<span class="w"> </span>-f<span class="w"> </span>my-values.yaml<span class="w"> </span><span class="p">|</span><span class="w"> </span>less
+helm<span class="w"> </span>template<span class="w"> </span>baserow<span class="w"> </span>deploy/helm/saveroom<span class="w"> </span>-f<span class="w"> </span>my-values.yaml<span class="w"> </span><span class="p">|</span><span class="w"> </span>less
 </code></pre></div>
 <table>
 <thead>

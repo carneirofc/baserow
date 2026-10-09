@@ -17,12 +17,12 @@
         <link rel="next" href="../realtime-presence/">
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/logo.svg">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
     
     
       
-        <title>PostgreSQL locks - Baserow (carneirofc fork) Docs</title>
+        <title>PostgreSQL locks - Saveroom Docs</title>
       
     
     
@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#postgresql-locking-and-baserow" class="md-skip">
+        <a href="#postgresql-locking-and-saveroom" class="md-skip">
           Skip to content
         </a>
       
@@ -88,10 +88,9 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-header__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+    <a href="../.." title="Saveroom Docs" class="md-header__button md-logo" aria-label="Saveroom Docs" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../../assets/logo.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -102,7 +101,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Baserow (carneirofc fork) Docs
+            Saveroom Docs
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -451,13 +450,12 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-nav__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+    <a href="../.." title="Saveroom Docs" class="md-nav__button md-logo" aria-label="Saveroom Docs" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../../assets/logo.svg" alt="logo">
 
     </a>
-    Baserow (carneirofc fork) Docs
+    Saveroom Docs
   </label>
   
     <div class="md-nav__source">
@@ -1050,7 +1048,7 @@
         
   
   <span class="md-ellipsis">
-    Understanding Baserow Formulas
+    Understanding Saveroom Formulas
   </span>
   
 
@@ -1949,27 +1947,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/mcp-server/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MCP server
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../development/read-replicas/" class="md-nav__link">
         
   
@@ -2083,27 +2060,6 @@
   
   <span class="md-ellipsis">
     Plugin basics
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../plugins/boilerplate/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Plugin boilerplate (outdated)
   </span>
   
 
@@ -2487,7 +2443,7 @@
         
   
   <span class="md-ellipsis">
-    Back up and restore Baserow
+    Back up and restore Saveroom
   </span>
   
 
@@ -2596,27 +2552,6 @@
   
   <span class="md-ellipsis">
     Grid view test plan
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../testing/mcp-test-plan/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MCP test plan
   </span>
   
 
@@ -2886,9 +2821,9 @@
   
 
 
-<h1 id="postgresql-locking-and-baserow">PostgreSQL locking and Baserow<a class="headerlink" href="#postgresql-locking-and-baserow" title="Permanent link">&para;</a></h1>
+<h1 id="postgresql-locking-and-saveroom">PostgreSQL locking and Saveroom<a class="headerlink" href="#postgresql-locking-and-saveroom" title="Permanent link">&para;</a></h1>
 <h2 id="exceeding-max_locks_per_transaction">Exceeding <code>max_locks_per_transaction</code><a class="headerlink" href="#exceeding-max_locks_per_transaction" title="Permanent link">&para;</a></h2>
-<p>In a handful of Baserow features, such as snapshotting and duplicating, we take the specified database and fetch all of its tables
+<p>In a handful of Saveroom features, such as snapshotting and duplicating, we take the specified database and fetch all of its tables
 to perform operations on them.</p>
 <p>Unfortunately if the total number of tables in the database is very high (i.e. 5,000-10,000), it's possible to exceed
 the total number of locks specified in <a href="https://www.postgresql.org/docs/current/runtime-config-locks.html">PostgreSQL's <code>max_locks_per_transaction</code></a>
@@ -2900,7 +2835,7 @@ configuration setting.</p>
 <li>Increase the value. The new value will depend on a number of factors, such as what <a href="https://www.postgresql.org/docs/current/runtime-config-connection.html#GUC-MAX-CONNECTIONS"><code>max_connections</code></a> and <a href="https://www.postgresql.org/docs/current/runtime-config-resource.html#GUC-MAX-PREPARED-TRANSACTIONS"><code>max_prepared_transactions</code></a> are set to. We recommend experimenting with higher values.</li>
 <li>For the new value to effect, restart postgresql.</li>
 </ol>
-<p>If you are hosting Baserow with a managed database, please ask your hosting provider how <code>max_locks_per_transaction</code>
+<p>If you are hosting Saveroom with a managed database, please ask your hosting provider how <code>max_locks_per_transaction</code>
 can be increased, they may be able to increase it for you.</p>
 
 

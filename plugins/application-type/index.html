@@ -11,18 +11,18 @@
         <link rel="canonical" href="https://carneirofc.github.io/baserow/plugins/application-type/">
       
       
-        <link rel="prev" href="../boilerplate/">
+        <link rel="prev" href="../introduction/">
       
       
         <link rel="next" href="../view-type/">
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/logo.svg">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
     
     
       
-        <title>Create application type - Baserow (carneirofc fork) Docs</title>
+        <title>Create application type - Saveroom Docs</title>
       
     
     
@@ -88,10 +88,9 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-header__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+    <a href="../.." title="Saveroom Docs" class="md-header__button md-logo" aria-label="Saveroom Docs" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../../assets/logo.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -102,7 +101,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Baserow (carneirofc fork) Docs
+            Saveroom Docs
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -451,13 +450,12 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-nav__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+    <a href="../.." title="Saveroom Docs" class="md-nav__button md-logo" aria-label="Saveroom Docs" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../../assets/logo.svg" alt="logo">
 
     </a>
-    Baserow (carneirofc fork) Docs
+    Saveroom Docs
   </label>
   
     <div class="md-nav__source">
@@ -1050,7 +1048,7 @@
         
   
   <span class="md-ellipsis">
-    Understanding Baserow Formulas
+    Understanding Saveroom Formulas
   </span>
   
 
@@ -1895,27 +1893,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/mcp-server/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MCP server
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../development/read-replicas/" class="md-nav__link">
         
   
@@ -2034,27 +2011,6 @@
   
   <span class="md-ellipsis">
     Plugin basics
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../boilerplate/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Plugin boilerplate (outdated)
   </span>
   
 
@@ -2496,7 +2452,7 @@
         
   
   <span class="md-ellipsis">
-    Back up and restore Baserow
+    Back up and restore Saveroom
   </span>
   
 
@@ -2605,27 +2561,6 @@
   
   <span class="md-ellipsis">
     Grid view test plan
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../testing/mcp-test-plan/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MCP test plan
   </span>
   
 
@@ -2907,13 +2842,13 @@
 <h1 id="application-type">Application type<a class="headerlink" href="#application-type" title="Permanent link">&para;</a></h1>
 <p>An application is an abstraction that a user can add to workspace. More information about 
 this can be found in the <a href="../../technical/introduction/">introduction</a>. This is a
-tutorial about how you can add your own application to Baserow via a plugin. We are 
+tutorial about how you can add your own application to Saveroom via a plugin. We are 
 going to create a text file application. In the end a user can use the "Create new" 
-button to create a text file and add it to a workspace. We expect that you are using the
-<a href="../boilerplate/">plugin boilerplate</a>.</p>
+button to create a text file and add it to a workspace. We expect that you have a plugin laid out as described in
+<a href="../creation/#plugin-architecture">plugin architecture</a>.</p>
 <h2 id="backend">Backend<a class="headerlink" href="#backend" title="Permanent link">&para;</a></h2>
 <p>We are going to start by creating a new application type instance for our text file and
-add it to the application type registry. By doing this the Baserow backend knows we 
+add it to the application type registry. By doing this the Saveroom backend knows we 
 have an additional application type names <code>text_file</code>. Creating the following python 
 classes and modify the plugins config. Every time a user creates a new text file 
 application a TextFile model instance is automatically created. It is also possible to 
@@ -2960,7 +2895,7 @@ $ baserow migrate
 <p>Lets try to create a new application with the <code>text_file</code> type by calling the 
 <code>create_application</code> endpoint. More information on how to do this can be found in the
 <a href="../../apis/rest-api/">api docs</a> and in the 
-<a href="https://api.baserow.io/api/redoc/#operation/create_application">create application api spec</a>.
+create application api spec (<code>https://YOUR_HOST/api/redoc/#operation/create_application</code>).
 If that succeeds you are ready to get to the next web-frontend part. You might want to 
 inspect the <code>backend/src/baserow/core/registries.py::ApplicationType</code> class for all the
 options.</p>
@@ -3006,7 +2941,7 @@ the state right now it does not do anything. There are several methods that can
 be overridden in the <code>TextFileApplicationType</code> class. You can for example create a new 
 route and provide that route name in the <code>getRouteName</code> method if you want to navigate 
 to that route when the user clicks on the text file in the sidebar. You might want to 
-inspect the <code>web-frontend/modules/core/applicationTypes.js</code> file in the Baserow 
+inspect the <code>web-frontend/modules/core/applicationTypes.js</code> file in the Saveroom 
 repository for all the options.</p>
 
 

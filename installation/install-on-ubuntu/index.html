@@ -17,12 +17,12 @@
         <link rel="next" href="../third-party-hosting-providers/">
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/logo.svg">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
     
     
       
-        <title>Ubuntu - Baserow (carneirofc fork) Docs</title>
+        <title>Ubuntu - Saveroom Docs</title>
       
     
     
@@ -88,10 +88,9 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-header__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+    <a href="../.." title="Saveroom Docs" class="md-header__button md-logo" aria-label="Saveroom Docs" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../../assets/logo.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -102,7 +101,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Baserow (carneirofc fork) Docs
+            Saveroom Docs
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -451,13 +450,12 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-nav__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+    <a href="../.." title="Saveroom Docs" class="md-nav__button md-logo" aria-label="Saveroom Docs" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../../assets/logo.svg" alt="logo">
 
     </a>
-    Baserow (carneirofc fork) Docs
+    Saveroom Docs
   </label>
   
     <div class="md-nav__source">
@@ -1137,7 +1135,7 @@
         
   
   <span class="md-ellipsis">
-    Understanding Baserow Formulas
+    Understanding Saveroom Formulas
   </span>
   
 
@@ -1982,27 +1980,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/mcp-server/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MCP server
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../development/read-replicas/" class="md-nav__link">
         
   
@@ -2116,27 +2093,6 @@
   
   <span class="md-ellipsis">
     Plugin basics
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../plugins/boilerplate/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Plugin boilerplate (outdated)
   </span>
   
 
@@ -2520,7 +2476,7 @@
         
   
   <span class="md-ellipsis">
-    Back up and restore Baserow
+    Back up and restore Saveroom
   </span>
   
 
@@ -2629,27 +2585,6 @@
   
   <span class="md-ellipsis">
     Grid view test plan
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../testing/mcp-test-plan/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MCP test plan
   </span>
   
 
@@ -2960,7 +2895,7 @@ https://github.com/carneirofc/baserow/tree/develop/docs .</p>
 <p>If you installed Baserow 1.8.2 or earlier using this guide in version 1.8.2 please
 See the upgrade section at the end of this guide.</p>
 </blockquote>
-<p>This guide will walk you through a production installation of Baserow using Docker 
+<p>This guide will walk you through a production installation of Saveroom using Docker 
 on Ubuntu. This document aims to provide a walkthrough for servers running Ubuntu 
 20.04.4 LTS. These instructions have been tested with a clean install of Ubuntu 
 20.04.4 LTS and a user account with root access or the ability to run Docker containers. </p>
@@ -2974,8 +2909,8 @@ sudo<span class="w"> </span>usermod<span class="w"> </span>-aG<span class="w"> <
 <span class="c1"># Refresh the group so you don't need to relog to get docker permissions</span>
 newgrp<span class="w"> </span>docker<span class="w"> </span>
 <span class="c1"># Change BASEROW_PUBLIC_URL to your domain name or http://YOUR_SERVERS_IP if you want</span>
-<span class="c1"># to access Baserow remotely.</span>
-<span class="c1"># This command will run Baserow with it's data stored in the new baserow_data docker </span>
+<span class="c1"># to access Saveroom remotely.</span>
+<span class="c1"># This command will run Saveroom with it's data stored in the new baserow_data docker </span>
 <span class="c1"># volume.</span>
 docker<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </span><span class="nv">BASEROW_PUBLIC_URL</span><span class="o">=</span>http://localhost<span class="w"> </span><span class="se">\</span>
 --name<span class="w"> </span>baserow<span class="w"> </span><span class="se">\</span>
@@ -2984,21 +2919,21 @@ docker<span class="w"> </span>run<span class="w"> </span>-e<span class="w"> </sp
 -v<span class="w"> </span>baserow_data:/baserow/data<span class="w"> </span><span class="se">\</span>
 -p<span class="w"> </span><span class="m">80</span>:80<span class="w"> </span><span class="se">\</span>
 -p<span class="w"> </span><span class="m">443</span>:443<span class="w"> </span><span class="se">\</span>
-ghcr.io/carneirofc/baserow/baserow:0.15.0
-<span class="c1"># Watch the logs for Baserow to come available by running:</span>
+ghcr.io/carneirofc/baserow:0.15.0
+<span class="c1"># Watch the logs for Saveroom to come available by running:</span>
 docker<span class="w"> </span>logs<span class="w"> </span>baserow
 </code></pre></div>
 <h2 id="further-information">Further information<a class="headerlink" href="#further-information" title="Permanent link">&para;</a></h2>
 <p>Please refer to the <a href="../install-with-docker/">Install with Docker</a> guide for how to
-configure and maintain your Docker based Baserow server.</p>
+configure and maintain your Docker based Saveroom server.</p>
 <h2 id="upgrade-from-baserow-182-or-earlier">Upgrade from Baserow 1.8.2 or earlier<a class="headerlink" href="#upgrade-from-baserow-182-or-earlier" title="Permanent link">&para;</a></h2>
 <p>The <a href="../old-install-on-ubuntu/">Old Install on Ubuntu</a> guide is now deprecated. We are 
-asking any users who wish to run Baserow on Ubuntu to instead install Docker and use our
-official Docker images to run Baserow. This guide explains how to migrate an existing
-Baserow Ubuntu install to use our official Docker images.</p>
+asking any users who wish to run Saveroom on Ubuntu to instead install Docker and use our
+official Docker images to run Saveroom. This guide explains how to migrate an existing
+Saveroom Ubuntu install to use our official Docker images.</p>
 <blockquote>
 <p>If you were previously using a separate api.your_baserow_server.com domain this is no
-longer needed. Baserow will now work on a single domain accessing the api at 
+longer needed. Saveroom will now work on a single domain accessing the api at 
 YOUR_DOMAIN.com/api. </p>
 </blockquote>
 <h3 id="migration-steps">Migration Steps<a class="headerlink" href="#migration-steps" title="Permanent link">&para;</a></h3>
@@ -3036,8 +2971,8 @@ newgrp<span class="w"> </span>docker
 
 docker<span class="w"> </span>run<span class="w"> </span>hello-world
 
-<span class="c1"># === Baserow Upgrade ===</span>
-<span class="c1"># When you are ready to stop your old Baserow server by running</span>
+<span class="c1"># === Saveroom Upgrade ===</span>
+<span class="c1"># When you are ready to stop your old Saveroom server by running</span>
 sudo<span class="w"> </span>supervisorctl<span class="w"> </span>stop<span class="w"> </span>all
 
 <span class="c1"># === Extract your secret key ===</span>
@@ -3065,14 +3000,14 @@ sudo<span class="w"> </span>systemctl<span class="w"> </span>restart<span class=
 <span class="c1"># 8. Check the logs do not have errors by running</span>
 sudo<span class="w"> </span>less<span class="w"> </span>/var/log/postgresql/postgresql-YOUR_PSQL_VERSION-main.log
 
-<span class="c1"># === Launch Baserow ===</span>
+<span class="c1"># === Launch Saveroom ===</span>
 
 <span class="c1"># Please change this variable to the password used by the baserow user in your </span>
 <span class="c1"># postgresql database.</span>
 <span class="nv">YOUR_BASEROW_DATABASE_PASSWORD</span><span class="o">=</span>yourpassword
 <span class="c1"># Change BASEROW_PUBLIC_URL to your domain name or http://YOUR_SERVERS_IP if you want</span>
-<span class="c1"># to access Baserow remotely.</span>
-<span class="c1"># This command will run Baserow so it uses your existing postgresql database and your</span>
+<span class="c1"># to access Saveroom remotely.</span>
+<span class="c1"># This command will run Saveroom so it uses your existing postgresql database and your</span>
 <span class="c1"># existing user uploaded files in /baserow/media. </span>
 <span class="c1"># It will store it's redis database and password, any data related to the automatic </span>
 <span class="c1"># HTTPS setup provided by Caddy in the new baserow_data docker volume.</span>
@@ -3091,12 +3026,12 @@ docker<span class="w"> </span>run<span class="w"> </span><span class="se">\</spa
 <span class="w">  </span>-v<span class="w"> </span>/baserow/media:/baserow/data/media<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-p<span class="w"> </span><span class="m">80</span>:80<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-p<span class="w"> </span><span class="m">443</span>:443<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>ghcr.io/carneirofc/baserow/baserow:0.15.0
-<span class="c1"># Check the logs and wait for Baserow to become available</span>
+<span class="w">  </span>ghcr.io/carneirofc/baserow:0.15.0
+<span class="c1"># Check the logs and wait for Saveroom to become available</span>
 docker<span class="w"> </span>logs<span class="w"> </span>baserow
 </code></pre></div>
 <p>Please refer to the <a href="../install-with-docker/">Install with Docker</a> guide in the future
-and for more information on how to manage your Docker based Baserow install.</p>
+and for more information on how to manage your Docker based Saveroom install.</p>
 
 
 

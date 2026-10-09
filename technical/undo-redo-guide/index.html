@@ -17,12 +17,12 @@
         <link rel="next" href="../permissions-guide/">
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/logo.svg">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
     
     
       
-        <title>Undo Redo Technical Guide - Baserow (carneirofc fork) Docs</title>
+        <title>Undo Redo Technical Guide - Saveroom Docs</title>
       
     
     
@@ -88,10 +88,9 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-header__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+    <a href="../.." title="Saveroom Docs" class="md-header__button md-logo" aria-label="Saveroom Docs" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../../assets/logo.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -102,7 +101,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Baserow (carneirofc fork) Docs
+            Saveroom Docs
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -451,13 +450,12 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-nav__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+    <a href="../.." title="Saveroom Docs" class="md-nav__button md-logo" aria-label="Saveroom Docs" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../../assets/logo.svg" alt="logo">
 
     </a>
-    Baserow (carneirofc fork) Docs
+    Saveroom Docs
   </label>
   
     <div class="md-nav__source">
@@ -1050,7 +1048,7 @@
         
   
   <span class="md-ellipsis">
-    Understanding Baserow Formulas
+    Understanding Saveroom Formulas
   </span>
   
 
@@ -1985,27 +1983,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/mcp-server/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MCP server
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../development/read-replicas/" class="md-nav__link">
         
   
@@ -2119,27 +2096,6 @@
   
   <span class="md-ellipsis">
     Plugin basics
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../plugins/boilerplate/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Plugin boilerplate (outdated)
   </span>
   
 
@@ -2523,7 +2479,7 @@
         
   
   <span class="md-ellipsis">
-    Back up and restore Baserow
+    Back up and restore Saveroom
   </span>
   
 
@@ -2632,27 +2588,6 @@
   
   <span class="md-ellipsis">
     Grid view test plan
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../testing/mcp-test-plan/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MCP test plan
   </span>
   
 
@@ -2961,7 +2896,7 @@
 <h1 id="undoredo-technical-guide">Undo/Redo Technical Guide<a class="headerlink" href="#undoredo-technical-guide" title="Permanent link">&para;</a></h1>
 <h2 id="actions">Actions<a class="headerlink" href="#actions" title="Permanent link">&para;</a></h2>
 <p>A ActionType is a class which defines how to <code>do</code>, <code>undo</code> and <code>redo</code> a particular action
-in Baserow. It can freely use Handlers to do the logic, but it almost certainly
+in Saveroom. It can freely use Handlers to do the logic, but it almost certainly
 shouldn't call any other ActionType's unless it is some sort of <code>meta</code> ActionAction if
 we ever have one. ActionTypes will be retrieved from a registry given a type and
 triggered by <code>API</code> methods (
@@ -3026,16 +2961,16 @@ need three pieces of information:</p>
    undo/redo the action. For example a user might be redoing a deletion of a workspace, but
    if they have been banned from the workspace in the meantime they should be prevented
    from redoing.</li>
-<li>A <code>client session id</code>. Every time a user does an action in Baserow we check the
+<li>A <code>client session id</code>. Every time a user does an action in Saveroom we check the
    <code>ClientSessionId</code> header. If set we associate the action with that <code>ClientSessionId</code>.
    When a user then goes to undo or redo they also provide this header and we only let
    them undo/redo actions with a matching <code>ClientSessionId</code>. This lets us have different
    undo/redo histories per tab the user has open as each tab will generate a
    unique <code>ClientSessionId</code>.</li>
-<li>A <code>category</code>. Every time an action is performed in Baserow we associate it with a
+<li>A <code>category</code>. Every time an action is performed in Saveroom we associate it with a
    particular category. This is literally just a text column on the <code>Action</code> model with
    values like <code>root</code> or <code>table10</code> or <code>workspace20</code>. An actions category describes in which
-   logical part of Baserow the action was performed. The <code>ActionType</code> implementation
+   logical part of Saveroom the action was performed. The <code>ActionType</code> implementation
    decides what to set its category to when calling <code>cls.register_action</code>. When an
    undo/redo occurs the web-frontend sends the categories the user is currently looking
    at. For example if I have table 20 open, with workspace 6 in the side bar and I press

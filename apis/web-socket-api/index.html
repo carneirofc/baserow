@@ -17,12 +17,12 @@
         <link rel="next" href="../deprecations/">
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/logo.svg">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
     
     
       
-        <title>WebSocket API - Baserow (carneirofc fork) Docs</title>
+        <title>WebSocket API - Saveroom Docs</title>
       
     
     
@@ -88,10 +88,9 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-header__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+    <a href="../.." title="Saveroom Docs" class="md-header__button md-logo" aria-label="Saveroom Docs" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../../assets/logo.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -102,7 +101,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Baserow (carneirofc fork) Docs
+            Saveroom Docs
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -451,13 +450,12 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-nav__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+    <a href="../.." title="Saveroom Docs" class="md-nav__button md-logo" aria-label="Saveroom Docs" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../../assets/logo.svg" alt="logo">
 
     </a>
-    Baserow (carneirofc fork) Docs
+    Saveroom Docs
   </label>
   
     <div class="md-nav__source">
@@ -1050,7 +1048,7 @@
         
   
   <span class="md-ellipsis">
-    Understanding Baserow Formulas
+    Understanding Saveroom Formulas
   </span>
   
 
@@ -2042,27 +2040,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/mcp-server/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MCP server
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../development/read-replicas/" class="md-nav__link">
         
   
@@ -2176,27 +2153,6 @@
   
   <span class="md-ellipsis">
     Plugin basics
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../plugins/boilerplate/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Plugin boilerplate (outdated)
   </span>
   
 
@@ -2580,7 +2536,7 @@
         
   
   <span class="md-ellipsis">
-    Back up and restore Baserow
+    Back up and restore Saveroom
   </span>
   
 
@@ -2689,27 +2645,6 @@
   
   <span class="md-ellipsis">
     Grid view test plan
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../testing/mcp-test-plan/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MCP test plan
   </span>
   
 
@@ -3083,11 +3018,11 @@ working with the most recent data without reloading the page.</p>
 <p>In order to connect to the web socket you first need to authenticate via the REST API
 and obtain a <a href="https://jwt.io/">JSON Web Token</a>. After that you can connect to the
 following URL providing your JWT as query parameter: 
-<code>wss://api.baserow.io/ws/core/?jwt_token=YOUR_JWT_TOKEN</code>. If you self host
-you need to replace <code>api.baserow.io</code> with your own backend URL. The web socket
+<code>wss://YOUR_HOST/ws/core/?jwt_token=YOUR_JWT_TOKEN</code>, where <code>YOUR_HOST</code> is
+the address of your own backend. The web socket
 connection only receives messages targeted at the workspaces that the authenticated user
 belongs to. Below is an example of how to connect to the web socket in JavaScript.</p>
-<div class="highlight"><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">socket</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">WebSocket</span><span class="p">(</span><span class="s1">'wss://api.baserow.io/ws/core/?jwt_token=YOUR_JWT_TOKEN'</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">socket</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">WebSocket</span><span class="p">(</span><span class="s1">'wss://YOUR_HOST/ws/core/?jwt_token=YOUR_JWT_TOKEN'</span><span class="p">)</span>
 <span class="nx">socket</span><span class="p">.</span><span class="nx">onopen</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'The connection is made'</span><span class="p">)</span>
 <span class="p">}</span>
@@ -3133,7 +3068,7 @@ and an example HTTP request containing the <code>WebSocketId</code> header.</p>
 <span class="p">}</span>
 </code></pre></div>
 <div class="highlight"><pre><span></span><code>PATCH /api/applications/1/
-Host: api.baserow.io
+Host: YOUR_HOST
 Content-Type: application/json
 WebSocketId: 934254ab-0c87-4dbc-9d71-7eeab029296c
 
@@ -3147,7 +3082,7 @@ but we also have messages related to certain pages, for example to the table pag
 Because we don't want to cause an overload of messages you can subscribe to a page of your interest. It is also possible to be subscribed to multiple pages. If
 successful you will receive messages related to that page. You will need to manually unsubscribe from a page to stop receiving updates.</p>
 <h3 id="table-page">Table page<a class="headerlink" href="#table-page" title="Permanent link">&para;</a></h3>
-<p>Subscribing to a table page will request updates related to a Baserow table that will
+<p>Subscribing to a table page will request updates related to a Saveroom table that will
 give you information about new rows, row updates, and other relevant information. </p>
 <p>A table page expects the<code>table_id</code> parameter. Below you will find an example how to subscribe to that page.</p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
@@ -3166,7 +3101,7 @@ are subscribed to the page.</p>
 <span class="p">}</span>
 </code></pre></div>
 <h3 id="row-page">Row page<a class="headerlink" href="#row-page" title="Permanent link">&para;</a></h3>
-<p>Subscribing to a Row page will request additional updates related to a Baserow row of a particular table that will give you information like row history updates. Please note that to get updates such as row deletions and similar, you should use the table page described above.</p>
+<p>Subscribing to a Row page will request additional updates related to a Saveroom row of a particular table that will give you information like row history updates. Please note that to get updates such as row deletions and similar, you should use the table page described above.</p>
 <p>A Row page expects the<code>table_id</code> and <code>row_id</code> parameters. Below you will find an example how to subscribe to that page.</p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
 <span class="w">  </span><span class="nt">"page"</span><span class="p">:</span><span class="w"> </span><span class="s2">"row"</span><span class="p">,</span>

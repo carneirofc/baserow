@@ -14,15 +14,15 @@
         <link rel="prev" href="../building-and-running-production-images/">
       
       
-        <link rel="next" href="../mcp-server/">
+        <link rel="next" href="../read-replicas/">
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/logo.svg">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
     
     
       
-        <title>CI/CD - Baserow (carneirofc fork) Docs</title>
+        <title>CI/CD - Saveroom Docs</title>
       
     
     
@@ -88,10 +88,9 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-header__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+    <a href="../.." title="Saveroom Docs" class="md-header__button md-logo" aria-label="Saveroom Docs" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../../assets/logo.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -102,7 +101,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Baserow (carneirofc fork) Docs
+            Saveroom Docs
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -451,13 +450,12 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-nav__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+    <a href="../.." title="Saveroom Docs" class="md-nav__button md-logo" aria-label="Saveroom Docs" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../../assets/logo.svg" alt="logo">
 
     </a>
-    Baserow (carneirofc fork) Docs
+    Saveroom Docs
   </label>
   
     <div class="md-nav__source">
@@ -1050,7 +1048,7 @@
         
   
   <span class="md-ellipsis">
-    Understanding Baserow Formulas
+    Understanding Saveroom Formulas
   </span>
   
 
@@ -1976,27 +1974,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../mcp-server/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MCP server
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../read-replicas/" class="md-nav__link">
         
   
@@ -2110,27 +2087,6 @@
   
   <span class="md-ellipsis">
     Plugin basics
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../plugins/boilerplate/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Plugin boilerplate (outdated)
   </span>
   
 
@@ -2514,7 +2470,7 @@
         
   
   <span class="md-ellipsis">
-    Back up and restore Baserow
+    Back up and restore Saveroom
   </span>
   
 
@@ -2623,27 +2579,6 @@
   
   <span class="md-ellipsis">
     Grid view test plan
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../testing/mcp-test-plan/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MCP test plan
   </span>
   
 
@@ -2976,7 +2911,7 @@ PR does not run the backend tests, etc.). The jobs are:</p>
 <li><strong>Lint</strong> — <code>backend-lint</code> (Ruff), <code>frontend-lint</code> (ESLint/Stylelint/Prettier),
   <code>dockerfile-lint</code> (hadolint).</li>
 <li><strong>Tests</strong> — <code>backend-check-startup</code>, <code>test-backend</code> (parallel groups),
-  <code>test-frontend</code> (sharded Vitest), <code>test-zapier</code>, <code>check-mjml-compiled</code>,
+  <code>test-frontend</code> (sharded Vitest), <code>check-mjml-compiled</code>,
   <code>test-e2e</code> (sharded), plus <code>collect-coverage</code> and <code>collect-e2e-reports</code>.</li>
 <li><strong>build-backend</strong> / <strong>build-frontend</strong> — build the CI Docker images the test jobs run
   inside, pushed to GHCR with a short-lived <code>ci-&lt;sha&gt;</code> tag.</li>
@@ -3005,7 +2940,7 @@ image contains the fork's changes.</p>
 Steps 1 and 2 also push short-lived <code>backend:build-&lt;sha&gt;</code> / <code>web-frontend:build-&lt;sha&gt;</code>
 intermediates that the all-in-one build consumes. Every published image is CVE-scanned
 after the push. <code>publish-helm-chart.yml</code> publishes the chart on the same tag as
-<code>oci://ghcr.io/&lt;owner&gt;/&lt;repo&gt;/charts/baserow:&lt;Chart.yaml version&gt;</code>.</p>
+<code>oci://ghcr.io/&lt;owner&gt;/&lt;repo&gt;/charts/saveroom:&lt;Chart.yaml version&gt;</code>.</p>
 <p>The GHCR packages are public, so the images and chart pull anonymously. A newly created
 package starts private: make it public once under its package settings (<strong>Danger Zone →
 Change visibility</strong>). That change cannot be undone.</p>
@@ -3014,7 +2949,7 @@ Change visibility</strong>). That change cannot be undone.</p>
 <li>On <code>develop</code>, bump the release version everywhere it is pinned:</li>
 <li>the <code>BASEROW_VERSION</code> defaults in <code>docker-compose.yml</code> and
      <code>deploy/all-in-one/docker-compose.yml</code>;</li>
-<li><code>appVersion</code> in <code>deploy/helm/baserow/Chart.yaml</code>, plus <code>version</code> if the chart
+<li><code>appVersion</code> in <code>deploy/helm/saveroom/Chart.yaml</code>, plus <code>version</code> if the chart
      changed since its last publish;</li>
 <li>the <code>ghcr.io/carneirofc/baserow/*:&lt;version&gt;</code> image tags in <code>docs/installation/</code>,
      <code>docs/plugins/</code> and <code>deploy/all-in-one/README.md</code>, the image tag in

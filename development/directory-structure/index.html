@@ -17,12 +17,12 @@
         <link rel="next" href="../tools/">
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/logo.svg">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
     
     
       
-        <title>Directory structure - Baserow (carneirofc fork) Docs</title>
+        <title>Directory structure - Saveroom Docs</title>
       
     
     
@@ -88,10 +88,9 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-header__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+    <a href="../.." title="Saveroom Docs" class="md-header__button md-logo" aria-label="Saveroom Docs" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../../assets/logo.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -102,7 +101,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Baserow (carneirofc fork) Docs
+            Saveroom Docs
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -451,13 +450,12 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-nav__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+    <a href="../.." title="Saveroom Docs" class="md-nav__button md-logo" aria-label="Saveroom Docs" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../../assets/logo.svg" alt="logo">
 
     </a>
-    Baserow (carneirofc fork) Docs
+    Saveroom Docs
   </label>
   
     <div class="md-nav__source">
@@ -1050,7 +1048,7 @@
         
   
   <span class="md-ellipsis">
-    Understanding Baserow Formulas
+    Understanding Saveroom Formulas
   </span>
   
 
@@ -2033,27 +2031,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../mcp-server/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MCP server
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../read-replicas/" class="md-nav__link">
         
   
@@ -2167,27 +2144,6 @@
   
   <span class="md-ellipsis">
     Plugin basics
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../plugins/boilerplate/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Plugin boilerplate (outdated)
   </span>
   
 
@@ -2571,7 +2527,7 @@
         
   
   <span class="md-ellipsis">
-    Back up and restore Baserow
+    Back up and restore Saveroom
   </span>
   
 
@@ -2680,27 +2636,6 @@
   
   <span class="md-ellipsis">
     Grid view test plan
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../testing/mcp-test-plan/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MCP test plan
   </span>
   
 
@@ -3071,7 +3006,7 @@ This whole directory is also added to the backend container.</p>
 <li><code>.flake8</code>: contains the flake8 linter configuration.</li>
 <li><code>baserow</code>: is actually a python file, that just calls the management.py file in the
   source directory. This file is registered as a command via the <code>pyproject.toml</code>. When
-  someone adds Baserow as a dependency they can use the command <code>baserow migrate</code> which
+  someone adds Saveroom as a dependency they can use the command <code>baserow migrate</code> which
   is the same as <code>python src/baserow/manage.py migrate</code>.</li>
 <li><code>Dockerfile</code>: Builds an image containing just the backend service, build with
    <code>--target dev</code> to instead get a dev ready image.</li>
@@ -3080,9 +3015,9 @@ This whole directory is also added to the backend container.</p>
 <li><code>pytest.ini</code>: pytest configuration when running the tests.</li>
 </ul>
 <h3 id="src">src<a class="headerlink" href="#src" title="Permanent link">&para;</a></h3>
-<p>The src directory contains the full source code of the Baserow backend module.</p>
+<p>The src directory contains the full source code of the Saveroom backend module.</p>
 <ul>
-<li><code>api</code>: is a Django app that exposes Baserow via a REST API. Even though it is an
+<li><code>api</code>: is a Django app that exposes Saveroom via a REST API. Even though it is an
   optional app it is installed by default. It's highly recommended to use this package.
   It contains several directories each with their urls, views, serializers, and errors
   related to a specific part. For example, the workspaces and application both have their
@@ -3098,7 +3033,7 @@ This whole directory is also added to the backend container.</p>
   optional.</li>
 <li><code>core</code>: is a required app that is installed by default. It contains some abstract
   concepts that are reused throughout the backend. It also contains the code for the
-  workspace and application concepts that are at the core of Baserow. Of course there are
+  workspace and application concepts that are at the core of Saveroom. Of course there are
   also helper classes, functions, and decorators that can be reused.</li>
 <li><code>manage.py</code>: the Django manage.py file to execute management commands.</li>
 </ul>
@@ -3152,9 +3087,9 @@ aren't maintained at this point, the directory structure is off. The specs shoul
 the matching modules directory.</p>
 <h2 id="docs">docs<a class="headerlink" href="#docs" title="Permanent link">&para;</a></h2>
 <p>The docs folder contains markdown files with the full developer documentation of
-Baserow.</p>
+Saveroom.</p>
 <h2 id="media">media<a class="headerlink" href="#media" title="Permanent link">&para;</a></h2>
-<p>Contains a nginx based docker image which is used in Baserow's docker setup to serve
+<p>Contains a nginx based docker image which is used in Saveroom's docker setup to serve
 any uploaded user files. This is needed as Django will not serve media files when
 not in debug mode and instead requires you to run your own web server to serve these
 assets.</p>

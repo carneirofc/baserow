@@ -17,12 +17,12 @@
         <link rel="next" href="../upgrade-embedded-postgres/">
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/logo.svg">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
     
     
       
-        <title>Migrate from user tables database - Baserow (carneirofc fork) Docs</title>
+        <title>Migrate from user tables database - Saveroom Docs</title>
       
     
     
@@ -88,10 +88,9 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-header__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+    <a href="../.." title="Saveroom Docs" class="md-header__button md-logo" aria-label="Saveroom Docs" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../../assets/logo.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -102,7 +101,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Baserow (carneirofc fork) Docs
+            Saveroom Docs
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -451,13 +450,12 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-nav__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+    <a href="../.." title="Saveroom Docs" class="md-nav__button md-logo" aria-label="Saveroom Docs" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../../assets/logo.svg" alt="logo">
 
     </a>
-    Baserow (carneirofc fork) Docs
+    Saveroom Docs
   </label>
   
     <div class="md-nav__source">
@@ -1050,7 +1048,7 @@
         
   
   <span class="md-ellipsis">
-    Understanding Baserow Formulas
+    Understanding Saveroom Formulas
   </span>
   
 
@@ -1895,27 +1893,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/mcp-server/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MCP server
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../development/read-replicas/" class="md-nav__link">
         
   
@@ -2029,27 +2006,6 @@
   
   <span class="md-ellipsis">
     Plugin basics
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../plugins/boilerplate/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Plugin boilerplate (outdated)
   </span>
   
 
@@ -2438,7 +2394,7 @@
         
   
   <span class="md-ellipsis">
-    Back up and restore Baserow
+    Back up and restore Saveroom
   </span>
   
 
@@ -2605,27 +2561,6 @@
   
   <span class="md-ellipsis">
     Grid view test plan
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../testing/mcp-test-plan/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MCP test plan
   </span>
   
 
@@ -2906,17 +2841,17 @@
 
 <h1 id="migrate-from-users-tables-database-runbook">Migrate From Users Tables Database Runbook<a class="headerlink" href="#migrate-from-users-tables-database-runbook" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p>Users who have not manually changed their default Baserow backend Django configuration
+<p>Users who have not manually changed their default Saveroom backend Django configuration
 to enable a separate <code>USER_TABLES_DATABASE</code> do not need to follow this runbook, will
 not been affected by the database inconstancy issues described below and finally do
 not need to perform any special upgrade steps for version 1.5 or later. As this
-setting is an internal undocumented Baserow setting, we believe/hope no users have
-been using this setting and this guide is primarily for internal Baserow dev
+setting is an internal undocumented Saveroom setting, we believe/hope no users have
+been using this setting and this guide is primarily for internal Saveroom dev
 reference.</p>
 </blockquote>
 <p>This runbook describes how to migrate away from storing user tables in a separate user
-tables database back to storing them in the same database as the rest of Baserow's
-tables. If you have set the internal Baserow config parameter <code>USER_TABLES_DATABASE</code>
+tables database back to storing them in the same database as the rest of Saveroom's
+tables. If you have set the internal Saveroom config parameter <code>USER_TABLES_DATABASE</code>
 present in versions prior to 1.5 to connection for another database, then you are
 storing the user tables in another database and must follow this migration to upgrade to
 1.5 or later.</p>
@@ -2924,13 +2859,13 @@ storing the user tables in another database and must follow this migration to up
 incredibly dangerous to enable. This is because any crash that happened in a transaction
 after a change had been made to the <code>USER_TABLES_DATABASE</code>
 would not roll back the changes in the <code>USER_TABLES_DATABASE</code>, but it would rollback
-changes in the normal Baserow database. This resulted in database inconstancy issues
-where Baserow believed a table/field/relation existed when in-fact it didn't, or vice
+changes in the normal Saveroom database. This resulted in database inconstancy issues
+where Saveroom believed a table/field/relation existed when in-fact it didn't, or vice
 versa.</p>
 <h2 id="steps-to-migrate">Steps to Migrate<a class="headerlink" href="#steps-to-migrate" title="Permanent link">&para;</a></h2>
 <ol>
 <li>Confirm you are actually storing user tables in a separate database and need to
-   follow this migration. To check this your normal Baserow database should not contain
+   follow this migration. To check this your normal Saveroom database should not contain
    any <code>table_XXX</code> and <code>database_relation_XXX</code> tables. Instead you will find all of
    these tables in an entirely separate database you manually configured
    <code>USER_TABLES_DATABASE</code> to point to. Inside this other database you should see your
@@ -2939,19 +2874,19 @@ versa.</p>
    <code>backend/src/baserow/config/settings/base.py</code> <code>USER_TABLES_DATABASE</code> is set to
    <code>default</code> (and not overridden by other config files you might be using) then you do
    not need to follow this guide and can stop here.</li>
-<li>Ensure you have taken a recoverable backup of your Baserow database.</li>
-<li>Shut-down your Baserow server to ensure no further changes can be made to the
+<li>Ensure you have taken a recoverable backup of your Saveroom database.</li>
+<li>Shut-down your Saveroom server to ensure no further changes can be made to the
    database during the migration period.</li>
-<li>Upgrade your version of Baserow, however leave the django connection pointed to by
+<li>Upgrade your version of Saveroom, however leave the django connection pointed to by
    your <code>USER_TABLES_DATABASE</code> setting.</li>
 <li>Ensure you have the command line utilities <code>pg_dump</code> and <code>psql</code> available, these can
    be installed in ubuntu by running <code>sudo apt install postgresql-client</code></li>
 <li>If you are connecting to a connection pool service like pgbouncer with your instance
-   of Baserow, you need to ensure <code>copy_tables</code> will not run using a pooled connection.<ol>
+   of Saveroom, you need to ensure <code>copy_tables</code> will not run using a pooled connection.<ol>
 <li>This is because <code>copy_tables</code> uses both <code>pg_dump</code> and <code>psql</code> which when combined
    will change the search_path of the current connection. If this happens to a
    shared pooled connection then future clients of the connection will encounter
-   errors as if the Baserow tables don't exist. You must set the <code>DATABASE_HOST</code>
+   errors as if the Saveroom tables don't exist. You must set the <code>DATABASE_HOST</code>
    , <code>DATABASE_PORT</code> and <code>DATABASE_NAME</code> environment variables before running the
    <code>copy_tables</code> command to ensure you connect directly to the database instead of
    via pg_bouncer. If you accidentally run <code>copy_tables</code> via a pooled connection you
@@ -2969,7 +2904,7 @@ versa.</p>
 </li>
 <li>Confirm the dry run looks correct and remove <code>--dry-run</code> to the above command to
    perform the real copy.</li>
-<li>Start-up your Baserow server.</li>
+<li>Start-up your Saveroom server.</li>
 <li>Confirm you can see your previous databases, tables and can create new ones.</li>
 <li>When confident everything is working as expected, all data has been copied and you
    have sufficient back-ups you can delete the old <code>USER_TABLES_DATABASE</code> entirely.</li>
@@ -2978,8 +2913,8 @@ versa.</p>
 </ol>
 <h2 id="steps-to-rollback">Steps to Rollback<a class="headerlink" href="#steps-to-rollback" title="Permanent link">&para;</a></h2>
 <ol>
-<li>Simply down-grade your version of Baserow to the previous version.</li>
-<li>If you successfully ran the <code>copy_tables</code> command above your default Baserow database
+<li>Simply down-grade your version of Saveroom to the previous version.</li>
+<li>If you successfully ran the <code>copy_tables</code> command above your default Saveroom database
    will now have a copy of all the user tables. Before attempting to migrate again you
    need to delete these copied tables otherwise when you come to repeat the command it
    will not overwrite the copies with potential new user table data. If you know the

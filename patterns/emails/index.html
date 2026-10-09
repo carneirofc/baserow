@@ -17,12 +17,12 @@
         <link rel="next" href="../forms/">
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/logo.svg">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
     
     
       
-        <title>Emails - Baserow (carneirofc fork) Docs</title>
+        <title>Emails - Saveroom Docs</title>
       
     
     
@@ -88,10 +88,9 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-header__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+    <a href="../.." title="Saveroom Docs" class="md-header__button md-logo" aria-label="Saveroom Docs" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../../assets/logo.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -102,7 +101,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Baserow (carneirofc fork) Docs
+            Saveroom Docs
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -451,13 +450,12 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-nav__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+    <a href="../.." title="Saveroom Docs" class="md-nav__button md-logo" aria-label="Saveroom Docs" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../../assets/logo.svg" alt="logo">
 
     </a>
-    Baserow (carneirofc fork) Docs
+    Saveroom Docs
   </label>
   
     <div class="md-nav__source">
@@ -1050,7 +1048,7 @@
         
   
   <span class="md-ellipsis">
-    Understanding Baserow Formulas
+    Understanding Saveroom Formulas
   </span>
   
 
@@ -1895,27 +1893,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/mcp-server/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MCP server
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../development/read-replicas/" class="md-nav__link">
         
   
@@ -2029,27 +2006,6 @@
   
   <span class="md-ellipsis">
     Plugin basics
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../plugins/boilerplate/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Plugin boilerplate (outdated)
   </span>
   
 
@@ -2544,7 +2500,7 @@
         
   
   <span class="md-ellipsis">
-    Back up and restore Baserow
+    Back up and restore Saveroom
   </span>
   
 
@@ -2653,27 +2609,6 @@
   
   <span class="md-ellipsis">
     Grid view test plan
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../testing/mcp-test-plan/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MCP test plan
   </span>
   
 
@@ -3002,7 +2937,7 @@
 
 <h1 id="emails">Emails<a class="headerlink" href="#emails" title="Permanent link">&para;</a></h1>
 <h2 id="creating-a-new-email-template">Creating a new email template<a class="headerlink" href="#creating-a-new-email-template" title="Permanent link">&para;</a></h2>
-<p>Baserow uses <a href="https://mjml.io/">MJML</a> framework to define email templates. These templates have to be compiled into their HTML versions so that they can be used by Django.</p>
+<p>Saveroom uses <a href="https://mjml.io/">MJML</a> framework to define email templates. These templates have to be compiled into their HTML versions so that they can be used by Django.</p>
 <p>Start by creating a new template (<code>*.mjml.eta</code>) in the core email template folder (<code>backend/src/baserow/core/templates/baserow</code>) or in the template folder of the contrib module that the template belongs to.</p>
 <p>The template should be in MJML format and will typically inherit a base layout (<code>base.layout.eta</code>) common to all emails. Besides formatting itself, the template should be a normal Django template, using the Django template language, and should utilize standard Django syntax for translations.</p>
 <p>The template will look something like this:</p>
@@ -3022,12 +2957,12 @@
   <span class="p">&lt;/</span><span class="nt">mj-column</span><span class="p">&gt;</span>
 <span class="p">&lt;/</span><span class="nt">mj-section</span><span class="p">&gt;</span>
 </code></pre></div>
-<p>If you are using the Baserow Docker Compose development environment (<code>just dc-dev up -d</code>), the new template should be automatically compiled into its HTML version, resulting in a new file. If that's not the case, follow the instructions in <code>backend/email_compiler</code> to compile the template manually.</p>
+<p>If you are using the Saveroom Docker Compose development environment (<code>just dc-dev up -d</code>), the new template should be automatically compiled into its HTML version, resulting in a new file. If that's not the case, follow the instructions in <code>backend/email_compiler</code> to compile the template manually.</p>
 <h3 id="do">Do<a class="headerlink" href="#do" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Make sure the received email has both HTML and plain text version.</li>
 <li>Make sure the whole content of the email template is translatable.</li>
-<li>Make sure the links lead correctly to Baserow instance without hard-coding the URL.</li>
+<li>Make sure the links lead correctly to Saveroom instance without hard-coding the URL.</li>
 </ul>
 <h3 id="dont">Don't<a class="headerlink" href="#dont" title="Permanent link">&para;</a></h3>
 <ul>
@@ -3041,7 +2976,7 @@
 <li>Use <code>with translation.override(user.profile.language)</code> to send emails in the user's selected language.</li>
 </ul>
 <h2 id="testing">Testing<a class="headerlink" href="#testing" title="Permanent link">&para;</a></h2>
-<p>The Baserow dev environment automatically starts an instance of <a href="https://github.com/mailhog/MailHog">MailHog</a> at <a href="http://localhost:8025/">http://localhost:8025/</a>. You can verify that the emails are formatted and sent correctly there.</p>
+<p>The Saveroom dev environment automatically starts an instance of <a href="https://github.com/mailhog/MailHog">MailHog</a> at <a href="http://localhost:8025/">http://localhost:8025/</a>. You can verify that the emails are formatted and sent correctly there.</p>
 <p><strong>Docker development:</strong>
 <div class="highlight"><pre><span></span><code>just<span class="w"> </span>dc-dev<span class="w"> </span>up<span class="w"> </span>-d<span class="w">    </span><span class="c1"># MailHog is included</span>
 </code></pre></div></p>

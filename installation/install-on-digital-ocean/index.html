@@ -17,12 +17,12 @@
         <link rel="next" href="../install-on-railway/">
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/logo.svg">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
     
     
       
-        <title>Digital Ocean Apps - Baserow (carneirofc fork) Docs</title>
+        <title>Digital Ocean Apps - Saveroom Docs</title>
       
     
     
@@ -88,10 +88,9 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-header__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+    <a href="../.." title="Saveroom Docs" class="md-header__button md-logo" aria-label="Saveroom Docs" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../../assets/logo.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -102,7 +101,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Baserow (carneirofc fork) Docs
+            Saveroom Docs
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -451,13 +450,12 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-nav__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+    <a href="../.." title="Saveroom Docs" class="md-nav__button md-logo" aria-label="Saveroom Docs" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../../assets/logo.svg" alt="logo">
 
     </a>
-    Baserow (carneirofc fork) Docs
+    Saveroom Docs
   </label>
   
     <div class="md-nav__source">
@@ -1257,7 +1255,7 @@
         
   
   <span class="md-ellipsis">
-    Understanding Baserow Formulas
+    Understanding Saveroom Formulas
   </span>
   
 
@@ -2102,27 +2100,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/mcp-server/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MCP server
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../development/read-replicas/" class="md-nav__link">
         
   
@@ -2236,27 +2213,6 @@
   
   <span class="md-ellipsis">
     Plugin basics
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../plugins/boilerplate/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Plugin boilerplate (outdated)
   </span>
   
 
@@ -2640,7 +2596,7 @@
         
   
   <span class="md-ellipsis">
-    Back up and restore Baserow
+    Back up and restore Saveroom
   </span>
   
 
@@ -2749,27 +2705,6 @@
   
   <span class="md-ellipsis">
     Grid view test plan
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../testing/mcp-test-plan/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MCP test plan
   </span>
   
 
@@ -3194,7 +3129,7 @@
 
 <h1 id="installation-on-digital-ocean-apps">Installation on Digital Ocean Apps<a class="headerlink" href="#installation-on-digital-ocean-apps" title="Permanent link">&para;</a></h1>
 <p>This guide will walk you through deploying on the Digital Ocean Apps platform. It's a
-step-by-step guide that helps you install Baserow from scratch in a scalable way.</p>
+step-by-step guide that helps you install Saveroom from scratch in a scalable way.</p>
 <h2 id="create-managed-database">Create managed database<a class="headerlink" href="#create-managed-database" title="Permanent link">&para;</a></h2>
 <p>The app platform doesn't support volumes, and offers horizontal scalability. That means
 the application that runs will be stateless. We will therefore need to create a managed
@@ -3204,7 +3139,7 @@ the app depends on these resources to exist, we have to create those first.</p>
 <p>Navigate to the <code>Databases</code> page in the left sidebar of your Digital Ocean dashboard.
 Click on <code>Create Database</code> in the top right corner. Choose your region, it's important
 that all the created servers are in the same region, select PostgreSQL v15, and choose
-the server specs you would like to have. Baserow is compatible with 1vCPU and 1GB
+the server specs you would like to have. Saveroom is compatible with 1vCPU and 1GB
 RAM.</p>
 <p>While the database server is being created, you can already find the <code>Connection
 Details</code> on the database detail page. Click on the dropdown in that top right corner,
@@ -3214,7 +3149,7 @@ later.</p>
 <p>Navigate to the <code>Databases</code> page in the left sidebar of your Digital Ocean dashboard.
 Click on <code>Create Database</code> in the top right corner. Choose your region, it's important
 that all the created servers are in the same region, select Redis v7, and choose the
-server specs you would like to have. Baserow is compatible with 1vCPU and 1GB RAM.</p>
+server specs you would like to have. Saveroom is compatible with 1vCPU and 1GB RAM.</p>
 <p>While the database server is being created, you can already find the <code>Connection
 Details</code> on the database detail page. Click on the dropdown in that top right corner,
 and switch to <code>Connection String</code>. Copy that string because you're going to need it
@@ -3231,7 +3166,7 @@ Keys</code> tab, click on <code>Generate New Key</code>, and create a new key. C
 on <code>Create App</code>, choose a container image from <code>GitHub Container Registry</code> (GHCR), and
 fill out the following. The image is public, so no registry credentials are needed:</p>
 <p>Registry (owner): <code>carneirofc</code>
-Repository: <code>baserow/baserow</code>
+Repository: <code>ghcr.io/carneirofc/baserow</code>
 Image tag or digest: <code>0.6.0</code></p>
 <p>Click on <code>Next</code>, then on the <code>Edit</code> button of the <code>baserow-baserow</code> web service. Here
 you must change the HTTP Port to 80, and then click on <code>Back</code>. Click on the <code>Next</code>
@@ -3276,16 +3211,16 @@ look like <code>https://example.com</code> and not <code>https://example.com/</c
 the cheapest managed database plan. If you wish to enable it, then you must set the
 environment variable <code>BASEROW_TRIGGER_SYNC_TEMPLATES_AFTER_MIGRATION</code> to <code>true</code>.</p>
 <h3 id="spaces">Spaces<a class="headerlink" href="#spaces" title="Permanent link">&para;</a></h3>
-<p>In order for the download button to work in Baserow you would need to configure the CORS
+<p>In order for the download button to work in Saveroom you would need to configure the CORS
 settings in spaces. Navigate to the created space, go to the <code>Settings</code> tab, click on
 <code>Add</code> next to the CORS  Configurations, and add the URL of the newly created
 application without a trailing slash, so it must not end with a <code>/</code>. Select the <code>GET</code>,
 <code>HEAD</code> and <code>OPTIONS</code> method, and click <code>Save CORS Configuration</code>.</p>
 <h2 id="finish">Finish<a class="headerlink" href="#finish" title="Permanent link">&para;</a></h2>
-<p>Wait until the build restarts, and then visit the copied URL to make use of your Baserow
+<p>Wait until the build restarts, and then visit the copied URL to make use of your Saveroom
 environment.</p>
 <h2 id="update-version">Update version<a class="headerlink" href="#update-version" title="Permanent link">&para;</a></h2>
-<p>In order to update the Baserow version, you simply need to replace the image tag.
+<p>In order to update the Saveroom version, you simply need to replace the image tag.
 Navigate to the <code>Settings</code> tag of your created app, click on the <code>baserow-baserow</code>
 component, then click on the <code>Edit</code> button next to source, change the <code>Image tag</code> into
 the desired version (see the
@@ -3302,7 +3237,7 @@ EMAIL_SMTP_PASSWORD=
 EMAIL_SMTP_USE_TLS=
 </code></pre></div>
 <h2 id="application-builder-domains">Application builder domains<a class="headerlink" href="#application-builder-domains" title="Permanent link">&para;</a></h2>
-<p>Baserow has an application builder that allows to deploy an application to a specific
+<p>Saveroom has an application builder that allows to deploy an application to a specific
 domain. Because Digital Ocean has a reverse proxy that routes a domain to the right
 app, the deployed application isn't automatically available on the chosen domain.</p>
 <p>To make this work you must navigate to the App <code>Settings</code>, and click on <code>Edit</code> next to
@@ -3310,7 +3245,7 @@ the domain. Here you can add additional domains that will be routed to your publ
 application builder domain.</p>
 <h2 id="scaling">Scaling<a class="headerlink" href="#scaling" title="Permanent link">&para;</a></h2>
 <h3 id="containers">Containers<a class="headerlink" href="#containers" title="Permanent link">&para;</a></h3>
-<p>If you're going to use Baserow with more concurrent users, have big database schemas,
+<p>If you're going to use Saveroom with more concurrent users, have big database schemas,
 need more API requests per second, then you're going to run into limitations with
 the current setup, and you need to scale up.</p>
 <p>With the existing environment variables, you can easily scale the number of containers

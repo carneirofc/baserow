@@ -17,12 +17,12 @@
         <link rel="next" href="../collapsible-grid-group-by/">
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/logo.svg">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
     
     
       
-        <title>Permissions handling Guide - Baserow (carneirofc fork) Docs</title>
+        <title>Permissions handling Guide - Saveroom Docs</title>
       
     
     
@@ -88,10 +88,9 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-header__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+    <a href="../.." title="Saveroom Docs" class="md-header__button md-logo" aria-label="Saveroom Docs" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../../assets/logo.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -102,7 +101,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Baserow (carneirofc fork) Docs
+            Saveroom Docs
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -451,13 +450,12 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Baserow (carneirofc fork) Docs" class="md-nav__button md-logo" aria-label="Baserow (carneirofc fork) Docs" data-md-component="logo">
+    <a href="../.." title="Saveroom Docs" class="md-nav__button md-logo" aria-label="Saveroom Docs" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../../assets/logo.svg" alt="logo">
 
     </a>
-    Baserow (carneirofc fork) Docs
+    Saveroom Docs
   </label>
   
     <div class="md-nav__source">
@@ -1050,7 +1048,7 @@
         
   
   <span class="md-ellipsis">
-    Understanding Baserow Formulas
+    Understanding Saveroom Formulas
   </span>
   
 
@@ -2078,27 +2076,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/mcp-server/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MCP server
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../development/read-replicas/" class="md-nav__link">
         
   
@@ -2212,27 +2189,6 @@
   
   <span class="md-ellipsis">
     Plugin basics
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../plugins/boilerplate/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Plugin boilerplate (outdated)
   </span>
   
 
@@ -2616,7 +2572,7 @@
         
   
   <span class="md-ellipsis">
-    Back up and restore Baserow
+    Back up and restore Saveroom
   </span>
   
 
@@ -2725,27 +2681,6 @@
   
   <span class="md-ellipsis">
     Grid view test plan
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../testing/mcp-test-plan/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    MCP test plan
   </span>
   
 
@@ -3146,24 +3081,24 @@
 
 <h1 id="permissions-system-guide">🔐 Permissions system guide<a class="headerlink" href="#permissions-system-guide" title="Permanent link">&para;</a></h1>
 <p>The permission system is used to control access to resources or functionality within
-Baserow. It determines who is allowed to perform certain operations or access certain
+Saveroom. It determines who is allowed to perform certain operations or access certain
 data.</p>
 <p>The permission system is pluggable and allows for the easy addition or replacement of
 different components that handle the authorization of user operations.
 It provides flexibility and modularity in the way that access to resources or
-functionality is controlled within Baserow.</p>
+functionality is controlled within Saveroom.</p>
 <p>This allows for different authorization strategies to be easily implemented and
 swapped out as needed without having to make significant changes to the overall code.</p>
 <h2 id="glossary">📖 Glossary<a class="headerlink" href="#glossary" title="Permanent link">&para;</a></h2>
 <p>Before going any further, we need to agree on the definition of some terms:</p>
-<p><strong>Object</strong>: represents a piece of data in Baserow. One of Field, Row, Table, Database,
+<p><strong>Object</strong>: represents a piece of data in Saveroom. One of Field, Row, Table, Database,
   Workspace, User, Team, Role, Webhook, …</p>
 <p><strong>Hierarchical Objects</strong>: in Basrow, <em>Objects</em> are related to each others and we
 can have a parent &lt;-&gt; children dependency between two <em>Objects</em>. A full
-hierarchy tree can be created with all the Baserow objects. For instance, The
+hierarchy tree can be created with all the Saveroom objects. For instance, The
 <code>Table</code> <em>Object</em> is a child of a <code>Database</code>.</p>
 <p><strong>Actor</strong>: A generic term grouping anything that can perform <em>Operations</em> on an
-<em>Object</em> in Baserow. Can be a <code>User</code> but also a <code>Personal API Token</code> or an
+<em>Object</em> in Saveroom. Can be a <code>User</code> but also a <code>Personal API Token</code> or an
 <code>AnonymousUser</code>...</p>
 <p><strong>Operation</strong>: an action an <em>Actor</em> do on an <em>Object</em>. Some examples:</p>
 <ul>
@@ -3185,7 +3120,7 @@ consisting of an <em>Actor</em>, an <em>Operation</em>, and a <em>Context</em>, 
 determine if access to a specific resource or functionality is granted or denied
 by the <em>Permission system</em>. The <em>Context</em> can be omitted if the <em>Operation</em>
 doesn't need one.</p>
-<p><strong>Permission system</strong>: the whole mechanism in Baserow that decides if a
+<p><strong>Permission system</strong>: the whole mechanism in Saveroom that decides if a
 <em>Permission request</em> is allowed or not. The <em>Permission system</em> relies on
 <em>Permission managers</em> to take a decision regarding a specific <em>Permission
 request</em> in a given <em>Workspace</em>.</p>
@@ -3198,7 +3133,7 @@ decide to disallow an <em>Operation</em> if the given <em>Actor</em> is not part
 Group).</p>
 <p><strong>Subject</strong>: includes all <em>Actors</em> but also groups of <em>Actors</em> like <code>Teams</code>.</p>
 <p><strong>Personal API Token</strong>: An authentication token which can be created by users in
-their settings area in Baserow. It is owned by a <code>User</code>, for a <em>Workspace</em>,
+their settings area in Saveroom. It is owned by a <code>User</code>, for a <em>Workspace</em>,
 allowing access to some of our API endpoints.</p>
 <h2 id="main-principles">📃 Main principles<a class="headerlink" href="#main-principles" title="Permanent link">&para;</a></h2>
 <p>For every <em>Operation</em> an <em>Actor</em> wants to perform on a <em>Context</em>, a <em>Permission
@@ -3214,7 +3149,7 @@ Each <em>Permission manager</em> can:</p>
 </ul>
 <p>If none of the Permission managers have allowed or disallowed the Permission,
 then the permission is disallowed by default.</p>
-<p><img alt="Permission diagram" src="https://raw.githubusercontent.com/baserow/baserow/refs/heads/master/docs/assets/diagrams/permissionProcessus.jpg" /></p>
+<p><img alt="Permission diagram" src="../../assets/diagrams/permissionProcessus.jpg" /></p>
 <p><a href="https://viewer.diagrams.net/?tags=%7B%7D&amp;highlight=0000ff&amp;edit=_blank&amp;layers=1&amp;nav=1#R7VnZVtswEP2aPNLjJXbIIwESKEvbAxR4FLZiq5GtVFYW9%2Bs7iiXvJUkhUCgvOZrxWMvcO4uVjn0YLUccTcML5mPasQx%2F2bGPOpbVd7rwKxVppnBNO1MEnPiZyiwUV%2BQXVkpDaWfEx0nFUDBGBZlWlR6LY%2ByJig5xzhZVszGj1VWnKMANxZWHaFN7S3wRZtp9q1foTzAJQr2y6fazJxHSxuokSYh8tiip7OOOfcgZE9koWh5iKn2n%2FXJ7mt7S84k7%2Bvwt%2BYluBmfXl9%2F3ssmG27ySH4HjWDzv1FY29RzRmfKXOqtItQM5m8U%2BlpMYHXsQiojC0IThDyxEqgBHM8FAxbgIWcBiRM8Zmyq7MYuFMjOljGP%2FQAIL8gNl3iRTDQmlag2QlP0%2BSIngbJJjJyfIgZDGFD1gOkDeJFht9JBRxuFRzGIsp%2FKBDOosxeaOC%2B1gQ98qDBI24x5%2BxE4Fh0A8wI%2FN52Z2cn8lnirkRphFWPAUDDimSJB5lcxIxUSQ2xW4w0BBvwUN7AYNRrBmLJeSzsE8IklCWPwIOSQwi5AIfDVFKw8tIJ1UCVMmApx1EFCUJArGNShvh9Icc4GXj%2FpVPbUNFdypljNxUaQKU8d%2FWEoTXWNHSHRbAtKlsOrAJ3MYBnJ4ybQS1ijpP2L3SbHrbhi7urStDV5Fsj3jk%2BM4boVomlQbx7ea%2FSsjcNbChI3HCWy2Trt8E3%2FPRKfBxHuo43WGrQfpTXPwlRjW25BgabXX%2BnfJ5DbIdJpIR4S4Vl%2Bgi0SxALpYxkOaW3gzvkKgZhuhGNo3DqOOPWwmv5BFD7NkfV2q8EGybYgiQqVvTzCdY0E81FK9ECVBDIIHG4M9tBINliRxAJJbSNcrYkOi311Vs%2FrVqmb2Wspat6Wsmeau6lqvQYDrFbIMAAXOruAkkhKIUraQ%2BL%2BzTqNbw8QynFduNfYbkMi%2B4qODeEJ%2B1%2BGzvoUwt24hrDfWP%2FQ%2F%2BodX5Jf13joIvcMNWgifJHkV%2BegMqt%2B7Zu1712ypQkZLFdp%2FhirEjfDCvDm4pQejL2dWgnu20dc3UE9ICa1B35IcSriCV3l6l4c7CPdS%2BORo8WhZfniUamlJxF1pXHoLpOIlKeh3njsF6EvUF79hWr0KmROlJYOpTABJS0bQrahbJVy3V7ulXGNvWU6NYtkOnje36DgqcssVpvI2WueXGC%2F%2F%2FPXxzjrV%2Bp1Yt7thp%2BrsqlPV1Wz910M59b8zWJz6VaX9gh8Qram7GTXXaILzmBkTnvy3QZMX0R2gA2Lxr1OWA4u%2F7uzj3w%3D%3D">source</a></p>
 <p>Example:</p>
 <p>1) If a non admin user wants to create <code>Table</code> in a <code>Database</code> of his
@@ -3236,12 +3171,12 @@ the Permissions system are the following:</p>
   allowing or not the Permission requests.</li>
 <li><code>SubjectType</code>: every <em>Actor</em> you want to use in the <em>Permission system</em> must
   belongs to a <code>SubjectType</code>.</li>
-<li><code>ObjectScopeType</code>: every <em>Context</em> object must be part of the Baserow <em>Object</em>
+<li><code>ObjectScopeType</code>: every <em>Context</em> object must be part of the Saveroom <em>Object</em>
   hierarchy. By now it's implemented by having a related <code>ObjectScopeType</code> for
   each <em>Object</em> type.</li>
 </ul>
 <p>All of them are objects you can register in their related registry to extend the
-core functionnalities of Baserow Permission system.</p>
+core functionnalities of Saveroom Permission system.</p>
 <h3 id="check-a-permission-on-the-backend">Check a Permission on the backend<a class="headerlink" href="#check-a-permission-on-the-backend" title="Permanent link">&para;</a></h3>
 <p>When you want to test a permission on the backend, you'll have to use the
 <code>CoreHandler.check_permission</code> method.</p>
