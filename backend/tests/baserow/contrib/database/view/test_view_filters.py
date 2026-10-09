@@ -1058,7 +1058,7 @@ def test_starts_with_filter_type(data_fixture):
                     f"field_{text_field.id}": "doesnt match",
                     f"field_{long_text_field.id}": "another value",
                     f"field_{url_field.id}": "http://baserow.io",
-                    f"field_{email_field.id}": "jane.doe@baserow.io",
+                    f"field_{email_field.id}": "jane.doe@example.com",
                     f"field_{phone_number_field.id}": "+44-20-7946-0000",
                     f"field_{number_field.id}": 90000,
                     f"field_{single_select_field.id}": option_b.id,

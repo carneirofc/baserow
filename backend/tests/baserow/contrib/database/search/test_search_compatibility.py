@@ -186,7 +186,7 @@ def test_search_compatibility_between_current_and_postgres(data_fixture, tmpdir)
                     }
                 ],
                 f"field_{url_field.id}": "https://baserow.io",
-                f"field_{email_field.id}": "peter@baserow.io",
+                f"field_{email_field.id}": "peter@example.com",
                 f"field_{date_field.id}": "2023-06-01",
                 f"field_{datetime_field.id}": "2023-06-01 15:00:00.327017+00",
                 f"field_{single_select_field.id}": single_select_option_1.id,

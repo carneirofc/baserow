@@ -210,19 +210,9 @@
   },
   "dashboard": {
     "title": "Painel de controle",
-    "alertTitle": "Nós precisamos da sua ajuda!",
-    "alertText": "Se você achar o Baserow útil, então patrocinar, estrelar ou compartilhar conosco é muito apreciado. Ao nos patrocinar no GitHub, você terá acesso antecipado aos recursos premium!",
-    "tweetContent": "Confira {'@'}baserow uma ferramenta de banco de dados sem código de código aberto e uma alternativa ao Airtable!",
-    "redditTitle": "'Baserow - Um banco de dados de código-aberto e no-code",
     "noWorkspaceTitle": "Sem grupos encontrados",
     "noWorkspaceText": "Você não é membro de nenhum grupo. Aplicativos como bancos de dados pertencem a um grupo, portanto, para criá-los, você precisa criar um grupo.",
-    "createWorkspace": "Criar grupo",
-    "becomeGithubSponsor": "Seja um patrocinador do Github",
-    "starOnGitlab": "Nos dê estrelas no Gitlab",
-    "shareOnTwitter": "Tweet sobre Baserow",
-    "shareOnReddit": "Compartilhar no Reddit",
-    "shareOnFacebook": "Compartilhar no Facebook",
-    "shareOnLinkedIn": "Compartilhar no LinkedIn"
+    "createWorkspace": "Criar grupo"
   },
   "login": {
     "title": "Login",

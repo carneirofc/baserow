@@ -648,11 +648,11 @@ def test_update_all_user_source_counts_in_chunks(data_fixture):
             ("Role", "text"),
         ],
         rows=[
-            ["jrmi@baserow.io", "Jérémie", ""],
-            ["peter@baserow.io", "Peter", ""],
-            ["afonso@baserow.io", "Afonso", ""],
-            ["tsering@baserow.io", "Tsering", ""],
-            ["evren@baserow.io", "Evren", ""],
+            ["jrmi@example.com", "Jérémie", ""],
+            ["peter@example.com", "Peter", ""],
+            ["afonso@example.com", "Afonso", ""],
+            ["tsering@example.com", "Tsering", ""],
+            ["evren@example.com", "Evren", ""],
         ],
     )
     email_field, name_field, role_field = fields

@@ -12,13 +12,13 @@ working with the most recent data without reloading the page.
 In order to connect to the web socket you first need to authenticate via the REST API
 and obtain a [JSON Web Token](https://jwt.io/). After that you can connect to the
 following URL providing your JWT as query parameter: 
-`wss://api.baserow.io/ws/core/?jwt_token=YOUR_JWT_TOKEN`. If you self host
-you need to replace `api.baserow.io` with your own backend URL. The web socket
+`wss://YOUR_HOST/ws/core/?jwt_token=YOUR_JWT_TOKEN`, where `YOUR_HOST` is
+the address of your own backend. The web socket
 connection only receives messages targeted at the workspaces that the authenticated user
 belongs to. Below is an example of how to connect to the web socket in JavaScript.
 
 ```javascript
-const socket = new WebSocket('wss://api.baserow.io/ws/core/?jwt_token=YOUR_JWT_TOKEN')
+const socket = new WebSocket('wss://YOUR_HOST/ws/core/?jwt_token=YOUR_JWT_TOKEN')
 socket.onopen = () => {
     console.log('The connection is made')
 }
@@ -75,7 +75,7 @@ and an example HTTP request containing the `WebSocketId` header.
 
 ```
 PATCH /api/applications/1/
-Host: api.baserow.io
+Host: YOUR_HOST
 Content-Type: application/json
 WebSocketId: 934254ab-0c87-4dbc-9d71-7eeab029296c
 

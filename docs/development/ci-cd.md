@@ -19,7 +19,7 @@ PR does not run the backend tests, etc.). The jobs are:
 - **Lint** — `backend-lint` (Ruff), `frontend-lint` (ESLint/Stylelint/Prettier),
   `dockerfile-lint` (hadolint).
 - **Tests** — `backend-check-startup`, `test-backend` (parallel groups),
-  `test-frontend` (sharded Vitest), `test-zapier`, `check-mjml-compiled`,
+  `test-frontend` (sharded Vitest), `check-mjml-compiled`,
   `test-e2e` (sharded), plus `collect-coverage` and `collect-e2e-reports`.
 - **build-backend** / **build-frontend** — build the CI Docker images the test jobs run
   inside, pushed to GHCR with a short-lived `ci-<sha>` tag.

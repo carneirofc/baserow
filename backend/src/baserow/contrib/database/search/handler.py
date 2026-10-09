@@ -377,13 +377,13 @@ class SearchHandler(
         users (which would really super-user privileges), we will force some
         tokenization behaviour by changing certain specific characters to spaces.
         Emails:
-          With input "peter@baserow.com" this will result in tokens:
+          With input "peter@example.com" this will result in tokens:
           1. peter
-          2. baserow.io
+          2. example.com
         URLs
-          With input "https://baserow.io/jobs/" this will result in tokens:
+          With input "https://example.com/jobs/" this will result in tokens:
           1. https
-          2. baserow.io
+          2. example.com
           3. jobs
         Dates
           With input "06/13/2023" or "06-13-2023" this will result in tokens:

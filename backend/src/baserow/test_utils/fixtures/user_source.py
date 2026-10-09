@@ -121,11 +121,11 @@ class UserSourceFixtures:
                     ("Role", "text"),
                 ],
                 rows=[
-                    ["bram@baserow.io", "Bram", ""],
-                    ["jrmi@baserow.io", "Jérémie", ""],
-                    ["peter@baserow.io", "Peter", ""],
-                    ["tsering@baserow.io", "Tsering", ""],
-                    ["evren@baserow.io", "Evren", ""],
+                    ["bram@example.com", "Bram", ""],
+                    ["jrmi@example.com", "Jérémie", ""],
+                    ["peter@example.com", "Peter", ""],
+                    ["tsering@example.com", "Tsering", ""],
+                    ["evren@example.com", "Evren", ""],
                 ],
             )
             email_field, name_field, role_field = fields

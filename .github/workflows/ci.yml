@@ -189,7 +189,6 @@ jobs:
       frontend: ${{ steps.filter.outputs.frontend }}
       dockerfiles: ${{ steps.filter.outputs.dockerfiles }}
       mjml: ${{ steps.filter.outputs.mjml }}
-      zapier: ${{ steps.filter.outputs.zapier }}
       e2e: ${{ steps.filter.outputs.e2e }}
     steps:
       - name: Checkout code
@@ -211,9 +210,6 @@ jobs:
               - '.github/workflows/ci.yml'
             mjml:
               - '**/*.eta'
-              - '.github/workflows/ci.yml'
-            zapier:
-              - 'integrations/zapier/**'
               - '.github/workflows/ci.yml'
             e2e:
               - 'e2e-tests/**'
@@ -726,31 +722,6 @@ jobs:
           check_name: Web-Frontend Tests (Shard ${{ matrix.shard }})
           comment_mode: off
 
-  test-zapier:
-    name: Zapier Integration Tests
-    runs-on: ubuntu-latest
-    needs:
-      - detect-changes
-    if: needs.detect-changes.outputs.zapier == 'true' || github.ref_name == 'develop' || github.ref_name == 'master'
-    permissions:
-      contents: read
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v7
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v7
-        with:
-          node-version-file: ".nvmrc"
-          cache: "yarn"
-          cache-dependency-path: "integrations/zapier/yarn.lock"
-
-      - name: Run Zapier tests
-        run: |
-          cd integrations/zapier
-          yarn install
-          yarn test
-
   check-mjml-compiled:
     name: Check MJML Email Templates Compiled
     runs-on: ubuntu-latest
@@ -1149,7 +1120,7 @@ jobs:
   # 1. Go to Settings → Secrets and variables → Actions → Variables
   # 2. Create a repository variable named OPTIONAL_CHECKS
   # 3. Set its value to a comma-separated list of job names that should be optional
-  #    Example: "test-e2e,test-zapier"
+  #    Example: "test-e2e,collect-coverage"
   #
   # Jobs listed in OPTIONAL_CHECKS can fail without blocking the PR.
   # Jobs NOT listed are required and must pass (or be skipped due to path filtering).
@@ -1172,7 +1143,6 @@ jobs:
       - backend-check-startup
       - test-backend
       - test-frontend
-      - test-zapier
       - check-mjml-compiled
       # E2E tests (can be skipped based on path changes)
       - test-e2e
@@ -1193,7 +1163,6 @@ jobs:
             backend-check-startup=${{ needs.backend-check-startup.result }}
             test-backend=${{ needs.test-backend.result }}
             test-frontend=${{ needs.test-frontend.result }}
-            test-zapier=${{ needs.test-zapier.result }}
             check-mjml-compiled=${{ needs.check-mjml-compiled.result }}
             test-e2e=${{ needs.test-e2e.result }}
             collect-e2e-reports=${{ needs.collect-e2e-reports.result }}

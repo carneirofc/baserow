@@ -71,7 +71,7 @@ request. Note that you must already have a grid view that contains some fields.
 
 ```
 POST /api/database/views/{view_id}/filters/
-Host: api.baserow.io
+Host: YOUR_HOST
 Content-Type: application/json
 
 {
@@ -82,7 +82,7 @@ Content-Type: application/json
 ```
 or
 ```
-curl -X POST -H 'Content-Type: application/json' -i https://api.baserow.io/api/database/views/{view_id}/filters/ --data '{
+curl -X POST -H 'Content-Type: application/json' -i https://YOUR_HOST/api/database/views/{view_id}/filters/ --data '{
   "field": {field_id},
   "type": "equal_to",
   "value": "Example"
@@ -95,12 +95,12 @@ apply to the filter.
 
 ```
 GET /api/database/views/grid/{view_id}/
-Host: api.baserow.io
+Host: YOUR_HOST
 Content-Type: application/json
 ```
 or
 ```
-curl -X GET -H 'Content-Type: application/json' -i https://api.baserow.io/api/database/views/grid/{view_id}/'
+curl -X GET -H 'Content-Type: application/json' -i https://YOUR_HOST/api/database/views/grid/{view_id}/'
 ```
 
 ## Web frontend

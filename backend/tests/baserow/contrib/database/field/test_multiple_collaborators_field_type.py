@@ -108,9 +108,9 @@ def test_multiple_collaborators_field_type_update(data_fixture):
 
 @pytest.mark.django_db(transaction=True)
 def test_get_set_export_serialized_value_multiple_collaborators_field(data_fixture):
-    user = data_fixture.create_user(email="user1@baserow.io")
-    user_2 = data_fixture.create_user(email="user2@baserow.io")
-    user_3 = data_fixture.create_user(email="user3@baserow.io")
+    user = data_fixture.create_user(email="user1@example.com")
+    user_2 = data_fixture.create_user(email="user2@example.com")
+    user_3 = data_fixture.create_user(email="user3@example.com")
     workspace = data_fixture.create_workspace(user=user)
     data_fixture.create_user_workspace(workspace=workspace, user=user_2)
     data_fixture.create_user_workspace(workspace=workspace, user=user_3)
@@ -197,9 +197,9 @@ def test_get_set_export_serialized_value_multiple_collaborators_field(data_fixtu
 def test_export_import_multiple_collaborators_default_value_across_workspaces(
     data_fixture,
 ):
-    user = data_fixture.create_user(email="shared@baserow.io", first_name="Shared")
+    user = data_fixture.create_user(email="shared@example.com", first_name="Shared")
     user_2 = data_fixture.create_user(
-        email="only_source@baserow.io", first_name="OnlySource"
+        email="only_source@example.com", first_name="OnlySource"
     )
 
     source_workspace = data_fixture.create_workspace(user=user)
@@ -284,9 +284,9 @@ def test_export_import_multiple_collaborators_default_value_across_workspaces(
 def test_multiple_collaborators_field_type_sorting(
     data_fixture, django_assert_num_queries
 ):
-    user = data_fixture.create_user(email="user1@baserow.io", first_name="User 1")
-    user_2 = data_fixture.create_user(email="user2@baserow.io", first_name="User 2")
-    user_3 = data_fixture.create_user(email="user3@baserow.io", first_name="User 3")
+    user = data_fixture.create_user(email="user1@example.com", first_name="User 1")
+    user_2 = data_fixture.create_user(email="user2@example.com", first_name="User 2")
+    user_3 = data_fixture.create_user(email="user3@example.com", first_name="User 3")
     database = data_fixture.create_database_application(user=user, name="Placeholder")
     data_fixture.create_user_workspace(workspace=database.workspace, user=user_2)
     data_fixture.create_user_workspace(workspace=database.workspace, user=user_3)
@@ -353,9 +353,9 @@ def test_call_apps_registry_pending_operations(data_fixture):
 
 @pytest.mark.django_db
 def test_multiple_collaborators_model_field(data_fixture):
-    user = data_fixture.create_user(email="user1@baserow.io", first_name="User 1")
-    user_2 = data_fixture.create_user(email="user2@baserow.io", first_name="User 2")
-    user_3 = data_fixture.create_user(email="user3@baserow.io", first_name="User 3")
+    user = data_fixture.create_user(email="user1@example.com", first_name="User 1")
+    user_2 = data_fixture.create_user(email="user2@example.com", first_name="User 2")
+    user_3 = data_fixture.create_user(email="user3@example.com", first_name="User 3")
     database = data_fixture.create_database_application(user=user, name="Placeholder")
     data_fixture.create_user_workspace(workspace=database.workspace, user=user_2)
     workspace_user_3 = data_fixture.create_user_workspace(
@@ -424,9 +424,9 @@ def test_multiple_collaborators_model_field(data_fixture):
 def test_multiple_collaborators_model_enhanced_field(
     data_fixture, django_assert_num_queries
 ):
-    user = data_fixture.create_user(email="user1@baserow.io", first_name="User 1")
-    user_2 = data_fixture.create_user(email="user2@baserow.io", first_name="User 2")
-    user_3 = data_fixture.create_user(email="user3@baserow.io", first_name="User 3")
+    user = data_fixture.create_user(email="user1@example.com", first_name="User 1")
+    user_2 = data_fixture.create_user(email="user2@example.com", first_name="User 2")
+    user_3 = data_fixture.create_user(email="user3@example.com", first_name="User 3")
     database = data_fixture.create_database_application(user=user, name="Placeholder")
     data_fixture.create_user_workspace(workspace=database.workspace, user=user_2)
     workspace_user_3 = data_fixture.create_user_workspace(

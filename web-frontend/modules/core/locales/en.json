@@ -409,49 +409,6 @@
   "workspaceSettingsModal": {
     "title": "Workspace Settings"
   },
-  "workspaceSettingType": {
-    "generativeAI": "Generative AI"
-  },
-  "generativeAIModelType": {
-    "openai": "OpenAI",
-    "openaiApiKeyLabel": "API Key",
-    "openaiApiKeyDescription": "Provide an OpenAI API key if you would like to enable the integration. [Instructions on getting an API key](https://help.openai.com/en/articles/4936850-where-do-i-find-my-openai-api-key).",
-    "openaiOrganization": "Organization (optional)",
-    "openaiModelsLabel": "Enabled Models",
-    "openaiModelsDescription": "Provide a list of comma separated [OpenAI models](https://platform.openai.com/docs/models/continuous-model-upgrades) that can be used in Baserow. (e.g. `gpt-3.5-turbo,gpt-4`)",
-    "openaiBaseUrl": "Base URL",
-    "openaiBaseUrlDescription": "Uses the default OpenAI base URL by default if empty. Can optionally be changed to https://eu.api.openai.com/v1, https://&#60;your-resource-name&#62;.openai.azure.com, or any other OpenAI compatible API.",
-    "anthropic": "Anthropic",
-    "anthropicApiKeyLabel": "API Key",
-    "anthropicApiKeyDescription": "Provide an Anthropic API key if you would like to enable the integration. [Instructions on getting an API key](https://docs.anthropic.com/en/api/getting-started).",
-    "anthropicModelsLabel": "Enabled Models",
-    "anthropicModelsDescription": "Provide a list of comma separated [Anthropic models](https://docs.anthropic.com/en/docs/about-claude/models) that can be used in Baserow. (e.g. `claude-3-5-sonnet-20241022,claude-3-opus-20240229`)",
-    "mistral": "Mistral",
-    "mistralApiKeyLabel": "API Key",
-    "mistralApiKeyDescription": "Provide a Mistral API key if you would like to enable the integration. [Instructions on getting an API key](https://docs.mistral.ai/getting-started/quickstart/).",
-    "mistralModelsLabel": "Enabled Models",
-    "mistralModelsDescription": "Provide a list of comma separated [Mistral models](https://docs.mistral.ai/getting-started/models/models_overview/) that can be used in Baserow. (e.g. `mistral-large-latest,mistral-small-latest`)",
-    "ollama": "Ollama",
-    "ollamaHostLabel": "Host",
-    "ollamaHostDescription": "Provide the hostname to your [Ollama](https://ollama.com/) server. This typically runs locally on your own device.",
-    "ollamaModelsLabel": "Enabled Models",
-    "ollamaModelsDescription": "Provide a list of comma separated [Ollama installed models](https://ollama.com/library). Note that the model must be downloaded and installed before it can be used. (e.g. `llama2,mistral`)",
-    "openRouter": "OpenRouter",
-    "openRouterApiKeyLabel": "API Key",
-    "openRouterApiKeyDescription": "Provide an OpenRouter API key if you would like to enable the integration. [get an API key](https://openrouter.ai/settings/keys).",
-    "openRouterOrganization": "Organization (optional)",
-    "openRouterModelsLabel": "Enabled Models",
-    "openRouterModelsDescription": "Provide a list of comma separated [OpenRouter models](https://openrouter.ai/models) that can be used in Baserow. (e.g. `openai/gpt-4o,anthropic/claude-3-haiku`)"
-  },
-  "generativeAIWorkspaceSettings": {
-    "title": "Generative AI settings",
-    "description": "These settings can be used to optionally set generative AI configuration on workspace level. Features like the AI field can be disabled because they lack an API key for one of the supported models. By providing the settings here, you can enable those features. Leaving a value blank defaults back to the global instance settings. Note that everyone in the workspace will share these settings.",
-    "changedTitle": "Settings updated correctly",
-    "changedDescription": "The settings have been updated and they will be now used in this workspace.",
-    "submitButton": "Update settings",
-    "openSettings": "Open settings",
-    "hideSettings": "Hide settings"
-  },
   "createWorkspaceModal": {
     "createNew": "Create new workspace",
     "defaultName": "Untitled Workspace",
@@ -596,16 +553,6 @@
   },
   "dashboard": {
     "title": "Dashboard",
-    "alertTitle": "We need your help!",
-    "alertText": "By sharing Baserow you are helping us to improve the product and to make it more useful for you.",
-    "tweetContent": "Check out {'@'}baserow an open source no-code database tool and Airtable alternative!",
-    "redditTitle": "'Baserow - An open source no-code database",
-    "becomeGithubSponsor": "Become a GitHub sponsor",
-    "starOnGitHub": "Star us on GitHub",
-    "shareOnTwitter": "Tweet about Baserow",
-    "shareOnReddit": "Share on Reddit",
-    "shareOnFacebook": "Share on Facebook",
-    "shareOnLinkedIn": "Share on LinkedIn",
     "resources": "Resources",
     "knowledgeBase": "Knowledge base",
     "knowledgeBaseMessage": "Find answers to all of your questions",
@@ -1014,13 +961,6 @@
     "unorderedList": "Bullet list",
     "code": "Code",
     "taskList": "Task list"
-  },
-  "selectAIModelForm": {
-    "AIType": "AI Type",
-    "AIModel": "AI Model",
-    "fileField": "File field",
-    "temperatureLabel": "Temperature",
-    "temperatureDescription": "The temperature of an LLM, a parameter set between 0 and {max}, adjusts response randomness—lower values yield focused answers, while higher values increase creativity."
   },
   "onboarding": {
     "title": "Onboarding",

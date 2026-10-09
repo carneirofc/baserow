@@ -468,9 +468,9 @@ def test_trash_restore_created_by_field(data_fixture):
 @pytest.mark.field_created_by
 @pytest.mark.django_db
 def test_created_by_field_type_sorting(data_fixture):
-    user_a = data_fixture.create_user(email="user1@baserow.io", first_name="User a")
-    user_b = data_fixture.create_user(email="user2@baserow.io", first_name="User b")
-    user_c = data_fixture.create_user(email="user3@baserow.io", first_name="User c")
+    user_a = data_fixture.create_user(email="user1@example.com", first_name="User a")
+    user_b = data_fixture.create_user(email="user2@example.com", first_name="User b")
+    user_c = data_fixture.create_user(email="user3@example.com", first_name="User c")
 
     database = data_fixture.create_database_application(user=user_a, name="Placeholder")
     data_fixture.create_user_workspace(workspace=database.workspace, user=user_b)
@@ -505,9 +505,9 @@ def test_created_by_field_type_sorting(data_fixture):
 @pytest.mark.field_created_by
 @pytest.mark.django_db
 def test_created_by_field_view_aggregation(data_fixture):
-    user_a = data_fixture.create_user(email="user1@baserow.io", first_name="User a")
-    user_b = data_fixture.create_user(email="user2@baserow.io", first_name="User b")
-    user_c = data_fixture.create_user(email="user3@baserow.io", first_name="User c")
+    user_a = data_fixture.create_user(email="user1@example.com", first_name="User a")
+    user_b = data_fixture.create_user(email="user2@example.com", first_name="User b")
+    user_c = data_fixture.create_user(email="user3@example.com", first_name="User c")
 
     database = data_fixture.create_database_application(user=user_a, name="Placeholder")
     data_fixture.create_user_workspace(workspace=database.workspace, user=user_b)

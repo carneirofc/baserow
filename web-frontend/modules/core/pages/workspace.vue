@@ -1,6 +1,6 @@
 <template>
   <div v-if="workspaceExists">
-    <div class="dashboard__header" ph-autocapture="dashboard-header">
+    <div class="dashboard__header">
       <div class="dashboard__header-left">
         <h1
           ref="contextLink"
@@ -58,10 +58,7 @@
         </span>
       </div>
     </div>
-    <div
-      class="dashboard__scroll-container"
-      ph-autocapture="dashboard-container"
-    >
+    <div class="dashboard__scroll-container">
       <div class="dashboard__main">
         <DashboardVerifyEmail
           class="margin-top-0 margin-bottom-0"
@@ -174,14 +171,11 @@
       >
       </CreateApplicationContext>
     </div>
-    <DashboardHelp v-if="dashboardHelpComponents.length === 0"></DashboardHelp>
-    <template v-else>
-      <component
-        :is="component"
-        v-for="(component, index) in dashboardHelpComponents"
-        :key="index"
-      ></component>
-    </template>
+    <component
+      :is="component"
+      v-for="(component, index) in dashboardHelpComponents"
+      :key="index"
+    ></component>
   </div>
 </template>
 
@@ -195,7 +189,6 @@ import CreateApplicationContext from '@baserow/modules/core/components/applicati
 import DashboardApplication from '@baserow/modules/core/components/dashboard/DashboardApplication'
 import editWorkspace from '@baserow/modules/core/mixins/editWorkspace'
 import DashboardVerifyEmail from '@baserow/modules/core/components/dashboard/DashboardVerifyEmail'
-import DashboardHelp from '@baserow/modules/core/components/dashboard/DashboardHelp'
 
 definePageMeta({
   layout: 'app',

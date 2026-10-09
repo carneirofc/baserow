@@ -1,5 +1,5 @@
 <template>
-  <div class="sidebar__section" ph-autocapture="sidebar" data-highlight="menu">
+  <div class="sidebar__section" data-highlight="menu">
     <ul class="tree">
       <SidebarSearch
         :selected-workspace="selectedWorkspace"
