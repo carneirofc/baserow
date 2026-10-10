@@ -62,7 +62,7 @@ async def _get_cached_authenticated_user(token):
     try:
         access_token = AccessToken(token)
         user_id = access_token[jwt_settings.USER_ID_CLAIM]
-    except (TokenError, InvalidToken, KeyError):
+    except TokenError, InvalidToken, KeyError:
         return None
 
     user = await aget_cached_user(user_id)
@@ -76,7 +76,7 @@ def _get_authenticated_user(token):
 
     try:
         return get_user_from_token(token)
-    except (TokenError, InvalidToken):
+    except TokenError, InvalidToken:
         return
 
 

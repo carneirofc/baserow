@@ -1082,8 +1082,6 @@ export class FieldType extends Registerable {
     return null
   }
 
-
-
   /**
    * Alternative text used when searching for the field.
    */

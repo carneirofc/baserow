@@ -95,7 +95,7 @@ class ICalCalendarDataSyncType(DataSyncType):
             )
         except UnacceptableAddressException:
             raise SyncError(DATA_SYNC_BLOCKED_URL_ERROR)
-        except (RequestException, ConnectionError):
+        except RequestException, ConnectionError:
             raise SyncError("The provided URL could not be reached.")
 
         if not response.ok:
