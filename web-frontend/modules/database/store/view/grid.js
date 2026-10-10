@@ -4829,6 +4829,10 @@ export const actions = {
       isRowOpenedInModal = undefined,
     }
   ) {
+    // Closing the row modal clears its store entry, so a late blur-save gets an empty row.
+    if (row?.id === undefined) {
+      return
+    }
     const { $registry, $client, $i18n, $config } = this
     const taskQueue = createAndUpdateRowQueue.getOrCreateQueue(
       `table_${table.id}`
