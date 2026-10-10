@@ -20,11 +20,11 @@
 # deploy/all-in-one/Dockerfile.
 # =============================================================================
 ARG CADDY_VERSION=2.11.7
-ARG GO_VERSION=1.27.1
+ARG GO_VERSION=1.27.2
 
 FROM golang:${GO_VERSION} AS caddy_builder
 ARG CADDY_VERSION
-ARG CADDY_MODULE_UPGRADES="google.golang.org/grpc@v1.84.0"
+ARG CADDY_MODULE_UPGRADES="google.golang.org/grpc@v1.84.0 golang.org/x/net@v0.60.0"
 ENV CGO_ENABLED=0 \
     GOTOOLCHAIN=local
 WORKDIR /src/caddy

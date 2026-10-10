@@ -4,7 +4,7 @@ ARG GID="9999"
 ARG BACKEND_IMAGE=ghcr.io/carneirofc/baserow/backend
 ARG WEBFRONTEND_IMAGE=ghcr.io/carneirofc/baserow/web-frontend
 ARG CADDY_VERSION=2.11.7
-ARG GO_VERSION=1.27.1
+ARG GO_VERSION=1.27.2
 # hadolint ignore=DL3006
 FROM ${BACKEND_IMAGE} AS backend_image
 # hadolint ignore=DL3006
@@ -24,7 +24,7 @@ FROM ${WEBFRONTEND_IMAGE} AS web_frontend_image
 # =============================================================================
 FROM golang:${GO_VERSION} AS caddy_image
 ARG CADDY_VERSION
-ARG CADDY_MODULE_UPGRADES="google.golang.org/grpc@v1.84.0"
+ARG CADDY_MODULE_UPGRADES="google.golang.org/grpc@v1.84.0 golang.org/x/net@v0.60.0"
 ENV CGO_ENABLED=0 \
     GOTOOLCHAIN=local
 WORKDIR /src/caddy
