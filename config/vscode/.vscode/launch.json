@@ -56,41 +56,17 @@
             },
         },
         {
-            "name": "vscode-jest-current-file",
+            "name": "vitest-current-file",
             "type": "node",
-            "runtimeVersion": "16.15.0",
             "request": "launch",
             "cwd": "${workspaceFolder}/web-frontend",
-            "program": "./node_modules/jest/bin/jest",
-            "args": [
-                "${fileBasename}",
-                "--verbose",
-                "-i",
-                "--no-cache"
-            ],
+            "program": "./node_modules/vitest/vitest.mjs",
+            "args": ["run", "${file}"],
             "env": {
                 "PRIVATE_BACKEND_URL": "http://localhost:8000"
             },
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen"
-        },
-        {
-            "name": "vscode-jest-tests",
-            "type": "node",
-            "runtimeVersion": "16.15.0",
-            "request": "launch",
-            "console": "integratedTerminal",
-            "internalConsoleOptions": "neverOpen",
-            "cwd": "${workspaceFolder}/web-frontend",
-            "program": "node_modules/.bin/jest",
-            "args": [
-                "--config=jest.config.js",
-                "--runInBand",
-                "--watchAll=false"
-            ],
-            "env": {
-                "PRIVATE_BACKEND_URL": "http://localhost:8000"
-            },
         }
     ]
 }

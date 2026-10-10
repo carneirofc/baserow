@@ -28,7 +28,7 @@ services:
       - BASEROW_BACKEND_DEBUGGER_ENABLED
       - BASEROW_BACKEND_DEBUGGER_PORT=${BASEROW_BACKEND_DEBUGGER_PORT:-5678}
       - BASEROW_DANGEROUS_SILKY_ANALYZE_QUERIES
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+      - OTEL_EXPORTER_OTLP_ENDPOINT
     build:
       dockerfile: ./backend/Dockerfile
       context: .
@@ -49,8 +49,6 @@ services:
     # Open stdin and tty so when attaching key input works as expected.
     stdin_open: true
     tty: true
-    depends_on:
-      - otel-collector
 
   web-frontend:
     image: baserow_web-frontend:dev
@@ -116,7 +114,7 @@ services:
     user: "${UID}:${GID}"
     command: "watch-py celery-worker"
     environment:
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+      - OTEL_EXPORTER_OTLP_ENDPOINT
       - BASEROW_DANGEROUS_SILKY_ANALYZE_QUERIES
     volumes:
       - ./docs:/baserow/docs
@@ -125,15 +123,13 @@ services:
     # Open stdin and tty so when attaching key input works as expected.
     stdin_open: true
     tty: true
-    depends_on:
-      - otel-collector
 
   celery-export-worker:
     image: baserow_backend:dev
     user: "${UID}:${GID}"
     command: "watch-py celery-exportworker"
     environment:
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+      - OTEL_EXPORTER_OTLP_ENDPOINT
       - BASEROW_DANGEROUS_SILKY_ANALYZE_QUERIES
     volumes:
       - ./docs:/baserow/docs
@@ -142,15 +138,13 @@ services:
     # Open stdin and tty so when attaching key input works as expected.
     stdin_open: true
     tty: true
-    depends_on:
-      - otel-collector
 
   celery-beat-worker:
     image: baserow_backend:dev
     user: "${UID}:${GID}"
     command: "watch-py celery-beat"
     environment:
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
+      - OTEL_EXPORTER_OTLP_ENDPOINT
     volumes:
       - ./backend:/baserow/backend
       - ./deploy/plugins:/baserow/plugins
