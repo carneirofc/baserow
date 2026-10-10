@@ -1138,7 +1138,7 @@ def test_get_data_sync_properties_non_member_denied(data_fixture, api_client):
         url,
         {
             "type": "ical_calendar",
-            "ical_url": "https://baserow.io/ical.ics",
+            "ical_url": "https://example.com/ical.ics",
         },
         format="json",
         HTTP_AUTHORIZATION=f"JWT {token}",

@@ -1253,8 +1253,8 @@ def test_multiple_collaborators_field_type_group_by_sort_order_ignores_selection
     that rows of one group sort contiguously.
     """
 
-    user = data_fixture.create_user(email="user1@baserow.io", first_name="User 1")
-    user_2 = data_fixture.create_user(email="user2@baserow.io", first_name="User 2")
+    user = data_fixture.create_user(email="user1@example.com", first_name="User 1")
+    user_2 = data_fixture.create_user(email="user2@example.com", first_name="User 2")
     database = data_fixture.create_database_application(user=user, name="Placeholder")
     data_fixture.create_user_workspace(workspace=database.workspace, user=user_2)
     table = data_fixture.create_database_table(name="Example", database=database)

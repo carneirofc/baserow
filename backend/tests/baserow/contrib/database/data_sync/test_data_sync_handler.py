@@ -578,7 +578,7 @@ def test_update_data_sync_table_rejects_target_change_without_credential(data_fi
         table_name="Test",
         type_name="ical_calendar",
         synced_properties=["uid", "dtstart"],
-        ical_url="https://baserow.io",
+        ical_url="https://example.com",
     )
 
     with patch(
@@ -620,7 +620,7 @@ def test_update_data_sync_table_allows_target_change_with_credential(
         table_name="Test",
         type_name="ical_calendar",
         synced_properties=["uid", "dtstart"],
-        ical_url="https://baserow.io",
+        ical_url="https://example.com",
     )
 
     with patch(
@@ -664,7 +664,7 @@ def test_update_data_sync_table_allows_non_target_change_without_credential(
         table_name="Test",
         type_name="ical_calendar",
         synced_properties=["uid", "dtstart"],
-        ical_url="https://baserow.io",
+        ical_url="https://example.com",
     )
 
     with patch(
@@ -677,7 +677,7 @@ def test_update_data_sync_table_allows_non_target_change_without_credential(
             synced_properties=["uid", "dtstart", "dtend"],
         )
 
-    assert data_sync.ical_url == "https://baserow.io"
+    assert data_sync.ical_url == "https://example.com"
 
 
 @pytest.mark.django_db
@@ -706,7 +706,7 @@ def test_update_data_sync_table_allows_same_target_value_without_credential(
         table_name="Test",
         type_name="ical_calendar",
         synced_properties=["uid", "dtstart"],
-        ical_url="https://baserow.io",
+        ical_url="https://example.com",
     )
 
     with patch(
@@ -717,10 +717,10 @@ def test_update_data_sync_table_allows_same_target_value_without_credential(
             user=user,
             data_sync=data_sync,
             synced_properties=["uid", "dtstart"],
-            ical_url="https://baserow.io",
+            ical_url="https://example.com",
         )
 
-    assert data_sync.ical_url == "https://baserow.io"
+    assert data_sync.ical_url == "https://example.com"
 
 
 @pytest.mark.django_db

@@ -180,7 +180,7 @@ def test_base_data_sync_settings_are_preserved_on_import_export(data_fixture):
 def test_import_export_data_sync_with_trashed_property_field(data_fixture):
     responses.add(
         responses.GET,
-        "https://baserow.io/ical.ics",
+        "https://example.com/ical.ics",
         status=200,
         body=ICAL_FEED_WITH_ONE_ITEMS,
     )
@@ -197,7 +197,7 @@ def test_import_export_data_sync_with_trashed_property_field(data_fixture):
         table_name="Test",
         type_name="ical_calendar",
         synced_properties=["uid", "dtstart", "dtend", "summary"],
-        ical_url="https://baserow.io/ical.ics",
+        ical_url="https://example.com/ical.ics",
     )
     handler.sync_data_sync_table(user=user, data_sync=data_sync)
 
