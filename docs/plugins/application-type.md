@@ -104,14 +104,19 @@ export class TextFileApplicationType extends ApplicationType {
 
 plugins/my_baserow_plugin/web-frontend/plugin.js
 ```javascript
+import { defineNuxtPlugin } from '#app'
 import { PluginNamePlugin } from '@my-baserow-plugin/plugins'
 import { TextFileApplicationType } from '@my-baserow-plugin/applicationTypes'
 
-export default (context) => {
-  const { app } = context
-  app.$registry.register('plugin', new PluginNamePlugin(context))
-  app.$registry.register('application', new TextFileApplicationType(context))
-}
+export default defineNuxtPlugin({
+  dependsOn: ['core'],
+  setup(nuxtApp) {
+    const { $registry } = nuxtApp
+    const context = { app: nuxtApp }
+    $registry.register('plugin', new PluginNamePlugin(context))
+    $registry.register('application', new TextFileApplicationType(context))
+  },
+})
 ```
 
 Once you have added this code you should be able to use the "Create new" button in the

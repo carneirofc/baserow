@@ -33,7 +33,7 @@ just --version
 ```bash
 # Clone the repository
 git clone --branch develop https://github.com/carneirofc/baserow.git
-cd saveroom
+cd baserow
 
 # Build and start the dev environment
 just dc-dev up -d

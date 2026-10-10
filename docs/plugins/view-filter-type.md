@@ -160,14 +160,19 @@ export class EqualViewFilterType extends ViewFilterType {
 
 plugins/my_baserow_plugin/web-frontend/plugin.js
 ```javascript
+import { defineNuxtPlugin } from '#app'
 import { PluginNamePlugin } from '@my-baserow-plugin/plugins'
 import { EqualViewFilterType } from '@my-baserow-plugin/viewFilters'
 
-export default (context) => {
-  const { app } = context
-  app.$registry.register('plugin', new PluginNamePlugin(context))
-  app.$registry.register('viewFilter', new EqualViewFilterType(context))
-}
+export default defineNuxtPlugin({
+  dependsOn: ['core'],
+  setup(nuxtApp) {
+    const { $registry } = nuxtApp
+    const context = { app: nuxtApp }
+    $registry.register('plugin', new PluginNamePlugin(context))
+    $registry.register('viewFilter', new EqualViewFilterType(context))
+  },
+})
 ```
 
 Once you have added this code, a new filter to a view and have selected a

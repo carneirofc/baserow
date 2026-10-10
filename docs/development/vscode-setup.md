@@ -17,7 +17,7 @@ Install the following tools:
 
 1. First checkout a fresh copy of Saveroom: `git clone git@github.com:carneirofc/baserow.git`
    (or your personal fork of the project)
-1. `cd saveroom`
+1. `cd baserow`
 1. `./config/vscode/apply_standard_baserow_vscode_config.sh`
     1. Type `Y` and hit enter to apply the standard Saveroom config
 1. Open VSCode and on the "Welcome to VSCode" screen click the "Open" button
@@ -43,7 +43,7 @@ Install the following tools:
        just dc-dev up -d db redis
        ```
     2. Or install PostgreSQL locally:
-       [https://www.postgresql.org/docs/11/tutorial-install.html](https://www.postgresql.org/docs/11/tutorial-install.html)
+       [https://www.postgresql.org/docs/18/tutorial-install.html](https://www.postgresql.org/docs/18/tutorial-install.html)
     3. If running PostgreSQL locally, create a baserow user:
         ```sql
         CREATE USER baserow WITH ENCRYPTED PASSWORD 'baserow';
@@ -51,19 +51,14 @@ Install the following tools:
         ```
 1. Now you should be able to run the backend python tests from the testing menu, try
    run `backend/tests/baserow/core/test_core_models.py` for instance.
-1. Now lets set up your frontend dev by changing directory to `saveroom/web-frontend`
-1. Use [nvm](https://github.com/nvm-sh/nvm) or [fnm](https://github.com/Schniz/fnm) to install the correct version of `node`.
-   To determine the version of Node.js to use, see the `runtimeVersion` inside the
-   `launch.json` file. E.g. if the version is `v16.15.0`, you can install it with:
-   `nvm install v16.15.0` and then enable it with `nvm use v16.15.0`. Alternatively,
-   see `baserow/docs/installation/supported.md` to determine the supported version
-   of Node.js to use.
+1. Now lets set up your frontend dev by changing directory to `baserow/web-frontend`
+1. Use [nvm](https://github.com/nvm-sh/nvm) or [fnm](https://github.com/Schniz/fnm) to install the
+   Node.js version pinned in the repo's `.nvmrc`: `nvm install` then `nvm use` from the repo root.
 1. Install `yarn` globally: `npm install -g yarn`
 1. Now run `just f install` to install dependencies (or `yarn install` directly).
 1. Select "Trust Project" if you see an VSCode popup after running yarn install
-1. If you do not see Jest tests in the testing menu:
-   1. Type: Ctrl + Shift + P or open the command palette
-   1. Type: Jest: Start All Runners
+1. Install the Vitest extension; web-frontend tests then appear in the testing menu. The
+   `vitest-current-file` launch configuration debugs the open spec file.
 1. Confirm you can run a web-frontend unit test from vscode
 
 # Recommended Plugins
@@ -74,9 +69,9 @@ Otherwise, you can manually install:
 1. Python
 1. Volar
 1. Eslint
-1. Gitlab Workflow
 1. Gitlens
-1. Jest
+1. Vitest
+1. Ruff
 1. SCSS Formatter
 1. Stylelint
 1. Mypy

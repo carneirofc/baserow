@@ -70,7 +70,7 @@ git --version
 ```bash
 # Clone the repository
 git clone --branch develop https://github.com/carneirofc/baserow.git
-cd saveroom
+cd baserow
 
 # Initialize backend and frontend (creates venv, installs deps, creates .env.local)
 just init
@@ -306,14 +306,6 @@ just b m makemigrations core  # Specific app
 
 ```bash
 just b m createsuperuser
-```
-
-### Syncing Templates
-
-Templates (example databases, forms, etc.) are not synced by default for faster startup:
-
-```bash
-just b m sync_templates
 ```
 
 ### Accessing the Database

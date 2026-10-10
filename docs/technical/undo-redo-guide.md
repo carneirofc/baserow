@@ -10,7 +10,7 @@ triggered by `API` methods (
 e.g. `action_type_registry.get_by_type(DeleteWorkspaceAction).do(user, 
 workspace_to_delete)`).
 
-1. In `backend/src/baserow/core/actions/registries.py` there is a `action_type_registry`
+1. In `backend/src/baserow/core/action/registries.py` there is a `action_type_registry`
    which can be used to register `ActionType`'s
 2. An `ActionType` must implement `do`/`undo`/`redo` methods.
     1. `do` Performs the action when a user requests it to happen, it must also save

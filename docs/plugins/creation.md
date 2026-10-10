@@ -15,10 +15,10 @@ Django `backend` API server and a Nuxt frontend
 services by populating the respective plugin sub-folder.
 
 Since the `backend` service is built with Django, the `backend` sub-folder in a plugin
-should be a Django [app](https://docs.djangoproject.com/en/3.2/ref/applications/).
+should be a Django [app](https://docs.djangoproject.com/en/stable/ref/applications/).
 Similarly, the `web-frontend` service is built using Nuxt.js, and so the `web-frontend`
-plugin sub-folder should contain a Nuxt (
-v2) [module](https://nuxtjs.org/tutorials/creating-a-nuxt-module/).
+plugin sub-folder should contain a Nuxt
+[module](https://nuxt.com/docs/guide/going-further/modules).
 
 ### Plugin Installation API
 

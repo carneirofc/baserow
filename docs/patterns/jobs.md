@@ -88,7 +88,7 @@ The workflow consists of the following steps:
 * If a job has been completed, it will be marked as `finished`. In case of an error, the
   job will be marked as `failed` or `cancelled` if it was requested to cancel.
 
-Celery task queue receives a task to execute a specific job (`run_async_task` with job
+Celery task queue receives a task to execute a specific job (`run_async_job` with job
 id). Job tasks are scheduled for `export` workers. A worker will attempt to execute the
 task, however:
 
@@ -212,7 +212,7 @@ Job cancellation workflow is shown on the diagram below:
   the backend.
 * If a job is picked by a Celery worker, sanity checks will be performed:
     * if a job has not been started yet but the job is not in `pending` state,
-      `run_asyc_job` won't start this job.
+      `run_async_job` won't start this job.
     * If a job is running, it will check the state in the cache every time just before
       updating the progress percentage. If the job has been canceled, a `JobCancelled`
       exception is raised, stopping the job execution. If the canceled state is not set,

@@ -16,7 +16,7 @@ Install the following tools:
 ## Setup Steps
 
 1. First checkout a fresh copy of Saveroom: `git clone git@github.com:carneirofc/baserow.git`
-1. `cd saveroom`
+1. `cd baserow`
 1. `./config/intellij/apply_standard_baserow_intellij_config.sh`
     1. Type `Y` and hit enter to apply the standard Saveroom config
 1. Open Intellij and on the "Welcome to IntelliJ IDEA" screen click the "Open" button
@@ -50,7 +50,7 @@ Install the following tools:
        just dc-dev up -d db redis
        ```
     2. Or install PostgreSQL locally:
-       [https://www.postgresql.org/docs/11/tutorial-install.html](https://www.postgresql.org/docs/11/tutorial-install.html)
+       [https://www.postgresql.org/docs/18/tutorial-install.html](https://www.postgresql.org/docs/18/tutorial-install.html)
     3. If running PostgreSQL locally, create a baserow user:
         ```sql
         CREATE USER baserow WITH ENCRYPTED PASSWORD 'baserow';
@@ -58,13 +58,12 @@ Install the following tools:
         ```
 1. Now you should be able to run the backend python tests, try
    run `backend/tests/baserow/core/test_core_models.py` for instance.
-1. Now lets set up your frontend dev by changing directory to `saveroom/web-frontend`
+1. Now lets set up your frontend dev by changing directory to `baserow/web-frontend`
 1. Now run `just f install` (or `yarn install` directly). If you do not have yarn available
    check out and install a node version manager like [nvm](https://github.com/nvm-sh/nvm) or
    [fnm](https://github.com/Schniz/fnm) and follow the
    [Yarn installation instructions](https://yarnpkg.com/getting-started/install)).
-   See `baserow/docs/installation/supported.md` to determine the supported version of
-   Node.js to use.
+   Use the Node.js version pinned in the repo's `.nvmrc`.
 1. Select "Trust Project" if you see an IntelliJ popup after running yarn install
 1. Open your settings, search for and open the `Node.js and NPM` category and ensure the
    Node interpreter is pointing to the desired node executable
@@ -72,13 +71,12 @@ Install the following tools:
 1. Open settings and search for eslint, make sure you have switched
    to `Manual ESLint configuration`, have set the `ESlint package` to to `eslint` sub
    folder in the `node_modules` created by the
-   previous `yarn install` (`saveroom/web-frontend/node_modules/eslint`)
+   previous `yarn install` (`baserow/web-frontend/node_modules/eslint`)
 
 # Recommended Plugins
 
-1. [https://plugins.jetbrains.com/plugin/14321-blackconnect](https://plugins.jetbrains.com/plugin/14321-blackconnect)
-    1. Auto runs black over changed files. Setup a blackd daemon that runs on startup
-       for lowest friction.
+1. [Ruff](https://plugins.jetbrains.com/plugin/20574-ruff)
+    1. Lints and formats Python with the repo's ruff config (`just b fix` does the same).
 1. [Database Navigator](https://plugins.jetbrains.com/plugin/1800-database-navigatorkey)
 1. [IntelliVue](https://plugins.jetbrains.com/plugin/12014-intellivue)
 1. [Key Promoter X](https://plugins.jetbrains.com/plugin/9792-key-promoter-x)

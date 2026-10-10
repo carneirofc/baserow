@@ -5,7 +5,7 @@
    by a running Saveroom instance or any other process which is making changes to the 
    database.
 2. Please create PGPASS file to store the password for your database, see
-   https://www.postgresql.org/docs/11/libpq-pgpass.html for more details on this file. 
+   https://www.postgresql.org/docs/18/libpq-pgpass.html for more details on this file. 
 3. Please read and understand the output of `./baserow backup_baserow --help`
 4. Run the following command to back-up Saveroom.
     `PGPASSFILE=PATH_TO_YOUR_PGPASSFILE ./baserow backup_baserow -h YOUR_DB_HOST -d YOUR_DB_NAME -U YOUR_DB_USER -p YOUR_DB_PORT`
@@ -18,7 +18,7 @@
 1. Get a baserow backup tar gz file produced by the `./baserow backup_baserow` command 
    and its file path.
 1. Please create PGPASS file to store the password for your database, see
-   https://www.postgresql.org/docs/11/libpq-pgpass.html for more details on this file.
+   https://www.postgresql.org/docs/18/libpq-pgpass.html for more details on this file.
 1. Please read and understand the output of `./baserow restore_baserow --help`
 1. To restore Saveroom run the following command: 
    `PGPASSFILE=PATH_TO_YOUR_PGPASSFILE ./baserow restore_baserow -h YOUR_DB_HOST -d YOUR_FRESH_DB_TO_RESTORE_INTO -U YOUR_DB_USER -p YOUR_DB_PORT -f PATH_TO_BACKUP_TAR_GZ` 

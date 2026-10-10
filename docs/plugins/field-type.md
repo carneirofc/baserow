@@ -146,14 +146,19 @@ export class IntegerFieldType extends FieldType {
 `plugins/my_baserow_plugin/web-frontend/plugin.js`
 
 ```javascript
+import { defineNuxtPlugin } from '#app'
 import { PluginNamePlugin } from "@my-baserow-plugin/plugins";
 import { IntegerFieldType } from "@my-baserow-plugin/fieldTypes";
 
-export default (context) => {
-    const { app } = context;
-    app.$registry.register("plugin", new PluginNamePlugin(context));
-    app.$registry.register("field", new IntegerFieldType(context));
-};
+export default defineNuxtPlugin({
+  dependsOn: ['core'],
+  setup(nuxtApp) {
+    const { $registry } = nuxtApp
+    const context = { app: nuxtApp }
+    $registry.register('plugin', new PluginNamePlugin(context))
+    $registry.register('field', new IntegerFieldType(context))
+  },
+})
 ```
 
 The GridViewIntegerField component is returned by the `getGridViewFieldComponent`

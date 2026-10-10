@@ -163,7 +163,6 @@ To stop receiving updates related to a page you are subscribed to, you will need
 * `authentication`
 * `page_add`
 * `page_discard`
-* `before_group_deleted`
 * `user_updated`
 * `user_deleted`
 * `user_restored`
@@ -172,6 +171,7 @@ To stop receiving updates related to a page you are subscribed to, you will need
 * `group_updated`
 * `group_deleted`
 * `group_restored`
+* `groups_reordered`
 * `group_user_added`
 * `group_user_updated`
 * `group_user_deleted`
@@ -185,7 +185,7 @@ To stop receiving updates related to a page you are subscribed to, you will need
 * `table_created`
 * `table_updated`
 * `table_deleted`
-* `tables_re_ordered`
+* `tables_reordered`
 * `field_created`
 * `field_updated`
 * `field_deleted`

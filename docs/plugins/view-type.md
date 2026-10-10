@@ -148,14 +148,19 @@ export class CalendarViewType extends ViewType {
 
 plugins/my_baserow_plugin/web-frontend/plugin.js
 ```javascript
+import { defineNuxtPlugin } from '#app'
 import { PluginNamePlugin } from '@my-baserow-plugin/plugins'
 import { CalendarViewType } from '@my-baserow-plugin/viewTypes'
 
-export default (context) => {
-  const { app } = context
-  app.$registry.register('plugin', new PluginNamePlugin(context))
-  app.$registry.register('view', new CalendarViewType(context))
-}
+export default defineNuxtPlugin({
+  dependsOn: ['core'],
+  setup(nuxtApp) {
+    const { $registry } = nuxtApp
+    const context = { app: nuxtApp }
+    $registry.register('plugin', new PluginNamePlugin(context))
+    $registry.register('view', new CalendarViewType(context))
+  },
+})
 ```
 
 Once you have added this code you should be able to click on the "Calendar" button

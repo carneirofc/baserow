@@ -19,7 +19,7 @@ If you want to use your own container orchestration software like Kubernetes the
 images let you run and scale these different parts of Saveroom independently. 
 
 For an example of how to use these images see the
-[`docker-compose.yml`](https://github.com/carneirofc/baserow/blob/master/docker-compose.yml) 
+[`docker-compose.yaml`](https://github.com/carneirofc/baserow/blob/develop/docker-compose.yaml) 
 in the root of our repository. 
 
 ## All Services needed to run Saveroom
@@ -29,7 +29,8 @@ images:
 
 * `ghcr.io/carneirofc/baserow/backend:0.6.0` (default command is `gunicorn`)
 * `ghcr.io/carneirofc/baserow/backend:0.6.0` with command `celery-worker`
-* `ghcr.io/carneirofc/baserow/backend:0.6.0` with command `celery-export-worker`
+* `ghcr.io/carneirofc/baserow/backend:0.6.0` with command `celery-exportworker`
+* `ghcr.io/carneirofc/baserow/backend:0.6.0` with command `celery-beat`
 * `ghcr.io/carneirofc/baserow/web-frontend:0.6.0` (default command is `nuxt-prod`)
 * A postgres database 
 * A redis server
@@ -48,7 +49,7 @@ images:
   `BASEROW_CADDY_ADDRESSES` environment variable used in other installation methods 
   has no affect.
 * You must set a `SECRET_KEY` environment variable for the backend gunicorn server.
-* See our example [`Caddyfile`](https://github.com/carneirofc/baserow/blob/master/Caddyfile)
+* See our example [`Caddyfile`](https://github.com/carneirofc/baserow/blob/develop/Caddyfile)
   for an example on how to setup a reverse proxy correctly with Saveroom. In summary you
   need to:
   * Redirect `/api/` and `/ws/` requests to the backend gunicorn service without 
