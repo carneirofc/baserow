@@ -29,9 +29,6 @@ export class ViewOwnershipType extends Registerable {
     return null
   }
 
-
-
-
   /**
    * Returns whether this ownership type is compatible with the given view type.
    * Subclasses can override this to prevent certain combinations.

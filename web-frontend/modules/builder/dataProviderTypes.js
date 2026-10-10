@@ -666,17 +666,17 @@ export class FormDataProviderType extends DataProviderType {
 
     const updatedValue = Object.fromEntries(
       Object.entries(dataContent).map(([elementId, value]) => {
-          const element = this.app.$store.getters['element/getElementById'](
-            page,
-            elementId
-          )
-          const elementType = this.app.$registry.get('element', element.type)
+        const element = this.app.$store.getters['element/getElementById'](
+          page,
+          elementId
+        )
+        const elementType = this.app.$registry.get('element', element.type)
 
-          return [
-            elementId,
-            elementType.beforeActionDispatchContext(element, value, files),
-          ]
-        })
+        return [
+          elementId,
+          elementType.beforeActionDispatchContext(element, value, files),
+        ]
+      })
     )
 
     return [updatedValue, files]

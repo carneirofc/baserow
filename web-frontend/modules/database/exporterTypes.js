@@ -70,9 +70,6 @@ export class TableExporterType extends Registerable {
       supportedViews: this.supportedViews,
     }
   }
-
-
-
 }
 
 export class CSVTableExporterType extends TableExporterType {

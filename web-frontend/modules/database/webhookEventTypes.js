@@ -67,9 +67,6 @@ export class WebhookEventType extends Registerable {
     return null
   }
 
-
-
-
   getFeatureName() {
     return ''
   }

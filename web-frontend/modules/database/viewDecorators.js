@@ -22,9 +22,6 @@ export class ViewDecoratorType extends Registerable {
     return null
   }
 
-
-
-
   /**
    * Returns whether or not the user can add a new instance of this decorator.
    * A decorator might be disabled if, for example, there is already one occurrence

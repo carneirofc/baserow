@@ -20,6 +20,4 @@ export class TwoWaySyncStrategyType extends Registerable {
       type: this.type,
     }
   }
-
-
 }

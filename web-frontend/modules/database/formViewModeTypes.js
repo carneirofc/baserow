@@ -35,9 +35,6 @@ export class FormViewModeType extends Registerable {
     throw new Error('The icon class of an importer type must be set.')
   }
 
-
-
-
   /**
    * This is the component that's responsible for previewing and editing the form.
    * It will be shown to users who who want to edit the form.

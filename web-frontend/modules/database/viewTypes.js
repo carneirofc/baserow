@@ -368,9 +368,6 @@ export class ViewType extends Registerable {
     }
   }
 
-
-
-
   /**
    * Helper function to set a field value to null for all
    * views of the same type
