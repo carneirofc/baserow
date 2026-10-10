@@ -16,7 +16,7 @@ keywords:
   - database
   - openshift
   - eks
-version: 0.9.0
+version: 0.10.0
 # Tracks the application version shipped by this fork's images.
 appVersion: "0.15.0"
 home: https://github.com/carneirofc/baserow
@@ -28,20 +28,12 @@ maintainers:
 
 annotations:
   artifacthub.io/changes: |
-    - kind: removed
+    - kind: fixed
       description: >-
-        Dropped the /mcp and /assistant backend routes; the MCP server and the
-        AI assistant they served are removed.
-    - kind: changed
-      description: >-
-        Renamed the chart to saveroom, published at
-        oci://ghcr.io/carneirofc/baserow/charts/saveroom. Resource names and
-        selector labels keep the baserow name, so existing releases upgrade in
-        place.
-    - kind: added
-      description: >-
-        branding.appName also reaches the backend and Celery pods, for the
-        product name in emails and the API docs.
+        Added a celery-export Deployment (replicaCount.celeryExport,
+        resources.celeryExport) consuming the export queue. Without it jobs,
+        exports, backups, webhooks, search indexing and notification emails
+        stayed pending.
 
 dependencies:
   - name: postgresql

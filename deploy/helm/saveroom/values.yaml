@@ -14,6 +14,9 @@ replicaCount:
   backend: 1
   webFrontend: 1
   celery: 1
+  # Runs the `export` queue: jobs (imports, exports, duplication, snapshots),
+  # webhooks, search indexing, notification emails, backups and cleanup.
+  celeryExport: 1
   # celery-beat is always a singleton and is not configurable here.
 
 image:
@@ -214,9 +217,9 @@ objectStorage:
   existingSecret: ""
 
 # PVC used only when objectStorage.enabled=false.
-# The backend and the Celery worker Deployments both mount this claim, and the worker
-# is what writes exports and backups. ReadWriteOnce appears to work for as long as the
-# two pods happen to land on the same node, then fails with a Multi-Attach error after
+# The backend and both Celery worker Deployments mount this claim, and the export
+# worker is what writes exports and backups. ReadWriteOnce appears to work for as long
+# as the pods happen to land on the same node, then fails with a Multi-Attach error after
 # a reschedule, so it defaults to ReadWriteMany. Set it back to ReadWriteOnce only
 # when something pins both pods to one node.
 mediaPersistence:
@@ -347,6 +350,9 @@ resources:
     requests: { cpu: 100m, memory: 256Mi }
     limits: { cpu: "1", memory: 1Gi }
   celery:
+    requests: { cpu: 250m, memory: 512Mi }
+    limits: { cpu: "2", memory: 2Gi }
+  celeryExport:
     requests: { cpu: 250m, memory: 512Mi }
     limits: { cpu: "2", memory: 2Gi }
   celeryBeat:

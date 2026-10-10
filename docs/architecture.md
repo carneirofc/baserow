@@ -82,7 +82,7 @@ flowchart TB
         direction LR
         c1[caddy] --> c2[web-frontend]
         c1 --> c3[backend]
-        c4[celery] & c5[celery-beat]
+        c4[celery] & c8[celery-export-worker] & c5[celery-beat]
         c6[(db)] & c7[(redis)]
     end
 
@@ -90,7 +90,7 @@ flowchart TB
         direction LR
         h1[Route / Ingress<br/>path demux] --> h2[web-frontend]
         h1 --> h3[backend]
-        h4[celery] & h5[celery-beat]
+        h4[celery] & h8[celery-export] & h5[celery-beat]
         h6[(Bitnami PostgreSQL / Redis<br/>or external)]
     end
 ```
@@ -104,16 +104,16 @@ flowchart TB
 | PostgreSQL / Redis | Embedded, or external | `db` and `redis` containers | Bundled subcharts, or external |
 | Scaling | One container | Per service | Per Deployment; runs under OpenShift `restricted-v2` |
 
-!!! warning "Export queue"
+!!! note "Two worker queues"
     Most background work is bound to the `export` Celery queue: `run_async_job` (every
     job), webhooks, search indexing, notification emails, backups, scheduled exports and
-    cleanup tasks. See `queue="export"` in the `tasks.py` modules and `CELERY_TASK_ROUTES`
-    in `backend/src/baserow/config/settings/base.py`. The all-in-one image runs a
-    dedicated `exportworker` for it. `docker-compose.yaml` and the Helm chart currently
-    start only `celery-worker`, which consumes `celery,automation_workflow`. It also
-    consumes `export` only when `BASEROW_RUN_MINIMAL` is set and
-    `BASEROW_AMOUNT_OF_WORKERS=1`. Without one of those, run a
-    `celery-exportworker` process.
+    cleanup tasks (`queue="export"` in the `tasks.py` modules and `CELERY_TASK_ROUTES` in
+    `backend/src/baserow/config/settings/base.py`). Every deployment therefore runs a
+    `celery-exportworker` next to the default `celery-worker`: `exportworker` in the
+    all-in-one image, `celery-export-worker` in `docker-compose.yaml` and the
+    `celery-export` Deployment in the Helm chart. With `BASEROW_RUN_MINIMAL` and
+    `BASEROW_AMOUNT_OF_WORKERS=1` the default worker takes both queues and the export
+    worker idles.
 
 ## Repository layout
 

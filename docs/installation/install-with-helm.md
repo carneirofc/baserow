@@ -1,7 +1,7 @@
 # Installing with Helm
 
-The Helm chart deploys Saveroom on Kubernetes as four separate workloads — `backend`,
-`web-frontend`, `celery` worker and `celery-beat` — with optional bundled PostgreSQL
+The Helm chart deploys Saveroom on Kubernetes as five separate workloads — `backend`,
+`web-frontend`, `celery` worker, `celery-export` worker and `celery-beat` — with optional bundled PostgreSQL
 and Redis. It runs on plain Kubernetes, on OpenShift under the default `restricted-v2`
 SCC, and on Amazon EKS.
 
@@ -202,9 +202,9 @@ replicaCount:
   backend: 1
 ```
 
-The backend and the Celery worker both mount this claim, and the worker is what writes
-exports and backups, so it needs `ReadWriteMany`. `ReadWriteOnce` appears to work for as
-long as the two pods happen to land on the same node, and then fails with a Multi-Attach
+The backend and both Celery workers mount this claim, and the export worker is what
+writes exports and backups, so it needs `ReadWriteMany`. `ReadWriteOnce` appears to work
+for as long as the pods happen to land on the same node, and then fails with a Multi-Attach
 error after a reschedule. Outside OpenShift nothing assigns an `fsGroup`, so add
 `podSecurityContext.fsGroup: 1000` if the backend cannot write to `/baserow/media`.
 
@@ -252,7 +252,7 @@ Single sign-on and RBAC are configured this way; see
 External storage for backups and datalake exports is declared with
 `BASEROW_DATA_DESTINATIONS` in `extraEnv`. Keep its credentials out of the ConfigMap: put
 them in a Secret, mount it with `extraVolumes`/`extraVolumeMounts` (added to the backend,
-Celery worker and Celery beat pods) and reference the files with `*_file` keys. A
+Celery worker, Celery export worker and Celery beat pods) and reference the files with `*_file` keys. A
 `filesystem` destination mounts its PVC the same way.
 
 ```yaml
@@ -325,6 +325,7 @@ Everything else is additive; existing values files keep working.
 kubectl get pods -l app.kubernetes.io/instance=baserow
 kubectl logs deploy/baserow-backend
 kubectl logs deploy/baserow-celery
+kubectl logs deploy/baserow-celery-export
 helm get values baserow
 helm template baserow deploy/helm/saveroom -f my-values.yaml | less
 ```

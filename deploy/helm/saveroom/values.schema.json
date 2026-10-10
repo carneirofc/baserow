@@ -13,7 +13,8 @@
       "properties": {
         "backend": { "type": "integer", "minimum": 0 },
         "webFrontend": { "type": "integer", "minimum": 0 },
-        "celery": { "type": "integer", "minimum": 0 }
+        "celery": { "type": "integer", "minimum": 0 },
+        "celeryExport": { "type": "integer", "minimum": 0 }
       }
     },
 
@@ -223,6 +224,7 @@
         "backend": { "$ref": "#/definitions/resourceBlock" },
         "webFrontend": { "$ref": "#/definitions/resourceBlock" },
         "celery": { "$ref": "#/definitions/resourceBlock" },
+        "celeryExport": { "$ref": "#/definitions/resourceBlock" },
         "celeryBeat": { "$ref": "#/definitions/resourceBlock" }
       }
     },

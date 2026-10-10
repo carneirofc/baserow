@@ -1,7 +1,7 @@
 # Saveroom Helm chart
 
 Deploys this Saveroom fork on Kubernetes as separate, hardened pods — `backend`,
-`web-frontend`, `celery` worker and `celery-beat` — plus optional, toggleable
+`web-frontend`, `celery` worker, `celery-export` worker and `celery-beat` — plus optional, toggleable
 PostgreSQL and Redis subcharts.
 
 The chart runs on plain Kubernetes, on OpenShift under the default `restricted-v2`
@@ -95,7 +95,7 @@ April 2023. The backend would otherwise send `public-read` and every upload woul
 with `AccessControlListNotSupported`.
 
 **PVC fallback.** `objectStorage.enabled: false` creates an RWO PVC mounted on backend
-+ celery and serves uploads through the backend. Keep `replicaCount.backend: 1` unless
++ both celery workers and serves uploads through the backend. Keep `replicaCount.backend: 1` unless
 your storage class supports ReadWriteMany. Outside OpenShift nothing assigns an
 `fsGroup`, so set `podSecurityContext.fsGroup` if the backend cannot write to
 `/baserow/media`.

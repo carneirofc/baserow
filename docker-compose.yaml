@@ -103,6 +103,30 @@ services:
       redis:
         condition: service_healthy
 
+  # Runs the `export` queue: jobs (imports, exports, duplication, snapshots),
+  # webhooks, search indexing, notification emails, backups and cleanup.
+  celery-export-worker:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+      target: prod
+    restart: unless-stopped
+    command: celery-exportworker
+    environment: *backend-env
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "/baserow/backend/docker/docker-entrypoint.sh celery-exportworker-healthcheck",
+        ]
+    volumes:
+      - media:/baserow/media
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
   celery-beat:
     build:
       context: .
