@@ -9,6 +9,10 @@
          <lastmod>2026-10-10</lastmod>
     </url>
     <url>
+         <loc>https://carneirofc.github.io/baserow/architecture/</loc>
+         <lastmod>2026-10-10</lastmod>
+    </url>
+    <url>
          <loc>https://carneirofc.github.io/baserow/adr/001-phone-number-field-validation/</loc>
          <lastmod>2026-10-10</lastmod>
     </url>
@@ -34,10 +38,6 @@
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/agents/triage-labels/</loc>
-         <lastmod>2026-10-10</lastmod>
-    </url>
-    <url>
-         <loc>https://carneirofc.github.io/baserow/apis/deprecations/</loc>
          <lastmod>2026-10-10</lastmod>
     </url>
     <url>
@@ -70,10 +70,6 @@
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/development/development-environment/</loc>
-         <lastmod>2026-10-10</lastmod>
-    </url>
-    <url>
-         <loc>https://carneirofc.github.io/baserow/development/directory-structure/</loc>
          <lastmod>2026-10-10</lastmod>
     </url>
     <url>
@@ -113,10 +109,6 @@
          <lastmod>2026-10-10</lastmod>
     </url>
     <url>
-         <loc>https://carneirofc.github.io/baserow/development/sso-saml/</loc>
-         <lastmod>2026-10-10</lastmod>
-    </url>
-    <url>
          <loc>https://carneirofc.github.io/baserow/development/tools/</loc>
          <lastmod>2026-10-10</lastmod>
     </url>
@@ -153,14 +145,6 @@
          <lastmod>2026-10-10</lastmod>
     </url>
     <url>
-         <loc>https://carneirofc.github.io/baserow/installation/install-on-railway/</loc>
-         <lastmod>2026-10-10</lastmod>
-    </url>
-    <url>
-         <loc>https://carneirofc.github.io/baserow/installation/install-on-ubuntu/</loc>
-         <lastmod>2026-10-10</lastmod>
-    </url>
-    <url>
          <loc>https://carneirofc.github.io/baserow/installation/install-using-standalone-images/</loc>
          <lastmod>2026-10-10</lastmod>
     </url>
@@ -177,19 +161,11 @@
          <lastmod>2026-10-10</lastmod>
     </url>
     <url>
-         <loc>https://carneirofc.github.io/baserow/installation/install-with-k8s/</loc>
-         <lastmod>2026-10-10</lastmod>
-    </url>
-    <url>
          <loc>https://carneirofc.github.io/baserow/installation/instance-settings/</loc>
          <lastmod>2026-10-10</lastmod>
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/installation/monitoring/</loc>
-         <lastmod>2026-10-10</lastmod>
-    </url>
-    <url>
-         <loc>https://carneirofc.github.io/baserow/installation/old-install-on-ubuntu/</loc>
          <lastmod>2026-10-10</lastmod>
     </url>
     <url>
@@ -205,15 +181,7 @@
          <lastmod>2026-10-10</lastmod>
     </url>
     <url>
-         <loc>https://carneirofc.github.io/baserow/installation/third-party-hosting-providers/</loc>
-         <lastmod>2026-10-10</lastmod>
-    </url>
-    <url>
          <loc>https://carneirofc.github.io/baserow/installation/workspace-access/</loc>
-         <lastmod>2026-10-10</lastmod>
-    </url>
-    <url>
-         <loc>https://carneirofc.github.io/baserow/other/external-resources/</loc>
          <lastmod>2026-10-10</lastmod>
     </url>
     <url>
@@ -294,10 +262,6 @@
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/technical/formula-technical-guide/</loc>
-         <lastmod>2026-10-10</lastmod>
-    </url>
-    <url>
-         <loc>https://carneirofc.github.io/baserow/technical/introduction/</loc>
          <lastmod>2026-10-10</lastmod>
     </url>
     <url>

@@ -12,7 +12,7 @@
       
       
       
-        <link rel="next" href="installation/install-with-docker/">
+        <link rel="next" href="architecture/">
       
       
       <link rel="icon" href="assets/logo.svg">
@@ -72,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#table-of-contents" class="md-skip">
+        <a href="#saveroom-documentation" class="md-skip">
           Skip to content
         </a>
       
@@ -232,16 +232,42 @@
   
   
   
+    <li class="md-tabs__item">
+      <a href="architecture/" class="md-tabs__link">
+        
+  
+    
+  
+  Architecture
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      
+  
+  
+  
     
     
       <li class="md-tabs__item">
         <a href="installation/install-with-docker/" class="md-tabs__link">
           
   
-  Installation
+  Run
 
         </a>
       </li>
+    
+  
+
     
   
 
@@ -256,7 +282,7 @@
         <a href="tutorials/understanding-baserow-formulas/" class="md-tabs__link">
           
   
-  Tutorials
+  Use
 
         </a>
       </li>
@@ -274,7 +300,7 @@
         <a href="apis/rest-api/" class="md-tabs__link">
           
   
-  API Usage
+  Integrate
 
         </a>
       </li>
@@ -288,19 +314,7 @@
   
     
     
-      <li class="md-tabs__item">
-        <a href="technical/introduction/" class="md-tabs__link">
-          
-  
-  Technical Overviews
-
-        </a>
-      </li>
-    
-  
-
       
-        
   
   
   
@@ -310,10 +324,13 @@
         <a href="development/development-environment/" class="md-tabs__link">
           
   
-  Development
+  Develop
 
         </a>
       </li>
+    
+  
+
     
   
 
@@ -328,97 +345,7 @@
         <a href="plugins/introduction/" class="md-tabs__link">
           
   
-  Plugins
-
-        </a>
-      </li>
-    
-  
-
-      
-        
-  
-  
-  
-    
-    
-      <li class="md-tabs__item">
-        <a href="patterns/date-and-time/" class="md-tabs__link">
-          
-  
-  Patterns
-
-        </a>
-      </li>
-    
-  
-
-      
-        
-  
-  
-  
-    
-    
-      <li class="md-tabs__item">
-        <a href="runbooks/back-up-and-restore-baserow/" class="md-tabs__link">
-          
-  
-  Runbooks
-
-        </a>
-      </li>
-    
-  
-
-      
-        
-  
-  
-  
-    
-    
-      <li class="md-tabs__item">
-        <a href="testing/grid-view-test-plan/" class="md-tabs__link">
-          
-  
-  Testing
-
-        </a>
-      </li>
-    
-  
-
-      
-        
-  
-  
-  
-    
-    
-      <li class="md-tabs__item">
-        <a href="adr/001-phone-number-field-validation/" class="md-tabs__link">
-          
-  
-  Architecture Decision Records
-
-        </a>
-      </li>
-    
-  
-
-      
-        
-  
-  
-  
-    
-    
-      <li class="md-tabs__item">
-        <a href="other/external-resources/" class="md-tabs__link">
-          
-  
-  Other
+  Extend
 
         </a>
       </li>
@@ -523,63 +450,45 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
+  <a href="#run-saveroom" class="md-nav__link">
     <span class="md-ellipsis">
-      Installation
+      Run Saveroom
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#saveroom-tutorials" class="md-nav__link">
+  <a href="#use-saveroom" class="md-nav__link">
     <span class="md-ellipsis">
-      Saveroom Tutorials
+      Use Saveroom
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#api-usage" class="md-nav__link">
+  <a href="#integrate-through-the-api" class="md-nav__link">
     <span class="md-ellipsis">
-      API Usage
+      Integrate through the API
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#technical-overviews" class="md-nav__link">
+  <a href="#develop-saveroom" class="md-nav__link">
     <span class="md-ellipsis">
-      Technical Overviews
+      Develop Saveroom
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#development" class="md-nav__link">
+  <a href="#extend-with-plugins" class="md-nav__link">
     <span class="md-ellipsis">
-      Development
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#plugins" class="md-nav__link">
-    <span class="md-ellipsis">
-      Plugins
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#other" class="md-nav__link">
-    <span class="md-ellipsis">
-      Other
+      Extend with plugins
     </span>
   </a>
   
@@ -589,6 +498,26 @@
   
 </nav>
       
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="architecture/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
+  </span>
+  
+
+      </a>
     </li>
   
 
@@ -610,24 +539,62 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
         
           
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
             
   
   <span class="md-ellipsis">
-    Installation
+    Run
   </span>
   
 
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_2">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
-            Installation
+            Run
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Install
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_1">
+            <span class="md-nav__icon md-icon"></span>
+            Install
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -642,7 +609,7 @@
         
   
   <span class="md-ellipsis">
-    Docker
+    Docker (all-in-one)
   </span>
   
 
@@ -680,137 +647,11 @@
   
   
     <li class="md-nav__item">
-      <a href="installation/install-on-aws/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    AWS
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="installation/install-using-standalone-images/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Standalone images
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="installation/install-on-digital-ocean/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Digital Ocean Apps
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="installation/install-on-railway/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Railway
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="installation/install-on-ubuntu/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Ubuntu
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="installation/third-party-hosting-providers/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Third party hosting providers
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="installation/install-with-helm/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Helm
+    Helm (Kubernetes, OpenShift)
   </span>
   
 
@@ -848,11 +689,11 @@
   
   
     <li class="md-nav__item">
-      <a href="installation/install-with-k8s/" class="md-nav__link">
+      <a href="installation/install-on-aws/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Kubernetes (K8S)
+    AWS ECS
   </span>
   
 
@@ -869,11 +710,32 @@
   
   
     <li class="md-nav__item">
-      <a href="installation/old-install-on-ubuntu/" class="md-nav__link">
+      <a href="installation/install-on-digital-ocean/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    DEPRECATED: Ubuntu (manual)
+    DigitalOcean Apps
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="installation/install-using-standalone-images/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Standalone images
   </span>
   
 
@@ -894,11 +756,19 @@
         
   
   <span class="md-ellipsis">
-    Supported runtime dependencies
+    Supported dependencies
   </span>
   
 
       </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -910,12 +780,50 @@
   
   
   
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Configure
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            Configure
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
-      <a href="installation/monitoring/" class="md-nav__link">
+      <a href="installation/configuration/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Monitoring
+    Configuration reference
   </span>
   
 
@@ -974,90 +882,6 @@
   
   
     <li class="md-nav__item">
-      <a href="development/sso-saml/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    SSO with SAML
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="installation/workspace-access/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Managing workspace access
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="installation/data-destinations/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Data destinations, backups & datalake exports
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="installation/instance-settings/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Turning application types off instance-wide
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="installation/branding/" class="md-nav__link">
         
   
@@ -1079,15 +903,216 @@
   
   
     <li class="md-nav__item">
-      <a href="installation/configuration/" class="md-nav__link">
+      <a href="installation/workspace-access/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Configuration
+    Workspace access
   </span>
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="installation/instance-settings/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Turning application types off
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Operate
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            Operate
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="installation/monitoring/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Monitoring
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="installation/data-destinations/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Data destinations and backups
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="runbooks/back-up-and-restore-baserow/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Back up and restore
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="runbooks/upgrade-embedded-postgres/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Upgrade embedded PostgreSQL
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="runbooks/migrate-from-user-tables-database/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Migrate from a user tables database
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="tutorials/debugging-connection-issues/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Debugging connection issues
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -1117,24 +1142,24 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
         
           
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
             
   
   <span class="md-ellipsis">
-    Tutorials
+    Use
   </span>
   
 
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
-            Tutorials
+            Use
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1149,28 +1174,7 @@
         
   
   <span class="md-ellipsis">
-    Understanding Saveroom Formulas
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="tutorials/debugging-connection-issues/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Debugging Connection Issues
+    Understanding formulas
   </span>
   
 
@@ -1213,6 +1217,93 @@
   
   <span class="md-ellipsis">
     Protected editing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Integrate
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Integrate
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="apis/rest-api/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    REST API
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="apis/web-socket-api/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    WebSocket API
   </span>
   
 
@@ -1267,99 +1358,29 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
             
   
   <span class="md-ellipsis">
-    API Usage
+    Develop
   </span>
   
 
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
-            API Usage
+            Develop
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
               
                 
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="apis/rest-api/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    REST API
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="apis/web-socket-api/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    WebSocket API
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="apis/deprecations/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Deprecations
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
   
   
   
@@ -1375,24 +1396,24 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_1" >
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_6_1" id="__nav_6_1_label" tabindex="0">
             
   
   <span class="md-ellipsis">
-    Technical Overviews
+    Get started
   </span>
   
 
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_1">
             <span class="md-nav__icon md-icon"></span>
-            Technical Overviews
+            Get started
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1403,11 +1424,11 @@
   
   
     <li class="md-nav__item">
-      <a href="technical/introduction/" class="md-nav__link">
+      <a href="development/development-environment/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Introduction
+    Development environment
   </span>
   
 
@@ -1416,6 +1437,476 @@
   
 
               
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="development/running-the-dev-env-locally/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Run locally
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="development/running-the-dev-env-with-docker/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Run with Docker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="development/justfile/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Justfile reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="development/vscode-setup/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    VS Code
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="development/intellij-setup/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    IntelliJ
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="development/zed-setup/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Zed
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_2" id="__nav_6_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Workflow
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_2">
+            <span class="md-nav__icon md-icon"></span>
+            Workflow
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="development/code-quality/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code quality
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="development/tools/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tools
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="development/running-tests/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Running tests
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="development/e2e-testing/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    E2E testing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="testing/grid-view-test-plan/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Grid view test plan
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="development/debugging/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Debugging
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="development/feature-flags/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Feature flags
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="development/metrics-and-logs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Metrics and logs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="development/read-replicas/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Read replicas
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="development/building-and-running-production-images/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Production images
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="development/ci-cd/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CI/CD
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="development/create-a-template/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Create a template
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_3" id="__nav_6_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Internals
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_3">
+            <span class="md-nav__icon md-icon"></span>
+            Internals
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
             
               
                 
@@ -1445,11 +1936,11 @@
   
   
     <li class="md-nav__item">
-      <a href="technical/formula-technical-guide/" class="md-nav__link">
+      <a href="technical/table-persistence/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Formula Technical Guide
+    Table persistence
   </span>
   
 
@@ -1466,11 +1957,11 @@
   
   
     <li class="md-nav__item">
-      <a href="technical/undo-redo-guide/" class="md-nav__link">
+      <a href="technical/formula-technical-guide/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Undo Redo Technical Guide
+    Formulas
   </span>
   
 
@@ -1491,7 +1982,91 @@
         
   
   <span class="md-ellipsis">
-    Permissions handling Guide
+    Permissions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="technical/undo-redo-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Undo and redo
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="technical/websockets/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    WebSockets
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="technical/realtime-presence/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Realtime presence
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="technical/workspace-search/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Workspace search
   </span>
   
 
@@ -1543,78 +2118,16 @@
 
               
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="technical/realtime-presence/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Realtime presence
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="technical/websockets/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    WebSockets
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="technical/workspace-search/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Workspace search
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
           </ul>
         </nav>
       
     </li>
   
 
-    
-      
-      
+              
+            
+              
+                
   
   
   
@@ -1630,667 +2143,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_4" >
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
-            
-  
-  <span class="md-ellipsis">
-    Development
-  </span>
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6">
-            <span class="md-nav__icon md-icon"></span>
-            Development
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="development/development-environment/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Development environment
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="development/running-the-dev-env-locally/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Running the Dev Environment Locally
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="development/running-the-dev-env-with-docker/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Running the Dev Environment with Docker
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="development/directory-structure/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Directory structure
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="development/tools/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Tools
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="development/code-quality/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Code quality
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="development/debugging/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Debugging
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="development/create-a-template/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Create a template
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="development/justfile/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Justfile reference
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="development/intellij-setup/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    IntelliJ setup
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="development/feature-flags/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Feature flags
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="development/e2e-testing/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    E2E Testing
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="development/metrics-and-logs/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Metrics and Logs
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="development/running-tests/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Backend Tests
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="development/building-and-running-production-images/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Building and running production images
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="development/ci-cd/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    CI/CD
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="development/read-replicas/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Read replicas
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="development/vscode-setup/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    VS Code setup
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="development/zed-setup/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Zed setup
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-      
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
-        
-          
-          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
-            
-  
-  <span class="md-ellipsis">
-    Plugins
-  </span>
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_7">
-            <span class="md-nav__icon md-icon"></span>
-            Plugins
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="plugins/introduction/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Plugin basics
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="plugins/application-type/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Create application type
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="plugins/view-type/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Create database table view
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="plugins/view-filter-type/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Create database table view filter
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="plugins/field-type/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Create database table field
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="plugins/field-converter/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Create a field converter
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="plugins/creation/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Plugin creation
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="plugins/installation/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Plugin installation
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-      
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
-        
-          
-          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_6_4" id="__nav_6_4_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -2301,8 +2157,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_8">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_4">
             <span class="md-nav__icon md-icon"></span>
             Patterns
           </label>
@@ -2315,32 +2171,11 @@
   
   
     <li class="md-nav__item">
-      <a href="patterns/date-and-time/" class="md-nav__link">
+      <a href="patterns/jobs/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Date and time
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="patterns/emails/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Emails
+    Jobs
   </span>
   
 
@@ -2378,11 +2213,32 @@
   
   
     <li class="md-nav__item">
-      <a href="patterns/jobs/" class="md-nav__link">
+      <a href="patterns/emails/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Jobs
+    Emails
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="patterns/date-and-time/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Date and time
   </span>
   
 
@@ -2440,9 +2296,10 @@
     </li>
   
 
-    
-      
-      
+              
+            
+              
+                
   
   
   
@@ -2458,198 +2315,24 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_5" >
         
           
-          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_6_5" id="__nav_6_5_label" tabindex="0">
             
   
   <span class="md-ellipsis">
-    Runbooks
+    Decisions (ADRs)
   </span>
   
 
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_9">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_5">
             <span class="md-nav__icon md-icon"></span>
-            Runbooks
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="runbooks/back-up-and-restore-baserow/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Back up and restore Saveroom
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="runbooks/migrate-from-user-tables-database/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Migrate from user tables database
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="runbooks/upgrade-embedded-postgres/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Upgrade embedded Postgres
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-      
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
-        
-          
-          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
-            
-  
-  <span class="md-ellipsis">
-    Testing
-  </span>
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_10">
-            <span class="md-nav__icon md-icon"></span>
-            Testing
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="testing/grid-view-test-plan/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Grid view test plan
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-      
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
-        
-          
-          <label class="md-nav__link" for="__nav_11" id="__nav_11_label" tabindex="0">
-            
-  
-  <span class="md-ellipsis">
-    Architecture Decision Records
-  </span>
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_11">
-            <span class="md-nav__icon md-icon"></span>
-            Architecture Decision Records
+            Decisions (ADRs)
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -2685,7 +2368,7 @@
         
   
   <span class="md-ellipsis">
-    002: Baserow data backups
+    002: Data backups
   </span>
   
 
@@ -2706,7 +2389,7 @@
         
   
   <span class="md-ellipsis">
-    004: Baserow metrics
+    004: Metrics
   </span>
   
 
@@ -2743,6 +2426,14 @@
     </li>
   
 
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
     
       
       
@@ -2761,24 +2452,24 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
         
           
-          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
             
   
   <span class="md-ellipsis">
-    Other
+    Extend
   </span>
   
 
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_12">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
-            Other
+            Extend
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -2789,11 +2480,158 @@
   
   
     <li class="md-nav__item">
-      <a href="other/external-resources/" class="md-nav__link">
+      <a href="plugins/introduction/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    External resources
+    Plugin basics
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="plugins/creation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Creating a plugin
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="plugins/installation/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Installing plugins
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="plugins/application-type/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Application type
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="plugins/field-type/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Field type
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="plugins/field-converter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Field converter
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="plugins/view-type/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    View type
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="plugins/view-filter-type/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    View filter type
   </span>
   
 
@@ -2837,63 +2675,45 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
+  <a href="#run-saveroom" class="md-nav__link">
     <span class="md-ellipsis">
-      Installation
+      Run Saveroom
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#saveroom-tutorials" class="md-nav__link">
+  <a href="#use-saveroom" class="md-nav__link">
     <span class="md-ellipsis">
-      Saveroom Tutorials
+      Use Saveroom
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#api-usage" class="md-nav__link">
+  <a href="#integrate-through-the-api" class="md-nav__link">
     <span class="md-ellipsis">
-      API Usage
+      Integrate through the API
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#technical-overviews" class="md-nav__link">
+  <a href="#develop-saveroom" class="md-nav__link">
     <span class="md-ellipsis">
-      Technical Overviews
+      Develop Saveroom
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#development" class="md-nav__link">
+  <a href="#extend-with-plugins" class="md-nav__link">
     <span class="md-ellipsis">
-      Development
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#plugins" class="md-nav__link">
-    <span class="md-ellipsis">
-      Plugins
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#other" class="md-nav__link">
-    <span class="md-ellipsis">
-      Other
+      Extend with plugins
     </span>
   </a>
   
@@ -2922,144 +2742,104 @@
   
 
 
-<h1 id="table-of-contents">Table of contents<a class="headerlink" href="#table-of-contents" title="Permanent link">&para;</a></h1>
-<p>Saveroom is an open-source online database tool, a fork of Baserow. Users can use this no-code platform to
-create a database without any technical experience. It lowers the barriers to app
-creation so that anyone who can work with a spreadsheet can also create a database. The
-interface looks a lot like a spreadsheet. Our goal is to provide a perfect and fast user
-experience while keeping it easy for developers to write plugins and maintain the
-codebase. The developer documentation contains several topics you might need as a
-developer.</p>
-<h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
-<p>You can easily self-host Saveroom by following one of the guides below:</p>
+<h1 id="saveroom-documentation">Saveroom documentation<a class="headerlink" href="#saveroom-documentation" title="Permanent link">&para;</a></h1>
+<p>Saveroom is an open-source no-code platform: spreadsheet-like databases, an application
+builder, automations and dashboards on top of PostgreSQL. It is a fully MIT-licensed fork
+of Baserow.</p>
+<p>Start with <strong><a href="architecture/">Architecture</a></strong> for how the pieces fit together, then pick
+the section that matches what you want to do.</p>
+<h2 id="run-saveroom">Run Saveroom<a class="headerlink" href="#run-saveroom" title="Permanent link">&para;</a></h2>
+<p>Pick one install path, then configure and operate it.</p>
+<table>
+<thead>
+<tr>
+<th>I want to…</th>
+<th>Read</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Try it on one machine</td>
+<td><a href="installation/install-with-docker/">Docker (all-in-one image)</a></td>
+</tr>
+<tr>
+<td>Run one container per service with Compose</td>
+<td><a href="installation/install-with-docker-compose/">Docker Compose</a></td>
+</tr>
+<tr>
+<td>Run on Kubernetes or OpenShift</td>
+<td><a href="installation/install-with-helm/">Helm</a>, <a href="installation/install-on-eks/">Amazon EKS</a></td>
+</tr>
+<tr>
+<td>Use a managed container platform</td>
+<td><a href="installation/install-on-aws/">AWS ECS</a>, <a href="installation/install-on-digital-ocean/">DigitalOcean Apps</a>, <a href="installation/install-using-standalone-images/">Standalone images</a></td>
+</tr>
+<tr>
+<td>Check versions of PostgreSQL, Redis and others</td>
+<td><a href="installation/supported/">Supported dependencies</a></td>
+</tr>
+<tr>
+<td>Set environment variables</td>
+<td><a href="installation/configuration/">Configuration reference</a></td>
+</tr>
+<tr>
+<td>Sign in through an identity provider</td>
+<td><a href="installation/sso-oidc/">OpenID Connect</a>, <a href="installation/sso-rhbk-keycloak/">RHBK/Keycloak</a></td>
+</tr>
+<tr>
+<td>Change name, colours and logos</td>
+<td><a href="installation/branding/">Branding</a></td>
+</tr>
+<tr>
+<td>Control who sees what</td>
+<td><a href="installation/workspace-access/">Workspace access</a>, <a href="installation/instance-settings/">Turning application types off</a></td>
+</tr>
+<tr>
+<td>Back up and restore</td>
+<td><a href="installation/data-destinations/">Data destinations and backups</a>, <a href="runbooks/back-up-and-restore-baserow/">Back up and restore</a></td>
+</tr>
+<tr>
+<td>Monitor it</td>
+<td><a href="installation/monitoring/">Monitoring</a></td>
+</tr>
+<tr>
+<td>Fix a broken install or upgrade</td>
+<td><a href="tutorials/debugging-connection-issues/">Debugging connection issues</a>, <a href="runbooks/upgrade-embedded-postgres/">Upgrade embedded PostgreSQL</a>, <a href="runbooks/migrate-from-user-tables-database/">Migrate from a user tables database</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="use-saveroom">Use Saveroom<a class="headerlink" href="#use-saveroom" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="installation/install-with-docker/">Install with Docker</a>: A step-by-step guide to
-  install Saveroom using docker.</li>
-<li><a href="installation/install-with-docker-compose/">Install with Docker Compose</a>: A
-  step-by-step guide to install Saveroom using Docker Compose.</li>
-<li><a href="installation/install-on-aws/">Install on AWS</a>: An overview of your options to 
-  install Saveroom on AWS with two specific guides for ECS.</li>
-<li><a href="installation/install-using-standalone-images/">Install using Standalone images</a>: A
-  general overview on how to run the Saveroom standalone service images with your own
-  container orchestration software.</li>
-<li><a href="installation/install-on-digital-ocean/">Install on Digital Ocean Apps</a>:
-  Instructions on how to install on Digital Ocean Apps platform.</li>
-<li><a href="installation/install-on-railway/">Install on Railway</a>: A step-by-step guide to
-  install Saveroom on Railway.</li>
-<li><a href="installation/install-on-ubuntu/">Install on Ubuntu</a>: Instructions on how to install
-  Docker and use it to install Saveroom on a fresh ubuntu install.</li>
-<li><a href="installation/third-party-hosting-providers/">Third party hosting providers</a>: A list
-  of hosting/deployment providers that allow to easily self-host Saveroom.</li>
-<li><a href="installation/install-with-helm/">Install with Helm</a>: The recommended Kubernetes
-  path. Deploys the split backend/web-frontend/Celery pods with optional bundled
-  PostgreSQL/Redis and S3 media, and runs unmodified under OpenShift's restricted-v2 SCC.</li>
-<li><a href="installation/install-on-eks/">Install on Amazon EKS</a>: Saveroom on EKS behind an
-  internal ALB fronted by CloudFront, with S3 media authenticated through IRSA.</li>
-<li><a href="installation/install-with-k8s/">Install with K8S</a>: An example performant 
-  production ready K8S configuration for use as a starting point.</li>
-<li><a href="installation/old-install-on-ubuntu/">DEPRECATED: Install on Ubuntu</a>: A deprecated
-  and now unsupported guide on how to manually install Saveroom and its required services
-  on a fresh Ubuntu install. Please use the guides above instead.</li>
-<li><a href="installation/supported/">Supported runtime dependencies and environments</a>: Learn about
-  the supported and recommended runtime dependencies.</li>
-<li><a href="installation/monitoring/">Monitoring Saveroom</a>: Learn how to monitor your Saveroom
-  server using open telemetry.</li>
-<li><a href="installation/sso-oidc/">Single sign-on with OpenID Connect</a>: Full OIDC reference —
-  provider keys, the user/staff/superuser profiles the IdP defines, a complete example and
-  error codes.</li>
-<li><a href="installation/sso-rhbk-keycloak/">Single sign-on with RHBK/Keycloak</a>: Configure
-  OpenID Connect login with Keycloak client roles deciding who may sign in and who is staff.</li>
-<li><a href="installation/workspace-access/">Managing workspace access</a>: Add existing users to
-  workspaces, group them into teams, and set no access, viewer, editor or builder levels
-  per database and table.</li>
-<li><a href="installation/data-destinations/">Data destinations, backups and datalake exports</a>:
-  Ship backups to S3, Azure Blob Storage or a volume and restore them, and export table
-  rows as Parquet to a datalake on a schedule.</li>
-<li><a href="installation/instance-settings/">Turning application types off instance-wide</a>: Use
-  the admin settings to disable databases, the application builder, dashboards or
-  automations for the whole instance.</li>
+<li><a href="tutorials/understanding-baserow-formulas/">Understanding formulas</a></li>
+<li><a href="tutorials/prefill-forms/">Prefill forms</a></li>
+<li><a href="tutorials/protected-editing/">Protected editing</a></li>
 </ul>
-<h2 id="saveroom-tutorials">Saveroom Tutorials<a class="headerlink" href="#saveroom-tutorials" title="Permanent link">&para;</a></h2>
+<h2 id="integrate-through-the-api">Integrate through the API<a class="headerlink" href="#integrate-through-the-api" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="tutorials/understanding-baserow-formulas/">Understanding Saveroom Formulas</a>: A
-  tutorial explaining how to use the formula field in Saveroom.</li>
-<li><a href="tutorials/debugging-connection-issues/">Debugging Connection Issues</a>: A guide
-  to help you troubleshoot and resolve common connection issues in Saveroom.</li>
+<li><a href="apis/rest-api/">REST API</a>: resources, authentication and the generated API docs.</li>
+<li><a href="apis/web-socket-api/">WebSocket API</a>: realtime events.</li>
+<li><a href="tutorials/api-clients/">API clients</a>: scoped credentials for scripts and
+  integrations.</li>
 </ul>
-<h2 id="api-usage">API Usage<a class="headerlink" href="#api-usage" title="Permanent link">&para;</a></h2>
-<p>Saveroom provides various APIs detailed below:</p>
-<ul>
-<li><a href="apis/rest-api/">REST API</a>: An introduction to the REST API and information about
-  API resources.</li>
-<li><a href="apis/web-socket-api/">WebSocket API</a>: An introduction to the WebSockets API which
-  is used to broadcast real time updates.</li>
-</ul>
-<h2 id="technical-overviews">Technical Overviews<a class="headerlink" href="#technical-overviews" title="Permanent link">&para;</a></h2>
-<ul>
-<li><a href="technical/introduction/">Introduction</a>: An introduction to some important technical
-  concepts in Saveroom.</li>
-<li><a href="technical/database-plugin/">Database plugin</a> An introduction to the database plugin
-  which is installed by default.</li>
-<li><a href="technical/formula-technical-guide/">Formula Technical Guide</a>: A more technical
-  guide about formulas aimed at developers who want to understand and work with
-  internals of Saveroom formulas.</li>
-<li><a href="technical/undo-redo-guide/">Undo Redo Technical Guide</a>: How Saveroom implements undo
-  redo technically.</li>
-<li><a href="technical/permissions-guide/">Permissions handling Guide</a>: How Saveroom implements
-  permission checking technically.</li>
-<li><a href="technical/table-persistence/">Table persistence</a>: How user created tables are stored
-  in PostgreSQL, how their schema is created and altered, and what deleting them does.</li>
-</ul>
-<h2 id="development">Development<a class="headerlink" href="#development" title="Permanent link">&para;</a></h2>
-<p>Everything related to contributing and developing for Saveroom.</p>
-<ul>
-<li><a href="development/development-environment/">Development environment</a>: More detailed
-  information on baserow's local development environment.</li>
-<li><a href="development/running-the-dev-env-locally/">Running the Dev Environment Locally</a>: A
-  step-by-step guide to run Saveroom locally for development.</li>
-<li><a href="development/running-the-dev-env-with-docker/">Running the Dev Environment with Docker</a>: A
-  step-by-step guide to run Saveroom with Docker for development.</li>
-<li><a href="development/directory-structure/">Directory structure</a>: The structure of all the
-  directories in the Saveroom repository explained.</li>
-<li><a href="development/tools/">Tools</a>: The tools (flake8, pytest, eslint, etc) and how to
-  use them.</li>
-<li><a href="development/code-quality/">Code quality</a>: More information about the code style,
-  quality, choices we made, and how we enforce them.</li>
-<li><a href="development/debugging/">Debugging</a>: Debugging tools and how to use them.</li>
-<li><a href="development/create-a-template/">Create a template</a>: Create a template that can be
-  previewed and installed by others.</li>
-<li><a href="development/justfile/">Justfile reference</a>: Complete reference for all <code>just</code> commands
-  available for development.</li>
-<li><a href="development/intellij-setup/">IntelliJ setup</a>: How to configure Intellij to work
-  well with Saveroom for development purposes.</li>
-<li><a href="development/feature-flags/">Feature flags</a>: How Saveroom uses basic feature flags for optionally
-  enabling unfinished or unready features.</li>
-<li><a href="development/e2e-testing/">E2E Testing</a>: How to run Saveroom's end-to-end tests 
-  and when to add your own.</li>
-<li><a href="development/metrics-and-logs/">Metrics and Logs</a>: How to work with metrics and logs
-  to aid with monitoring Saveroom as a developer.</li>
-<li><a href="development/running-tests/">Backend Tests</a>: A guide on how to run python tests for the backend.</li>
-</ul>
-<h2 id="plugins">Plugins<a class="headerlink" href="#plugins" title="Permanent link">&para;</a></h2>
-<p>Everything related to custom plugin development.</p>
-<ul>
-<li><a href="plugins/introduction/">Plugin basics</a>: An introduction into Saveroom plugins.</li>
-<li><a href="plugins/application-type/">Create application</a>: Want to create an application
-  type? Learn how to do that here.</li>
-<li><a href="plugins/view-type/">Create database table view</a>: Display table data like a
-  calendar, Kanban board or however you like by creating a view type.</li>
-<li><a href="plugins/view-filter-type/">Create database table view filter</a>: Filter the rows of
-  a view with custom conditions.</li>
-<li><a href="plugins/field-type/">Create database table field</a>: You can store data in a custom
-  format by creating a field type.</li>
-<li><a href="plugins/field-converter/">Creata a field converter</a>: Converters alter a field and
-  convert the related data for specific field changes.</li>
-</ul>
-<h2 id="other">Other<a class="headerlink" href="#other" title="Permanent link">&para;</a></h2>
-<ul>
-<li><a href="other/external-resources/">External resources related to Saveroom</a>: A list of
-  external third party resources.</li>
-</ul>
+<h2 id="develop-saveroom">Develop Saveroom<a class="headerlink" href="#develop-saveroom" title="Permanent link">&para;</a></h2>
+<ol>
+<li><a href="development/development-environment/">Set up the development environment</a>, either
+   <a href="development/running-the-dev-env-locally/">locally</a> or
+   <a href="development/running-the-dev-env-with-docker/">in Docker</a>.</li>
+<li>Learn the <a href="development/justfile/"><code>just</code> commands</a>, the
+   <a href="development/code-quality/">code quality</a> gates and how to
+   <a href="development/running-tests/">run tests</a>, including
+   <a href="development/e2e-testing/">end-to-end tests</a>.</li>
+<li>Read the internals for the area you are changing: <a href="technical/database-plugin/">database plugin</a>,
+   <a href="technical/table-persistence/">table persistence</a>,
+   <a href="technical/permissions-guide/">permissions</a>, <a href="technical/undo-redo-guide/">undo/redo</a>,
+   <a href="technical/websockets/">WebSockets</a>, <a href="technical/formula-technical-guide/">formulas</a>.</li>
+<li>Follow the <a href="patterns/jobs/">patterns</a> for jobs, forms, emails and dates.</li>
+</ol>
+<p>Architectural decisions are recorded as <a href="adr/001-phone-number-field-validation/">ADRs</a>.</p>
+<h2 id="extend-with-plugins">Extend with plugins<a class="headerlink" href="#extend-with-plugins" title="Permanent link">&para;</a></h2>
+<p>Add field types, view types, filters or whole application types without forking:
+start with <a href="plugins/introduction/">Plugin basics</a>.</p>
 
 
 
