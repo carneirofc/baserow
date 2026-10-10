@@ -29,18 +29,6 @@
          <lastmod>2026-10-10</lastmod>
     </url>
     <url>
-         <loc>https://carneirofc.github.io/baserow/agents/domain/</loc>
-         <lastmod>2026-10-10</lastmod>
-    </url>
-    <url>
-         <loc>https://carneirofc.github.io/baserow/agents/issue-tracker/</loc>
-         <lastmod>2026-10-10</lastmod>
-    </url>
-    <url>
-         <loc>https://carneirofc.github.io/baserow/agents/triage-labels/</loc>
-         <lastmod>2026-10-10</lastmod>
-    </url>
-    <url>
          <loc>https://carneirofc.github.io/baserow/apis/rest-api/</loc>
          <lastmod>2026-10-10</lastmod>
     </url>
@@ -109,10 +97,6 @@
          <lastmod>2026-10-10</lastmod>
     </url>
     <url>
-         <loc>https://carneirofc.github.io/baserow/development/tools/</loc>
-         <lastmod>2026-10-10</lastmod>
-    </url>
-    <url>
          <loc>https://carneirofc.github.io/baserow/development/vscode-setup/</loc>
          <lastmod>2026-10-10</lastmod>
     </url>
@@ -130,14 +114,6 @@
     </url>
     <url>
          <loc>https://carneirofc.github.io/baserow/installation/data-destinations/</loc>
-         <lastmod>2026-10-10</lastmod>
-    </url>
-    <url>
-         <loc>https://carneirofc.github.io/baserow/installation/install-on-aws/</loc>
-         <lastmod>2026-10-10</lastmod>
-    </url>
-    <url>
-         <loc>https://carneirofc.github.io/baserow/installation/install-on-digital-ocean/</loc>
          <lastmod>2026-10-10</lastmod>
     </url>
     <url>

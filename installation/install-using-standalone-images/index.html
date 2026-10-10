@@ -11,7 +11,7 @@
         <link rel="canonical" href="https://carneirofc.github.io/baserow/installation/install-using-standalone-images/">
       
       
-        <link rel="prev" href="../install-on-digital-ocean/">
+        <link rel="prev" href="../install-on-eks/">
       
       
         <link rel="next" href="../supported/">
@@ -599,48 +599,6 @@
   
   <span class="md-ellipsis">
     Amazon EKS
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../install-on-aws/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    AWS ECS
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../install-on-digital-ocean/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    DigitalOcean Apps
   </span>
   
 
@@ -1606,27 +1564,6 @@
   
   <span class="md-ellipsis">
     Code quality
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../development/tools/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Tools
   </span>
   
 
@@ -2717,7 +2654,7 @@ separate standalone images by us:
 <p>If you want to use your own container orchestration software like Kubernetes then these
 images let you run and scale these different parts of Saveroom independently. </p>
 <p>For an example of how to use these images see the
-<a href="https://github.com/carneirofc/baserow/blob/master/docker-compose.yml"><code>docker-compose.yml</code></a> 
+<a href="https://github.com/carneirofc/baserow/blob/develop/docker-compose.yaml"><code>docker-compose.yaml</code></a> 
 in the root of our repository. </p>
 <h2 id="all-services-needed-to-run-saveroom">All Services needed to run Saveroom<a class="headerlink" href="#all-services-needed-to-run-saveroom" title="Permanent link">&para;</a></h2>
 <p>These are all the services you need to set up to run a Saveroom using the standalone 
@@ -2725,7 +2662,8 @@ images:</p>
 <ul>
 <li><code>ghcr.io/carneirofc/baserow/backend:0.6.0</code> (default command is <code>gunicorn</code>)</li>
 <li><code>ghcr.io/carneirofc/baserow/backend:0.6.0</code> with command <code>celery-worker</code></li>
-<li><code>ghcr.io/carneirofc/baserow/backend:0.6.0</code> with command <code>celery-export-worker</code></li>
+<li><code>ghcr.io/carneirofc/baserow/backend:0.6.0</code> with command <code>celery-exportworker</code></li>
+<li><code>ghcr.io/carneirofc/baserow/backend:0.6.0</code> with command <code>celery-beat</code></li>
 <li><code>ghcr.io/carneirofc/baserow/web-frontend:0.6.0</code> (default command is <code>nuxt-prod</code>)</li>
 <li>A postgres database </li>
 <li>A redis server</li>
@@ -2744,7 +2682,7 @@ images:</p>
   <code>BASEROW_CADDY_ADDRESSES</code> environment variable used in other installation methods 
   has no affect.</li>
 <li>You must set a <code>SECRET_KEY</code> environment variable for the backend gunicorn server.</li>
-<li>See our example <a href="https://github.com/carneirofc/baserow/blob/master/Caddyfile"><code>Caddyfile</code></a>
+<li>See our example <a href="https://github.com/carneirofc/baserow/blob/develop/Caddyfile"><code>Caddyfile</code></a>
   for an example on how to setup a reverse proxy correctly with Saveroom. In summary you
   need to:</li>
 <li>Redirect <code>/api/</code> and <code>/ws/</code> requests to the backend gunicorn service without 

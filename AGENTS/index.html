@@ -600,48 +600,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../installation/install-on-aws/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    AWS ECS
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../installation/install-on-digital-ocean/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    DigitalOcean Apps
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../installation/install-using-standalone-images/" class="md-nav__link">
         
   
@@ -1533,27 +1491,6 @@
   
   <span class="md-ellipsis">
     Code quality
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../development/tools/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Tools
   </span>
   
 
@@ -2664,35 +2601,23 @@
 
 <h1 id="docs">docs<a class="headerlink" href="#docs" title="Permanent link">&para;</a></h1>
 <h2 id="purpose">Purpose<a class="headerlink" href="#purpose" title="Permanent link">&para;</a></h2>
-<p>Project documentation: architecture and technical references, installation/deployment guides, development workflow, agent conventions, and decision records.</p>
+<p>User and developer documentation, published to <code>https://carneirofc.github.io/baserow/</code> with MkDocs Material (<code>mkdocs.yml</code> at the root, <code>.github/workflows/docs.yml</code> deploys on push to <code>develop</code>).</p>
 <h2 id="ownership">Ownership<a class="headerlink" href="#ownership" title="Permanent link">&para;</a></h2>
-<p>Owns everything under <code>docs/</code>. Notable subtrees:</p>
-<ul>
-<li><code>agents/</code> — how agents operate in this repo: <code>issue-tracker.md</code>, <code>triage-labels.md</code>, <code>domain.md</code>.</li>
-<li><code>adr/</code> — Architecture Decision Records (numbered <code>NNN-*.md</code>).</li>
-<li><code>development/</code>, <code>technical/</code>, <code>patterns/</code>, <code>installation/</code>, <code>testing/</code>, <code>runbooks/</code>, <code>tutorials/</code>, <code>apis/</code>, <code>plugins/</code> — topic guides.</li>
-<li><code>index.md</code> — docs entry point, organised by reader objective.</li>
-<li><code>architecture.md</code> — runtime topology, deployment shapes, repository layout, backend/frontend structure and the realtime request flow, as Mermaid diagrams. Owns the repo-layout description (there is no separate directory-structure page).</li>
-</ul>
+<p>Everything under <code>docs/</code>: <code>index.md</code> (entry point by reader objective), <code>architecture.md</code> (topology, repo layout, request flow), <code>adr/</code> (numbered decision records) and the topic folders.</p>
 <h2 id="local-contracts">Local Contracts<a class="headerlink" href="#local-contracts" title="Permanent link">&para;</a></h2>
 <ul>
-<li>ADRs are append-mostly and numbered; when a change contradicts an existing ADR, surface the conflict rather than silently overriding it (see <code>agents/domain.md</code>).</li>
-<li>Keep docs current with the FOSS fork: no pointers/branding tying back to Baserow B.V.</li>
-<li>Docs are Markdown; match the surrounding file's structure and heading style.</li>
-<li>Diagrams are Mermaid fenced blocks (<code>```mermaid</code>), rendered by MkDocs Material via the <code>pymdownx.superfences</code> custom fence and by GitHub; prefer them over binary images so they stay editable.</li>
-<li>The site <code>nav</code> is grouped by objective: Run (Install / Configure / Operate), Use, Integrate, Develop (Get started / Workflow / Internals / Patterns / ADRs), Extend. File paths stay put when the nav changes, because code, Helm values, justfiles and the README link to them.</li>
+<li>Nav is grouped by objective: Run, Use, Integrate, Develop, Extend. A new guide must be added to <code>mkdocs.yml</code> <code>nav</code> and the matching <code>index.md</code> section. File paths stay put when nav changes (code, Helm values and the README link to them).</li>
 <li><code>architecture.md</code> must stay true to the code: update it when processes, Celery queues, proxy routes, Django apps or frontend modules change.</li>
-<li><code>docs/</code> is published as a hosted site (<code>https://carneirofc.github.io/baserow/</code>) via <code>mkdocs.yml</code> (repo root) + <code>.github/workflows/docs.yml</code>, which builds with MkDocs Material and deploys to <code>gh-pages</code> on push to <code>develop</code>. New top-level guide files must be added to <code>mkdocs.yml</code>'s <code>nav</code> or they won't appear on the site (they still exist as plain files). <code>agents/</code> and <code>AGENTS.md</code> are intentionally excluded from <code>nav</code> — agent-internal, not user docs.</li>
+<li>ADRs are append-mostly; surface conflicts with an existing ADR instead of silently overriding it.</li>
+<li>Diagrams are Mermaid fenced blocks, not binary images.</li>
 </ul>
 <h2 id="work-guidance">Work Guidance<a class="headerlink" href="#work-guidance" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Update the doc nearest the change; add a new ADR under <code>adr/</code> for durable architectural decisions.</li>
-<li>The <code>research</code> and <code>domain-modeling</code> skills write their outputs here.</li>
-<li>When adding a new guide file, add it to <code>mkdocs.yml</code>'s <code>nav</code> in the matching objective section and to the matching section of <code>index.md</code>.</li>
+<li>Update the doc nearest the change; add an ADR for durable architectural decisions.</li>
 </ul>
 <h2 id="verification">Verification<a class="headerlink" href="#verification" title="Permanent link">&para;</a></h2>
 <ul>
-<li><code>mkdocs build</code> should run clean of nav-coverage warnings before committing docs changes. Cross-directory links out of <code>docs/</code> (e.g. to <code>deploy/</code>, <code>docker-compose.yaml</code>) will still warn — those files live outside the site and are expected to only resolve via GitHub source browsing.</li>
+<li><code>mkdocs build</code> clean of nav-coverage warnings. Links out of <code>docs/</code> (e.g. <code>deploy/</code>) are expected to warn.</li>
 </ul>
 <h2 id="child-dox-index">Child DOX Index<a class="headerlink" href="#child-dox-index" title="Permanent link">&para;</a></h2>
 <p>None.</p>

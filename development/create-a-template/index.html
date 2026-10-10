@@ -608,48 +608,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../installation/install-on-aws/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    AWS ECS
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../installation/install-on-digital-ocean/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    DigitalOcean Apps
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../installation/install-using-standalone-images/" class="md-nav__link">
         
   
@@ -1564,27 +1522,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../tools/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Tools
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../running-tests/" class="md-nav__link">
         
   
@@ -1842,24 +1779,6 @@
   <a href="#development-environment" class="md-nav__link">
     <span class="md-ellipsis">
       Development environment
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#cloudron-environment" class="md-nav__link">
-    <span class="md-ellipsis">
-      Cloudron environment
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#ubuntu-environment" class="md-nav__link">
-    <span class="md-ellipsis">
-      Ubuntu environment
     </span>
   </a>
   
@@ -2747,24 +2666,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#cloudron-environment" class="md-nav__link">
-    <span class="md-ellipsis">
-      Cloudron environment
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#ubuntu-environment" class="md-nav__link">
-    <span class="md-ellipsis">
-      Ubuntu environment
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#the-export" class="md-nav__link">
     <span class="md-ellipsis">
       The export
@@ -2848,25 +2749,10 @@ three dots. If you click on that you will see another context menu containing th
 of that workspace, and a number between brackets. That number is your workspace ID.</p>
 <p>Now that you have the workspace ID that contains your template, you need to export it to
 JSON format. In order to do that you need access to the command line of your Saveroom
-environment. This could be different depending on how your environment is installed.
-A couple of examples:</p>
+environment.</p>
 <h3 id="development-environment">Development environment<a class="headerlink" href="#development-environment" title="Permanent link">&para;</a></h3>
 <p>Inside the backend container you need to execute the following command:</p>
 <div class="highlight"><pre><span></span><code>$ python src/baserow/manage.py export_workspace_applications YOUR_WORKSPACE_ID --indent
-</code></pre></div>
-<h3 id="cloudron-environment">Cloudron environment<a class="headerlink" href="#cloudron-environment" title="Permanent link">&para;</a></h3>
-<p>By logging into your Cloudron environment, you can access to the terminal of your
-Saveroom app. There you can enter the following command to export your application:</p>
-<div class="highlight"><pre><span></span><code>$ /app/code/env/bin/python /app/code/baserow/backend/src/baserow/manage.py export_workspace_applications YOUR_WORKSPACE_ID --indent --settings=cloudron.settings
-</code></pre></div>
-<h3 id="ubuntu-environment">Ubuntu environment<a class="headerlink" href="#ubuntu-environment" title="Permanent link">&para;</a></h3>
-<p>Connect to your server via SSH and execute the following commands:</p>
-<div class="highlight"><pre><span></span><code>$ cd /baserow
-$ source backend/env/bin/activate
-$ export DJANGO_SETTINGS_MODULE='baserow.config.settings.base'
-$ export DATABASE_PASSWORD='yourpassword'
-$ export DATABASE_HOST='localhost'
-$ baserow export_workspace_applications YOUR_WORKSPACE_ID --indent
 </code></pre></div>
 <h3 id="the-export">The export<a class="headerlink" href="#the-export" title="Permanent link">&para;</a></h3>
 <p>After running the management command, you will notice that two files have created in
@@ -2907,8 +2793,6 @@ template is called <code>applicant-tracker.json</code>, the ZIP file must be nam
 <p>In order to try out your template, you need to run the <code>sync_templates</code> management
 command. This will make sure that a copy of the template is added to the database so
 that the user can see a quick preview.</p>
-<p>If everything works, you could create a merge request and share your template with the
-community.</p>
 
 
 

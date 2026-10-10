@@ -608,48 +608,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../installation/install-on-aws/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    AWS ECS
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../installation/install-on-digital-ocean/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    DigitalOcean Apps
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../installation/install-using-standalone-images/" class="md-nav__link">
         
   
@@ -1546,27 +1504,6 @@
   
   <span class="md-ellipsis">
     Code quality
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../development/tools/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Tools
   </span>
   
 
@@ -2763,7 +2700,7 @@ triggered by <code>API</code> methods (
 e.g. <code>action_type_registry.get_by_type(DeleteWorkspaceAction).do(user, 
 workspace_to_delete)</code>).</p>
 <ol>
-<li>In <code>backend/src/baserow/core/actions/registries.py</code> there is a <code>action_type_registry</code>
+<li>In <code>backend/src/baserow/core/action/registries.py</code> there is a <code>action_type_registry</code>
    which can be used to register <code>ActionType</code>'s</li>
 <li>An <code>ActionType</code> must implement <code>do</code>/<code>undo</code>/<code>redo</code> methods.<ol>
 <li><code>do</code> Performs the action when a user requests it to happen, it must also save

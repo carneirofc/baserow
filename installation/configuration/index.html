@@ -613,48 +613,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../install-on-aws/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    AWS ECS
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../install-on-digital-ocean/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    DigitalOcean Apps
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../install-using-standalone-images/" class="md-nav__link">
         
   
@@ -1852,27 +1810,6 @@
   
   <span class="md-ellipsis">
     Code quality
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../development/tools/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Tools
   </span>
   
 
@@ -3709,7 +3646,7 @@ doing.</p>
 <tr>
 <td>BASEROW_AMOUNT_OF_WORKERS</td>
 <td>The number of concurrent celery worker processes used to process asynchronous tasks. If not set will default to the number of available cores. Each celery process uses memory, to reduce Saveroom's memory footprint consider setting and reducing this variable.</td>
-<td>1 for the All-in-one, Heroku and Cloudron images. Defaults to empty and hence the number of available cores in the standalone images.</td>
+<td>1 for the All-in-one image. Defaults to empty and hence the number of available cores in the standalone images.</td>
 </tr>
 <tr>
 <td>BASEROW_RUN_MINIMAL</td>
@@ -3864,11 +3801,6 @@ doing.</p>
 <td>BASEROW_JOB_SOFT_TIME_LIMIT</td>
 <td>The number of seconds a Saveroom job can run before being terminated.</td>
 <td>1800</td>
-</tr>
-<tr>
-<td>BASEROW_MAX_FILE_IMPORT_ERROR_COUNT</td>
-<td>The max number of per row errors than can occur in a file import before an overall failure is declared</td>
-<td>30</td>
 </tr>
 <tr>
 <td>MINUTES_UNTIL_ACTION_CLEANED_UP</td>
@@ -4046,7 +3978,7 @@ doing.</p>
 </tr>
 <tr>
 <td>BASEROW_DATA_SYNC_ALLOW_PRIVATE_ADDRESS</td>
-<td>If set to <code>false</code>, data syncs that fetch from a user configured URL (such as a self-hosted GitLab, Jira instance, or an iCal feed) are blocked from reaching private/internal network addresses and ports other than 80, 443, 8000, 8080 and 8443 (SSRF protection). Defaults to <code>true</code> for backwards compatibility; setting it to <code>false</code> is recommended when your data sources are hosted on public addresses and standard ports.</td>
+<td>If set to <code>false</code>, data syncs that fetch from a user configured URL (such as an iCal feed) are blocked from reaching private/internal network addresses and ports other than 80, 443, 8000, 8080 and 8443 (SSRF protection). Defaults to <code>true</code> for backwards compatibility; setting it to <code>false</code> is recommended when your data sources are hosted on public addresses and standard ports.</td>
 <td>true</td>
 </tr>
 </tbody>

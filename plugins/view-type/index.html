@@ -606,48 +606,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../installation/install-on-aws/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    AWS ECS
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../installation/install-on-digital-ocean/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    DigitalOcean Apps
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../installation/install-using-standalone-images/" class="md-nav__link">
         
   
@@ -1539,27 +1497,6 @@
   
   <span class="md-ellipsis">
     Code quality
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../development/tools/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Tools
   </span>
   
 
@@ -2822,14 +2759,19 @@ type is selected.</p>
 <span class="p">}</span>
 </code></pre></div></p>
 <p>plugins/my_baserow_plugin/web-frontend/plugin.js
-<div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">PluginNamePlugin</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'@my-baserow-plugin/plugins'</span>
+<div class="highlight"><pre><span></span><code><span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">defineNuxtPlugin</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'#app'</span>
+<span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">PluginNamePlugin</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'@my-baserow-plugin/plugins'</span>
 <span class="k">import</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">CalendarViewType</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="kr">from</span><span class="w"> </span><span class="s1">'@my-baserow-plugin/viewTypes'</span>
 
-<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="p">(</span><span class="nx">context</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
-<span class="w">  </span><span class="kd">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">app</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">context</span>
-<span class="w">  </span><span class="nx">app</span><span class="p">.</span><span class="nx">$registry</span><span class="p">.</span><span class="nx">register</span><span class="p">(</span><span class="s1">'plugin'</span><span class="p">,</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">PluginNamePlugin</span><span class="p">(</span><span class="nx">context</span><span class="p">))</span>
-<span class="w">  </span><span class="nx">app</span><span class="p">.</span><span class="nx">$registry</span><span class="p">.</span><span class="nx">register</span><span class="p">(</span><span class="s1">'view'</span><span class="p">,</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">CalendarViewType</span><span class="p">(</span><span class="nx">context</span><span class="p">))</span>
-<span class="p">}</span>
+<span class="k">export</span><span class="w"> </span><span class="k">default</span><span class="w"> </span><span class="nx">defineNuxtPlugin</span><span class="p">({</span>
+<span class="w">  </span><span class="nx">dependsOn</span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="s1">'core'</span><span class="p">],</span>
+<span class="w">  </span><span class="nx">setup</span><span class="p">(</span><span class="nx">nuxtApp</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">$registry</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">nuxtApp</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">context</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nx">app</span><span class="o">:</span><span class="w"> </span><span class="nx">nuxtApp</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="nx">$registry</span><span class="p">.</span><span class="nx">register</span><span class="p">(</span><span class="s1">'plugin'</span><span class="p">,</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">PluginNamePlugin</span><span class="p">(</span><span class="nx">context</span><span class="p">))</span>
+<span class="w">    </span><span class="nx">$registry</span><span class="p">.</span><span class="nx">register</span><span class="p">(</span><span class="s1">'view'</span><span class="p">,</span><span class="w"> </span><span class="ow">new</span><span class="w"> </span><span class="nx">CalendarViewType</span><span class="p">(</span><span class="nx">context</span><span class="p">))</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="p">})</span>
 </code></pre></div></p>
 <p>Once you have added this code you should be able to click on the "Calendar" button
 in the views context menu next to "Add a view". A popup should appear and if you fill

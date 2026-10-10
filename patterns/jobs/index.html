@@ -608,48 +608,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../installation/install-on-aws/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    AWS ECS
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../installation/install-on-digital-ocean/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    DigitalOcean Apps
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../installation/install-using-standalone-images/" class="md-nav__link">
         
   
@@ -1546,27 +1504,6 @@
   
   <span class="md-ellipsis">
     Code quality
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../development/tools/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Tools
   </span>
   
 
@@ -3139,7 +3076,7 @@ with job-specific properties.</p>
 <li>If a job has been completed, it will be marked as <code>finished</code>. In case of an error, the
   job will be marked as <code>failed</code> or <code>cancelled</code> if it was requested to cancel.</li>
 </ul>
-<p>Celery task queue receives a task to execute a specific job (<code>run_async_task</code> with job
+<p>Celery task queue receives a task to execute a specific job (<code>run_async_job</code> with job
 id). Job tasks are scheduled for <code>export</code> workers. A worker will attempt to execute the
 task, however:</p>
 <ul>
@@ -3287,7 +3224,7 @@ error.</p>
   the backend.</li>
 <li>If a job is picked by a Celery worker, sanity checks will be performed:<ul>
 <li>if a job has not been started yet but the job is not in <code>pending</code> state,
-  <code>run_asyc_job</code> won't start this job.</li>
+  <code>run_async_job</code> won't start this job.</li>
 <li>If a job is running, it will check the state in the cache every time just before
   updating the progress percentage. If the job has been canceled, a <code>JobCancelled</code>
   exception is raised, stopping the job execution. If the canceled state is not set,

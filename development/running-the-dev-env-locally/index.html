@@ -608,48 +608,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../installation/install-on-aws/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    AWS ECS
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../installation/install-on-digital-ocean/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    DigitalOcean Apps
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../installation/install-using-standalone-images/" class="md-nav__link">
         
   
@@ -1691,15 +1649,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#syncing-templates" class="md-nav__link">
-    <span class="md-ellipsis">
-      Syncing Templates
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#accessing-the-database" class="md-nav__link">
     <span class="md-ellipsis">
       Accessing the Database
@@ -1996,27 +1945,6 @@
   
   <span class="md-ellipsis">
     Code quality
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../tools/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Tools
   </span>
   
 
@@ -3323,15 +3251,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#syncing-templates" class="md-nav__link">
-    <span class="md-ellipsis">
-      Syncing Templates
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#accessing-the-database" class="md-nav__link">
     <span class="md-ellipsis">
       Accessing the Database
@@ -3544,7 +3463,7 @@ git<span class="w"> </span>--version
 <h2 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><span class="c1"># Clone the repository</span>
 git<span class="w"> </span>clone<span class="w"> </span>--branch<span class="w"> </span>develop<span class="w"> </span>https://github.com/carneirofc/baserow.git
-<span class="nb">cd</span><span class="w"> </span>saveroom
+<span class="nb">cd</span><span class="w"> </span>baserow
 
 <span class="c1"># Initialize backend and frontend (creates venv, installs deps, creates .env.local)</span>
 just<span class="w"> </span>init
@@ -3566,14 +3485,14 @@ just<span class="w"> </span>dev<span class="w"> </span>tmux<span class="w">    <
 <h2 id="how-it-works">How It Works<a class="headerlink" href="#how-it-works" title="Permanent link">&para;</a></h2>
 <p>The <code>just dev up</code> command orchestrates:</p>
 <ol>
-<li><strong>Docker services</strong>: PostgreSQL, Redis, Mailhog, OpenTelemetry collector</li>
+<li><strong>Docker services</strong>: PostgreSQL, Redis, Mailhog</li>
 <li><strong>Database migrations</strong>: Applied automatically</li>
 <li><strong>Backend server</strong>: Django development server on port 8000</li>
 <li><strong>Celery workers</strong>: Background task processing (main, export, beat scheduler)</li>
 <li><strong>Frontend server</strong>: Nuxt development server on port 3000</li>
 </ol>
 <div class="highlight"><pre><span></span><code>just dev up
-├── Docker: db, redis, mailhog, otel-collector
+├── Docker: db, redis, mailhog
 ├── Backend: Django dev server (port 8000)
 ├── Celery: main worker + export worker + beat scheduler
 └── Frontend: Nuxt dev server (port 3000)
@@ -3710,10 +3629,6 @@ just<span class="w"> </span>b<span class="w"> </span>m<span class="w"> </span>ma
 </code></pre></div>
 <h3 id="creating-a-superuser">Creating a Superuser<a class="headerlink" href="#creating-a-superuser" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code>just<span class="w"> </span>b<span class="w"> </span>m<span class="w"> </span>createsuperuser
-</code></pre></div>
-<h3 id="syncing-templates">Syncing Templates<a class="headerlink" href="#syncing-templates" title="Permanent link">&para;</a></h3>
-<p>Templates (example databases, forms, etc.) are not synced by default for faster startup:</p>
-<div class="highlight"><pre><span></span><code>just<span class="w"> </span>b<span class="w"> </span>m<span class="w"> </span>sync_templates
 </code></pre></div>
 <h3 id="accessing-the-database">Accessing the Database<a class="headerlink" href="#accessing-the-database" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code><span class="c1"># Django database shell</span>

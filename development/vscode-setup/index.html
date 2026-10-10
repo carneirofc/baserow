@@ -608,48 +608,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../installation/install-on-aws/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    AWS ECS
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../installation/install-on-digital-ocean/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    DigitalOcean Apps
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../installation/install-using-standalone-images/" class="md-nav__link">
         
   
@@ -1606,27 +1564,6 @@
   
   <span class="md-ellipsis">
     Code quality
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../tools/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Tools
   </span>
   
 
@@ -2715,7 +2652,7 @@ postgres and command line tools.</p>
 <ol>
 <li>First checkout a fresh copy of Saveroom: <code>git clone git@github.com:carneirofc/baserow.git</code>
    (or your personal fork of the project)</li>
-<li><code>cd saveroom</code></li>
+<li><code>cd baserow</code></li>
 <li><code>./config/vscode/apply_standard_baserow_vscode_config.sh</code><ol>
 <li>Type <code>Y</code> and hit enter to apply the standard Saveroom config</li>
 </ol>
@@ -2747,7 +2684,7 @@ postgres and command line tools.</p>
    <div class="highlight"><pre><span></span><code>just<span class="w"> </span>dc-dev<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>db<span class="w"> </span>redis
 </code></pre></div></li>
 <li>Or install PostgreSQL locally:
-   <a href="https://www.postgresql.org/docs/11/tutorial-install.html">https://www.postgresql.org/docs/11/tutorial-install.html</a></li>
+   <a href="https://www.postgresql.org/docs/18/tutorial-install.html">https://www.postgresql.org/docs/18/tutorial-install.html</a></li>
 <li>If running PostgreSQL locally, create a baserow user:
     <div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">USER</span><span class="w"> </span><span class="n">baserow</span><span class="w"> </span><span class="k">WITH</span><span class="w"> </span><span class="k">ENCRYPTED</span><span class="w"> </span><span class="n">PASSWORD</span><span class="w"> </span><span class="s1">'baserow'</span><span class="p">;</span>
 <span class="k">ALTER</span><span class="w"> </span><span class="k">USER</span><span class="w"> </span><span class="n">baserow</span><span class="w"> </span><span class="k">CREATEDB</span><span class="p">;</span>
@@ -2756,19 +2693,14 @@ postgres and command line tools.</p>
 </li>
 <li>Now you should be able to run the backend python tests from the testing menu, try
    run <code>backend/tests/baserow/core/test_core_models.py</code> for instance.</li>
-<li>Now lets set up your frontend dev by changing directory to <code>saveroom/web-frontend</code></li>
-<li>Use <a href="https://github.com/nvm-sh/nvm">nvm</a> or <a href="https://github.com/Schniz/fnm">fnm</a> to install the correct version of <code>node</code>.
-   To determine the version of Node.js to use, see the <code>runtimeVersion</code> inside the
-   <code>launch.json</code> file. E.g. if the version is <code>v16.15.0</code>, you can install it with:
-   <code>nvm install v16.15.0</code> and then enable it with <code>nvm use v16.15.0</code>. Alternatively,
-   see <code>baserow/docs/installation/supported.md</code> to determine the supported version
-   of Node.js to use.</li>
+<li>Now lets set up your frontend dev by changing directory to <code>baserow/web-frontend</code></li>
+<li>Use <a href="https://github.com/nvm-sh/nvm">nvm</a> or <a href="https://github.com/Schniz/fnm">fnm</a> to install the
+   Node.js version pinned in the repo's <code>.nvmrc</code>: <code>nvm install</code> then <code>nvm use</code> from the repo root.</li>
 <li>Install <code>yarn</code> globally: <code>npm install -g yarn</code></li>
 <li>Now run <code>just f install</code> to install dependencies (or <code>yarn install</code> directly).</li>
 <li>Select "Trust Project" if you see an VSCode popup after running yarn install</li>
-<li>If you do not see Jest tests in the testing menu:</li>
-<li>Type: Ctrl + Shift + P or open the command palette</li>
-<li>Type: Jest: Start All Runners</li>
+<li>Install the Vitest extension; web-frontend tests then appear in the testing menu. The
+   <code>vitest-current-file</code> launch configuration debugs the open spec file.</li>
 <li>Confirm you can run a web-frontend unit test from vscode</li>
 </ol>
 <h1 id="recommended-plugins">Recommended Plugins<a class="headerlink" href="#recommended-plugins" title="Permanent link">&para;</a></h1>
@@ -2778,9 +2710,9 @@ Otherwise, you can manually install:</p>
 <li>Python</li>
 <li>Volar</li>
 <li>Eslint</li>
-<li>Gitlab Workflow</li>
 <li>Gitlens</li>
-<li>Jest</li>
+<li>Vitest</li>
+<li>Ruff</li>
 <li>SCSS Formatter</li>
 <li>Stylelint</li>
 <li>Mypy</li>

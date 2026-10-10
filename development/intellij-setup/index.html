@@ -608,48 +608,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../installation/install-on-aws/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    AWS ECS
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../installation/install-on-digital-ocean/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    DigitalOcean Apps
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../installation/install-using-standalone-images/" class="md-nav__link">
         
   
@@ -1606,27 +1564,6 @@
   
   <span class="md-ellipsis">
     Code quality
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../tools/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Tools
   </span>
   
 
@@ -2714,7 +2651,7 @@ postgres and command line tools.</p>
 <h2 id="setup-steps">Setup Steps<a class="headerlink" href="#setup-steps" title="Permanent link">&para;</a></h2>
 <ol>
 <li>First checkout a fresh copy of Saveroom: <code>git clone git@github.com:carneirofc/baserow.git</code></li>
-<li><code>cd saveroom</code></li>
+<li><code>cd baserow</code></li>
 <li><code>./config/intellij/apply_standard_baserow_intellij_config.sh</code><ol>
 <li>Type <code>Y</code> and hit enter to apply the standard Saveroom config</li>
 </ol>
@@ -2754,7 +2691,7 @@ postgres and command line tools.</p>
    <div class="highlight"><pre><span></span><code>just<span class="w"> </span>dc-dev<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>db<span class="w"> </span>redis
 </code></pre></div></li>
 <li>Or install PostgreSQL locally:
-   <a href="https://www.postgresql.org/docs/11/tutorial-install.html">https://www.postgresql.org/docs/11/tutorial-install.html</a></li>
+   <a href="https://www.postgresql.org/docs/18/tutorial-install.html">https://www.postgresql.org/docs/18/tutorial-install.html</a></li>
 <li>If running PostgreSQL locally, create a baserow user:
     <div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">USER</span><span class="w"> </span><span class="n">baserow</span><span class="w"> </span><span class="k">WITH</span><span class="w"> </span><span class="k">ENCRYPTED</span><span class="w"> </span><span class="n">PASSWORD</span><span class="w"> </span><span class="s1">'baserow'</span><span class="p">;</span>
 <span class="k">ALTER</span><span class="w"> </span><span class="k">USER</span><span class="w"> </span><span class="n">baserow</span><span class="w"> </span><span class="k">CREATEDB</span><span class="p">;</span>
@@ -2763,13 +2700,12 @@ postgres and command line tools.</p>
 </li>
 <li>Now you should be able to run the backend python tests, try
    run <code>backend/tests/baserow/core/test_core_models.py</code> for instance.</li>
-<li>Now lets set up your frontend dev by changing directory to <code>saveroom/web-frontend</code></li>
+<li>Now lets set up your frontend dev by changing directory to <code>baserow/web-frontend</code></li>
 <li>Now run <code>just f install</code> (or <code>yarn install</code> directly). If you do not have yarn available
    check out and install a node version manager like <a href="https://github.com/nvm-sh/nvm">nvm</a> or
    <a href="https://github.com/Schniz/fnm">fnm</a> and follow the
    <a href="https://yarnpkg.com/getting-started/install">Yarn installation instructions</a>).
-   See <code>baserow/docs/installation/supported.md</code> to determine the supported version of
-   Node.js to use.</li>
+   Use the Node.js version pinned in the repo's <code>.nvmrc</code>.</li>
 <li>Select "Trust Project" if you see an IntelliJ popup after running yarn install</li>
 <li>Open your settings, search for and open the <code>Node.js and NPM</code> category and ensure the
    Node interpreter is pointing to the desired node executable</li>
@@ -2777,13 +2713,12 @@ postgres and command line tools.</p>
 <li>Open settings and search for eslint, make sure you have switched
    to <code>Manual ESLint configuration</code>, have set the <code>ESlint package</code> to to <code>eslint</code> sub
    folder in the <code>node_modules</code> created by the
-   previous <code>yarn install</code> (<code>saveroom/web-frontend/node_modules/eslint</code>)</li>
+   previous <code>yarn install</code> (<code>baserow/web-frontend/node_modules/eslint</code>)</li>
 </ol>
 <h1 id="recommended-plugins">Recommended Plugins<a class="headerlink" href="#recommended-plugins" title="Permanent link">&para;</a></h1>
 <ol>
-<li><a href="https://plugins.jetbrains.com/plugin/14321-blackconnect">https://plugins.jetbrains.com/plugin/14321-blackconnect</a><ol>
-<li>Auto runs black over changed files. Setup a blackd daemon that runs on startup
-   for lowest friction.</li>
+<li><a href="https://plugins.jetbrains.com/plugin/20574-ruff">Ruff</a><ol>
+<li>Lints and formats Python with the repo's ruff config (<code>just b fix</code> does the same).</li>
 </ol>
 </li>
 <li><a href="https://plugins.jetbrains.com/plugin/1800-database-navigatorkey">Database Navigator</a></li>

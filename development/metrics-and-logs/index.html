@@ -608,48 +608,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../installation/install-on-aws/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    AWS ECS
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../installation/install-on-digital-ocean/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    DigitalOcean Apps
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../installation/install-using-standalone-images/" class="md-nav__link">
         
   
@@ -1564,27 +1522,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../tools/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Tools
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../running-tests/" class="md-nav__link">
         
   
@@ -1736,35 +1673,11 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#setting-up-honeycomb-to-view-saveroom-telemetry-in-your-local-dev-env" class="md-nav__link">
+  <a href="#sending-telemetry-from-your-local-dev-env" class="md-nav__link">
     <span class="md-ellipsis">
-      Setting up honeycomb to view Saveroom telemetry in your local dev env
+      Sending telemetry from your local dev env
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Setting up honeycomb to view Saveroom telemetry in your local dev env">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#debugging-telemetry" class="md-nav__link">
-    <span class="md-ellipsis">
-      Debugging telemetry
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#under-the-hood" class="md-nav__link">
-    <span class="md-ellipsis">
-      Under the hood
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -2767,35 +2680,11 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#setting-up-honeycomb-to-view-saveroom-telemetry-in-your-local-dev-env" class="md-nav__link">
+  <a href="#sending-telemetry-from-your-local-dev-env" class="md-nav__link">
     <span class="md-ellipsis">
-      Setting up honeycomb to view Saveroom telemetry in your local dev env
+      Sending telemetry from your local dev env
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Setting up honeycomb to view Saveroom telemetry in your local dev env">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#debugging-telemetry" class="md-nav__link">
-    <span class="md-ellipsis">
-      Debugging telemetry
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#under-the-hood" class="md-nav__link">
-    <span class="md-ellipsis">
-      Under the hood
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -2926,40 +2815,10 @@ Saveroom offers to monitor itself.</p>
 <li>What tracing is and how to add new spans tracing your functions</li>
 <li>Add new metrics to the codebase and when to do so</li>
 </ol>
-<h2 id="setting-up-honeycomb-to-view-saveroom-telemetry-in-your-local-dev-env">Setting up honeycomb to view Saveroom telemetry in your local dev env<a class="headerlink" href="#setting-up-honeycomb-to-view-saveroom-telemetry-in-your-local-dev-env" title="Permanent link">&para;</a></h2>
-<ol>
-<li>Sign up at https://honeycomb.io.</li>
-<li>Create your own environment inside of honeycomb, you will configure your local dev
-   setup to send events here.</li>
-<li>Click on your new environment in the sidebar, click the config icon.</li>
-<li>Switch to API keys and copy your API key.</li>
-<li>Edit your local <code>.env</code> and set:</li>
-</ol>
-<div class="highlight"><pre><span></span><code><span class="nv">HONEYCOMB_API_KEY</span><span class="o">=</span>YOUR_KEY
-<span class="nv">BASEROW_ENABLE_OTEL</span><span class="o">=</span><span class="nb">true</span>
-</code></pre></div>
-<ol>
-<li>Restart the dev environment:
-   <div class="highlight"><pre><span></span><code>just<span class="w"> </span>dc-dev<span class="w"> </span>restart
-</code></pre></div></li>
-<li>Go to your honeycomb environment and you should start seeing new datasets being
-   created!</li>
-</ol>
-<h3 id="debugging-telemetry">Debugging telemetry<a class="headerlink" href="#debugging-telemetry" title="Permanent link">&para;</a></h3>
-<p>Look at the logs of your otel-collector for a starting place:</p>
-<div class="highlight"><pre><span></span><code>docker logs baserow-otel-collector-1
-</code></pre></div>
-<h3 id="under-the-hood">Under the hood<a class="headerlink" href="#under-the-hood" title="Permanent link">&para;</a></h3>
-<ul>
-<li>When you enable telemetry using <code>BASEROW_ENABLE_OTEL=true</code> the dev containers export
-  to the endpoint set in <code>OTEL_EXPORTER_OTLP_ENDPOINT</code>. Point it at your own
-  <a href="https://opentelemetry.io/docs/collector/">Open Telemetry Collector</a>, e.g.
-  <code>OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318</code>
-  to send telemetry to that local collector.</li>
-<li>Then this local collector will send telemetry
-  to <a href="https://honeycomb.io">honeycomb</a> using your <code>HONEYCOMB_API_KEY</code> where you can
-  finally inspect everything.</li>
-</ul>
+<h2 id="sending-telemetry-from-your-local-dev-env">Sending telemetry from your local dev env<a class="headerlink" href="#sending-telemetry-from-your-local-dev-env" title="Permanent link">&para;</a></h2>
+<p>Set <code>BASEROW_ENABLE_OTEL=true</code> and point <code>OTEL_EXPORTER_OTLP_ENDPOINT</code> at your own
+<a href="https://opentelemetry.io/docs/collector/">OpenTelemetry Collector</a>, then restart the
+dev environment. The dev stack does not ship a collector.</p>
 <h2 id="how-to-log">How to log<a class="headerlink" href="#how-to-log" title="Permanent link">&para;</a></h2>
 <p>To log something just:</p>
 <div class="highlight"><pre><span></span><code>from loguru import logger

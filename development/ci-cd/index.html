@@ -608,48 +608,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../installation/install-on-aws/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    AWS ECS
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../installation/install-on-digital-ocean/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    DigitalOcean Apps
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../installation/install-using-standalone-images/" class="md-nav__link">
         
   
@@ -1548,27 +1506,6 @@
   
   <span class="md-ellipsis">
     Code quality
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../tools/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Tools
   </span>
   
 
@@ -2812,8 +2749,7 @@ Change visibility</strong>). That change cannot be undone.</p>
 <li><code>appVersion</code> in <code>deploy/helm/saveroom/Chart.yaml</code>, plus <code>version</code> if the chart
      changed since its last publish;</li>
 <li>the <code>ghcr.io/carneirofc/baserow/*:&lt;version&gt;</code> image tags in <code>docs/installation/</code>,
-     <code>docs/plugins/</code> and <code>deploy/all-in-one/README.md</code>, the image tag in
-     <code>docs/installation/install-on-digital-ocean.md</code>, and the version heading in
+     <code>docs/plugins/</code> and <code>deploy/all-in-one/README.md</code>, and the version heading in
      <code>docs/installation/supported.md</code>
      (<code>grep -rn 'baserow/.*:&lt;old version&gt;' docs deploy README.md</code> finds them).</li>
 <li>Cut the changelog release: <code>just changelog release v1.2.3</code>.</li>

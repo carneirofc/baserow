@@ -608,48 +608,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../installation/install-on-aws/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    AWS ECS
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../installation/install-on-digital-ocean/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    DigitalOcean Apps
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../installation/install-using-standalone-images/" class="md-nav__link">
         
   
@@ -1546,27 +1504,6 @@
   
   <span class="md-ellipsis">
     Code quality
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../development/tools/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Tools
   </span>
   
 
@@ -2926,29 +2863,29 @@ with a :</p>
 </ul>
 </li>
 <li>Lexers and parsers generated using ANTLR4 from the grammar.<ul>
-<li>See <code>{git repo root}/formulas/build.sh</code> for the script that generates these using
+<li>See <code>{git repo root}/formula/build.sh</code> for the script that generates these using
   docker.</li>
 <li>A generated parser used for checking formula validity in the browser can be found
   in
-  <code>web-frontend/modules/database/formula/parser</code>.</li>
+  <code>web-frontend/modules/core/formula/parser</code>.</li>
 <li>A generated parser used for checking formula validity and constructing the python
   AST in the backend can be found
-  in <code>backend/src/baserow/core/formulas/parser/generated</code>.</li>
+  in <code>backend/src/baserow/core/formula/parser/generated</code>.</li>
 </ul>
 </li>
 <li>A python abstract syntax tree used internally in the backend.<ul>
-<li>See <code>backend/src/baserow/core/formulas/ast/tree.py</code>.</li>
+<li>See <code>backend/src/baserow/contrib/database/formula/ast/tree.py</code>.</li>
 </ul>
 </li>
 <li>A typing algorithm that is capable of typing a given formula.<ul>
 <li>See the formula types module found
-  in <code>backend/src/baserow/core/formulas/types</code>.</li>
+  in <code>backend/src/baserow/contrib/database/formula/types</code>.</li>
 </ul>
 </li>
 <li>Finally, a generator which coverts a typed formula into a Django expression for safe
   evaluation.<ul>
 <li>see the expression generator module found
-  in <code>backend/src/baserow/core/formulas/expression_generator</code>.</li>
+  in <code>backend/src/baserow/contrib/database/formula/expression_generator</code>.</li>
 </ul>
 </li>
 </ul>

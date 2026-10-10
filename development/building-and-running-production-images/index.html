@@ -608,48 +608,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../installation/install-on-aws/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    AWS ECS
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../installation/install-on-digital-ocean/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    DigitalOcean Apps
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../installation/install-using-standalone-images/" class="md-nav__link">
         
   
@@ -1564,27 +1522,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../tools/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Tools
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../running-tests/" class="md-nav__link">
         
   
@@ -1917,26 +1854,8 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#platform-specific-deployments" class="md-nav__link">
-    <span class="md-ellipsis">
-      Platform-Specific Deployments
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#local-testing-setup" class="md-nav__link">
-    <span class="md-ellipsis">
-      Local Testing Setup
-    </span>
-  </a>
   
 </li>
         
@@ -3101,26 +3020,8 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#platform-specific-deployments" class="md-nav__link">
-    <span class="md-ellipsis">
-      Platform-Specific Deployments
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#local-testing-setup" class="md-nav__link">
-    <span class="md-ellipsis">
-      Local Testing Setup
-    </span>
-  </a>
   
 </li>
         
@@ -3338,21 +3239,6 @@
 <td>Single container without PostgreSQL/Redis</td>
 <td><code>just build all-in-one-lite</code></td>
 </tr>
-<tr>
-<td><code>heroku</code></td>
-<td>Heroku platform</td>
-<td><code>just build heroku</code></td>
-</tr>
-<tr>
-<td><code>cloudron</code></td>
-<td>Cloudron marketplace</td>
-<td><code>just build cloudron</code></td>
-</tr>
-<tr>
-<td><code>render</code></td>
-<td>Render.com platform</td>
-<td><code>just build render</code></td>
-</tr>
 </tbody>
 </table>
 <h2 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
@@ -3405,11 +3291,6 @@ just<span class="w"> </span>build<span class="w"> </span>all-in-one<span class="
 <span class="c1">#   web-frontend    - Nuxt web frontend</span>
 <span class="c1">#   all-in-one      - Single container (production)</span>
 <span class="c1">#   all-in-one-lite - Single container without postgres/redis</span>
-<span class="c1">#   heroku          - Heroku platform</span>
-<span class="c1">#   cloudron        - Cloudron marketplace</span>
-<span class="c1">#   render          - Render.com platform</span>
-<span class="c1">#   apache          - Apache reverse proxy</span>
-<span class="c1">#   apache-no-caddy - Apache reverse proxy (no Caddy)</span>
 </code></pre></div>
 <h3 id="building-with-dc-prod">Building with <code>dc-prod</code><a class="headerlink" href="#building-with-dc-prod" title="Permanent link">&para;</a></h3>
 <p>The <code>just dc-prod build</code> command builds production images using Docker Compose:</p>
@@ -3478,12 +3359,6 @@ just<span class="w"> </span>dc-prod<span class="w"> </span>down
 <div class="highlight"><pre><span></span><code>just<span class="w"> </span>dc-deploy
 <span class="c1"># Shows available deployments:</span>
 <span class="c1">#   all-in-one      - All-in-one container (production)</span>
-<span class="c1">#   cloudron        - Cloudron deployment</span>
-<span class="c1">#   heroku          - Heroku deployment</span>
-<span class="c1">#   traefik         - Traefik reverse proxy</span>
-<span class="c1">#   nginx           - Nginx reverse proxy</span>
-<span class="c1">#   apache          - Apache reverse proxy</span>
-<span class="c1">#   local-testing   - Local testing setup</span>
 </code></pre></div>
 <h4 id="all-in-one-container">All-in-One Container<a class="headerlink" href="#all-in-one-container" title="Permanent link">&para;</a></h4>
 <p>The all-in-one image includes everything: backend, frontend, celery, PostgreSQL, and Redis.</p>
@@ -3515,25 +3390,6 @@ docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </sp
 <span class="w">  </span>-e<span class="w"> </span><span class="nv">BASEROW_PUBLIC_URL</span><span class="o">=</span>https://baserow.example.com<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>-p<span class="w"> </span><span class="m">80</span>:80<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>saveroom/all-in-one:lite-latest
-</code></pre></div>
-<h4 id="platform-specific-deployments">Platform-Specific Deployments<a class="headerlink" href="#platform-specific-deployments" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><span class="c1"># Heroku</span>
-just<span class="w"> </span>build<span class="w"> </span>heroku
-just<span class="w"> </span>dc-deploy<span class="w"> </span>heroku<span class="w"> </span>up<span class="w"> </span>-d
-
-<span class="c1"># Cloudron</span>
-just<span class="w"> </span>build<span class="w"> </span>cloudron
-just<span class="w"> </span>dc-deploy<span class="w"> </span>cloudron<span class="w"> </span>up<span class="w"> </span>-d
-
-<span class="c1"># With reverse proxies</span>
-just<span class="w"> </span>dc-deploy<span class="w"> </span>traefik<span class="w"> </span>up<span class="w"> </span>-d
-just<span class="w"> </span>dc-deploy<span class="w"> </span>nginx<span class="w"> </span>up<span class="w"> </span>-d
-just<span class="w"> </span>dc-deploy<span class="w"> </span>apache<span class="w"> </span>up<span class="w"> </span>-d
-</code></pre></div>
-<h3 id="local-testing-setup">Local Testing Setup<a class="headerlink" href="#local-testing-setup" title="Permanent link">&para;</a></h3>
-<p>For quick local testing of production images:</p>
-<div class="highlight"><pre><span></span><code>just<span class="w"> </span>dc-deploy<span class="w"> </span>local-testing<span class="w"> </span>up<span class="w"> </span>-d
-just<span class="w"> </span>dc-deploy<span class="w"> </span>local-testing<span class="w"> </span>logs<span class="w"> </span>-f
 </code></pre></div>
 <h2 id="environment-configuration">Environment Configuration<a class="headerlink" href="#environment-configuration" title="Permanent link">&para;</a></h2>
 <h3 id="production-environment-variables">Production Environment Variables<a class="headerlink" href="#production-environment-variables" title="Permanent link">&para;</a></h3>

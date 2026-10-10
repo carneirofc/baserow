@@ -613,48 +613,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../installation/install-on-aws/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    AWS ECS
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../installation/install-on-digital-ocean/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    DigitalOcean Apps
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../installation/install-using-standalone-images/" class="md-nav__link">
         
   
@@ -1606,27 +1564,6 @@
   
   <span class="md-ellipsis">
     Code quality
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../development/tools/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Tools
   </span>
   
 
@@ -2706,7 +2643,7 @@
    by a running Saveroom instance or any other process which is making changes to the 
    database.</li>
 <li>Please create PGPASS file to store the password for your database, see
-   https://www.postgresql.org/docs/11/libpq-pgpass.html for more details on this file. </li>
+   https://www.postgresql.org/docs/18/libpq-pgpass.html for more details on this file. </li>
 <li>Please read and understand the output of <code>./baserow backup_baserow --help</code></li>
 <li>Run the following command to back-up Saveroom.
     <code>PGPASSFILE=PATH_TO_YOUR_PGPASSFILE ./baserow backup_baserow -h YOUR_DB_HOST -d YOUR_DB_NAME -U YOUR_DB_USER -p YOUR_DB_PORT</code></li>
@@ -2720,7 +2657,7 @@
 <li>Get a baserow backup tar gz file produced by the <code>./baserow backup_baserow</code> command 
    and its file path.</li>
 <li>Please create PGPASS file to store the password for your database, see
-   https://www.postgresql.org/docs/11/libpq-pgpass.html for more details on this file.</li>
+   https://www.postgresql.org/docs/18/libpq-pgpass.html for more details on this file.</li>
 <li>Please read and understand the output of <code>./baserow restore_baserow --help</code></li>
 <li>To restore Saveroom run the following command: 
    <code>PGPASSFILE=PATH_TO_YOUR_PGPASSFILE ./baserow restore_baserow -h YOUR_DB_HOST -d YOUR_FRESH_DB_TO_RESTORE_INTO -U YOUR_DB_USER -p YOUR_DB_PORT -f PATH_TO_BACKUP_TAR_GZ</code> </li>
