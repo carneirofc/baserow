@@ -17,12 +17,6 @@ from baserow.contrib.builder.workflow_actions.registries import (
 from baserow.contrib.builder.workflow_actions.workflow_action_types import (
     CreateRowWorkflowActionType,
 )
-from baserow.contrib.database.workflow_actions.registries import (
-    database_workflow_action_type_registry,
-)
-from baserow.contrib.database.workflow_actions.workflow_action_types import (
-    LocalBaserowCreateRowWorkflowActionType,
-)
 
 
 def service_field(serializer_class):
@@ -33,11 +27,6 @@ def service_field(serializer_class):
     "registry,type_class,serializer_kwargs",
     [
         (builder_workflow_action_type_registry, CreateRowWorkflowActionType, {}),
-        (
-            database_workflow_action_type_registry,
-            LocalBaserowCreateRowWorkflowActionType,
-            {},
-        ),
         (
             automation_node_type_registry,
             LocalBaserowGetRowNodeType,

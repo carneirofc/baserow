@@ -1327,12 +1327,15 @@ def test_import_rows_upsert_checks_update_permission(data_fixture):
     name_field = data_fixture.create_text_field(
         table=table, name="Name", text_default="", order=1
     )
+    # This fork skips upserted rows whose values don't change, so the import
+    # must change another field for the update permission to be required.
+    data_fixture.create_text_field(table=table, name="Note", text_default="", order=2)
 
     handler = RowHandler()
     rows, _ = handler.import_rows(
         user=user,
         table=table,
-        data=[["Alice"], ["Bob"]],
+        data=[["Alice", ""], ["Bob", ""]],
         send_realtime_update=False,
     )
     assert len(rows) == 2
@@ -1353,7 +1356,7 @@ def test_import_rows_upsert_checks_update_permission(data_fixture):
             handler.import_rows(
                 user=user,
                 table=table,
-                data=[["Alice"]],
+                data=[["Alice", "changed"]],
                 configuration={
                     "upsert_fields": [name_field.id],
                     "upsert_values": [["Alice"]],
