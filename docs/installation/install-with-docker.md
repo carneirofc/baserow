@@ -9,8 +9,8 @@
 > Please check that your docker is up-to date by running `docker -v`.
 
 This guide assumes you already have Docker installed and have permissions to run Docker
-containers. See the [Install on Ubuntu](install-on-ubuntu.md) for an installation from
-scratch.
+containers. To install Docker itself, follow
+[the official Docker Engine guide](https://docs.docker.com/engine/install/).
 
 [comment]: <> (All content from here must be kept in sync with `deploy/all-in-one/README.md`)
 
@@ -59,7 +59,7 @@ a single container for maximum ease of use.
 > deployment services such as Google Cloud Run.
 >
 > If you are instead looking for images which are better suited for horizontal
-> scaling (e.g. when using [K8S](./install-with-k8s.md)) then please instead use our
+> scaling (e.g. when using [Kubernetes](./install-with-helm.md)) then please instead use our
 > [ghcr.io/carneirofc/baserow/backend and ghcr.io/carneirofc/baserow/web-frontend](./install-with-docker-compose.md) images
 > instead which deploy each Saveroom service in its own container independently.
 
@@ -375,7 +375,7 @@ docker run -it \
 This image can also be configured to deploy Saveroom in a horizontally scalable way.
 We recommend you first consider using our `ghcr.io/carneirofc/baserow/backend` and `ghcr.io/carneirofc/baserow/web-frontend`
 single service per container images
-on [K8S](./install-with-k8s.md).
+on [Kubernetes](./install-with-helm.md).
 However, if you just want to easily horizontally scale Saveroom on something like
 AWS ECS or Google Cloud Run then the `ghcr.io/carneirofc/baserow` can be used.
 

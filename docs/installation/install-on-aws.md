@@ -13,12 +13,11 @@ Saveroom can be deployed to AWS in the following ways:
    horizontally scalable but easy to
    set up deployment. **See below for a detailed guide.**
 2. Using
-   this [docker-compose](https://github.com/carneirofc/baserow/blob/develop/docker-compose.yml)
-   file or our [sample K8S configuration](./install-with-k8s.md) as a starting point to
+   this [docker-compose](https://github.com/carneirofc/baserow/blob/develop/docker-compose.yaml)
+   file or the [Helm chart](./install-with-helm.md) as a starting point to
    configure ECS/Fargate tasks for more advanced, production ready, one service per
    container model. **See below for a detailed guide**
-3. Customizing our [sample K8S configuration](./install-with-k8s.md) and using that with
-   EKS.
+3. Deploying the [Helm chart on EKS](./install-on-eks.md).
 4. Installing and using docker/docker-compose on an EC2 instance with
    our [all-in-one](./install-with-docker.md) or
    our [one container per service](./install-with-docker-compose.md) docker images.
@@ -430,10 +429,10 @@ the ECS tasks and ALB.
 Let's now deploy each of Saveroom's individual services to Fargate/ECS. Make a
 new cluster for Saveroom and then proceed to make the following task definitions.
 
-> If you are familiar with K8S then [this sample config](./install-with-k8s.md) gives an
-> overview of the services.
+> If you are familiar with Kubernetes then the [Helm chart](./install-with-helm.md) gives
+> an overview of the services.
 >
-Alternatively [this docker-compose](https://github.com/carneirofc/baserow/blob/develop/docker-compose.yml)
+Alternatively [this docker-compose](https://github.com/carneirofc/baserow/blob/develop/docker-compose.yaml)
 > can also be used as reference
 
 #### 6) The backend WSGI service

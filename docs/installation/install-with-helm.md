@@ -345,6 +345,5 @@ helm template baserow deploy/helm/saveroom -f my-values.yaml | less
 ## Related
 
 - [Installing on Amazon EKS](install-on-eks.md)
-- [Installing with Kubernetes manifests](install-with-k8s.md)
 - [Configuration](configuration.md)
 - [SSO with Keycloak/RHBK](sso-rhbk-keycloak.md)

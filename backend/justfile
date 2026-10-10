@@ -28,7 +28,7 @@ help:
     @echo "Setup & Development:"
     @echo "  docs/development/running-the-dev-env-locally.md     - Local development setup"
     @echo "  docs/development/running-the-dev-env-with-docker.md - Docker development setup"
-    @echo "  docs/development/directory-structure.md             - Project structure"
+    @echo "  docs/architecture.md                                - Architecture and project structure"
     @echo ""
     @echo "Testing:"
     @echo "  docs/development/running-tests.md                   - Running backend tests"

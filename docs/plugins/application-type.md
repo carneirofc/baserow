@@ -1,7 +1,7 @@
 # Application type
 
 An application is an abstraction that a user can add to workspace. More information about 
-this can be found in the [introduction](../technical/introduction.md). This is a
+this can be found in the [architecture overview](../architecture.md). This is a
 tutorial about how you can add your own application to Saveroom via a plugin. We are 
 going to create a text file application. In the end a user can use the "Create new" 
 button to create a text file and add it to a workspace. We expect that you have a plugin laid out as described in

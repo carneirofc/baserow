@@ -268,11 +268,11 @@ just b test-coverage
 For 2-5x faster tests, use a PostgreSQL container with tmpfs:
 
 ```bash
-# Start ramdisk database (port 5433)
+# Start ramdisk database (port 5431)
 just test-db start
 
 # Run tests against it
-DATABASE_URL=postgres://baserow:baserow@localhost:5433/baserow just b test -n=auto
+DATABASE_URL=postgres://baserow:baserow@localhost:5431/baserow just b test -n=auto
 
 # Stop when done
 just test-db stop

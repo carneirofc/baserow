@@ -1,35 +1,10 @@
-# Creating A Plugin [Outdated]
+# Creating a plugin
 
 > Check out the [issue tracker](https://github.com/carneirofc/baserow/issues) for
 > discussion.
 
 In this guide we dive into how to create a Saveroom plugin from scratch, give you example
 plugins to get inspiration from and discuss how to publish your plugin.
-
-## Get inspiration from examples
-
-Two example plugins written for upstream Baserow show how to do common things with a
-plugin. They target upstream's plugin API, so expect to adapt them.
-
-### [Baserow Geo Plugin](https://gitlab.com/nigel_baserow/baserow_geo_plugin/)
-
-The [Geo plugin](https://gitlab.com/nigel_baserow/baserow_geo_plugin/) is an example
-plugin which adds a new "Point" field type. It shows how to:
-
-* Install and enables a postgres extension (only when Saveroom is running in the
-  all-in-one image when using an embedded database)
-* Install extra system packages using apt-get
-* Add custom backend python and frontend node dependencies
-* Add a new field type, with custom components and scss
-
-### [Baserow Example Formula Plugin](https://gitlab.com/nigel_baserow/baserow_example_formula_plugin/)
-
-The [Example formula plugin](https://gitlab.com/nigel_baserow/baserow_example_formula_plugin)
-adds a new formula function called `timezone`. It shows how to :
-
-* Add a new formula function to Saveroom
-* Use a custom plpgsql stored procedure to implement the new formula function
-* Use a migration to add the stored procedure
 
 ## Plugin Architecture
 
@@ -143,7 +118,7 @@ customize Saveroom using your plugin.
 First you should read the following documentation for a basic introduction to Saveroom's
 technical architecture:
 
-1. [Saveroom Technical Introduction](../technical/introduction.md)
+1. [Architecture](../architecture.md)
 2. [Database Plugin](../technical/database-plugin.md)
 
 ### Storing State

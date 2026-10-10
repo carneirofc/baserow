@@ -47,9 +47,6 @@ Both approaches use the same `just` commands and can be switched between freely.
 - [Feature flags](feature-flags.md) - Optionally enabling unfinished features
 - [Saveroom Docker API](../installation/install-with-docker.md) - Docker setup configuration
 
-> **Note**: The older `dev.sh` script is deprecated. See [dev.sh](dev_sh.md) for
-> documentation on the legacy script if needed.
-
 ## Fixing git blame
 
 A large formatting only commit was made to the repo when we converted to use the black
