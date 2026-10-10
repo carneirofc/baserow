@@ -51,8 +51,6 @@ nav:
           - Docker Compose: installation/install-with-docker-compose.md
           - Helm (Kubernetes, OpenShift): installation/install-with-helm.md
           - Amazon EKS: installation/install-on-eks.md
-          - AWS ECS: installation/install-on-aws.md
-          - DigitalOcean Apps: installation/install-on-digital-ocean.md
           - Standalone images: installation/install-using-standalone-images.md
           - Supported dependencies: installation/supported.md
       - Configure:
@@ -88,7 +86,6 @@ nav:
           - Zed: development/zed-setup.md
       - Workflow:
           - Code quality: development/code-quality.md
-          - Tools: development/tools.md
           - Running tests: development/running-tests.md
           - E2E testing: development/e2e-testing.md
           - Grid view test plan: testing/grid-view-test-plan.md

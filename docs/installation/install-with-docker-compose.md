@@ -118,7 +118,7 @@ environment variables set on the command line (fill in secure values first):
 SECRET_KEY= DATABASE_PASSWORD= REDIS_PASSWORD= docker-compose up
 ```
 
-## Upgrading from Saveroom version 1.9.0 or later
+## Upgrading
 
 1. It is recommended that you backup your data before upgrading, see the Backup sections
    below for more details on how to do this.
@@ -133,41 +133,6 @@ SECRET_KEY= DATABASE_PASSWORD= REDIS_PASSWORD= docker-compose up
 ```
 [BASEROW-WATCHER][2022-05-10 08:44:46] Saveroom is now available at ...
 ```
-
-## Upgrading from Baserow 1.8.2's docker-compose file
-
-> If you were previously using a separate api.your_baserow_server.com domain this is no
-> longer needed. Saveroom will now work on a single domain accessing the api at
-> YOUR_DOMAIN.com/api.
-
-To upgrade from 1.8.2's docker-compose file from inside the Saveroom git repo you need
-to:
-
-1. Stop your existing Saveroom install when safe to do so:
-   `docker-compose down`
-2. `git pull`
-3. Copy `.env.example` to `.env` and edit `.env` filling in the missing variables below:
-    - `SECRET_KEY` to a secure value, existing logins sessions will be invalidated.
-    - `DATABASE_PASSWORD` to a secure password (this defaulted to 'baserow' before, in
-      step 3 we are going to change the database users password to the value you set)
-    - `REDIS_PASSWORD` to a secure password.
-    - `WEB_FRONTEND_PORT` back to 3000 if you want to continue accessing Saveroom on that
-      port (it now defaults to 80).
-    - `BASEROW_PUBLIC_URL` to the URL/IP/Domain you were using access Saveroom remotely
-      (it must begin with http:// or https://). If you have set `WEB_FRONTEND_PORT` to
-      anything but 80 you must append it to the end of `BASEROW_PUBLIC_URL`.
-    - `BASEROW_CADDY_ADDRESSES` configures which addresses the new internal Caddy
-      reverse proxy listens on. By default, it will serve http only, enable automatic
-      https by setting to `https://YOUR_DOMAIN_NAME.com`. Append `,http://localhost` if
-      you still want to be able to access Saveroom from `localhost`.
-4. Run the command below which will change the baserow postgresql users password to what
-   you have set in step 1 in the .env file (no need to edit the command):
-
-```
-docker-compose run --rm backend bash -c "PGPASSWORD=baserow psql -h db -U baserow -c \"ALTER USER baserow WITH PASSWORD '$DATABASE_PASSWORD';\" && echo 'Successfully changed Saveroom's db user password'"
-```
-
-5. `docker-compose up -d`
 
 ## How To
 

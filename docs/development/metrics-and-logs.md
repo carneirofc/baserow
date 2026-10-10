@@ -11,45 +11,11 @@ This doc explains how to:
 3. What tracing is and how to add new spans tracing your functions
 4. Add new metrics to the codebase and when to do so
 
-## Setting up honeycomb to view Saveroom telemetry in your local dev env
+## Sending telemetry from your local dev env
 
-1. Sign up at https://honeycomb.io.
-2. Create your own environment inside of honeycomb, you will configure your local dev
-   setup to send events here.
-3. Click on your new environment in the sidebar, click the config icon.
-4. Switch to API keys and copy your API key.
-5. Edit your local `.env` and set:
-
-```bash
-HONEYCOMB_API_KEY=YOUR_KEY
-BASEROW_ENABLE_OTEL=true
-```
-
-6. Restart the dev environment:
-   ```bash
-   just dc-dev restart
-   ```
-7. Go to your honeycomb environment and you should start seeing new datasets being
-   created!
-
-### Debugging telemetry
-
-Look at the logs of your otel-collector for a starting place:
-
-```
-docker logs baserow-otel-collector-1
-```
-
-### Under the hood
-
-* When you enable telemetry using `BASEROW_ENABLE_OTEL=true` the dev containers export
-  to the endpoint set in `OTEL_EXPORTER_OTLP_ENDPOINT`. Point it at your own
-  [Open Telemetry Collector](https://opentelemetry.io/docs/collector/), e.g.
-  `OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318`
-  to send telemetry to that local collector.
-* Then this local collector will send telemetry
-  to [honeycomb](https://honeycomb.io) using your `HONEYCOMB_API_KEY` where you can
-  finally inspect everything.
+Set `BASEROW_ENABLE_OTEL=true` and point `OTEL_EXPORTER_OTLP_ENDPOINT` at your own
+[OpenTelemetry Collector](https://opentelemetry.io/docs/collector/), then restart the
+dev environment. The dev stack does not ship a collector.
 
 ## How to log
 

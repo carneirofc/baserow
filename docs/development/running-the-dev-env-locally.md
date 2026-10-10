@@ -98,7 +98,7 @@ just dev tmux    # Alternative: start tmux session with all services (you need t
 
 The `just dev up` command orchestrates:
 
-1. **Docker services**: PostgreSQL, Redis, Mailhog, OpenTelemetry collector
+1. **Docker services**: PostgreSQL, Redis, Mailhog
 2. **Database migrations**: Applied automatically
 3. **Backend server**: Django development server on port 8000
 4. **Celery workers**: Background task processing (main, export, beat scheduler)
@@ -106,7 +106,7 @@ The `just dev up` command orchestrates:
 
 ```
 just dev up
-├── Docker: db, redis, mailhog, otel-collector
+├── Docker: db, redis, mailhog
 ├── Backend: Django dev server (port 8000)
 ├── Celery: main worker + export worker + beat scheduler
 └── Frontend: Nuxt dev server (port 3000)

@@ -12,9 +12,6 @@ Saveroom provides several image types for different deployment scenarios:
 | `web-frontend` | Nuxt frontend (separate deployment) | `just build web-frontend` |
 | `all-in-one` | Single container with embedded PostgreSQL/Redis | `just build all-in-one` |
 | `all-in-one-lite` | Single container without PostgreSQL/Redis | `just build all-in-one-lite` |
-| `heroku` | Heroku platform | `just build heroku` |
-| `cloudron` | Cloudron marketplace | `just build cloudron` |
-| `render` | Render.com platform | `just build render` |
 
 ## Quick Start
 
@@ -82,11 +79,6 @@ just build
 #   web-frontend    - Nuxt web frontend
 #   all-in-one      - Single container (production)
 #   all-in-one-lite - Single container without postgres/redis
-#   heroku          - Heroku platform
-#   cloudron        - Cloudron marketplace
-#   render          - Render.com platform
-#   apache          - Apache reverse proxy
-#   apache-no-caddy - Apache reverse proxy (no Caddy)
 ```
 
 ### Building with `dc-prod`
@@ -151,12 +143,6 @@ Run specific deployment configurations:
 just dc-deploy
 # Shows available deployments:
 #   all-in-one      - All-in-one container (production)
-#   cloudron        - Cloudron deployment
-#   heroku          - Heroku deployment
-#   traefik         - Traefik reverse proxy
-#   nginx           - Nginx reverse proxy
-#   apache          - Apache reverse proxy
-#   local-testing   - Local testing setup
 ```
 
 #### All-in-One Container
@@ -197,32 +183,6 @@ docker run -d \
   -e BASEROW_PUBLIC_URL=https://baserow.example.com \
   -p 80:80 \
   saveroom/all-in-one:lite-latest
-```
-
-#### Platform-Specific Deployments
-
-```bash
-# Heroku
-just build heroku
-just dc-deploy heroku up -d
-
-# Cloudron
-just build cloudron
-just dc-deploy cloudron up -d
-
-# With reverse proxies
-just dc-deploy traefik up -d
-just dc-deploy nginx up -d
-just dc-deploy apache up -d
-```
-
-### Local Testing Setup
-
-For quick local testing of production images:
-
-```bash
-just dc-deploy local-testing up -d
-just dc-deploy local-testing logs -f
 ```
 
 ## Environment Configuration

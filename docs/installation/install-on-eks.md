@@ -329,5 +329,4 @@ the one step that exercises IRSA end to end.
 ## Related
 
 - [Installing with Helm](install-with-helm.md)
-- [Installing on AWS (Compose)](install-on-aws.md)
 - [Configuration](configuration.md)

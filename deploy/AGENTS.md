@@ -2,62 +2,62 @@
 
 ## Purpose
 
-Deployment artifacts for running Saveroom: the single-container "all-in-one" image and the Kubernetes/OpenShift Helm chart.
+Deployment artifacts: the all-in-one image, the Caddy proxy image and the Kubernetes/OpenShift/EKS Helm chart.
 
 ## Ownership
 
-Owns everything under `deploy/`:
+- `all-in-one/` — single image bundling backend, frontend, workers and supervisor.
+- `helm/saveroom/` — chart published as `saveroom`, with presets `values.yaml`, `values-openshift.yaml`, `values-eks.yaml`.
+- `caddy/` — reverse-proxy image for the split-services Compose stack (`ghcr.io/<owner>/<repo>/caddy`).
+- `plugins/` — plugin packaging helpers. `branding-example/` — example branding directory.
 
-- `all-in-one/` — self-contained image bundling backend, frontend, workers, and supervisor (`baserow.sh`, `Dockerfile`, `docker-compose.yml`, `supervisor/`).
-- `helm/saveroom/` — Helm chart, published as `saveroom` (`Chart.yaml`, `values.yaml`, `values.schema.json`, `values-openshift.yaml`, `values-eks.yaml`, `templates/`, subcharts). Its resource names and selector labels keep the base name `baserow` (`baserow.name` in `_helpers.tpl`), pinned rather than derived from `.Chart.Name`, because selectors are immutable and releases installed before the rename must keep upgrading in place; never derive them from the chart name again.
-- `caddy/` — standalone Caddy reverse-proxy image for the split-services Compose stacks; published as `ghcr.io/<owner>/<repo>/caddy` by `.github/workflows/build-publish-image.yml`.
-- `plugins/` — plugin packaging helpers.
-
-The root `docker-compose.yaml` / `docker-compose.yml` and `Caddyfile*` are the local/dev entrypoints and stay owned by the root.
+The root `docker-compose*.y*ml` and `Caddyfile*` stay owned by the root.
 
 ## Local Contracts
 
-- This is a FOSS fork: image references, registries, chart names, and branding must point at this fork's infrastructure, **not** Baserow B.V. Do not reintroduce upstream pointers.
-- Keep `values-openshift.yaml` compatible with OpenShift's restricted SCC (no fixed UIDs/root, arbitrary-UID-safe) when editing the chart.
-- The chart targets plain Kubernetes, OpenShift and EKS. Every shipped values preset (`values.yaml`, `values-openshift.yaml`, `values-eks.yaml`) must stay lint-clean and renderable on its own — CI lints and `kubeconform`-validates all three, so a preset that needs a `--set` to render is broken. Default values stay platform-neutral: `openshift.route.enabled` defaults to `false` and CI fails if stock values render a `Route`.
-- `values.schema.json` is enforced by Helm on lint/template/install. Adding a value means adding it there too; `postgresql` and `redis` stay `additionalProperties: true` so subchart values pass through.
-- In `objectStorage.auth: irsa`/`podIdentity` the chart must render **no** `AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY` and write no `s3-*` Secret keys — omitted entirely, never emitted empty. The backend's `set_setting_from_env_if_present` (`backend/src/baserow/config/settings/utils.py`) reads `os.getenv(var, None)`, so a present-but-empty variable sets the Django setting to `""` and boto3 uses that instead of falling through to the pod's web identity token. `_helpers.tpl`'s `baserow.objectStorage.useStaticKeys` is the single gate for this; `publish-helm-chart.yml` asserts the IRSA render stays credential-free.
-- The chart serves no `/media/` path, and must not pretend to. Exported files and backups are downloaded through `/api/`, streamed by the backend, so they work in either storage mode. User file attachments still resolve to `MEDIA_URL`, which nothing here serves — Django's `static()` is a no-op outside `DEBUG` and `/media` is not in `backendPaths` — so a deployment that relies on file fields needs `objectStorage.enabled: true`. Never reintroduce `BASEROW_SERVE_FILES_THROUGH_BACKEND`: it belonged to the removed enterprise `secure_file_serve` module and does nothing in this fork.
-- `mediaPersistence.accessMode` defaults to `ReadWriteMany` because the backend and both Celery worker Deployments mount that claim and the export worker is what writes exports and backups. `ReadWriteOnce` works only for as long as the pods share a node, then fails with a Multi-Attach error after a reschedule.
-- `objectStorage.defaultACL` defaults to `""` (send no ACL). The backend defaults `AWS_DEFAULT_ACL` to `public-read`, which every bucket with ACLs disabled rejects with `AccessControlListNotSupported`; do not reintroduce a non-empty default.
-- `ingress.mode: albGroup` renders two Ingress objects joined by `alb.ingress.kubernetes.io/group.name`. It exists because the AWS Load Balancer Controller resolves `healthcheck-path` per Ingress, so a single Ingress cannot give the backend and web-frontend target groups different health endpoints. The controller merges Service annotations over Ingress annotations, which is what `service.<component>.annotations` is for.
-- Deployments carry `checksum/config` and `checksum/secret` pod annotations (`baserow.podAnnotations`). New workloads must include them, or config-only `helm upgrade`s silently leave pods on stale values. `checksum/secret` hashes the credential **values**, never the rendered `secret.yaml`: that template falls back to `randAlphaNum` whenever `lookup` finds no live Secret, so hashing its output changes on every render and would roll every pod on each Argo CD sync. CI asserts these annotations are identical across two renders.
-- Every deployment runs two Celery workers: `celery-worker` (queues `celery,automation_workflow`) and `celery-exportworker` (queue `export`, which carries every job, webhooks, search indexing, notification emails, backups and cleanup — `queue="export"` in backend `tasks.py` modules). The all-in-one runs `exportworker` under supervisor, the root `docker-compose.yaml` the `celery-export-worker` service, the chart the `celery-export` Deployment (`replicaCount.celeryExport`, `resources.celeryExport`). Never ship a stack without the export worker: its tasks queue up silently and jobs stay `pending`.
-- Bump `Chart.yaml` `version` on chart changes (and `appVersion` on release cuts); keep `Chart.lock` and subcharts consistent. The `version-bump` job in `publish-helm-chart.yml` fails any PR touching `deploy/helm/**` without a version bump.
-- Runtime web-frontend branding (`docs/installation/branding.md`) reaches every deployment as a directory at `BASEROW_BRANDING_DIR`:
-  - **Helm:** `templates/configmap-branding.yaml` renders `branding.*` values, with `files` keys flattened `/`→`__` and mapped back through `items` in `webfrontend-deployment.yaml`, mounted read-only at `/baserow/branding`. `branding.existingClaim` mounts a PVC instead. `faviconBase64` also keeps its subPath mount over `.output/public/favicon.ico`. The branding ConfigMap is covered by `checksum/branding` in `baserow.podAnnotations`.
-  - **All-in-one:** `supervisor/default_baserow_env.sh` defaults the directory to `$DATA_DIR/branding`.
-  - **Compose:** the root `docker-compose.yaml` forwards `BASEROW_BRANDING_*` and documents the optional mount.
-  - `baserow.branding.inline` decides whether the ConfigMap is rendered at all. Any branding value that defaults to something truthy needs its own term there: `showAttribution` defaults to `true`, so only `(not $b.showAttribution)` counts as a change.
-  - Example directory: `branding-example/`.
-  - `BASEROW_BRANDING_APP_NAME` is also read by the backend (product name in emails, API docs title, TOTP issuer), so it must reach the backend and Celery containers too, not only the web-frontend: the chart renders `branding.appName` into the shared app ConfigMap (`configmap-env.yaml`), the root `docker-compose.yaml` forwards it in `x-backend-env`, `docker-compose.yml` lists it in `x-backend-variables`, and the all-in-one inherits it from the container environment.
-- Backend settings the chart does not model explicitly go through `values.yaml`'s `extraEnv` map, rendered into the shared app ConfigMap by `templates/configmap-env.yaml`. That is how SSO is configured (`BASEROW_OIDC_PROVIDERS`, `BASEROW_OIDC_ONLY`), and data destinations (`BASEROW_DATA_DESTINATIONS`); the root `docker-compose.yaml` forwards the same three from the environment. The ConfigMap is not encrypted, so secrets belong elsewhere: destination credentials are mounted as files through `extraVolumes`/`extraVolumeMounts`, which the chart adds to the backend, Celery worker, Celery export worker and Celery beat pods (not the web-frontend) and referenced with `*_file` keys.
-- All three images (`backend/Dockerfile`, `web-frontend/Dockerfile`, `all-in-one/Dockerfile`) build on `ubuntu:26.04` and take PostgreSQL 18 and Redis from the Ubuntu archive — no third-party apt repositories. The all-in-one copies the backend venv, so its base must keep providing the same `python3` as the backend image.
-- Every stage built on `ubuntu:26.04` deletes `/usr/bin/pebble` and `/var/lib/pebble` in its first `RUN`. Canonical drops that binary into the base layer without a dpkg package owning it, so `apt-get upgrade`/`purge` cannot touch the CVEs vendored into it (CVE-2026-39821), and no image here executes it. A new `ubuntu:26.04` stage must repeat the removal — each `FROM` restarts from the pristine base layer. The `dockerfile-lint` job in `ci.yml` statically asserts every `ubuntu:26.04` stage carries the removal; `caddy-image-build` and `web-frontend-prod-image` assert it is absent from the images they build, and `build-publish-image.yml` does the same for the backend, web-frontend and all-in-one images it publishes.
-- Node is installed from the SHA256-pinned nodejs.org tarball in both `web-frontend/Dockerfile` (`node-base`) and `all-in-one/Dockerfile`; keep `NODE_VERSION`, the per-arch SHA256s, `NPM_VERSION` and `YARN_VERSION` identical in both. npm is pinned (not left at the version bundled with Node) because the all-in-one keeps npm and the bundled release can carry vulnerable copies of its own dependencies; raise `NPM_VERSION` when the release image scan flags a package under `/usr/local/lib/node_modules/npm`. The all-in-one installs its own copy because the web-frontend `prod` target deletes npm/yarn, which `plugins/*.sh` needs.
-- Caddy is built from source in `all-in-one/Dockerfile` and `caddy/Dockerfile` (`golang:${GO_VERSION}` stage, Caddy `v${CADDY_VERSION}` built from a generated module) rather than copied out of the official `caddy` image, which lags behind Go security releases. Keep `GO_VERSION` and `CADDY_VERSION` identical in both; bump `GO_VERSION` when a Go patch release fixes a reported CVE and `CADDY_VERSION` for Caddy releases. Caddy is built in module mode (a generated `main.go` + `go get`, as xcaddy does) so `CADDY_MODULE_UPGRADES` can raise Go modules compiled into the binary (e.g. `golang.org/x/*`, grpc) past what the Caddy release pins; keep that list identical in both Dockerfiles, raise an entry when the image CVE scan flags a module in `/usr/bin/caddy`, and drop it once `CADDY_VERSION` requires that version or newer.
-- `.github/workflows/build-publish-image.yml` passes `BASEROW_BUILD_VERSION`/`BASEROW_BUILD_COMMIT`/`BASEROW_BUILD_DATE` as build args to the backend, web-frontend and all-in-one builds; each Dockerfile turns them into `ENV`, and the UI reports them. A new image that runs the backend or the web-frontend needs the same three, or it reports itself as a development build. Never forward them from Compose or the chart as possibly-empty values: the backend reads an empty value as a development build, while the web-frontend ignores an empty value and keeps what was baked in (`env-remap.mjs` maps them only when non-empty), so the two halves would disagree.
-- Images are CVE-gated with Trivy (HIGH/CRITICAL with a fix, exceptions in root `.trivyignore.yaml`): `ci.yml` scans the caddy and web-frontend prod images it builds, and `build-publish-image.yml` scans all four published images after push, failing the release run. Locally: `just audit images <refs>`.
-- `.github/workflows/build-publish-image.yml` builds every image with `pull: true`, so a `v*` tag cut re-resolves `ubuntu:26.04` and `golang:${GO_VERSION}` instead of serving a stale GHA cache hit. Cutting a release is therefore the way to republish images against upstream security rebuilds when no source changed.
-- Every image reference points at this fork's registry (`ghcr.io/carneirofc/baserow` for the all-in-one and `ghcr.io/carneirofc/baserow/{backend,web-frontend,caddy}`), including the `BACKEND_IMAGE`/`WEBFRONTEND_IMAGE` defaults in `all-in-one/Dockerfile`. Never reference Docker Hub `baserow/*` — those are Baserow B.V.'s images, and a stack pointed at them silently runs and gets scanned as upstream code.
-- The images target PostgreSQL 18, so every database beside them is pinned to `pgvector/pgvector:pg18` — the root `docker-compose.yaml`/`docker-compose.yml`, `docker-compose.dev.yml`, `docker-compose.e2e-infra.yml`, the `ci.yml` service blocks, and the `justfile` ramdisk test DB. Bump them together; a split leaves `pg_dump` talking to an older server than its own major.
-- Bumping the embedded PostgreSQL major version is a breaking change for all-in-one users: update `docs/runbooks/upgrade-embedded-postgres.md` and the version guard in `all-in-one/supervisor/docker-postgres-setup.sh` together.
+### Images
+
+- Every image reference points at this fork (`ghcr.io/carneirofc/baserow` and `…/baserow/{backend,web-frontend,caddy}`), including defaults in `all-in-one/Dockerfile`. Never Docker Hub `baserow/*`.
+- Images build on `ubuntu:26.04` with PostgreSQL 18 and Redis from the Ubuntu archive (no third-party apt repos). The all-in-one copies the backend venv, so its `python3` must match.
+- Every `ubuntu:26.04` stage deletes `/usr/bin/pebble` and `/var/lib/pebble` in its first `RUN` (unowned binary with CVEs); CI asserts it.
+- Node comes from the SHA256-pinned nodejs.org tarball in `web-frontend/Dockerfile` and `all-in-one/Dockerfile`: keep `NODE_VERSION`, SHA256s, `NPM_VERSION`, `YARN_VERSION` identical. Raise `NPM_VERSION` when scans flag npm's own deps.
+- Caddy is built from source in module mode in `all-in-one/Dockerfile` and `caddy/Dockerfile`: keep `GO_VERSION`, `CADDY_VERSION` and `CADDY_MODULE_UPGRADES` identical; drop an upgrade once Caddy requires it.
+- `build-publish-image.yml` passes `BASEROW_BUILD_{VERSION,COMMIT,DATE}` to every app image and builds with `pull: true` (a `v*` tag republishes against fresh bases). Never forward those vars from Compose or the chart.
+- Trivy gates images (`ci.yml` for caddy and web-frontend prod, `build-publish-image.yml` for all published images).
+- Every database is `pgvector/pgvector:pg18` (Compose files, `ci.yml`, `justfile` test DB); bump together. An embedded PostgreSQL major bump is breaking: update `docs/runbooks/upgrade-embedded-postgres.md` and the guard in `all-in-one/supervisor/docker-postgres-setup.sh`.
+
+### Workers
+
+- Every stack runs two Celery workers: `celery-worker` (`celery,automation_workflow`) and the export worker (`export` queue: jobs, webhooks, search indexing, emails, backups, cleanup) — `exportworker` in supervisor, `celery-export-worker` in Compose, the `celery-export` Deployment in Helm. Without it jobs stay `pending`.
+
+### Helm chart
+
+- Resource names and selector labels keep the pinned base name `baserow` (`baserow.name` in `_helpers.tpl`); never derive them from `.Chart.Name` (selectors are immutable).
+- Every preset must lint and render on its own; defaults stay platform-neutral (`openshift.route.enabled: false`). `values-openshift.yaml` stays restricted-SCC compatible (no fixed UIDs).
+- New values go into `values.schema.json`; `postgresql`/`redis` stay `additionalProperties: true`.
+- With `objectStorage.auth: irsa|podIdentity`, render no AWS key env vars or `s3-*` Secret keys at all (an empty var overrides the web identity); `baserow.objectStorage.useStaticKeys` is the gate.
+- The chart serves no `/media/`; file fields need `objectStorage.enabled: true`. Never reintroduce `BASEROW_SERVE_FILES_THROUGH_BACKEND`.
+- `mediaPersistence.accessMode` defaults to `ReadWriteMany` (backend and both workers mount it). `objectStorage.defaultACL` defaults to `""`.
+- `ingress.mode: albGroup` renders two Ingresses joined by an ALB group so backend and frontend get separate health checks.
+- Workloads carry `checksum/config` and `checksum/secret` (`baserow.podAnnotations`); `checksum/secret` hashes credential values, never the rendered Secret (it uses `randAlphaNum`). Renders must be stable.
+- Backend settings the chart doesn't model go through `extraEnv` (e.g. `BASEROW_OIDC_PROVIDERS`, `BASEROW_OIDC_ONLY`, `BASEROW_DATA_DESTINATIONS`); secrets are mounted as files via `extraVolumes`/`extraVolumeMounts` (backend and Celery pods) and referenced with `*_file` keys.
+- Bump `Chart.yaml` `version` on every chart change (CI enforces); keep `Chart.lock` consistent.
+
+### Branding
+
+- Branding reaches every stack as a directory at `BASEROW_BRANDING_DIR`: Helm `configmap-branding.yaml` (files keys flattened `/`→`__`, mounted at `/baserow/branding`, or `branding.existingClaim`), all-in-one `$DATA_DIR/branding`, Compose forwards `BASEROW_BRANDING_*`. `baserow.branding.inline` must count each truthy-default value (e.g. only `not showAttribution`).
+- `BASEROW_BRANDING_APP_NAME` must also reach backend and Celery containers (chart `configmap-env.yaml`, Compose backend env).
 
 ## Work Guidance
 
-- Validate chart edits with `helm lint --strict deploy/helm/saveroom` and `helm template` against all three values presets before shipping, then pipe the render through `kubeconform -strict -ignore-missing-schemas` (`-ignore-missing-schemas` covers the OpenShift `Route` CRD). `kubectl apply --dry-run=client` is not a substitute — it downloads the OpenAPI schema from a live cluster.
-- User-facing chart docs live in `docs/installation/install-with-helm.md` (values reference, day-two ops) and `docs/installation/install-on-eks.md` (internal ALB + CloudFront VPC origin, IRSA). `deploy/helm/README.md` is the short orientation page that links to both; keep the three consistent.
-- Keep the all-in-one image and the Compose/Helm envs in sync with backend/frontend env-var contracts.
+- Validate chart edits: `helm lint --strict deploy/helm/saveroom`, then `helm template` each preset through `kubeconform -strict -ignore-missing-schemas`.
+- User-facing chart docs: `docs/installation/install-with-helm.md` and `install-on-eks.md`, linked from `deploy/helm/README.md`; keep them consistent.
+- Keep Compose, all-in-one and Helm env in sync with backend/frontend env contracts.
 
 ## Verification
 
-- `.github/workflows/publish-helm-chart.yml` runs on PRs touching `deploy/helm/**` and on `v*` tags. It gates the chart version bump, lints and `kubeconform`-validates all three values presets plus five option combinations, asserts the IRSA render carries no static credentials and that default values render no OpenShift `Route`, then packages the chart. On `v*` tags it pushes to `oci://ghcr.io/<owner>/<repo>/charts/saveroom` (chart version from `Chart.yaml`).
-- Locally: `helm lint --strict`/`helm template` + `kubeconform`, and a `docker compose` bring-up.
+- `publish-helm-chart.yml` (PRs touching `deploy/helm/**`, `v*` tags): version-bump gate, lint + kubeconform of all presets and option combos, IRSA and Route assertions, OCI push on tags.
+- Locally: helm lint/template + kubeconform, and a `docker compose` bring-up.
 
 ## Child DOX Index
 

@@ -63,7 +63,6 @@ The Docker dev environment runs these services:
 | `caddy` | Reverse proxy for media files | 4000 |
 | `mailhog` | Email testing UI | 8025 |
 | `mjml-email-compiler` | MJML to HTML email compiler | 28101 |
-| `otel-collector` | OpenTelemetry metrics | 4317 |
 | `volume-permissions-fixer` | Fixes media file permissions on startup | - |
 | `web-frontend-storybook` | Component development UI | 6006 |
 | `celery-flower` | Celery task monitoring | 5555 |
@@ -135,7 +134,7 @@ just dc-dev exec web-frontend yarn test
 ### Terminal Tabs and Tmux
 
 ```bash
-# Open terminal tabs for each service (like the old dev.sh)
+# Open terminal tabs for each service
 just dc-dev tabs                    # or: just dct
 
 # Start a tmux session with all services

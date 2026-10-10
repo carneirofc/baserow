@@ -2,63 +2,64 @@
 
 ## Purpose
 
-Nuxt/Vue web application for Saveroom: the browser UI for databases, the Application Builder, Automation, Dashboards, and admin.
+Nuxt/Vue browser UI for databases, Application Builder, Automation, Dashboards and admin.
 
 ## Ownership
 
-Owns everything under `web-frontend/`: `modules/` (feature code), `test/`, `stories/`, `locales/`/`i18n/`, `public/`, Nuxt/Vite/Vitest config, `package.json`, and `Dockerfile`.
-
-- `modules/core/` — shared app shell, registries, components, and services.
-- `modules/database/`, `modules/builder/`, `modules/automation/`, `modules/dashboard/`, `modules/integrations/` — feature modules mirroring the backend `contrib` domains.
+Everything under `web-frontend/`. `modules/core/` is the shared shell; `modules/{database,builder,automation,dashboard,integrations}/` mirror the backend `contrib` domains.
 
 ## Local Contracts
 
-- Package manager is **yarn** (`yarn.lock`); Node version pinned by `.nvmrc`.
-- Frontend mirrors the backend **registry** pattern — feature types register into module registries; extend via registration, not hardcoding.
-- Keep the frontend contract in sync with the backend API it consumes (serializers, error codes, URLs).
-- Every backend permission manager whose `get_permissions_object` returns data needs a frontend `permissionManager` of the same type (`modules/core/permissionManagerTypes.js`). `plugins/permissions.js` skips unknown types, so a missing one silently lets a later manager allow what the backend denies.
-- `DownloadLink` (`modules/core/components/DownloadLink.vue`) preflights every download with a `HEAD` and only then hands the browser the link, because a plain anchor cannot report a failure and would render the server's error page where the file should be. It maps the status to a message: 410 is an expired file, 500 and 503 are the server's own file storage, and those two must never read as "file not found". Bind it to a job's `download_url`, never to `url` — the latter points straight at the storage and is unreachable in most container deployments. User file attachments still use `url`.
-- User-facing strings go through **i18n** (`locales/`, `i18n.config.ts`), not inline literals.
-- `config/locales.js` is the single source of truth for shipped languages (currently `en` and `pt-BR`); every module registers it (`modules/*/module.js`) and so does `config/nuxt.config.base.ts`. A registered code needs its JSON file in **every** `locales/` dir — each module's and the root `web-frontend/locales/` — or `yarn run build` dies with `ENOENT` in `computeLocaleHashes`; an empty `{}` is enough, since `modules/core/plugins/i18n.js` falls back to English. Keep the code list equal to `LANGUAGES` in `backend/src/baserow/config/settings/base.py` (the account language endpoint validates against it) and keep `modules/core/moment.js` importing the matching moment locales. Components read the list via `useI18n()`; never hardcode one.
-- The `prod` image ships only `.output` (`Dockerfile`), never `node_modules`. That is what keeps Go-compiled npm binaries — esbuild, pulled in by `nitropack` and `vite` — out of the runtime image; SCA scanners read the Go stdlib embedded in such binaries and report it against the image. The `ci` and `dev` targets do carry `node_modules` and therefore do contain them.
-- Runtime branding (`docs/installation/branding.md`) must keep working without a rebuild. `modules/core/server/branding/` (Nitro handlers registered in `modules/core/module.js`) serves `/_branding/theme.css`, `/_branding/config.json` and `/_branding/assets/{img,icons,files}/…` from `BASEROW_BRANDING_DIR`, falling back to defaults bundled as Nitro server assets (`branding-img`, `branding-icons`); `plugins/branding.js` applies the title, translation overrides and theme stylesheet during SSR.
-- Anything branding may override (logo and favicon references, the `baserow-icon` masks in `icons.scss`) must load through the `/_branding/assets/` route, never a bundled `?url` import or a `public`/`static` path: Nitro serves public assets before any handler, so a public path cannot be overridden.
-- Color tokens in `assets/scss/colors.scss` are CSS custom properties (`token()` → `var(--name, default)`). Never apply Sass color functions (`rgba`, `darken`, `mix`, `red()`…) to `$palette-*`/`$color-*` — the build fails on `var()` — use `alpha($color, $opacity)` or CSS `color-mix()`, and never interpolate tokens into data URIs. `$white`/`$black` stay literal.
-- No hard-coded hex colors in SCSS outside `colors.scss`: use the nearest `$palette-*`/`$color-*` token so branding reaches it. The exceptions are the hue/saturation gradients in `color_picker.scss` and the `var(--page-background-color, #fff)` builder-theme fallbacks.
-- Sass: only the `import` deprecation is silenced (`config/nuxt.config.base.ts`); don't add others back, fix them instead (`sass:string`/`sass:map` module functions, `@if` instead of `if()`). The `@import` → `@use` migration is pending because `@use` needs explicit wiring for the ~220 `@extend %placeholder` rules and reorders the emitted CSS.
-- Icon classes (`iconoir-*`) must exist in the installed iconoir version; a missing class renders blank with no error. After an iconoir upgrade, diff the class list in `node_modules/iconoir/css/iconoir.css` against the classes the code uses.
-- Plural messages written with `{n}` must be called with the count as the plural argument (`$t(key, days)`); passing `{ count: days }` leaves `{n}` empty and never selects a plural form.
-- Retention and expiry values the UI states (trash hours, export file expiry, snapshot expiry, audit log and row history retention) are Django settings mirrored into Nuxt runtime config: default in `modules/core/module.js`, remap in `env-remap.mjs`, and the env var passed to the **web-frontend service too** (`docker-compose.yml`; the Helm chart already shares one configmap). Miss the last step and the UI quietly shows its own default instead of what the backend enforces. Treat a non-positive value as "cleanup switched off" and show nothing. Staff-only limits belong in `/admin/limits/` (`services/admin/limits.js`), not in runtime config, which is public.
-- Build metadata (`appVersion`, `gitCommit`, `buildDate` in `modules/core/module.js`, provided as `$buildInfo` by `plugins/version.js`) identifies the bundle a viewer has open. It is baked in from the `BASEROW_BUILD_*` docker build args, and `env-remap.mjs` maps those three only when non-empty, because an orchestrator that forwards an unset variable would otherwise blank out the version the image was built with. Empty means a development build: `utils/buildInfo.js` returns an empty label for it and every surface (`layouts/login.vue`, `SidebarUserContext`, `components/version/BuildInfo.vue`) must render nothing rather than an empty row. The backend reports its own build through `/admin/build/`; a commit mismatch between the two is shown as a warning, and a failed request is rendered as an explicit "could not be read" state (a backend older than the web-frontend has no such endpoint), so don't collapse the two builds into one value and don't swallow the request error.
-- Job elapsed time comes from `utils/job.js` + the `mixins/jobElapsed.js` ticker, rendered by `components/job/JobDuration.vue`. It ticks on its own 1s interval, not on job updates, because the poller backs off up to `baserowFrontendJobsPollingTimeoutMs`. Add it next to a `ProgressBar`, never to a UI whose bar blends non-job progress (`ImportFileModal` mixes upload and job percentages, so a job-only duration would misreport there).
-- Keep this file free of nested lists: the root `.editorconfig` (4-space Markdown indent) is absent from the CI image, so prettier formats nested list indentation differently locally and in CI.
-- The product name is runtime branding, never a literal. Locale strings name it only through the linked message `@:{'app.name'}` — always the brace form, because a bare `@:app.name` swallows trailing punctuation into the key (`test/unit/core/branding/appName.spec.js` enforces this). `app.name` is defined once, in `modules/core/locales/en.json`, equal to `BRANDING_DEFAULTS.appName`; `plugins/branding.js` writes the operator's `appName` into `app.name` of every locale (a message that falls back to English resolves the link in English) and re-applies it after a language switch, since lazy-loaded locale files replace merged keys. Components outside i18n use `$branding.appName`. Prefer neutral wording ("this instance", "a table") when the name adds nothing. The exceptions are the `buildInfo` credits, which name the fork and upstream on purpose.
-- `branding.json` values are validated server-side (token names, CSS color values, font, locale keys, `http(s)`/root-relative URLs) so they cannot inject CSS or a `javascript:` href; keep that validation when adding settings.
-- Attribution and help links come from `$branding` (`appName`, `siteUrl`, `docsUrl`, `siteTitle`, `showAttribution`), provided by `plugins/branding.js` and defaulted in `modules/core/brandingDefaults.js`. Never hardcode a project URL in a component; anything gated on `showAttribution` must render nothing when it is false. The fork, upstream and license links credited by `components/version/BuildInfo.vue` are `PROJECT_CREDITS` in the same file: they name where the software comes from, so branding cannot override them, only hide them through `showAttribution`.
-- The `node-base` stage deletes Ubuntu's unowned `/usr/bin/pebble` (CVE-2026-39821) for the same reason npm/yarn are dropped from `local`: unreachable code that scanners still report. Every stage here descends from `node-base`, so the single removal covers them all — see `deploy/AGENTS.md` for the repo-wide rule.
-- `components/backups/{BackupsTab,BackupSchedulesTab,RemoteBackupsTab}.vue` accept an optional `service` prop (a `(client) => {...}` factory, defaulting to `services/backup.js`) so the same tabs render both the member-facing `BackupsModal` (workspace context menu) and the staff-only `pages/admin/backups.vue` (`components/admin/backups/BackupsAdminPanel.vue`, `services/admin/backups.js` hitting `/admin/backups/...`). Extend this prop, don't fork the components, when another surface needs the same tabs against a different endpoint. The admin panel also passes `admin` to all three tabs; the member surface instead gates restore on `workspace.create_application` (the backend checks it on top of `workspace.export`, which opens the modal) and schedule actions on the backup schedule operations plus ownership (`schedule.user_id` is the current user, or the user is a workspace admin, `workspace.permissions === 'ADMIN'`, or staff), matching the backend's 403 `ERROR_BACKUP_SCHEDULE_NOT_OWNED`; datalake run in `DataExportModal` follows the same ownership rule. Tabs and `DataExportModal` read dates with `'L LT'` and sizes with `formatFileSize`. `utils/backups.js` holds the restore helper (applications are only added to the sidebar store when the target workspace is in it) and `mixins/backupJobMemory.js` re-attaches a remounted tab to its running job through the `backupJobs` object that `BackupsModal` and `BackupsAdminPanel` provide. The lists share `BackupList` (loading, empty and filled states) and `BackupListItem` (title, detail, badges, error and actions slots) styled by `assets/scss/components/backups.scss`; add rows with them instead of new markup. `components/Button.vue` has no native `type`, so a form's Save button is a plain `Button` without a click handler (a native submit) and Cancel needs `@click.prevent`. The remote tab shows the trust checkbox only for staff and a destination with `allow_trust_public_key`, and `components/admin/backups/BackupDestinationsCard.vue` lists the configured destinations read only. `ApiClientScopes.vue` is the scope checkbox group shared by `ApiClientForm` and the "Edit scopes" action of `ApiClient.vue`.
-- Destructive one-click actions (delete, restore, reset) go through `components/modals/ConfirmModal.vue`: mount it once with a ref and call `ask({ title, message, confirmLabel, onConfirm })`; the action runs only from `onConfirm`. Reuse it rather than adding another single-purpose "are you sure" modal.
+No nested lists in this file: prettier indents them differently in CI (no `.editorconfig` there).
 
-- API clients (`components/apiClients/`, `services/apiClients.js`, `apiClients/scopes.js`): per-workspace, per-user integration credentials opened from `WorkspaceContext`, deliberately ungated because `/api/api-clients/...` is `IsAuthenticated` and lists only the caller's own clients. `scopes.js` mirrors `ALL_SCOPES` in `baserow.core.api_clients.scopes` and must stay in sync with it. A created key's full secret exists only in the create response: hand it straight to `ApiClientKeyRevealModal` and never store it on the key kept in the list. Revoking a key returns the updated record rather than deleting it, so update the row in place and keep it visible.
+### General
 
-- CrudTable filtering (`components/crudTable/CrudTable.vue`): pass `:filters` and fill the `#header-filters` slot, as `components/admin/auditLog/` does. Filters go straight into the query string and the backend applies an exact lookup per filter, so a blank one must be absent from the object entirely — build it with `omitEmptyFilters` (`services/admin/auditLog.js`). Anything that reproduces a CrudTable request outside the table (exporting what is on screen) must reuse `serializeSorts` from `crudTable/baseService.js` so it cannot drift from what `fetch` sends.
+- yarn manages packages; Node is pinned by `.nvmrc`.
+- Extend through module registries, not hardcoding. Keep in sync with the backend API (serializers, error codes, URLs).
+- Every backend permission manager returning data from `get_permissions_object` needs a frontend `permissionManager` of the same type (`modules/core/permissionManagerTypes.js`); unknown types are silently skipped.
+- The `prod` image ships only `.output`, never `node_modules` (keeps Go-built esbuild out of the scanned image).
+- Destructive one-click actions use `components/modals/ConfirmModal.vue` (`ask({ title, message, confirmLabel, onConfirm })`).
 
-- Protected editing (`table.require_edit_confirmation`, `modules/database/utils/editConfirmation.js`): on such tables a single cell or row modal edit is staged in the `pendingRowChanges` store and saved in one batch update by `PendingChangesBar`, and every other row mutation (create, paste, clear, delete, move, undo/redo) first awaits `confirmDataChange(store, table, …)`, rendered by the `ConfirmDataChangeModal` host mounted in `components/table/Table.vue`. A new row mutation entry point must honor the same helpers. `ImportFileModal` is the one exception: an import changes a whole set of rows, so it always refreshes the preview and asks for acceptance through its own `ConfirmImportModal` (the `confirmDataChange` host only exists on the table page, and the generic confirmation cannot render the change counts), it refuses to submit while the table has staged changes, and it gates the `replace` mode and `delete_unmatched` on `database.table.replace_rows`.
+### i18n
+
+- User-facing strings go through i18n. `config/locales.js` (`en`, `pt-BR`) is the single language list, equal to backend `LANGUAGES`; every `locales/` dir needs a JSON file per code (`{}` suffices) or the build fails. Keep `modules/core/moment.js` locales matching.
+- Plural messages using `{n}` take the count as the plural argument (`$t(key, n)`), not `{ count }`.
+- The product name is never a literal: locale strings use `@:{'app.name'}` (brace form, enforced by `test/unit/core/branding/appName.spec.js`); components outside i18n use `$branding.appName`.
+
+### Branding
+
+- Runtime branding must work without a rebuild: `modules/core/server/branding/` serves `/_branding/{theme.css,config.json,assets/…}` from `BASEROW_BRANDING_DIR` with bundled fallbacks; `plugins/branding.js` applies it during SSR and re-applies `app.name` after language switches.
+- Anything branding may override loads through `/_branding/assets/`, never a bundled import or public path.
+- `branding.json` values are validated server-side; keep that when adding settings.
+- Links come from `$branding` (`appName`, `siteUrl`, `docsUrl`, `siteTitle`, `showAttribution`); never hardcode a project URL. `PROJECT_CREDITS` in `components/version/BuildInfo.vue` can be hidden via `showAttribution` but not overridden.
+
+### Styles and icons
+
+- Color tokens in `assets/scss/colors.scss` are CSS variables: never apply Sass color functions to `$palette-*`/`$color-*`; use `alpha()` or `color-mix()`. No hex colors outside `colors.scss` (except `color_picker.scss` gradients and builder-theme fallbacks).
+- Only the Sass `import` deprecation is silenced; fix others.
+- `iconoir-*` classes must exist in the installed iconoir version (missing ones render blank).
+
+### Feature notes
+
+- `DownloadLink` preflights downloads with `HEAD` and maps 410 (expired) and 500/503 (server storage, never "not found"). Bind it to `download_url`, never `url`; user file attachments still use `url`.
+- Retention/expiry values the UI shows are mirrored from Django settings: default in `modules/core/module.js`, remap in `env-remap.mjs`, and the env var passed to the web-frontend service in `docker-compose.yml`. Non-positive means cleanup off (show nothing). Staff-only limits come from `/admin/limits/`.
+- Build metadata (`$buildInfo`) is baked from `BASEROW_BUILD_*` args; `env-remap.mjs` maps them only when non-empty. Empty means a dev build and renders nothing. Backend build (`/admin/build/`) is shown separately; a commit mismatch warns, a failed request shows "could not be read".
+- Job elapsed time (`utils/job.js`, `mixins/jobElapsed.js`, `JobDuration.vue`) ticks on its own 1s interval; use it only next to job-only progress bars.
+- Backup tabs (`components/backups/*Tab.vue`) take an optional `service` factory so member and staff admin surfaces share them; extend the prop rather than forking. Member restore is gated on `workspace.create_application`, schedule actions on ownership/admin/staff. Use `BackupList`/`BackupListItem` for rows. `Button.vue` has no native `type`: Save is a plain submit, Cancel needs `@click.prevent`.
+- API clients (`components/apiClients/`): `scopes.js` mirrors backend `ALL_SCOPES`. A key's secret exists only in the create response; never store it. Revoking updates the row in place.
+- CrudTable filters: a blank filter must be absent (`omitEmptyFilters`); anything replaying a CrudTable request reuses `serializeSorts`.
+- Protected editing (`modules/database/utils/editConfirmation.js`): single edits are staged in `pendingRowChanges` and saved by `PendingChangesBar`; every other row mutation awaits `confirmDataChange`. `ImportFileModal` uses its own `ConfirmImportModal`, refuses while changes are staged, and gates `replace`/`delete_unmatched` on `database.table.replace_rows`.
 
 ## Work Guidance
 
-- Run frontend tasks via `just frontend <recipe>` (aliases `just f …`): `check`/`lint`, `fix`/`format`, `test`, `run-dev-server`, `storybook`, `build-nuxt`.
-- Lint/format is **eslint** + **stylelint** (`eslint.config.mjs`, `stylelint.config.mjs`).
-- Tests are **Vitest** (Vue Test Utils / TestApp); update snapshots with `just frontend update-snapshots` only when intended.
-- Prefer the `write-frontend-unit-test` skill; UI element work is covered by `add-update-builder-element-type` and `create-in-app-notification`. Locate files to change first with `find-change-candidates`.
-- Add a changelog entry for user-facing changes (`just changelog add`).
+- `just frontend <recipe>` (`just f`): `lint`, `fix`, `test`, `run-dev-server`, `storybook`, `build-nuxt`. Update snapshots (`just frontend update-snapshots`) only intentionally.
+- Relevant skills: `write-frontend-unit-test`, `add-update-builder-element-type`, `create-in-app-notification`.
 
 ## Verification
 
-- Tests: `just frontend test` (Vitest); CI variant `just frontend ci-test`.
-- Lint: `just frontend lint`. Both must pass before commit (also enforced by pre-commit).
-- CI job `web-frontend-prod-image` (`.github/workflows/ci.yml`) builds the `prod` target, asserts no esbuild artefact is present anywhere in the exported image filesystem, and boots it against `/_health/`.
+- `just frontend test` and `just frontend lint` (also pre-commit).
+- CI `web-frontend-prod-image` builds `prod`, asserts no esbuild artefact, and boots it against `/_health/`.
 
 ## Child DOX Index
 
-No child AGENTS.md yet. Feature modules are documented via project skills; add a child only if a module gains its own durable, skill-independent contract.
+None.

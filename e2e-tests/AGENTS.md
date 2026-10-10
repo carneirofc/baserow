@@ -2,27 +2,25 @@
 
 ## Purpose
 
-End-to-end test suite that drives the full stack (backend + frontend + Postgres + Redis) through a real browser with Playwright.
+Playwright suite driving the full stack (backend, frontend, Postgres, Redis) in a real browser.
 
 ## Ownership
 
-Owns everything under `e2e-tests/`: `tests/` (specs), `pages/` (page objects), `fixtures/`, `client.ts`, `playwright.config.ts`, `justfile`, and the Dockerized service wiring.
+Everything under `e2e-tests/`: `tests/`, `pages/` (page objects), `fixtures/`, `client.ts`, `playwright.config.ts`, `justfile`, Docker wiring.
 
 ## Local Contracts
 
-- Runner is **Playwright** (`playwright.config.ts`); package manager is **yarn**.
-- Tests run against **built CI images** (`saveroom/backend:ci`, `saveroom/web-frontend:ci`) on a dedicated Docker network, not a local dev server.
-- Use the **page-object** pattern in `pages/` (e.g. `loginPage.ts`, `baserowPage.ts`) — specs should not select raw DOM ad hoc.
-- Fixtures/DB seed live in `fixtures/` (`e2e-db.dump`); restore/dump via the justfile recipes rather than manual SQL.
+- Tests run against built CI images (`saveroom/backend:ci`, `saveroom/web-frontend:ci`) on a dedicated Docker network, not a dev server.
+- Specs go through page objects in `pages/`, not ad-hoc DOM selectors.
+- The DB seed is `fixtures/e2e-db.dump`; restore/dump it via justfile recipes.
 
 ## Work Guidance
 
-- Run via `just e2e <recipe>`: `build`, `up`, `test`, `down`, or `run` (build + up + test + down end-to-end).
-- Local iteration: `run-e2e-tests-locally.sh` and `wait-for-services.sh` bring up and gate on the stack.
+- `just e2e build|up|test|down`, or `just e2e run` for all four. Prerequisites in `README.md`.
 
 ## Verification
 
-- `just e2e run` executes the full suite against fresh CI images and tears down. See `README.md` for prerequisites.
+- `just e2e run`.
 
 ## Child DOX Index
 

@@ -36,8 +36,7 @@ of that workspace, and a number between brackets. That number is your workspace 
 
 Now that you have the workspace ID that contains your template, you need to export it to
 JSON format. In order to do that you need access to the command line of your Saveroom
-environment. This could be different depending on how your environment is installed.
-A couple of examples:
+environment.
 
 ### Development environment
 
@@ -45,28 +44,6 @@ Inside the backend container you need to execute the following command:
 
 ```
 $ python src/baserow/manage.py export_workspace_applications YOUR_WORKSPACE_ID --indent
-```
-
-### Cloudron environment
-
-By logging into your Cloudron environment, you can access to the terminal of your
-Saveroom app. There you can enter the following command to export your application:
-
-```
-$ /app/code/env/bin/python /app/code/baserow/backend/src/baserow/manage.py export_workspace_applications YOUR_WORKSPACE_ID --indent --settings=cloudron.settings
-```
-
-### Ubuntu environment
-
-Connect to your server via SSH and execute the following commands:
-
-```
-$ cd /baserow
-$ source backend/env/bin/activate
-$ export DJANGO_SETTINGS_MODULE='baserow.config.settings.base'
-$ export DATABASE_PASSWORD='yourpassword'
-$ export DATABASE_HOST='localhost'
-$ baserow export_workspace_applications YOUR_WORKSPACE_ID --indent
 ```
 
 ### The export
@@ -115,6 +92,3 @@ template is called `applicant-tracker.json`, the ZIP file must be named
 In order to try out your template, you need to run the `sync_templates` management
 command. This will make sure that a copy of the template is added to the database so
 that the user can see a quick preview.
-
-If everything works, you could create a merge request and share your template with the
-community.

@@ -16,7 +16,7 @@ Pick one install path, then configure and operate it.
 | Try it on one machine | [Docker (all-in-one image)](installation/install-with-docker.md) |
 | Run one container per service with Compose | [Docker Compose](installation/install-with-docker-compose.md) |
 | Run on Kubernetes or OpenShift | [Helm](installation/install-with-helm.md), [Amazon EKS](installation/install-on-eks.md) |
-| Use a managed container platform | [AWS ECS](installation/install-on-aws.md), [DigitalOcean Apps](installation/install-on-digital-ocean.md), [Standalone images](installation/install-using-standalone-images.md) |
+| Use a managed container platform | [Standalone images](installation/install-using-standalone-images.md) |
 | Check versions of PostgreSQL, Redis and others | [Supported dependencies](installation/supported.md) |
 | Set environment variables | [Configuration reference](installation/configuration.md) |
 | Sign in through an identity provider | [OpenID Connect](installation/sso-oidc.md), [RHBK/Keycloak](installation/sso-rhbk-keycloak.md) |

@@ -65,8 +65,7 @@ Change visibility**). That change cannot be undone.
    * `appVersion` in `deploy/helm/saveroom/Chart.yaml`, plus `version` if the chart
      changed since its last publish;
    * the `ghcr.io/carneirofc/baserow/*:<version>` image tags in `docs/installation/`,
-     `docs/plugins/` and `deploy/all-in-one/README.md`, the image tag in
-     `docs/installation/install-on-digital-ocean.md`, and the version heading in
+     `docs/plugins/` and `deploy/all-in-one/README.md`, and the version heading in
      `docs/installation/supported.md`
      (`grep -rn 'baserow/.*:<old version>' docs deploy README.md` finds them).
 2. Cut the changelog release: `just changelog release v1.2.3`.

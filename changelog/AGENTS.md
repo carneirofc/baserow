@@ -2,25 +2,24 @@
 
 ## Purpose
 
-Conflict-free changelog generator: each change is a standalone JSON entry so parallel branches never collide on a shared `changelog.md`.
+Conflict-free changelog generator: each change is a standalone JSON entry, so parallel branches never collide on `changelog.md`.
 
 ## Ownership
 
-Owns everything under `changelog/`: `src/` (generator), `entries/` (per-change JSON, with an `unreleased/` staging area), `releases.json`, `conftest.py`, `tests/`, and `README.md`. The generated root `changelog.md` is the published output.
+Everything under `changelog/` (`src/`, `entries/` with its `unreleased/` staging area, `releases.json`, `tests/`). The root `changelog.md` is generated output.
 
 ## Local Contracts
 
-- All commands run from the repo root via `just changelog <cmd>` — never edit `changelog.md` by hand.
-- `just changelog add` creates an entry in `entries/unreleased/` as a `.json` file (editable directly).
-- `just changelog release <name>` moves unreleased entries into a release folder, appends to `releases.json`, and regenerates `changelog.md`.
+- Run from the repo root via `just changelog <cmd>`; never edit `changelog.md` by hand.
+- `just changelog add` writes a JSON entry to `entries/unreleased/`; `just changelog release <name>` moves them into a release and regenerates `changelog.md`.
 
 ## Work Guidance
 
-- Every user-facing or behavioral change gets an entry; use the `create-changelog` skill to classify domain/type and write the message.
+- The `create-changelog` skill classifies domain/type and drafts the message.
 
 ## Verification
 
-- `just changelog-test` runs the generator's own test suite (`changelog/tests/`).
+- `just changelog-test`.
 
 ## Child DOX Index
 
