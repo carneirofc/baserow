@@ -16,7 +16,7 @@ test("Branding config is served with defaults @fast", async ({ request }) => {
     hasTheme: false,
     siteUrl: "https://github.com/carneirofc/baserow",
     docsUrl: "https://github.com/carneirofc/baserow",
-    siteTitle: "Baserow",
+    siteTitle: "Saveroom",
     showAttribution: true,
   });
   expect(body.version).toEqual(expect.any(String));
@@ -59,5 +59,5 @@ test("Login page uses the branding logo and title @fast", async ({
   await expect
     .poll(() => logo.evaluate((img: HTMLImageElement) => img.naturalWidth))
     .toBeGreaterThan(0);
-  await expect(page).toHaveTitle(/Baserow$/);
+  await expect(page).toHaveTitle(/Saveroom$/);
 });
