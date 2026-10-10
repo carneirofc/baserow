@@ -824,6 +824,17 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Monitoring
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -833,6 +844,49 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#websocket-and-realtime-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      WebSocket and realtime metrics
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="WebSocket and realtime metrics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#capacity-and-storage-interpretation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Capacity and storage interpretation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -2744,6 +2798,38 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#websocket-and-realtime-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      WebSocket and realtime metrics
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="WebSocket and realtime metrics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#capacity-and-storage-interpretation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Capacity and storage interpretation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -2796,6 +2882,143 @@ yourself and add the env var passthroughs you need.</p>
 </ul>
 </li>
 </ul>
+<h2 id="websocket-and-realtime-metrics">WebSocket and realtime metrics<a class="headerlink" href="#websocket-and-realtime-metrics" title="Permanent link">&para;</a></h2>
+<p>WebSocket metrics are independent of trace sampling. Group them by deployment or pod
+and <code>process.pid</code>: an aggregate can hide one blocked ASGI worker. These metrics use
+bounded operation/outcome labels and exclude JWTs, payloads, user/table IDs, and
+client-supplied WebSocket IDs. See <a href="../../technical/websockets/">WebSocket concurrency and replay</a>
+for the execution and recovery model.</p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>baserow.websocket_phase_duration</code></td>
+<td>Milliseconds for <code>handshake</code> (application arrival to accept), <code>authentication</code>, <code>connect</code>, <code>accept</code>, <code>replay_cursor</code>, and <code>replay_query</code>, by outcome. Count <code>phase=handshake,outcome=accepted</code> observations for accepted handshakes per worker.</td>
+</tr>
+<tr>
+<td><code>baserow.websocket_handshakes_pending</code></td>
+<td>Applications that arrived but have not accepted or rejected.</td>
+</tr>
+<tr>
+<td><code>baserow.websocket_sync_queue_duration</code> / <code>baserow.websocket_sync_execution_duration</code></td>
+<td>Milliseconds before the executor starts work versus milliseconds on its thread, including database connection cleanup.</td>
+</tr>
+<tr>
+<td><code>baserow.websocket_sync_pending</code> / <code>baserow.websocket_sync_executing</code></td>
+<td>Awaiting callers, including queued and running calls, versus work actually executing. Executing work can outlive a cancelled caller.</td>
+</tr>
+<tr>
+<td><code>baserow.websocket_event_loop_lag</code></td>
+<td>Scheduling delay in milliseconds, sampled once per second while WebSocket applications are active.</td>
+</tr>
+<tr>
+<td><code>baserow.websocket_replay_requests</code></td>
+<td>Decisions by <code>baseline</code>, <code>replayed</code>, <code>refresh</code>, <code>overloaded</code>, <code>deadline_exceeded</code>, <code>query_timeout</code>, <code>database_error</code>, <code>cancelled</code>, or <code>error</code>. Refresh <code>reason</code> distinguishes <code>missing_cursor</code>, <code>unknown_history</code>, <code>cursor_ahead</code>, <code>expired_payload</code>, and <code>event_limit</code>; other outcomes use <code>none</code>.</td>
+</tr>
+<tr>
+<td><code>baserow.websocket_replay_duration</code> / <code>baserow.websocket_replay_events</code></td>
+<td>Caller wait in milliseconds and number of events returned by a completed decision.</td>
+</tr>
+<tr>
+<td><code>baserow.websocket_replay_inflight</code> / <code>baserow.websocket_replay_capacity</code></td>
+<td>Occupied slots and initialized replay pool capacity, including work still running after cancellation or a deadline.</td>
+</tr>
+<tr>
+<td><code>baserow.websocket_replay_queued</code> / <code>baserow.websocket_replay_queue_capacity</code> / <code>baserow.websocket_replay_queue_duration</code></td>
+<td>Waiting requests, admission queue capacity, and wait in milliseconds, including cancelled/expired waits. Admission precedes the separate synchronous executor queue measurement.</td>
+</tr>
+<tr>
+<td><code>baserow.websocket_replay_database_errors</code></td>
+<td>Database errors by reason, including errors occurring after the caller's deadline.</td>
+</tr>
+<tr>
+<td><code>baserow.realtime_recording_events</code></td>
+<td>Attempted recording envelopes by <code>destination=users/page</code> and handler <code>outcome=success/error</code>. A successful handler does not guarantee an enclosing transaction committed.</td>
+</tr>
+<tr>
+<td><code>baserow.realtime_recording_batch_size</code> / <code>baserow.realtime_recording_duration</code></td>
+<td>Envelopes per attempted batch and handler duration in milliseconds, including adaptation and database work.</td>
+</tr>
+<tr>
+<td><code>baserow.realtime_cleanup_deleted</code> / <code>baserow.realtime_cleanup_batch_size</code></td>
+<td>Deleted events and rows per successfully committed cleanup batch.</td>
+</tr>
+<tr>
+<td><code>baserow.realtime_cleanup_batch_duration</code></td>
+<td>Batch duration in milliseconds, including expired-history summary updates and commit. Failed batches have <code>outcome=error</code> and contribute no deleted rows.</td>
+</tr>
+<tr>
+<td><code>baserow.realtime_cleanup_run_deleted</code> / <code>baserow.realtime_cleanup_run_duration</code></td>
+<td>Committed progress and run duration in milliseconds, by outcome. Earlier commits still count if a later batch fails.</td>
+</tr>
+<tr>
+<td><code>baserow.realtime_cleanup_skipped</code></td>
+<td>Scheduled attempts skipped for <code>reason=overlap</code> (another task owns the lease) or <code>reason=lock_error</code> (lease acquisition failed).</td>
+</tr>
+</tbody>
+</table>
+<p>Synchronous operations distinguish <code>authentication</code>, <code>page_permission</code>,
+<code>presence_space</code>, <code>recording</code>, and <code>replay</code>. <code>executor=thread_sensitive</code> denotes the
+shared thread in ordinary WebSocket scopes; a synchronous Celery caller can instead
+use its task thread. <code>executor=isolated</code> identifies replay's separate executor.
+<code>presence_space</code> measures page-type resolution, including public-view queries.
+Database-free dispatch makes no cleanup submission. Channels' final disconnect
+cleanup is retained but is not included in these operation metrics.</p>
+<p>Compare queue and execution time for each operation on each worker. Long execution
+identifies work occupying a thread; queue delays show its waiting callers. High
+event-loop lag points to synchronous work on the loop, CPU starvation, or process
+resource pressure instead. During cancellation, pending and executing are not a
+strict subtraction for queue length. Replay has its own explicit queued metric.</p>
+<p>Duration histograms contain completed observations. Pending gauges help expose work
+that has not finished. Slow operations log warnings after one second, rate-limited
+per phase and operation to one every 30 seconds per process. Debug phase logs use a
+server-generated connection correlation ID. Event-loop lag becomes observable only
+after the loop responds again; worker stacks and database wait events help diagnose
+a complete stall. These instruments add no diagnostic database queries.</p>
+<h3 id="capacity-and-storage-interpretation">Capacity and storage interpretation<a class="headerlink" href="#capacity-and-storage-interpretation" title="Permanent link">&para;</a></h3>
+<p>Replay capacity appears only after a worker initializes its pool; importing the
+module in another process does not add capacity. Compare occupancy, queued work,
+overloads, and deadline outcomes per initialized worker, and use configured ASGI
+worker counts when sizing a deployment. For steady traffic, estimate utilization
+as request rate multiplied by mean thread execution time divided by replay
+concurrency. Caller latency understates demand when work continues after a timeout,
+and averages do not predict reconnect bursts.</p>
+<p>Potential replay database connections scale as pods × ASGI workers per pod × replay
+concurrency, in addition to HTTP, authentication, Celery, and other database users.
+Keep this total within the database or pool budget. A result-size limit and async
+deadline do not bound recording writes or terminate blocked connection attempts.</p>
+<p>The handshake timer starts when the application is invoked and excludes proxy
+waiting. Correlate it with ingress attempts, upstream selection and timings; HTTP
+health checks alone do not establish WebSocket responsiveness. Channel-capacity
+warnings describe full recipient queues, not a connection limit or proof that Redis
+has exhausted memory.</p>
+<p>Compare recording rate with committed cleanup deletions over time. A cleanup run
+ending with <code>budget</code> retained its earlier commits but exhausted its time allowance;
+<code>success</code> can still leave locked rows for the next run. Repeated overlap or lock
+errors explain runs that never reached the database. Track oldest full-event age,
+event-table size, history-summary count and size,
+<code>pg_stat_user_tables</code> live/dead tuple estimates and vacuum/analyze timestamps, and
+database I/O alongside these metrics. Deletion and vacuum make space reusable;
+they do not normally reduce allocated table files. Replay refresh fallbacks also
+create HTTP reads, so include that traffic when assessing capacity.</p>
+<p>Cleanup deletes expired business payloads while preserving routing summaries for
+exact audiences. Summaries have no fixed size bound: distinct audiences can
+accumulate, although new ignored sockets alone do not create additional rows.
+Measure summary growth alongside recent event volume and cleanup progress.</p>
+<p>For users-channel replay, compare rows and heap blocks visited with events actually
+returned. Recipient selection should use <code>target_user_ids</code> and <code>all_users</code>, with
+<code>ws_realtime_targets_idx</code> and <code>ws_realtime_all_users_idx</code> available to the planner.
+There is no full-payload GIN index. Include recipient-trigger work in recording
+measurements; smaller indexes do not by themselves guarantee faster inserts.</p>
+<p>Refresh reasons separate storage coverage from event volume: <code>expired_payload</code>
+means relevant missed history was compacted or falls outside the replay window;
+<code>unknown_history</code> means the cursor predates the known history boundary after
+activation or reset; <code>event_limit</code> means too many replayable changes remain.</p>
 
 
 

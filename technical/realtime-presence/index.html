@@ -1602,6 +1602,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#runtime-and-scaling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Runtime and scaling
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#future-capabilities-permitted-not-built" class="md-nav__link">
     <span class="md-ellipsis">
       Future capabilities (permitted, not built)
@@ -2994,6 +3003,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#runtime-and-scaling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Runtime and scaling
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#future-capabilities-permitted-not-built" class="md-nav__link">
     <span class="md-ellipsis">
       Future capabilities (permitted, not built)
@@ -3027,7 +3045,7 @@
 
 <h1 id="realtime-presence">Realtime Presence<a class="headerlink" href="#realtime-presence" title="Permanent link">&para;</a></h1>
 <p>This document defines the <strong>language and conceptual model</strong> of Saveroom's presence feature.</p>
-<p>Presence is built on Saveroom's WebSocket infrastructure; see <a href="realtime-reliability.md">realtime-reliability.md</a> for connection lifecycle, reconnection, and event durability. This document reuses its terms (web socket ID, page subscriptions, channel groups) without re-defining them.</p>
+<p>Presence is built on Saveroom's WebSocket infrastructure; see <a href="../websockets/">websockets.md</a> for connection lifecycle, reconnection, and event durability. This document reuses its terms (web socket ID, page subscriptions, channel groups) without re-defining them.</p>
 <p>Presence answers one question for people working in the same place: <strong>who else is here, and what are they doing?</strong> — bounded by what each viewer is permitted to see.</p>
 <blockquote>
 <p><strong>Presence is best-effort and partial by design.</strong> It reflects only what is observable over live connections: who is connected and looking, and their focus. Mutations that arrive through other paths — imports, API calls, data sync, server jobs — have no connection and no focus, and never appear. Presence is descriptive ("who we know is here right now"); it is <strong>never an activity feed, an audit log, or a security/completeness guarantee</strong>. An empty presence space does not mean nobody touched the data.</p>
@@ -3137,7 +3155,14 @@
 <p>A presence space is a logical location, not a transport channel. The same place (e.g. a table) is delivered to different users over different per-permission channel groups; presence collapses all of them into <strong>one</strong> space so that everyone viewing that place can see each other. A host (today a page type) opts in to presence and declares which logical place each subscription belongs to; permission-tiered entry points for the same place resolve to the same space. Presence is not tied to tables — any place a host enables it for (a grid, a dashboard, a builder page, …) is a presence space; table 42 is just the running example.</p>
 <h3 id="joining-and-leaving">Joining and leaving<a class="headerlink" href="#joining-and-leaving" title="Permanent link">&para;</a></h3>
 <p>A connection becomes present when it subscribes to a presence-enabled place, and is removed when it unsubscribes or disconnects. A connection can be present in several spaces at once (e.g. a grid and an expanded-row modal), each tracked independently; a disconnect clears all of them.</p>
-<p>Cleanup leans on the <strong>disconnect signal</strong>, which is reliable because both runtime stacks run a server-side WebSocket keepalive that closes connections which stop responding — so a dead client is detected and removed within seconds, while a merely idle-but-connected client (whose browser keeps answering keepalives automatically) correctly stays present. Any further cleanup is a best-effort backstop, never the primary mechanism: a space's stored record carries a coarse expiry, and a focus update rewrites the member's full entry in one atomic step, so an entry dropped by that expiry is recreated on the next focus without a resubscribe. Because presence is best-effort, a connection's mere presence is not guaranteed to be complete or permanent.</p>
+<p>Cleanup primarily uses the <strong>disconnect signal</strong>. Server-side WebSocket keepalives
+detect unresponsive clients; an idle browser that still answers keepalives remains
+connected and present. A worker crash can prevent disconnect cleanup from running.
+The Redis presence hash has a coarse 12-hour expiry for the whole space, refreshed
+by member activity. It is not an individual member's liveness deadline: activity
+can keep abandoned entries in a busy space. A focus update rewrites the member's
+full entry atomically, recreating it if the space expired. Presence remains
+best-effort, so neither completeness nor permanent membership is guaranteed.</p>
 <h3 id="two-axis-visibility">Two-axis visibility<a class="headerlink" href="#two-axis-visibility" title="Permanent link">&para;</a></h3>
 <p>Two independent, per-recipient questions decide what a viewer sees. They compose — a connection must be presence-visible before its focus can be seen at all:</p>
 <table>
@@ -3192,6 +3217,22 @@
 <li><strong>Focus emission is debounced per space.</strong> Navigation focus (cell/row selection changes) is debounced at 150ms — others see where you land, not each step. Editing state transitions (start/stop editing) send immediately, without debounce. When a user is alone in a space, focus sends are skipped — except <strong>clears</strong>: once a focus has actually been transmitted, its clear always goes out, so the server never holds stale focus that a later joiner would receive. When another member joins, the sender re-emits its current focus so the joiner sees it without waiting for the next change.</li>
 <li><strong>When several users focus the same target</strong>, one label is shown — an actively editing user wins — plus a counter for the rest.</li>
 </ul>
+<h2 id="runtime-and-scaling">Runtime and scaling<a class="headerlink" href="#runtime-and-scaling" title="Permanent link">&para;</a></h2>
+<p>Presence membership and current focus live in Redis; their broadcasts go directly
+through the channel layer. They have no replay event IDs and are not retained or
+replayed with database changes. Reconnection rebuilds presence through subscriptions
+and member snapshots. Disabling replay recording does not disable presence.</p>
+<p>Presence uses async Redis calls. Database-backed presence-space resolution, such
+as a public-view lookup, uses the measured ORM adapter described in
+<a href="../websockets/#concurrency-and-database-access">WebSocket concurrency</a>. Current focus
+validation and recipient filtering are small, database-free functions; keep this
+frequent delivery path nonblocking.</p>
+<p>Snapshot reads and decoding grow with a space's membership. Broadcast processing
+grows with its channel recipients, even when some consumers subsequently discard
+the payload. A UI avatar limit does not cap either cost. Preserve recipient
+visibility, visitor counts, and <code>presence.editors_active</code> signaling when changing
+fanout. Use <a href="../../installation/monitoring/#websocket-and-realtime-metrics">queue and event-loop metrics</a>
+to separate shared-thread waits from Redis work and CPU pressure.</p>
 <hr />
 <h2 id="future-capabilities-permitted-not-built">Future capabilities (permitted, not built)<a class="headerlink" href="#future-capabilities-permitted-not-built" title="Permanent link">&para;</a></h2>
 <p>The model deliberately <em>reserves room for</em> these without building them now; each can be added without changing the concepts or the wire-level contract:</p>

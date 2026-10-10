@@ -3460,7 +3460,7 @@ doing.</p>
 <tr>
 <td>BASEROW_CACHE_TTL_SECONDS</td>
 <td>How long (in seconds) to cache lookups of authenticated users, database tokens, instance-wide settings, and active licenses in Redis, to speed up requests and reduce database load. Set to 0 to disable these caches entirely.</td>
-<td>0 (disabled)</td>
+<td>120</td>
 </tr>
 <tr>
 <td>BASEROW_BACKEND_LOG_LEVEL</td>
@@ -3753,6 +3753,11 @@ doing.</p>
 <td></td>
 </tr>
 <tr>
+<td>BASEROW_POSTGRESQL_DATA_SYNC_STATEMENT_TIMEOUT</td>
+<td>The maximum time in seconds that a single SQL statement is allowed to run during a PostgreSQL data sync before it is cancelled. Increase this value for larger installations with slow queries.</td>
+<td>180</td>
+</tr>
+<tr>
 <td>BASEROW_CONN_MAX_AGE</td>
 <td>How long (in seconds) a database connection may be reused. Set to 0 to close connections after each request. With WSGI, values &gt; 0 can improve performance. With ASGI, use caution as persistent connections can multiply across async coroutines. Applied to all configured databases (primary and read replicas).</td>
 <td>0</td>
@@ -3882,6 +3887,11 @@ doing.</p>
 <td>BASEROW_WEBHOOKS_URL_CHECK_TIMEOUT_SECS</td>
 <td><strong>Disabled if BASEROW_WEBHOOKS_ALLOW_PRIVATE_ADDRESS is set.</strong> How long to wait before timing out and returning an error when checking if an url can be accessed for a webhook.</td>
 <td>10 seconds</td>
+</tr>
+<tr>
+<td>BASEROW_DATA_SYNC_ALLOW_PRIVATE_ADDRESS</td>
+<td>If set to <code>false</code>, data syncs that fetch from a user configured URL (such as an iCal feed) are blocked from reaching private/internal network addresses and ports other than 80, 443, 8000, 8080 and 8443 (SSRF protection). Defaults to <code>true</code> for backwards compatibility; setting it to <code>false</code> is recommended when your data sources are hosted on public addresses and standard ports.</td>
+<td>true</td>
 </tr>
 <tr>
 <td>BASEROW_WEBHOOKS_MAX_CONSECUTIVE_TRIGGER_FAILURES</td>
@@ -4067,8 +4077,13 @@ doing.</p>
 </tr>
 <tr>
 <td>BASEROW_REALTIME_REPLAY_MAX_EVENTS</td>
-<td>Maximum number of missed events replayed to a reconnecting WebSocket client. When the count exceeds this limit, the client is asked to refresh instead of receiving individual events. Set to <code>0</code> to disable event recording and replay entirely.</td>
-<td>0</td>
+<td>Maximum number of missed events replayed to a reconnecting WebSocket client. When the count exceeds this limit, the client is asked to refresh instead of receiving individual events. Set to <code>0</code> to disable event recording and replay. Full events are replayable for the configured retention window, independently of JWT lifetime. Expired events become routing summaries without business payloads; relevant missed expired history requires a refresh. Cleanup continues when recording is disabled.</td>
+<td>200</td>
+</tr>
+<tr>
+<td>BASEROW_REALTIME_REPLAY_RETENTION_HOURS</td>
+<td>Maximum age in hours of full realtime events available to replay after a WebSocket reconnect. Must be a positive integer. Increasing this window retains more full payloads and requires more database storage, but cannot restore events already compacted. Independent of JWT lifetime.</td>
+<td>24</td>
 </tr>
 <tr>
 <td>BASEROW_DEPENDANT_ROWS_REALTIME_UPDATE_LIMIT</td>
@@ -4158,6 +4173,11 @@ doing.</p>
 <td>BASEROW_TWO_WAY_SYNC_MAX_RETRIES</td>
 <td>Indicates the maximum of or two-way data sync create, update, or delete row retries before considering it a failure.</td>
 <td>3</td>
+</tr>
+<tr>
+<td>BASEROW_DATA_SYNC_ALLOW_PRIVATE_ADDRESS</td>
+<td>If set to <code>false</code>, data syncs that fetch from a user configured URL (such as a self-hosted GitLab, Jira instance, or an iCal feed) are blocked from reaching private/internal network addresses and ports other than 80, 443, 8000, 8080 and 8443 (SSRF protection). Defaults to <code>true</code> for backwards compatibility; setting it to <code>false</code> is recommended when your data sources are hosted on public addresses and standard ports.</td>
+<td>true</td>
 </tr>
 </tbody>
 </table>
